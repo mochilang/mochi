@@ -55,8 +55,15 @@ func TestPhase25TargetTebako(t *testing.T) {
 		t.Fatalf("script missing literal:\n%s", scriptBytes)
 	}
 	gfBytes, _ := os.ReadFile(gemfilePath)
-	if !strings.Contains(string(gfBytes), `gem "mochi-runtime"`) {
-		t.Fatalf("Gemfile missing mochi-runtime line:\n%s", gfBytes)
+	for _, want := range []string{
+		`gem "mochi-runtime"`,
+		`source "https://rubygems.org"`,
+		`ruby ">= 3.2"`,
+		`gem "mochi-runtime", ">= 0.1"`,
+	} {
+		if !strings.Contains(string(gfBytes), want) {
+			t.Fatalf("Gemfile missing %q:\n%s", want, gfBytes)
+		}
 	}
 
 	pressBytes, _ := os.ReadFile(pressPath)
@@ -70,6 +77,10 @@ func TestPhase25TargetTebako(t *testing.T) {
 		"--root=/mnt/w/root",
 		"MOCHI_TEBAKO_IMAGE",
 		"MOCHI_TEBAKO_RUBY",
+		"ghcr.io/tamatebako/tebako-ubuntu-20.04:latest",
+		"3.3.7",
+		`--Ruby="$RUBY_VERSION"`,
+		"docker run --rm",
 	} {
 		if !strings.Contains(pressStr, want) {
 			t.Fatalf("press.sh missing %q:\n%s", want, pressStr)

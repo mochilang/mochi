@@ -52,7 +52,19 @@ func TestPhase22TargetRubyGem(t *testing.T) {
 		t.Fatalf("lib file does not contain literal:\n%s", libBytes)
 	}
 	specBytes, _ := os.ReadFile(specPath)
-	for _, want := range []string{`s.name`, `"hello_gem"`, `lib/hello_gem.rb`, `mochi-runtime`} {
+	for _, want := range []string{
+		`s.name`,
+		`"hello_gem"`,
+		`lib/hello_gem.rb`,
+		`mochi-runtime`,
+		`s.version     = "0.1.0"`,
+		`s.license     = "Apache-2.0"`,
+		`s.required_ruby_version = ">= 3.2"`,
+		`s.summary     = "Mochi-generated gem"`,
+		`s.authors     = ["Mochi"]`,
+		`s.add_runtime_dependency "mochi-runtime", ">= 0.1"`,
+		`s.require_paths = ["lib"]`,
+	} {
 		if !strings.Contains(string(specBytes), want) {
 			t.Fatalf("gemspec missing %q:\n%s", want, specBytes)
 		}

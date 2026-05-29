@@ -41,7 +41,13 @@ func TestPhase23TargetRubyBundle(t *testing.T) {
 		t.Fatalf("script does not contain literal:\n%s", scriptBytes)
 	}
 	gfBytes, _ := os.ReadFile(gemfilePath)
-	for _, want := range []string{`source "https://rubygems.org"`, `gem "mochi-runtime"`, `ruby ">= 3.2"`} {
+	for _, want := range []string{
+		`source "https://rubygems.org"`,
+		`gem "mochi-runtime"`,
+		`ruby ">= 3.2"`,
+		`gem "mochi-runtime", ">= 0.1"`,
+		`# frozen_string_literal: true`,
+	} {
 		if !strings.Contains(string(gfBytes), want) {
 			t.Fatalf("Gemfile missing %q:\n%s", want, gfBytes)
 		}

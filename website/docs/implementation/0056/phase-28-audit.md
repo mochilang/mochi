@@ -22,7 +22,7 @@ description: "MEP-56 Phase 28, audit sweep covering Driver.Build failure paths, 
 Three top-level Go tests close the audit gaps left by the per-feature phases:
 
 - `TestPhase28DriverErrorPaths` (`phase28_driver_errors_test.go`): five subtests cover `Driver.Build` failure branches (parse error, typecheck error, missing source file, unknown target, output-dir is a file). Each subtest asserts a non-nil error and (for the four with stable wording) asserts the message names the failing stage (`parse`, `typecheck`, `read`/`no such file`/`parse`, `not implemented`).
-- `TestPhase29EdgeCases` (`phase29_edge_cases_test.go`): 19 subtests build and execute Mochi sources covering collection-boundary, scalar, string-Unicode, query, closure-capture, and previously-uncovered IR-node scenarios (`BreakStmt`, `ContinueStmt`, `MapValuesExpr`, `UnNotBool`, `Panic#code` round-trip) that the per-feature phase tests intentionally kept happy-path only.
+- `TestPhase29EdgeCases` (`phase29_edge_cases_test.go`): 30 subtests build and execute Mochi sources covering collection-boundary, scalar, string-Unicode, query, closure-capture, and previously-uncovered IR-node scenarios (`BreakStmt`, `ContinueStmt`, `MapValuesExpr`, `UnNotBool`, `Panic#code` round-trip, `ListSortAscExpr`, `ListSliceExpr`, `MathCallExpr "ceil"`, `StrConvertExpr`, `NumCastExpr`, `MatchStmt Default arm`, chained `elsif` folding, integer-valued float print, `Mochi::Runtime::VERSION` constant load, `Panic#message` channel, locked-in `BinDivI64` floor-div behaviour) that the per-feature phase tests intentionally kept happy-path only.
 - `TestPhase30TargetEmittedSyntax` (`phase30_target_syntax_test.go`): seven subtests run `ruby -c` against the `.rb` every non-source build target emits, plus a JSON.parse round-trip against the IRuby notebook and a `.gem` archive walk that asserts `lib/<name>.rb` is present byte for byte.
 - `TestPhase31Integration` (`phase31_integration_test.go`): five cross-cutting subtests exercise multi-feature programs (`closure_over_query_result`, `nested_hof_filter_then_map_then_reduce`, `try_catch_around_record_field_access`, `list_of_records_query`, `match_arm_returns_distinct_per_variant`) that touch two or more phases at once, catching regressions per-feature tests would miss.
 
@@ -45,7 +45,17 @@ The shared exercise source in `TestPhase30TargetEmittedSyntax` (a `Sign` sum typ
 | File | Purpose |
 |------|---------|
 | `transpiler3/ruby/build/phase28_driver_errors_test.go` | `TestPhase28DriverErrorPaths` (5 subtests): parse / typecheck / missing-file / unknown-target / out-dir-is-file |
-| `transpiler3/ruby/build/phase29_edge_cases_test.go` | `TestPhase29EdgeCases` (19 subtests): collection, scalar, string, query, closure boundary scenarios plus uncovered IR nodes |
+| `transpiler3/ruby/build/phase29_edge_cases_test.go` | `TestPhase29EdgeCases` (30 subtests): collection, scalar, string, query, closure boundary scenarios plus uncovered IR nodes + runtime gem assertions (VERSION, Panic#message) + locked floor-div divergence |
+| `transpiler3/ruby/build/phase22_test.go` | Expanded gemspec substring assertions for `s.version`, `s.license`, `required_ruby_version`, `summary`, `authors`, `add_runtime_dependency` constraint, `require_paths` |
+| `transpiler3/ruby/build/phase23_test.go` | Gemfile assertions for `mochi-runtime ">= 0.1"` version pin and `# frozen_string_literal: true` header |
+| `transpiler3/ruby/build/phase24_test.go` | Notebook assertions for `nbformat_minor` (5), `kernelspec.display_name`, `language_info.file_extension`, cell `execution_count == nil` |
+| `transpiler3/ruby/build/phase25_test.go` | Tebako press.sh assertions for default image (`ghcr.io/tamatebako/...`), default Ruby version (`3.3.7`), `--Ruby=` flag, full Gemfile |
+| `transpiler3/ruby/build/phase26_test.go` | TruffleNative assertions for `--initialize-at-build-time` flag and both error-message branches when `GRAAL_HOME` / `native-image` are missing |
+| `transpiler3/ruby/build/phase27_test.go` | MRuby build_config.rb assertions for `conf.gem core: 'mruby-bin-mrbc'`, `mruby-bin-mruby`, and `conf.gem '#{__dir__}'` directives |
+| `transpiler3/ruby/lower/lower.go` | Floor-div divergence flagged inline at line 1187 (no code change); covered by lock-in test |
+| `website/docs/mep/mep-0056.md` | §3 surface-syntax table extended with anonymous record `type Pair = { … }`, struct-literal agent constructor, `set{…}` and `omap<K,V>` annotation forms, `fetch` keyword form, `json_decode` snake_case, `int(x)` cast form, BinDivI64 known-divergence row |
+| `website/docs/implementation/0056/phase-02-scalars.md` | Floor-div divergence documented with the lock-in test name |
+| `website/docs/implementation/0056/phase-09-datalog.md` | Subtest count corrected from 3 to 5 |
 | `transpiler3/ruby/build/phase30_target_syntax_test.go` | `TestPhase30TargetEmittedSyntax` (7 subtests): `ruby -c` on every emitted `.rb`, notebook JSON probe, `.gem` archive walk via `inspectGemContainsLib` helper |
 | `transpiler3/ruby/build/phase31_integration_test.go` | `TestPhase31Integration` (5 subtests): cross-cutting programs touching closures + queries + records + try/catch + match together |
 | `transpiler3/ruby/build/phase09_test.go` | `dl_neq_constraint` and `dl_not_negation` subtests added for previously-untested `IsNeq` and `IsNot` paths in `datalog.go` |
@@ -58,7 +68,7 @@ The shared exercise source in `TestPhase30TargetEmittedSyntax` (a `Sign` sum typ
 
 `phase29_edge_cases_test.go`:
 
-- `TestPhase29EdgeCases/empty_list_len`, `empty_string_len`, `negative_arithmetic`, `large_integer`, `unicode_string_ops`, `list_with_one_element`, `nested_list`, `map_get_missing_default`, `omap_round_trip_multi_key`, `map_keys_iter_yields_all`, `for_range_zero_iterations`, `while_loop_zero_iterations`, `sum_neg_zero_pos_all_arms`, `closure_capture_by_value`, `break_exits_for_range`, `continue_skips_iteration`, `map_values_len`, `not_bool`, `panic_code_carries_through_catch`.
+- `TestPhase29EdgeCases/empty_list_len`, `empty_string_len`, `negative_arithmetic`, `large_integer`, `unicode_string_ops`, `list_with_one_element`, `nested_list`, `map_get_missing_default`, `omap_round_trip_multi_key`, `map_keys_iter_yields_all`, `for_range_zero_iterations`, `while_loop_zero_iterations`, `sum_neg_zero_pos_all_arms`, `closure_capture_by_value`, `break_exits_for_range`, `continue_skips_iteration`, `map_values_len`, `not_bool`, `panic_code_carries_through_catch`, `list_sort_via_query`, `list_slice_subscript`, `math_ceil`, `str_convert_float`, `int_cast_from_float`, `match_default_arm`, `if_else_if_else_chain`, `integer_valued_float_print`, `runtime_version_constant_loads`, `panic_message_arg_surfaces`, `negative_int_floor_div_known_divergence`.
 
 `phase30_target_syntax_test.go`:
 

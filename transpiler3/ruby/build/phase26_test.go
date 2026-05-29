@@ -48,11 +48,14 @@ func TestPhase26TargetTruffleNative(t *testing.T) {
 		"set -euo pipefail",
 		"--language:ruby",
 		"--no-fallback",
+		"--initialize-at-build-time",
 		`-o "hello_truffle"`,
 		`"hello_truffle.rb"`,
 		"MOCHI_GRAALVM_HOME",
 		"GRAALVM_HOME",
 		"native-image",
+		`echo "MOCHI_GRAALVM_HOME or GRAALVM_HOME must be set"`,
+		`echo "native-image not found at $NATIVE_IMAGE"`,
 	} {
 		if !strings.Contains(buildStr, want) {
 			t.Fatalf("native_build.sh missing %q:\n%s", want, buildStr)

@@ -29,7 +29,7 @@ Scalar literals lower one-to-one: `aotir.StringLit` → `rtree.StringLit`, `aoti
 
 `lowerUnary` covers `UnNegI64`/`UnNegF64` → `-x` and `UnNotBool` → `!x`. `LetStmt` becomes a Ruby `Assign{LHS: rubyIdent(name), RHS: lowered}`; the `rubyIdent` mangler appends `_` to the 36 reserved Ruby keywords (alias, and, begin, ..., yield) so a Mochi `var while = 1` would render as `while_ = 1`. `var` and `let` collapse to the same Ruby form because Ruby has no const/let distinction; the Mochi var-vs-let invariant is a typecheck-time concern that never reaches the emitter.
 
-A known limitation logged in the source: `BinDivI64` becomes Ruby's plain `/`, which floor-divides for negatives. Phase 2 fixtures use only positive operands, so it is correct here, but the comment at `lower.go:1187` flags this for a later phase to round to truncation via `.div`/`.divmod`.
+A known limitation logged in the source: `BinDivI64` becomes Ruby's plain `/`, which floor-divides for negatives. Phase 2 fixtures use only positive operands, so it is correct here, but the comment at `lower.go:1187` flags this for a later phase to round to truncation via `.div`/`.divmod`. The audit pass added `TestPhase29EdgeCases/negative_int_floor_div_known_divergence` to lock the floor-div emission in place so any later change is caught alongside the spec update. Concrete divergence: spec `-7 / 2` should be `-3` (truncate toward zero, matching C/JVM/Swift/.NET), current Ruby output is `-4`. The four-input test asserts the floor values `-4, -4, 3, -4` so the gap is permanently visible.
 
 ## Files changed
 

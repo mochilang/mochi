@@ -39,7 +39,7 @@ Helpers `resolveArg` (lines 194 to 202), `isVar` (lines 204 to 212), `tupleInRel
 |------|---------|
 | `transpiler3/ruby/lower/datalog.go` | `lowerDatalogQueryExpr` emitting a Ruby Array of pre-computed string literals; `datalogEval` semi-naive fixpoint; `deriveRule` for positive/negation/disequality literals; `resolveArg`, `isVar`, `tupleInRelation`, `copyEnv` helpers |
 | `transpiler3/ruby/lower/lower.go` | `aotir.DatalogQueryExpr` arm in `lowerExpr` dispatches to `lowerDatalogQueryExpr` (lines 737 to 738) |
-| `transpiler3/ruby/build/phase09_test.go` | `TestPhase9Datalog` with 3 subtests |
+| `transpiler3/ruby/build/phase09_test.go` | `TestPhase9Datalog` with 5 subtests |
 
 ## Test set
 
@@ -47,4 +47,4 @@ Helpers `resolveArg` (lines 194 to 202), `isVar` (lines 204 to 212), `tupleInRel
 
 ## Closeout notes
 
-Phase 9 landed on CRuby 3.4 with all three subtests green. The compile-time evaluation strategy was chosen over emitting a runtime Datalog engine for two reasons: every existing Mochi backend (C, JVM, BEAM) already does compile-time eval, so the engine is dead weight at runtime; and the Mochi fact/rule corpus is closed at compile time, so any runtime engine would just re-derive the same fixpoint on every process start. Key implementation insight: the `aotir.RawCStmt` arm at lower.go line 212 is a deliberate no-op for the C target's Datalog fixpoint scaffolding, since the Ruby lowerer evaluates the program at compile time via `lowerDatalogQueryExpr` and the C-side fixpoint setup is dead weight here. Future Phase 9.1 (aggregations like `count`, `sum`) will extend `deriveRule` rather than introducing runtime code.
+Phase 9 landed on CRuby 3.4 with all five subtests green. The compile-time evaluation strategy was chosen over emitting a runtime Datalog engine for two reasons: every existing Mochi backend (C, JVM, BEAM) already does compile-time eval, so the engine is dead weight at runtime; and the Mochi fact/rule corpus is closed at compile time, so any runtime engine would just re-derive the same fixpoint on every process start. Key implementation insight: the `aotir.RawCStmt` arm at lower.go line 212 is a deliberate no-op for the C target's Datalog fixpoint scaffolding, since the Ruby lowerer evaluates the program at compile time via `lowerDatalogQueryExpr` and the C-side fixpoint setup is dead weight here. Future Phase 9.1 (aggregations like `count`, `sum`) will extend `deriveRule` rather than introducing runtime code.

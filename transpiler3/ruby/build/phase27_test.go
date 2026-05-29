@@ -48,6 +48,10 @@ func TestPhase27TargetMRuby(t *testing.T) {
 		"toolchain :gcc",
 		"gembox 'default'",
 		"conf.bins = ['hello_mruby']",
+		"conf.gem core: 'mruby-bin-mrbc'",
+		"conf.gem core: 'mruby-bin-mruby'",
+		"conf.gem '#{__dir__}'",
+		"# frozen_string_literal: true",
 	} {
 		if !strings.Contains(cfgStr, want) {
 			t.Fatalf("build_config.rb missing %q:\n%s", want, cfgStr)

@@ -36,20 +36,23 @@ func TestPhase24TargetIRubyKernel(t *testing.T) {
 	}
 
 	var nb struct {
-		NbFormat int `json:"nbformat"`
-		Metadata struct {
+		NbFormat      int `json:"nbformat"`
+		NbFormatMinor int `json:"nbformat_minor"`
+		Metadata      struct {
 			Kernelspec struct {
 				Name        string `json:"name"`
 				DisplayName string `json:"display_name"`
 				Language    string `json:"language"`
 			} `json:"kernelspec"`
 			LanguageInfo struct {
-				Name string `json:"name"`
+				Name          string `json:"name"`
+				FileExtension string `json:"file_extension"`
 			} `json:"language_info"`
 		} `json:"metadata"`
 		Cells []struct {
-			CellType string   `json:"cell_type"`
-			Source   []string `json:"source"`
+			CellType       string   `json:"cell_type"`
+			ExecutionCount *int     `json:"execution_count"`
+			Source         []string `json:"source"`
 		} `json:"cells"`
 	}
 	if err := json.Unmarshal(raw, &nb); err != nil {
@@ -58,8 +61,14 @@ func TestPhase24TargetIRubyKernel(t *testing.T) {
 	if nb.NbFormat != 4 {
 		t.Fatalf("nbformat = %d, want 4", nb.NbFormat)
 	}
+	if nb.NbFormatMinor != 5 {
+		t.Fatalf("nbformat_minor = %d, want 5", nb.NbFormatMinor)
+	}
 	if nb.Metadata.Kernelspec.Name != "ruby" {
 		t.Fatalf("kernelspec.name = %q, want ruby", nb.Metadata.Kernelspec.Name)
+	}
+	if nb.Metadata.Kernelspec.DisplayName != "Ruby (IRuby)" {
+		t.Fatalf("kernelspec.display_name = %q, want \"Ruby (IRuby)\"", nb.Metadata.Kernelspec.DisplayName)
 	}
 	if nb.Metadata.Kernelspec.Language != "ruby" {
 		t.Fatalf("kernelspec.language = %q, want ruby", nb.Metadata.Kernelspec.Language)
@@ -67,8 +76,14 @@ func TestPhase24TargetIRubyKernel(t *testing.T) {
 	if nb.Metadata.LanguageInfo.Name != "ruby" {
 		t.Fatalf("language_info.name = %q, want ruby", nb.Metadata.LanguageInfo.Name)
 	}
+	if nb.Metadata.LanguageInfo.FileExtension != ".rb" {
+		t.Fatalf("language_info.file_extension = %q, want .rb", nb.Metadata.LanguageInfo.FileExtension)
+	}
 	if len(nb.Cells) != 1 || nb.Cells[0].CellType != "code" {
 		t.Fatalf("want one code cell, got %#v", nb.Cells)
+	}
+	if nb.Cells[0].ExecutionCount != nil {
+		t.Fatalf("cell execution_count = %v, want nil (cell unrun)", nb.Cells[0].ExecutionCount)
 	}
 	joined := strings.Join(nb.Cells[0].Source, "")
 	if !strings.Contains(joined, "hi from notebook") {
