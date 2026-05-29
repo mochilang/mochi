@@ -264,6 +264,16 @@ func lowerStmt(s aotir.Stmt) (rtree.Stmt, error) {
 			return nil, err
 		}
 		return &rtree.RawStmt{Text: fmt.Sprintf("%s[%s] = %s", rubyIdent(s.Name), key.RubyExprString(), val.RubyExprString())}, nil
+	case *aotir.OMapPutStmt:
+		key, err := lowerExpr(s.Key)
+		if err != nil {
+			return nil, err
+		}
+		val, err := lowerExpr(s.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawStmt{Text: fmt.Sprintf("%s[%s] = %s", rubyIdent(s.Name), key.RubyExprString(), val.RubyExprString())}, nil
 	case *aotir.BreakStmt:
 		return &rtree.RawStmt{Text: "break"}, nil
 	case *aotir.ContinueStmt:
@@ -852,6 +862,89 @@ func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 		}
 		return &rtree.RawExpr{Text: fmt.Sprintf("%s.inject(%s) { |__acc, __x| (%s).call(__acc, __x) }",
 			list.RubyExprString(), init.RubyExprString(), fn.RubyExprString())}, nil
+	case *aotir.SetLiteralExpr:
+		parts := make([]string, 0, len(e.Elems))
+		for _, el := range e.Elems {
+			ex, err := lowerExpr(el)
+			if err != nil {
+				return nil, err
+			}
+			parts = append(parts, ex.RubyExprString())
+		}
+		return &rtree.RawExpr{Text: "Set.new([" + strings.Join(parts, ", ") + "])"}, nil
+	case *aotir.SetAddExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		elem, err := lowerExpr(e.Elem)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawExpr{Text: fmt.Sprintf("(%s | Set[%s])",
+			recv.RubyExprString(), elem.RubyExprString())}, nil
+	case *aotir.SetHasExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		elem, err := lowerExpr(e.Elem)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "include?", Args: []rtree.Expr{elem}, UseParens: true}, nil
+	case *aotir.SetLenExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "size"}, nil
+	case *aotir.SetToListExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "to_a"}, nil
+	case *aotir.OMapLiteralExpr:
+		parts := make([]string, 0, len(e.Keys))
+		for i := range e.Keys {
+			k, err := lowerExpr(e.Keys[i])
+			if err != nil {
+				return nil, err
+			}
+			v, err := lowerExpr(e.Values[i])
+			if err != nil {
+				return nil, err
+			}
+			parts = append(parts, k.RubyExprString()+" => "+v.RubyExprString())
+		}
+		return &rtree.RawExpr{Text: "{" + strings.Join(parts, ", ") + "}"}, nil
+	case *aotir.OMapGetExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		key, err := lowerExpr(e.Key)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawExpr{Text: recv.RubyExprString() + ".fetch(" + key.RubyExprString() + ")"}, nil
+	case *aotir.OMapHasExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		key, err := lowerExpr(e.Key)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "key?", Args: []rtree.Expr{key}, UseParens: true}, nil
+	case *aotir.OMapLenExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "size"}, nil
 	}
 	return nil, fmt.Errorf("ruby lower: unsupported expression type %T", e)
 }
