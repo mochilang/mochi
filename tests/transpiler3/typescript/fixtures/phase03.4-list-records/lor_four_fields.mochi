@@ -1,0 +1,12 @@
+type Row {
+  id: int
+  label: string
+  weight: float
+  active: bool
+}
+
+let r = Row { id: 1, label: "alpha", weight: 1.5, active: true }
+print(r.id)
+print(r.label)
+print(r.weight)
+print(r.active)

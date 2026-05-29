@@ -1,0 +1,8 @@
+type Sample {
+  v: float
+  ok: bool
+}
+
+let s = Sample { v: 3.14, ok: true }
+print(s.v)
+print(s.ok)

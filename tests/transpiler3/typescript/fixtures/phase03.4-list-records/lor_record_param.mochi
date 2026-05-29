@@ -1,0 +1,13 @@
+type Pt {
+  x: int
+  y: int
+}
+
+fun magnitude_sq(p: Pt): int {
+  return p.x * p.x + p.y * p.y
+}
+
+let a = Pt { x: 3, y: 4 }
+let b = Pt { x: 5, y: 12 }
+print(magnitude_sq(a))
+print(magnitude_sq(b))

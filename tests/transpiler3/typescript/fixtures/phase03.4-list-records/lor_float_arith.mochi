@@ -1,0 +1,11 @@
+type Sample {
+  v: float
+}
+
+let xs = [Sample { v: 1.5 }, Sample { v: 2.5 }, Sample { v: 3.0 }, Sample { v: 0.5 }]
+var sum = 0.0
+for x in xs {
+  sum = sum + x.v
+}
+print(sum)
+print(len(xs))

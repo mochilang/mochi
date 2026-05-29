@@ -3100,17 +3100,29 @@ func (l *lowerer) lowerExpr(e *parser.Expr) (aotir.Expr, error) {
 	return l.lowerBinary(e.Binary)
 }
 
-// lowerBinary folds the parser's left-associative chain into an
-// aotir.BinaryExpr tree, monomorphising each operator against the
-// operand types via opForTypes.
+// lowerBinary climbs the parser's flat operator chain into a
+// precedence-respecting aotir.BinaryExpr tree, monomorphising each
+// operator against its operand types via opForTypes.
+//
+// The Mochi parser produces a flat `Binary.Left [op1 Right1] [op2 Right2]...`
+// shape and defers precedence to a post-parse pass; this is the pass.
+// Each precedence level reduces left-to-right (every Mochi binop is
+// left-associative). The sweep order matches compiler3/frontend's
+// reference lowerer at compiler3/frontend/lower.go and the natural
+// math reading: `a * b + c` -> `(a * b) + c`, never `a * (b + c)`.
 func (l *lowerer) lowerBinary(bin *parser.BinaryExpr) (aotir.Expr, error) {
 	if bin == nil || bin.Left == nil {
 		return nil, fmt.Errorf("nil binary")
 	}
-	left, err := l.lowerUnary(bin.Left)
+	leftFirst, err := l.lowerUnary(bin.Left)
 	if err != nil {
 		return nil, err
 	}
+	if len(bin.Right) == 0 {
+		return leftFirst, nil
+	}
+	operands := []aotir.Expr{leftFirst}
+	ops := make([]string, 0, len(bin.Right))
 	for _, op := range bin.Right {
 		if op == nil || op.Right == nil {
 			return nil, fmt.Errorf("nil binary operator")
@@ -3119,61 +3131,102 @@ func (l *lowerer) lowerBinary(bin *parser.BinaryExpr) (aotir.Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		if op.Op == "in" && right.Type() == aotir.TypeMap {
-			recvKey := exprKeyType(right)
-			if left.Type() != recvKey {
-				return nil, fmt.Errorf("`in` map: key type is %s, got %s", recvKey, left.Type())
+		operands = append(operands, right)
+		ops = append(ops, op.Op)
+	}
+	for _, level := range binaryPrecedenceLevels {
+		i := 0
+		for i < len(ops) {
+			if !level[ops[i]] {
+				i++
+				continue
 			}
-			left = &aotir.MapHasExpr{
-				Receiver:          right,
-				Key:               left,
-				KeyType:           recvKey,
-				ValueType:         exprValueType(right),
-				ListValueElemType: exprListValueElemType(right),
+			combined, err := l.reduceBinOp(ops[i], operands[i], operands[i+1])
+			if err != nil {
+				return nil, err
 			}
-			continue
-		}
-		if op.Op == "in" && right.Type() == aotir.TypeSet {
-			elemType := exprSetElemType(right)
-			if left.Type() != elemType {
-				return nil, fmt.Errorf("`in` set: value type is %s, set element type is %s", left.Type(), elemType)
-			}
-			left = &aotir.SetHasExpr{
-				Receiver: right,
-				Elem:     left,
-				ElemType: elemType,
-			}
-			continue
-		}
-		if op.Op == "in" && right.Type() == aotir.TypeList {
-			elem := exprElemType(right)
-			switch elem {
-			case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
-			default:
-				return nil, fmt.Errorf("`in` list: element type must be scalar, got %s", elem)
-			}
-			if left.Type() != elem {
-				return nil, fmt.Errorf("`in` list: value type is %s, list element type is %s", left.Type(), elem)
-			}
-			left = &aotir.ListContainsExpr{
-				List:     right,
-				Value:    left,
-				ElemType: elem,
-			}
-			continue
-		}
-		bop, res, err := opForTypes(op.Op, left.Type(), right.Type())
-		if err != nil {
-			return nil, err
-		}
-		left = &aotir.BinaryExpr{
-			Op:     bop,
-			Left:   left,
-			Right:  right,
-			Result: res,
+			operands[i] = combined
+			operands = append(operands[:i+1], operands[i+2:]...)
+			ops = append(ops[:i], ops[i+1:]...)
 		}
 	}
-	return left, nil
+	if len(operands) != 1 || len(ops) != 0 {
+		return nil, fmt.Errorf("ts lower: binary precedence reduce left %d operands, %d ops (operator without a precedence level)", len(operands), len(ops))
+	}
+	return operands[0], nil
+}
+
+// binaryPrecedenceLevels lists operator precedence buckets from
+// highest to lowest. Each bucket reduces left-to-right within a
+// single sweep. Order matches compiler3/frontend's
+// binaryPrecedenceLevels: `*` / `/` / `%` bind tightest; `||` /
+// `??` bind loosest. `union` / `except` / `intersect` sit at the
+// additive level per Mochi spec; they may not yet have a lowering
+// in transpiler3/c but their precedence shape is correct for when
+// they do.
+var binaryPrecedenceLevels = []map[string]bool{
+	{"*": true, "/": true, "%": true},
+	{"+": true, "-": true, "union": true, "except": true, "intersect": true},
+	{"==": true, "!=": true, "<": true, "<=": true, ">": true, ">=": true, "in": true},
+	{"&&": true},
+	{"||": true},
+	{"??": true},
+}
+
+// reduceBinOp applies one operator to two operands, dispatching the
+// `in` operator across map/set/list receivers (each gets its own
+// aotir node) and routing every other operator through opForTypes.
+func (l *lowerer) reduceBinOp(opStr string, left, right aotir.Expr) (aotir.Expr, error) {
+	if opStr == "in" && right.Type() == aotir.TypeMap {
+		recvKey := exprKeyType(right)
+		if left.Type() != recvKey {
+			return nil, fmt.Errorf("`in` map: key type is %s, got %s", recvKey, left.Type())
+		}
+		return &aotir.MapHasExpr{
+			Receiver:          right,
+			Key:               left,
+			KeyType:           recvKey,
+			ValueType:         exprValueType(right),
+			ListValueElemType: exprListValueElemType(right),
+		}, nil
+	}
+	if opStr == "in" && right.Type() == aotir.TypeSet {
+		elemType := exprSetElemType(right)
+		if left.Type() != elemType {
+			return nil, fmt.Errorf("`in` set: value type is %s, set element type is %s", left.Type(), elemType)
+		}
+		return &aotir.SetHasExpr{
+			Receiver: right,
+			Elem:     left,
+			ElemType: elemType,
+		}, nil
+	}
+	if opStr == "in" && right.Type() == aotir.TypeList {
+		elem := exprElemType(right)
+		switch elem {
+		case aotir.TypeInt, aotir.TypeFloat, aotir.TypeBool, aotir.TypeString:
+		default:
+			return nil, fmt.Errorf("`in` list: element type must be scalar, got %s", elem)
+		}
+		if left.Type() != elem {
+			return nil, fmt.Errorf("`in` list: value type is %s, list element type is %s", left.Type(), elem)
+		}
+		return &aotir.ListContainsExpr{
+			List:     right,
+			Value:    left,
+			ElemType: elem,
+		}, nil
+	}
+	bop, res, err := opForTypes(opStr, left.Type(), right.Type())
+	if err != nil {
+		return nil, err
+	}
+	return &aotir.BinaryExpr{
+		Op:     bop,
+		Left:   left,
+		Right:  right,
+		Result: res,
+	}, nil
 }
 
 // opForTypes maps a source operator + operand types to the typed

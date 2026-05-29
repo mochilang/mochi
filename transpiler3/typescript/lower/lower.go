@@ -120,11 +120,18 @@ func Lower(prog *aotir.Program, colours colour.ColourMap) (*tstree.SourceFile, e
 		return nil, err
 	}
 
-	// Helpers come first so they're hoisted above user code in
-	// the emitted module. TypeScript function declarations hoist
-	// regardless of textual order, but emit ordering still
-	// matters for source-map stability and for human readability.
-	decls := l.runtimeDecls()
+	// Record classes go first so user functions and main body
+	// references resolve forward (TS hoists `function` but not
+	// `class`, and a class used before its declaration would be
+	// a TDZ ReferenceError under `--strict`). Then runtime
+	// helpers, then user functions. Source-map stability and
+	// Phase 16 reproducibility rely on this fixed order.
+	recordClassDecls, err := l.recordDecls()
+	if err != nil {
+		return nil, err
+	}
+	decls := recordClassDecls
+	decls = append(decls, l.runtimeDecls()...)
 	decls = append(decls, l.runtimeListDecls()...)
 	decls = append(decls, l.runtimeMapDecls()...)
 	decls = append(decls, l.runtimeSetDecls()...)
@@ -406,7 +413,7 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) ([]tstree.Stmt, error) {
 // Phase 3 widens the type renderer to compound containers: list
 // slots emit `T[]` using the LetStmt's ElemType side-channel.
 func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) ([]tstree.Stmt, error) {
-	tn, err := tsTypeForLetSlot(s.VarType, s.ElemType, s.KeyType, s.ValueType)
+	tn, err := tsTypeForLetSlot(s.VarType, s.ElemType, s.KeyType, s.ValueType, s.RecordName, s.ElemRecordName)
 	if err != nil {
 		return nil, fmt.Errorf("ts lower: let %q: %w", s.Name, err)
 	}
@@ -626,6 +633,10 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (tstree.Expr, error) {
 		return l.lowerSetLenExpr(v)
 	case *aotir.SetToListExpr:
 		return l.lowerSetToListExpr(v)
+	case *aotir.RecordLit:
+		return l.lowerRecordLit(v)
+	case *aotir.FieldAccess:
+		return l.lowerFieldAccess(v)
 	default:
 		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 3 surface)", e)
 	}

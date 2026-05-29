@@ -1,0 +1,17 @@
+type Flag {
+  active: bool
+}
+
+let fs = [Flag { active: true }, Flag { active: false }, Flag { active: true }, Flag { active: true }, Flag { active: false }, Flag { active: true }]
+var ons = 0
+var offs = 0
+for f in fs {
+  if f.active {
+    ons = ons + 1
+  } else {
+    offs = offs + 1
+  }
+}
+print(ons)
+print(offs)
+print(len(fs))
