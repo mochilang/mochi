@@ -1,0 +1,17 @@
+agent CounterA {
+    var n: int = 0
+    intent inc() { n = n + 1 }
+    intent get(): int { return n }
+}
+agent CounterB {
+    var m: int = 100
+    intent dec() { m = m - 1 }
+    intent get(): int { return m }
+}
+let a = CounterA { n: 0 }
+let b = CounterB { m: 100 }
+a.inc()
+a.inc()
+b.dec()
+print(a.get())
+print(b.get())
