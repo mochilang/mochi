@@ -1,0 +1,9 @@
+let m: map<string, int> = {"a": 1, "b": 2}
+let probes = ["a", "z", "b", "x"]
+for k in probes {
+  if k in m {
+    print(m[k])
+  } else {
+    print(-1)
+  }
+}

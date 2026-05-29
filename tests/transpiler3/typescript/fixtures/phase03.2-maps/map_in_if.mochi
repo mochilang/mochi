@@ -1,0 +1,9 @@
+let m: map<string, int> = {"a": 1, "b": 2}
+let keys = ["a", "z", "b"]
+for k in keys {
+  if k in m {
+    print(m[k])
+  } else {
+    print(-1)
+  }
+}

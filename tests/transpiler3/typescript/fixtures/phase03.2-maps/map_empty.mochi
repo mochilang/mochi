@@ -1,0 +1,2 @@
+let m: map<string, int> = {}
+print(len(m))

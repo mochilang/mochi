@@ -1,0 +1,8 @@
+let m: map<string, int> = {"a": 5, "b": 7}
+var maxv = 0
+for v in values(m) {
+  if v > maxv {
+    maxv = v
+  }
+}
+print(maxv)

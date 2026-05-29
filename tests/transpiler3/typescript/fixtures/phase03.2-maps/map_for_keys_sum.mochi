@@ -1,0 +1,6 @@
+let m: map<string, int> = {"a": 10, "b": 20, "c": 30}
+var total = 0
+for v in values(m) {
+  total = total + v
+}
+print(total)
