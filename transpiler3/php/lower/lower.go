@@ -28,7 +28,6 @@ type runtimeFlags struct {
 	printBool   bool
 	printF64    bool
 	strContains bool
-	strCat      bool
 	setMake     bool // mochi_set_make([1,2,1]) → [1=>true, 2=>true]
 	setAdd      bool // mochi_set_add($s, 4) → $s with 4 added
 	listSortAsc bool // mochi_list_sort_asc($xs) → ascending stable copy
