@@ -45,9 +45,12 @@ type Driver struct {
 	CacheDir string
 	// NoCache disables the build cache.
 	NoCache bool
-	// Deterministic enables reproducible-build mode. Phase 16 wires
-	// SOURCE_DATE_EPOCH=0 and the sorted-Phar harness through this
-	// flag; Phase 0 only stores it.
+	// Deterministic is reserved for future SOURCE_DATE_EPOCH wiring
+	// and sorted-Phar packaging. Today it is a no-op: the lower +
+	// emit pipeline has no time-, random-, or PATH-derived sources
+	// of non-determinism, so builds are byte-equal regardless of
+	// this flag. TestPhase16NonDeterministicBuildsAlsoMatch is the
+	// gate that keeps it that way.
 	Deterministic bool
 
 	phpPath string
@@ -157,8 +160,11 @@ func (d *Driver) effectiveCacheDir() string {
 }
 
 // cacheKey computes a SHA-256 cache key from source bytes and php
-// version. Phase 0 does not use the cache; the helper exists for the
-// later phases that will.
+// version. Currently unused: every build invokes the pipeline from
+// scratch. The helper is reserved for a future cache integration
+// (NoCache and CacheDir on Driver are part of the same forward-compat
+// surface). The `_ = d.cacheKey` line in Build keeps the symbol live
+// so removing it across the codebase is a single-spot decision.
 func (d *Driver) cacheKey(srcBytes []byte) string {
 	h := sha256.New()
 	h.Write(srcBytes)
