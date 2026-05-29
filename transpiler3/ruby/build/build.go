@@ -202,6 +202,8 @@ func (d *Driver) Build(src, out string, target Target) error {
 		return nil
 	case TargetRubyGem:
 		return buildGem(sf, fileBase, out)
+	case TargetRubyBundle:
+		return buildBundle(sf, fileBase, out)
 	}
 	return fmt.Errorf("ruby build: target %d not implemented", target)
 }
@@ -242,6 +244,38 @@ end
 	specPath := filepath.Join(out, name+".gemspec")
 	if err := os.WriteFile(specPath, []byte(spec), 0o644); err != nil {
 		return fmt.Errorf("ruby build: write gemspec: %w", err)
+	}
+	return nil
+}
+
+// buildBundle writes a Bundler-managed script layout under out:
+//
+//	out/Gemfile
+//	out/<name>.rb
+//
+// Once dependencies are resolved with `bundle install`, the script runs as
+// `bundle exec ruby <name>.rb`. The Gemfile pins mochi-runtime so the
+// generated code can `require "mochi/runtime"` exactly as in the source
+// target. Source line uses rubygems.org so a vanilla bundle install works
+// out of the box for end users.
+func buildBundle(sf *rtree.SourceFile, name, out string) error {
+	if err := os.MkdirAll(out, 0o755); err != nil {
+		return err
+	}
+	scriptPath := filepath.Join(out, name+".rb")
+	if err := os.WriteFile(scriptPath, []byte(sf.RubySource()), 0o644); err != nil {
+		return fmt.Errorf("ruby build: write script: %w", err)
+	}
+	gemfile := `# frozen_string_literal: true
+source "https://rubygems.org"
+
+ruby ">= 3.2"
+
+gem "mochi-runtime", ">= 0.1"
+`
+	gfPath := filepath.Join(out, "Gemfile")
+	if err := os.WriteFile(gfPath, []byte(gemfile), 0o644); err != nil {
+		return fmt.Errorf("ruby build: write Gemfile: %w", err)
 	}
 	return nil
 }
