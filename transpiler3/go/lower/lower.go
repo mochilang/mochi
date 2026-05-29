@@ -563,6 +563,42 @@ func helperDecl(name string) gotree.Decl {
 	}
 	return m
 }`}
+	case "mochiStrIndex":
+		return &gotree.RawDecl{Code: `func mochiStrIndex(s string, i int64) string {
+	rs := []rune(s)
+	n := int64(len(rs))
+	if i < 0 {
+		i += n
+	}
+	if i < 0 || i >= n {
+		panic("string index out of range")
+	}
+	return string(rs[i])
+}`}
+	case "mochiStrSubstring":
+		return &gotree.RawDecl{Code: `func mochiStrSubstring(s string, start, end int64) string {
+	rs := []rune(s)
+	n := int64(len(rs))
+	if start < 0 {
+		start = 0
+	} else if start > n {
+		start = n
+	}
+	if end < start {
+		end = start
+	} else if end > n {
+		end = n
+	}
+	return string(rs[start:end])
+}`}
+	case "mochiStrReverse":
+		return &gotree.RawDecl{Code: `func mochiStrReverse(s string) string {
+	rs := []rune(s)
+	for i, j := 0, len(rs)-1; i < j; i, j = i+1, j-1 {
+		rs[i], rs[j] = rs[j], rs[i]
+	}
+	return string(rs)
+}`}
 	}
 	return nil
 }

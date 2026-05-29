@@ -1,0 +1,4 @@
+let s = "hello world"
+print(s.contains("world"))
+print(s.contains("hello"))
+print(s.contains("lo wo"))
