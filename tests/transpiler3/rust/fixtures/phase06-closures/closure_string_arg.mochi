@@ -1,0 +1,3 @@
+let exclaim = fun(s: string): string => s + "!"
+print(exclaim("hello"))
+print(exclaim("world"))

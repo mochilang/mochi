@@ -1,0 +1,4 @@
+let triple = fun(x: int): int => x * 3
+for i in 0..4 {
+  print(triple(i))
+}

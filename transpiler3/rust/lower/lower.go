@@ -189,16 +189,26 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*rtree.FnDecl, error) {
 	if err != nil {
 		return nil, err
 	}
-	params := make([]rtree.FnParam, 0, len(fn.Params))
+	params := make([]rtree.FnParam, 0, len(fn.Captures)+len(fn.Params))
+	// Lifted closures: captures are passed as real Rust parameters
+	// prepended to the formal parameter list. The C ABI uses a single
+	// env pointer; the Rust ABI is direct positional arguments which
+	// matches the Box<dyn Fn> call sites the lowerer constructs below.
+	for _, c := range fn.Captures {
+		params = append(params, rtree.FnParam{
+			Name:     c.FieldName,
+			TypeName: rustNamedTypeName(c.VarType, "", ""),
+		})
+	}
 	for _, p := range fn.Params {
 		params = append(params, rtree.FnParam{
 			Name:     p.Name,
-			TypeName: rustNamedTypeName(p.Type, p.RecordName, p.UnionName),
+			TypeName: rustParamType(p.Type, p.RecordName, p.UnionName, p.FunSig),
 		})
 	}
 	retTy := ""
 	if fn.ReturnType != aotir.TypeUnit {
-		retTy = rustNamedTypeName(fn.ReturnType, fn.ReturnRecordName, fn.ReturnUnionName)
+		retTy = rustParamType(fn.ReturnType, fn.ReturnRecordName, fn.ReturnUnionName, fn.ReturnFunSig)
 	}
 	return &rtree.FnDecl{
 		Name:       fn.Name,
@@ -209,6 +219,36 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*rtree.FnDecl, error) {
 	}, nil
 }
 
+// rustFnType renders the Rust trait-object form of a function type:
+// `Box<dyn Fn(P0, P1, ...) -> R>` (or with no `->` clause when R is
+// unit). The caller is responsible for ensuring this is the right form
+// for the context (let binding, fn param, fn return).
+func rustFnType(sig *aotir.FunSig) string {
+	if sig == nil {
+		return ""
+	}
+	parts := make([]string, len(sig.ParamTypes))
+	for i, t := range sig.ParamTypes {
+		parts[i] = rustTypeName(t)
+	}
+	ret := ""
+	if sig.ReturnType != aotir.TypeUnit {
+		ret = " -> " + rustTypeName(sig.ReturnType)
+	}
+	return fmt.Sprintf("Box<dyn Fn(%s)%s>", strings.Join(parts, ", "), ret)
+}
+
+// rustParamType extends rustNamedTypeName by handling TypeFun via the
+// caller-supplied FunSig. When sig is nil but t is TypeFun the result
+// falls back to the unit-type token, which is a lower-layer bug since
+// every TypeFun should carry a signature.
+func rustParamType(t aotir.Type, recordName, unionName string, sig *aotir.FunSig) string {
+	if t == aotir.TypeFun && sig != nil {
+		return rustFnType(sig)
+	}
+	return rustNamedTypeName(t, recordName, unionName)
+}
+
 func (l *lowerer) lowerBlock(b *aotir.Block) ([]rtree.Stmt, error) {
 	if b == nil {
 		return nil, nil
@@ -217,6 +257,12 @@ func (l *lowerer) lowerBlock(b *aotir.Block) ([]rtree.Stmt, error) {
 	i := 0
 	for i < len(b.Statements) {
 		s := b.Statements[i]
+		// ClosureEnvStmt is a C-specific env-alloc step; the Rust
+		// translation uses move-closures so no env struct exists.
+		if _, ok := s.(*aotir.ClosureEnvStmt); ok {
+			i++
+			continue
+		}
 		// Peep: `let mut X` followed by `MatchStmt{ResultVar: X}` collapses
 		// to `let mut X = match ... { ... };` which is idiomatic Rust.
 		if ls, ok := s.(*aotir.LetStmt); ok && ls.Init == nil && i+1 < len(b.Statements) {
@@ -428,17 +474,26 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (rtree.Stmt, error) {
 		return &rtree.LetStmt{
 			Mutable:  s.Mutable,
 			Name:     s.Name,
-			TypeName: rustNamedTypeName(s.VarType, s.RecordName, s.UnionName),
+			TypeName: rustParamType(s.VarType, s.RecordName, s.UnionName, s.FunSig),
 		}, nil
 	}
 	v, err := l.lowerExpr(s.Init)
 	if err != nil {
 		return nil, err
 	}
+	// Closure-typed bindings need an explicit `Box<dyn Fn(...)->...>`
+	// annotation so the Box<closure>/Box<fn item> on the RHS coerces
+	// into the trait-object shape used at call sites and downstream
+	// function parameters.
+	typeName := ""
+	if s.VarType == aotir.TypeFun && s.FunSig != nil {
+		typeName = rustFnType(s.FunSig)
+	}
 	return &rtree.LetStmt{
-		Mutable: s.Mutable,
-		Name:    s.Name,
-		Value:   v,
+		Mutable:  s.Mutable,
+		Name:     s.Name,
+		TypeName: typeName,
+		Value:    v,
 	}, nil
 }
 
@@ -559,7 +614,12 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 	case *aotir.BoolLit:
 		return &rtree.BoolLit{Value: n.Value}, nil
 	case *aotir.VarRef:
-		ident := &rtree.Ident{Name: n.Name}
+		// Lifted closure bodies see captured names as `__e->FieldName`
+		// in aotir, since the C lowerer rewrites them through the env
+		// pointer. The Rust ABI prepends captures as plain parameters
+		// (see lowerFunction), so the env prefix is stripped here.
+		name := strings.TrimPrefix(n.Name, "__e->")
+		ident := &rtree.Ident{Name: name}
 		if isOwnedType(n.VarType) {
 			return &rtree.CloneExpr{Expr: ident}, nil
 		}
@@ -868,6 +928,10 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 	case *aotir.UnionVarRef:
 		// Union values are owning; clone on read so the receiver stays usable.
 		return &rtree.CloneExpr{Expr: &rtree.Ident{Name: n.Name}}, nil
+	case *aotir.FunLit:
+		return l.lowerFunLit(n), nil
+	case *aotir.FunCallExpr:
+		return l.lowerFunCallExpr(n)
 	case *aotir.VariantFieldAccess:
 		// Inside a match arm the binding name shadows the field access.
 		if l.matchBindings != nil {
@@ -890,6 +954,93 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 		return fa, nil
 	}
 	return nil, fmt.Errorf("rust lower: unsupported expr %T", e)
+}
+
+// lowerFunLit builds the Rust expression that constructs a Box<dyn Fn>
+// from a lifted function plus its captured environment.
+//
+//   * Non-capturing: `Box::new(__anon_N)`. The function item coerces to
+//     the trait object when assigned into a `Box<dyn Fn(...) -> R>`
+//     binding or argument.
+//   * Capturing: `Box::new({ let cap = cap.clone(); ... move |a0, a1|
+//     __anon_N(cap.clone(), ..., a0, a1) })`. Owned captures are cloned
+//     into the closure environment (so the outer scope keeps its copy)
+//     and re-cloned per call (so the closure stays `Fn` rather than
+//     `FnOnce`). Copy primitives skip the prelude clone.
+func (l *lowerer) lowerFunLit(n *aotir.FunLit) rtree.Expr {
+	if len(n.Captures) == 0 {
+		return &rtree.CallExpr{
+			Func: "Box::new",
+			Args: []rtree.Expr{&rtree.Ident{Name: n.FuncName}},
+		}
+	}
+	var prelude []rtree.Stmt
+	for _, c := range n.Captures {
+		if isOwnedType(c.VarType) {
+			prelude = append(prelude, &rtree.LetStmt{
+				Name: c.FieldName,
+				Value: &rtree.MethodCall{
+					Receiver: &rtree.Ident{Name: c.SrcName},
+					Method:   "clone",
+				},
+			})
+		}
+	}
+	paramNames := make([]string, len(n.Sig.ParamTypes))
+	paramDecls := make([]string, len(n.Sig.ParamTypes))
+	for i, pt := range n.Sig.ParamTypes {
+		paramNames[i] = fmt.Sprintf("__arg%d", i)
+		paramDecls[i] = paramNames[i] + ": " + rustTypeName(pt)
+	}
+	callArgs := make([]string, 0, len(n.Captures)+len(paramNames))
+	for _, c := range n.Captures {
+		if isOwnedType(c.VarType) {
+			callArgs = append(callArgs, c.FieldName+".clone()")
+		} else {
+			callArgs = append(callArgs, c.FieldName)
+		}
+	}
+	callArgs = append(callArgs, paramNames...)
+	closureCode := fmt.Sprintf("move |%s| %s(%s)",
+		strings.Join(paramDecls, ", "),
+		n.FuncName,
+		strings.Join(callArgs, ", "))
+	closure := rtree.Expr(&rtree.RawExpr{Code: closureCode})
+	if len(prelude) > 0 {
+		closure = &rtree.BlockExpr{Stmts: prelude, Tail: closure}
+	}
+	return &rtree.CallExpr{Func: "Box::new", Args: []rtree.Expr{closure}}
+}
+
+// lowerFunCallExpr lowers a call to a fun-typed value. Direct identifier
+// callees emit as `name(args)`; arbitrary expressions are parenthesised
+// so the parser binds the call to the whole expression.
+func (l *lowerer) lowerFunCallExpr(n *aotir.FunCallExpr) (rtree.Expr, error) {
+	args := make([]rtree.Expr, 0, len(n.Args))
+	for _, a := range n.Args {
+		ea, err := l.lowerExpr(a)
+		if err != nil {
+			return nil, err
+		}
+		args = append(args, ea)
+	}
+	if vr, ok := n.Callee.(*aotir.VarRef); ok {
+		name := strings.TrimPrefix(vr.Name, "__e->")
+		return &rtree.CallExpr{Func: name, Args: args}, nil
+	}
+	callee, err := l.lowerExpr(n.Callee)
+	if err != nil {
+		return nil, err
+	}
+	return &rtree.RawExpr{Code: fmt.Sprintf("(%s)(%s)", callee.RustExpr(), joinExprs(args))}, nil
+}
+
+func joinExprs(args []rtree.Expr) string {
+	parts := make([]string, len(args))
+	for i, a := range args {
+		parts[i] = a.RustExpr()
+	}
+	return strings.Join(parts, ", ")
 }
 
 func (l *lowerer) lowerMapLit(m *aotir.MapLit) (rtree.Expr, error) {
@@ -1034,10 +1185,12 @@ func builtinValueCall(name string) (string, bool) {
 
 // isOwnedType reports whether values of t are owning (need .clone() on reads
 // when bound to a variable). Copy primitives like i64/f64/bool return false.
+// TypeFun is intentionally excluded because Box<dyn Fn> does not implement
+// Clone; closure values are passed by-move and called through auto-deref.
 func isOwnedType(t aotir.Type) bool {
 	switch t {
 	case aotir.TypeString, aotir.TypeRecord, aotir.TypeList, aotir.TypeMap,
-		aotir.TypeSet, aotir.TypeUnion, aotir.TypeFun, aotir.TypeChan,
+		aotir.TypeSet, aotir.TypeUnion, aotir.TypeChan,
 		aotir.TypeStream, aotir.TypeAgent:
 		return true
 	}

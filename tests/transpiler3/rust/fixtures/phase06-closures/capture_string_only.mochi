@@ -1,0 +1,5 @@
+let suffix = "!"
+let echo_yell = fun(s: string): string => s + suffix + suffix
+let r = echo_yell("hi")
+print(r)
+print(echo_yell("ok"))
