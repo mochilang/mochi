@@ -39,6 +39,7 @@ type lowerer struct {
 	needsSumI64     bool // true once `sum(xs:int)` lowers to mochi_runtime.query.sum_i64 (Phase 7.0)
 	needsSumF64     bool // true once `sum(xs:float)` lowers to mochi_runtime.query.sum_f64 (Phase 7.0)
 	needsDeque      bool // true once a chan<T> lowers to collections.deque (Phase 9.0)
+	needsStream     bool // true once a stream<T> / sub<T> needs the mochi_runtime.stream surface (Phase 10.0)
 }
 
 // Lower translates an aotir.Program into a pysrc.Module covering the
@@ -140,6 +141,12 @@ func Lower(prog *aotir.Program) (*pysrc.Module, error) {
 	}
 	if l.needsDeque {
 		mod.Imports = append(mod.Imports, pysrc.ImportStmt{From: "collections", Names: []string{"deque"}})
+	}
+	if l.needsStream {
+		mod.Imports = append(mod.Imports, pysrc.ImportStmt{
+			From:  "mochi_runtime.stream",
+			Names: []string{"MochiStream", "MochiSub", "mochi_emit", "mochi_make_stream", "mochi_recv_sub", "mochi_subscribe"},
+		})
 	}
 	return mod, nil
 }
@@ -317,6 +324,8 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (pysrc.Stmt, error) {
 		return l.lowerAgentIntentCallStmt(v)
 	case *aotir.ChanSendStmt:
 		return l.lowerChanSendStmt(v)
+	case *aotir.StreamEmitStmt:
+		return l.lowerStreamEmitStmt(v)
 	default:
 		return nil, fmt.Errorf("python/lower: unsupported statement %T", s)
 	}
@@ -372,6 +381,20 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (pysrc.Stmt, error) {
 		if inner.Name != "" {
 			l.needsDeque = true
 			annot = pysrc.TypeRef{Name: "deque[" + inner.Name + "]"}
+		}
+	}
+	if s.VarType == aotir.TypeStream {
+		inner := pyTypeFor(s.StreamElemType)
+		if inner.Name != "" {
+			l.needsStream = true
+			annot = pysrc.TypeRef{Name: "MochiStream[" + inner.Name + "]"}
+		}
+	}
+	if s.VarType == aotir.TypeSub {
+		inner := pyTypeFor(s.SubElemType)
+		if inner.Name != "" {
+			l.needsStream = true
+			annot = pysrc.TypeRef{Name: "MochiSub[" + inner.Name + "]"}
 		}
 	}
 	// Init==nil happens when the c lower introduces a mutable result var
@@ -866,6 +889,12 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (pysrc.Expr, error) {
 		return l.lowerChanMakeExpr(v)
 	case *aotir.ChanRecvExpr:
 		return l.lowerChanRecvExpr(v)
+	case *aotir.StreamMakeExpr:
+		return l.lowerStreamMakeExpr(v)
+	case *aotir.SubMakeExpr:
+		return l.lowerSubMakeExpr(v)
+	case *aotir.SubRecvExpr:
+		return l.lowerSubRecvExpr(v)
 	default:
 		return nil, fmt.Errorf("python/lower: unsupported expression %T", e)
 	}
