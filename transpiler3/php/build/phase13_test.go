@@ -104,6 +104,16 @@ func TestPhase13EmitFragments(t *testing.T) {
 				`$dir = getenv('MOCHI_LLM_CASSETTE_DIR');`,
 				`$path = rtrim($dir, '/') . '/' . $key . '.txt';`,
 				`$data = @file_get_contents($path);`,
+				// Both failure branches must emit a stderr note and
+				// short-circuit with `return '';`. Neither runtime
+				// test exercises the failing path (they all run with
+				// the env var set and cassettes present), so the
+				// fragment gate is the only thing pinning the
+				// diagnostic contract.
+				`fwrite(STDERR, "mochi_llm_generate: MOCHI_LLM_CASSETTE_DIR not set; live mode not yet implemented for PHP\n");`,
+				`fwrite(STDERR, "mochi_llm_generate: cassette not found: $path\n");`,
+				`if ($dir === false || $dir === '') {`,
+				`if ($data === false) {`,
 				// User call-site: provider literal flows in as a
 				// string arg; empty model means provider default.
 				`$r = mochi_llm_generate("openai", "", "Say hello.");`,
