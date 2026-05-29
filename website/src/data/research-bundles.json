@@ -1272,5 +1272,103 @@
         "docId": "research/0057/risks-and-alternatives"
       }
     ]
+  },
+  {
+    "number": 73,
+    "title": "MEP-73 research bundle",
+    "slug": "/docs/research/0073/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "Overview",
+        "docId": "research/0073/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "01. Language surface",
+        "docId": "research/0073/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "02. Design philosophy",
+        "docId": "research/0073/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-bridges",
+        "order": 3,
+        "isIndex": false,
+        "label": "03. Prior-art",
+        "docId": "research/0073/prior-art-bridges"
+      },
+      {
+        "stem": "04-rustdoc-json-ingest",
+        "order": 4,
+        "isIndex": false,
+        "label": "04. Rustdoc ingest",
+        "docId": "research/0073/rustdoc-json-ingest"
+      },
+      {
+        "stem": "05-type-mapping",
+        "order": 5,
+        "isIndex": false,
+        "label": "05. Type mapping",
+        "docId": "research/0073/type-mapping"
+      },
+      {
+        "stem": "06-cargo-publish-flow",
+        "order": 6,
+        "isIndex": false,
+        "label": "06. Publish",
+        "docId": "research/0073/cargo-publish-flow"
+      },
+      {
+        "stem": "07-sigstore-cargo-rfc3724",
+        "order": 7,
+        "isIndex": false,
+        "label": "07. Trusted publishing",
+        "docId": "research/0073/sigstore-cargo-rfc3724"
+      },
+      {
+        "stem": "08-async-bridge",
+        "order": 8,
+        "isIndex": false,
+        "label": "08. Async bridge",
+        "docId": "research/0073/async-bridge"
+      },
+      {
+        "stem": "09-abi-stability",
+        "order": 9,
+        "isIndex": false,
+        "label": "09. ABI stability",
+        "docId": "research/0073/abi-stability"
+      },
+      {
+        "stem": "10-lifetimes-and-ownership",
+        "order": 10,
+        "isIndex": false,
+        "label": "10. Lifetimes",
+        "docId": "research/0073/lifetimes-and-ownership"
+      },
+      {
+        "stem": "11-embedded-and-no-std",
+        "order": 11,
+        "isIndex": false,
+        "label": "11. Embedded",
+        "docId": "research/0073/embedded-and-no-std"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "12. Risks",
+        "docId": "research/0073/risks-and-alternatives"
+      }
+    ]
   }
 ]

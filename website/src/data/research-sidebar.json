@@ -232,5 +232,23 @@
       "research/0057/polyglot-fanout",
       "research/0057/risks-and-alternatives"
     ]
+  },
+  {
+    "label": "MEP-0073",
+    "items": [
+      "research/0073/index",
+      "research/0073/language-surface",
+      "research/0073/design-philosophy",
+      "research/0073/prior-art-bridges",
+      "research/0073/rustdoc-json-ingest",
+      "research/0073/type-mapping",
+      "research/0073/cargo-publish-flow",
+      "research/0073/sigstore-cargo-rfc3724",
+      "research/0073/async-bridge",
+      "research/0073/abi-stability",
+      "research/0073/lifetimes-and-ownership",
+      "research/0073/embedded-and-no-std",
+      "research/0073/risks-and-alternatives"
+    ]
   }
 ]
