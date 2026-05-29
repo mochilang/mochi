@@ -1,0 +1,7 @@
+fun compute(): int {
+  return 42
+}
+
+let fut = async compute()
+let result = await fut
+print(result)
