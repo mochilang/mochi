@@ -1,0 +1,11 @@
+type P {
+  x: int
+}
+
+var xs: list<P> = [P { x: 1 }]
+xs = append(xs, P { x: 2 })
+xs = append(xs, P { x: 3 })
+print(len(xs))
+for p in xs {
+  print(p.x)
+}

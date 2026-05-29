@@ -1,0 +1,9 @@
+type P {
+  x: int
+}
+
+var xs: list<P> = []
+print(len(xs))
+xs = append(xs, P { x: 1 })
+print(len(xs))
+print(xs[0].x)

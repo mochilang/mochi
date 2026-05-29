@@ -1,0 +1,8 @@
+type Tag {
+  label: string
+}
+
+let xs = [Tag { label: "alpha" }, Tag { label: "beta" }, Tag { label: "gamma" }]
+for t in xs {
+  print(t.label)
+}

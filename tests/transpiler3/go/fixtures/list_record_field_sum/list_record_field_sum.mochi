@@ -1,0 +1,10 @@
+type Item {
+  qty: int
+}
+
+let items = [Item { qty: 1 }, Item { qty: 2 }, Item { qty: 3 }, Item { qty: 4 }]
+var total: int = 0
+for it in items {
+  total = total + it.qty
+}
+print(total)

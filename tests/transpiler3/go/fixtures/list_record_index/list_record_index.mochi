@@ -1,0 +1,8 @@
+type P {
+  x: int
+}
+
+let xs = [P { x: 10 }, P { x: 20 }, P { x: 30 }]
+print(xs[0].x)
+print(xs[1].x)
+print(xs[2].x)

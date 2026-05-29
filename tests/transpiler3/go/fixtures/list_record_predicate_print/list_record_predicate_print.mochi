@@ -1,0 +1,17 @@
+type Item {
+  v: int
+  show: bool
+}
+
+let xs = [
+  Item { v: 1, show: true },
+  Item { v: 2, show: false },
+  Item { v: 3, show: true },
+  Item { v: 4, show: false },
+  Item { v: 5, show: true },
+]
+for it in xs {
+  if it.show {
+    print(it.v)
+  }
+}

@@ -1,0 +1,10 @@
+type V {
+  v: float
+}
+
+let xs = [V { v: 1.5 }, V { v: 2.5 }, V { v: 3.0 }]
+var total: float = 0.0
+for r in xs {
+  total = total + r.v
+}
+print(total)
