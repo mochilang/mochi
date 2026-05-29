@@ -259,6 +259,11 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]ptree.Stmt, error) {
 		return l.lowerForEachStmt(v)
 	case *aotir.MatchStmt:
 		return l.lowerMatchStmt(v)
+	case *aotir.ClosureEnvStmt:
+		// PHP closures capture via the surrounding scope (arrow functions
+		// inherit by value automatically), so the env-struct allocation
+		// the aotir lowerer emits for the C target is a no-op here.
+		return nil, nil
 	case *aotir.MapPutStmt:
 		key, err := l.lowerExpr(v.Key)
 		if err != nil {
@@ -396,12 +401,31 @@ func (l *lowerer) lowerForEachStmt(s *aotir.ForEachStmt) ([]ptree.Stmt, error) {
 // lowerFunction translates one non-main aotir Function to a PHP FuncDecl.
 // Phase 2 only sees scalar parameter and return types; later phases extend
 // phpType to cover records, lists, maps, sums, and closures.
+//
+// Phase 6: for lifted closures (fn.IsLifted with captures), prepend the
+// capture vars as leading parameters and rewrite the body so that any
+// reference to `__e->X` (the aotir env-pointer notation reserved for the
+// C target) resolves to the corresponding plain capture name. The
+// surrounding FunLit closure passes captures in this same order.
 func (l *lowerer) lowerFunction(fn *aotir.Function) (*ptree.FuncDecl, error) {
-	body, err := l.lowerBlock(fn.Body)
+	bodyBlock := fn.Body
+	if fn.IsLifted && len(fn.Captures) > 0 {
+		bodyBlock = rewriteEnvRefs(fn.Body, fn.Captures)
+	}
+	body, err := l.lowerBlock(bodyBlock)
 	if err != nil {
 		return nil, fmt.Errorf("php lower: in function %q: %w", fn.Name, err)
 	}
-	params := make([]ptree.FuncParam, 0, len(fn.Params))
+	params := make([]ptree.FuncParam, 0, len(fn.Captures)+len(fn.Params))
+	if fn.IsLifted && len(fn.Captures) > 0 {
+		for _, cap := range fn.Captures {
+			typeName, err := phpParamType(cap.VarType, "", "")
+			if err != nil {
+				return nil, fmt.Errorf("php lower: capture %q of %q: %w", cap.FieldName, fn.Name, err)
+			}
+			params = append(params, ptree.FuncParam{TypeName: typeName, Name: cap.FieldName})
+		}
+	}
 	for _, p := range fn.Params {
 		typeName, err := phpParamType(p.Type, p.RecordName, p.UnionName)
 		if err != nil {
@@ -419,6 +443,124 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*ptree.FuncDecl, error) {
 		ReturnType: ret,
 		Body:       body,
 	}, nil
+}
+
+// rewriteEnvRefs returns a deep copy of b with every VarRef whose Name
+// starts with "__e->" replaced by a VarRef using just the field name
+// after "->". The aotir lowerer encodes capture access as `__e->field`
+// (a C-target hint); PHP closures resolve captures through their
+// parameter list, so we strip the prefix.
+func rewriteEnvRefs(b *aotir.Block, captures []aotir.FunCapture) *aotir.Block {
+	renames := make(map[string]string, len(captures))
+	for _, cap := range captures {
+		renames["__e->"+cap.FieldName] = cap.FieldName
+	}
+	return rewriteBlockEnvRefs(b, renames)
+}
+
+func rewriteBlockEnvRefs(b *aotir.Block, renames map[string]string) *aotir.Block {
+	if b == nil {
+		return nil
+	}
+	stmts := make([]aotir.Stmt, len(b.Statements))
+	for i, s := range b.Statements {
+		stmts[i] = rewriteStmtEnvRefs(s, renames)
+	}
+	return &aotir.Block{Statements: stmts}
+}
+
+func rewriteStmtEnvRefs(s aotir.Stmt, renames map[string]string) aotir.Stmt {
+	switch s := s.(type) {
+	case *aotir.ReturnStmt:
+		if s.Value == nil {
+			return s
+		}
+		cp := *s
+		cp.Value = rewriteExprEnvRefs(s.Value, renames)
+		return &cp
+	case *aotir.LetStmt:
+		cp := *s
+		if s.Init != nil {
+			cp.Init = rewriteExprEnvRefs(s.Init, renames)
+		}
+		return &cp
+	case *aotir.AssignStmt:
+		cp := *s
+		cp.Value = rewriteExprEnvRefs(s.Value, renames)
+		return &cp
+	case *aotir.CallStmt:
+		cp := *s
+		cp.Args = make([]aotir.Expr, len(s.Args))
+		for i, a := range s.Args {
+			cp.Args[i] = rewriteExprEnvRefs(a, renames)
+		}
+		return &cp
+	case *aotir.IfStmt:
+		cp := *s
+		cp.Cond = rewriteExprEnvRefs(s.Cond, renames)
+		cp.Then = rewriteBlockEnvRefs(s.Then, renames)
+		cp.Else = rewriteBlockEnvRefs(s.Else, renames)
+		return &cp
+	case *aotir.WhileStmt:
+		cp := *s
+		cp.Cond = rewriteExprEnvRefs(s.Cond, renames)
+		cp.Body = rewriteBlockEnvRefs(s.Body, renames)
+		return &cp
+	case *aotir.ForRangeStmt:
+		cp := *s
+		cp.Start = rewriteExprEnvRefs(s.Start, renames)
+		cp.End = rewriteExprEnvRefs(s.End, renames)
+		cp.Body = rewriteBlockEnvRefs(s.Body, renames)
+		return &cp
+	case *aotir.ForEachStmt:
+		cp := *s
+		cp.List = rewriteExprEnvRefs(s.List, renames)
+		cp.Body = rewriteBlockEnvRefs(s.Body, renames)
+		return &cp
+	default:
+		return s
+	}
+}
+
+func rewriteExprEnvRefs(e aotir.Expr, renames map[string]string) aotir.Expr {
+	if e == nil {
+		return nil
+	}
+	switch e := e.(type) {
+	case *aotir.VarRef:
+		if newName, ok := renames[e.Name]; ok {
+			cp := *e
+			cp.Name = newName
+			return &cp
+		}
+		return e
+	case *aotir.BinaryExpr:
+		cp := *e
+		cp.Left = rewriteExprEnvRefs(e.Left, renames)
+		cp.Right = rewriteExprEnvRefs(e.Right, renames)
+		return &cp
+	case *aotir.UnaryExpr:
+		cp := *e
+		cp.Operand = rewriteExprEnvRefs(e.Operand, renames)
+		return &cp
+	case *aotir.CallExpr:
+		cp := *e
+		cp.Args = make([]aotir.Expr, len(e.Args))
+		for i, a := range e.Args {
+			cp.Args[i] = rewriteExprEnvRefs(a, renames)
+		}
+		return &cp
+	case *aotir.FunCallExpr:
+		cp := *e
+		cp.Callee = rewriteExprEnvRefs(e.Callee, renames)
+		cp.Args = make([]aotir.Expr, len(e.Args))
+		for i, a := range e.Args {
+			cp.Args[i] = rewriteExprEnvRefs(a, renames)
+		}
+		return &cp
+	default:
+		return e
+	}
 }
 
 // phpScalarType is the subset of phpType used where a record name is
@@ -462,6 +604,14 @@ func phpParamType(t aotir.Type, recordName, unionName string) (string, error) {
 		return unionName, nil
 	case aotir.TypeList, aotir.TypeMap, aotir.TypeSet:
 		return "array", nil
+	case aotir.TypeFun:
+		// PHP's Closure class is the type emitted for any function-typed
+		// value. PHP cannot express a parameterised callable type at the
+		// type-declaration site (the `callable` pseudo-type accepts
+		// strings/arrays, which is wider than we want); PHPStan/Psalm
+		// recover the precise signature from @param/@return tags added
+		// in Phase 15.
+		return "Closure", nil
 	default:
 		return phpScalarType(t)
 	}
@@ -499,6 +649,48 @@ func (l *lowerer) lowerUnion(u *aotir.UnionDecl) ([]ptree.Decl, error) {
 		})
 	}
 	return out, nil
+}
+
+// lowerFunLit lowers an aotir.FunLit (anonymous function lifted to a
+// top-level function during the C-style closure conversion) to a PHP
+// arrow function that forwards its arguments to the lifted callee.
+//
+// For non-capturing closures the result is `fn(int $p0): int =>
+// mochi__anon_N($p0)`. For capturing closures, the captures are
+// prepended to the call so they appear as the lifted function's
+// leading parameters; PHP arrow functions inherit those variable
+// names by value from the enclosing scope automatically.
+func (l *lowerer) lowerFunLit(e *aotir.FunLit) (ptree.Expr, error) {
+	if e.Sig == nil {
+		return nil, fmt.Errorf("php lower: FunLit %q missing Sig", e.FuncName)
+	}
+	params := make([]ptree.FuncParam, len(e.Sig.ParamTypes))
+	args := make([]ptree.Expr, 0, len(e.Captures)+len(params))
+	for _, cap := range e.Captures {
+		args = append(args, &ptree.VarExpr{Name: cap.FieldName})
+	}
+	for i, pt := range e.Sig.ParamTypes {
+		typeName, err := phpParamType(pt, "", "")
+		if err != nil {
+			return nil, fmt.Errorf("php lower: FunLit %q param %d: %w", e.FuncName, i, err)
+		}
+		name := fmt.Sprintf("__p%d", i)
+		params[i] = ptree.FuncParam{TypeName: typeName, Name: name}
+		args = append(args, &ptree.VarExpr{Name: name})
+	}
+	retType, err := phpParamType(e.Sig.ReturnType, "", "")
+	if err != nil {
+		return nil, fmt.Errorf("php lower: FunLit %q return type: %w", e.FuncName, err)
+	}
+	body := &ptree.CallExpr{
+		Callee: &ptree.IdentExpr{Name: e.FuncName},
+		Args:   args,
+	}
+	return &ptree.ClosureExpr{
+		Params:     params,
+		ReturnType: retType,
+		Body:       body,
+	}, nil
 }
 
 // lowerMatchStmt lowers an aotir.MatchStmt to a PHP chained-if. The
@@ -842,6 +1034,78 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 			return nil, err
 		}
 		return &ptree.PropAccessExpr{Receiver: recv, Field: v.FieldName}, nil
+	case *aotir.FunLit:
+		return l.lowerFunLit(v)
+	case *aotir.FunCallExpr:
+		callee, err := l.lowerExpr(v.Callee)
+		if err != nil {
+			return nil, err
+		}
+		args := make([]ptree.Expr, 0, len(v.Args))
+		for _, a := range v.Args {
+			lo, err := l.lowerExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, lo)
+		}
+		// PHP's `$callee($args...)` shorthand invokes any Closure /
+		// callable value without an extra dispatch helper.
+		return &ptree.CallExpr{Callee: callee, Args: args}, nil
+	case *aotir.ListMapExpr:
+		list, err := l.lowerExpr(v.List)
+		if err != nil {
+			return nil, err
+		}
+		fn, err := l.lowerExpr(v.Fn)
+		if err != nil {
+			return nil, err
+		}
+		// array_map($fn, $xs): PHP's call order is (callable, array),
+		// the reverse of Mochi's map(xs, fn). The result preserves
+		// the numeric keys 0..n-1, matching Mochi list semantics.
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "array_map"},
+			Args:   []ptree.Expr{fn, list},
+		}, nil
+	case *aotir.ListFilterExpr:
+		list, err := l.lowerExpr(v.List)
+		if err != nil {
+			return nil, err
+		}
+		fn, err := l.lowerExpr(v.Fn)
+		if err != nil {
+			return nil, err
+		}
+		// array_filter preserves the original keys, so wrap with
+		// array_values to re-pack 0..k-1 and match Mochi list shape.
+		filtered := &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "array_filter"},
+			Args:   []ptree.Expr{list, fn},
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "array_values"},
+			Args:   []ptree.Expr{filtered},
+		}, nil
+	case *aotir.ListFoldlExpr:
+		list, err := l.lowerExpr(v.List)
+		if err != nil {
+			return nil, err
+		}
+		fn, err := l.lowerExpr(v.Fn)
+		if err != nil {
+			return nil, err
+		}
+		init, err := l.lowerExpr(v.Init)
+		if err != nil {
+			return nil, err
+		}
+		// array_reduce($xs, $fn, $init) calls $fn(carry, item) which
+		// matches Mochi's reduce(xs, fun(acc, x) => ..., init) ordering.
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "array_reduce"},
+			Args:   []ptree.Expr{list, fn, init},
+		}, nil
 	default:
 		return nil, fmt.Errorf("php lower: phase 4 cannot lower %T", e)
 	}
