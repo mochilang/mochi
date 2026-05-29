@@ -226,6 +226,19 @@ func (d *Driver) Build(src, out string, target Target) error {
 			return err
 		}
 		return nil
+	case TargetPythonIpykernel:
+		// Phase 17.0: kernelspec dir + self-contained source tree.
+		// The user installs via
+		// `jupyter kernelspec install --user <out>/kernels/mochi-<pkg>`
+		// after `pip install -e <out>` (or the wheel from Phase 15).
+		rt, err := runtimeDir()
+		if err != nil {
+			return err
+		}
+		if _, err := buildIpykernel(out, workDir, rt, pkgName); err != nil {
+			return err
+		}
+		return nil
 	default:
 		return fmt.Errorf("python build: target %d not supported until later phase", target)
 	}
@@ -259,7 +272,7 @@ func (d *Driver) cacheKey(srcBytes []byte) string {
 	if d.tc != nil {
 		fmt.Fprintf(h, "%d.%d.%d", d.tc.Major, d.tc.Minor, d.tc.Patch)
 	}
-	h.Write([]byte("mep51-phase16"))
+	h.Write([]byte("mep51-phase17"))
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
 

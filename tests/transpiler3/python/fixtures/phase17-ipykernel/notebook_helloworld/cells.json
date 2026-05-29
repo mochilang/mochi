@@ -1,0 +1,10 @@
+{
+  "cells": [
+    "print(\"cell one\")\n",
+    "print(\"cell two\")\nprint(\"and three\")\n"
+  ],
+  "expect_outputs": [
+    "cell one\n",
+    "cell two\nand three\n"
+  ]
+}
