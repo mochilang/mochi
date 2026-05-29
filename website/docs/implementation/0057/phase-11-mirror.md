@@ -51,7 +51,9 @@ This contrasts with corporate package proxies in the Java/Python world (Artifact
 
 ## Sub-phase 11.0 — Mirror discovery
 
-Configuration lives in `~/.config/mochi/registries.toml` (introduced in Phase 8.8):
+Configuration lives at `$MOCHI_HOME/config/registries.toml` (introduced in
+Phase 8.8; canonical layout: [phase 0
+§conventions](./phase-00-skeleton#files-changed)):
 
 ```toml
 [default]

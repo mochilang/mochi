@@ -155,8 +155,11 @@ Refresh frequency: once per `mochi pkg audit`, with a 24-hour grace period so ba
 
 ## Sub-phase 16.2 — Cache
 
+Canonical root `$MOCHI_HOME` (see [phase 0
+§conventions](./phase-00-skeleton#files-changed)):
+
 ```
-~/.cache/mochi/advisories/
+$MOCHI_HOME/advisories/
   index.jsonl
   by-id/MCHI-2026-0001.yaml
   by-package/<bucket>/<scope>/<name>.jsonl

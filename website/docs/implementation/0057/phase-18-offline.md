@@ -154,7 +154,7 @@ The `Registry` interface is wrapped with an offline adapter:
 ```go
 // pkg/pkgregistry/offline.go
 type OfflineRegistry struct {
-    Local *local.FilesystemRegistry   // points at vendor/ or ~/.cache/mochi
+    Local *local.FilesystemRegistry   // points at vendor/ or $MOCHI_HOME/store
 }
 
 func (r *OfflineRegistry) Versions(pkg string) ([]VersionEntry, error) {
@@ -174,7 +174,9 @@ The solver runs unchanged; the only difference is the registry's miss semantics.
 
 ## Sub-phase 18.4 — `mochi pkg audit --offline`
 
-Reuses `vendor/advisories/` (or `~/.cache/mochi/advisories/`) and runs the audit (Phase 16.3) without network refresh:
+Reuses `vendor/advisories/` (or `$MOCHI_HOME/advisories/`, canonical layout
+[phase 0 §conventions](./phase-00-skeleton#files-changed)) and runs the
+audit (Phase 16.3) without network refresh:
 
 ```go
 func cmdAuditOffline(c *cli.Context) error {

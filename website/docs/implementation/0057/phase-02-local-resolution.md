@@ -41,7 +41,7 @@ The scoped-import surface is purely additive: no existing token is repurposed, n
 |---|-------|--------|--------|
 | 2.0 | Specifier classifier (path / scoped / unscoped / FFI / ambiguous) | NOT STARTED | — |
 | 2.1 | Manifest discovery (walk parents for `mochi.workspace.toml` / `mochi.toml`) | NOT STARTED | — |
-| 2.2 | Cache lookup `~/.cache/mochi/registry/<scope>/<name>/<version>/` | NOT STARTED | — |
+| 2.2 | Cache lookup at `$MOCHI_HOME/store/extracted/<blake3>/` (see [layout](./phase-00-skeleton#sub-phase-06--ci-workflow)) | NOT STARTED | — |
 | 2.3 | Manifest-less mode: path + FFI work; scoped fails with M057_NO_MANIFEST | NOT STARTED | — |
 | 2.4 | In-source `@req` vs manifest `version` mismatch detection | NOT STARTED | — |
 | 2.5 | Resolver dispatch wired into `parser/import.go` | NOT STARTED | — |
@@ -154,23 +154,27 @@ A directory containing both `mochi.toml` and `mochi.workspace.toml` is rejected 
 
 ## Sub-phase 2.2 — Cache lookup
 
-The local content-addressed cache (research note 08 §7) layout:
+The local content-addressed cache (research note 08 §7) is rooted at
+`$MOCHI_HOME` (canonical layout: [phase 0
+§conventions](./phase-00-skeleton#files-changed)):
 
 ```
-~/.cache/mochi/
-  registry/
-    <scope>/<name>/<version>/
-      manifest.toml          # the published manifest, byte-identical to publish-time
-      src/                   # extracted Mochi sources
+$MOCHI_HOME/                       # ~/.cache/mochi by default
+  store/
+    blobs/<bb>/<aa>/<hex>.tar.zst  # content-addressed (Phase 9)
+    extracted/<hex>/               # verified extracted trees (Phase 9)
+      manifest.toml                # byte-identical to publish-time
+      src/
       LICENSE
-      provenance.json        # Sigstore bundle if verified
-      .integrity             # blake3 + sha256 lines, machine-readable
-  blobs/
-    <bl>/<ak>/<blake3-rest>.tar.zst
-  index/
-    <bucket>/<scope>/<name>  # cached sparse-index responses
-  tmp/                       # download staging
+      provenance.json              # Sigstore bundle if verified
+      .integrity                   # blake3 + sha256 lines
+    locks/<hex>.lock               # fcntl per-blob lock (Phase 9)
+  index/<bucket>/<scope>/<name>    # cached sparse-index responses (Phase 8)
+  tmp/                             # download staging
 ```
+
+Phase 2 reads from this layout but does not own any of the subtrees;
+ownership is documented in the canonical layout table.
 
 Resolver flow for a scoped import (research note 01 §7):
 

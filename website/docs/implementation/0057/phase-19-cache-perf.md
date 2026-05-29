@@ -54,14 +54,24 @@ Parallel fetch over HTTP/2 multiplexing is where most of the wall-clock win live
 
 ## Sub-phase 19.0 — Shared cache
 
+Canonical root `$MOCHI_HOME` (default: `~/.cache/mochi` on Linux/macOS,
+`%LOCALAPPDATA%\mochi` on Windows; full resolution order in
+[phase 0 §conventions](./phase-00-skeleton#files-changed)):
+
 ```
-$MOCHI_HOME/store/                     # default: ~/.cache/mochi/store
-  blobs/<bb>/<hex>                     # raw tarballs
-  extracted/<hex>/                     # extracted trees
-  index/<bucket>/<scope>/<name>        # index JSONL
-  locks/                               # fcntl locks (Phase 9.3)
-  metrics/                             # last-access timestamps for GC
+$MOCHI_HOME/
+  store/
+    blobs/<bb>/<aa>/<hex>              # raw tarballs (owner: Phase 9)
+    extracted/<hex>/                   # extracted trees (owner: Phase 9)
+    locks/<hex>.lock                   # fcntl locks (owner: Phase 9.3)
+    metrics/                           # last-access timestamps for GC (owner: Phase 19)
+  index/<bucket>/<scope>/<name>        # index JSONL (owner: Phase 8)
 ```
+
+Phase 19 owns only `store/metrics/` and the install/GC code paths; the
+storage schema itself is owned by the phases that introduce each artefact.
+This phase pins the canonical paths so all installer + GC + bench code
+agrees on disk layout.
 
 Single canonical location for all `mochi` invocations on the machine. Workspaces with multiple members share `extracted/<hex>/` by hardlink:
 

@@ -376,6 +376,32 @@ Conventions used across the phase tracking pages:
   `cmd/mochi/pkg.go` (this phase) wires the verb tree; later phases add files
   named after the verb they implement (`cmd/mochi/lock.go`, etc.) but only
   register handlers, never a top-level command.
+- **Cache layout**: every on-disk cache subtree is rooted at `$MOCHI_HOME/`.
+  The CLI resolves the root in this order:
+  1. `MOCHI_HOME` environment variable (any platform);
+  2. `$XDG_CACHE_HOME/mochi` (Linux, macOS when set);
+  3. `~/.cache/mochi` (Linux, macOS fallback);
+  4. `%LOCALAPPDATA%\mochi` (Windows).
+
+  Subtrees, all owned by phases that introduce the artefact stored there:
+
+  | Path                              | Phase owner | Contents                                               |
+  |-----------------------------------|-------------|--------------------------------------------------------|
+  | `$MOCHI_HOME/index/`              | Phase 8     | Sparse index JSONL files + ETag cache                  |
+  | `$MOCHI_HOME/store/blobs/<bb>/<aa>/<hex>` | Phase 9 | Content-addressed `.tar.zst` blobs (BLAKE3 hex)        |
+  | `$MOCHI_HOME/store/extracted/<hex>/` | Phase 9  | Verified extracted trees, hardlink-installed by Phase 19 |
+  | `$MOCHI_HOME/store/locks/<hex>.lock` | Phase 9  | Per-blob fcntl locks (POSIX) / LockFileEx (Windows)    |
+  | `$MOCHI_HOME/advisories/`         | Phase 16    | Cached advisory feed (JSONL + by-id YAML)              |
+  | `$MOCHI_HOME/fanout/<target>/<version>/` | Phase 14 | Polyglot driver staging area                        |
+  | `$MOCHI_HOME/mirrors/<name>/`     | Phase 11    | Local mirror sync trees                                |
+  | `$MOCHI_HOME/config/registries.toml` | Phase 8 | Per-user registry config (was `~/.config/mochi/`)      |
+  | `$MOCHI_HOME/config/auth.toml`    | Phase 11    | Per-mirror bearer tokens (mode 0600)                   |
+
+  Older phase drafts referred to `~/.cache/mochi/registry/`, `~/.config/mochi/`
+  and similar paths; all are rewritten to the `$MOCHI_HOME` form. There is
+  no separate config root; `config/` is a subtree of `$MOCHI_HOME` because
+  registries.toml is read every command and the OS-defined config root adds
+  a second lookup path that is rarely useful in CI containers.
 
 | File | Purpose | Owner |
 |------|---------|-------|

@@ -343,7 +343,10 @@ func (d *Dispatcher) RunStrict(ctx context.Context, ...) error {
 }
 ```
 
-Staging strategy: each driver builds to `~/.cache/mochi/fanout/<target>/<version>/`. Upload only when all builds succeed. On strict failure, staging tree is removed; on non-strict failure, kept for the user to inspect.
+Staging strategy: each driver builds to `$MOCHI_HOME/fanout/<target>/<version>/`
+(canonical layout: [phase 0 §conventions](./phase-00-skeleton#files-changed)).
+Upload only when all builds succeed. On strict failure, staging tree is removed;
+on non-strict failure, kept for the user to inspect.
 
 ## Files changed
 

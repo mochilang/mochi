@@ -43,11 +43,11 @@ Tarball extraction safety is a 30-year-old CVE class (tar traversal, symlink tri
 |---|-------|--------|--------|
 | 9.0 | Streaming dual-hash (BLAKE3 + SHA-256 in one pass) | NOT STARTED | — |
 | 9.1 | Blob URL fetch via Phase 8's HTTP client | NOT STARTED | — |
-| 9.2 | Cache layout `~/.cache/mochi/registry/blobs/<bb>/<hex>` | NOT STARTED | — |
+| 9.2 | Cache layout `$MOCHI_HOME/store/blobs/<bb>/<aa>/<hex>` | NOT STARTED | — |
 | 9.3 | Cache concurrency: fcntl per-blob lock during extract | NOT STARTED | — |
 | 9.4 | zstd decompression streaming into tar extractor | NOT STARTED | — |
 | 9.5 | Tar extraction with reproducibility guards | NOT STARTED | — |
-| 9.6 | Extracted-tree caching at `~/.cache/mochi/extracted/<hex>/` | NOT STARTED | — |
+| 9.6 | Extracted-tree caching at `$MOCHI_HOME/store/extracted/<hex>/` | NOT STARTED | — |
 | 9.7 | `mochi pkg cache prune / clean` commands | NOT STARTED | — |
 | 9.8 | `mochi pkg audit blobs` — re-hash cache, compare against lockfile | NOT STARTED | — |
 
@@ -131,27 +131,29 @@ The fetch path reuses Phase 8's HTTP client (HTTP/2 multiplexing, retries, backo
 
 ## Sub-phase 9.2 — Cache layout
 
-From research note 08 §7:
+Canonical root `$MOCHI_HOME` (see [phase 0
+§conventions](./phase-00-skeleton#files-changed)); research note 08 §7
+established the two-character sharding scheme:
 
 ```
-~/.cache/mochi/registry/
+$MOCHI_HOME/store/
   blobs/
-    <bb>/<hex>             # bb = blake3[:2]
-  index/
-    <bucket>/<scope>/<name>
-    <bucket>/<scope>/<name>.etag
-
-~/.cache/mochi/extracted/
-  <hex>/
-    manifest.toml
-    src/...
-    .integrity             # the verified BLAKE3 + SHA-256
-
-~/.cache/mochi/locks/
-  <name>-<version>.lock    # fcntl, see 9.3
+    <bb>/<aa>/<hex>        # bb = blake3[:2], aa = blake3[2:4]; full hex is filename
+  extracted/
+    <hex>/
+      manifest.toml
+      src/...
+      .integrity           # the verified BLAKE3 + SHA-256
+  locks/
+    <hex>.lock             # fcntl, keyed by blob hash (not name+version);
+                           # see Phase 9.3 for the rationale
 ```
 
-The two-character pair sharding caps per-directory entries to a few hundred even for very popular packages.
+(The Phase 8 sparse-index cache lives at `$MOCHI_HOME/index/`; it is a
+sibling of `store/`, not nested.)
+
+The two-character pair sharding caps per-directory entries to a few hundred
+even for very popular packages.
 
 ## Sub-phase 9.3 — Concurrency
 
@@ -253,10 +255,11 @@ Entries accepted: directories (0755) and regular files (0644). Everything else (
 
 ## Sub-phase 9.6 — Extracted-tree caching
 
-After successful verify + extract, the tree is rooted at `~/.cache/mochi/extracted/<hex>/`:
+After successful verify + extract, the tree is rooted at
+`$MOCHI_HOME/store/extracted/<hex>/`:
 
 ```
-~/.cache/mochi/extracted/<hex>/
+$MOCHI_HOME/store/extracted/<hex>/
   manifest.toml
   src/
   LICENSE

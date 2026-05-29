@@ -122,10 +122,12 @@ func (r *SparseRegistry) Versions(pkg string) ([]VersionEntry, error) {
 }
 ```
 
-Cache layout on disk (research note 08 §7):
+Cache layout on disk (canonical root `$MOCHI_HOME` documented in
+[phase 0 §conventions](./phase-00-skeleton#files-changed); research note
+08 §7):
 
 ```
-~/.cache/mochi/index/
+$MOCHI_HOME/index/
   <bucket>/<scope>/<name>          # last 200 body
   <bucket>/<scope>/<name>.etag     # ETag string (trimmed quotes)
   <bucket>/<scope>/<name>.meta     # last-fetched timestamp, status
@@ -300,7 +302,8 @@ mochi config registry alternate remove NAME             # remove alternate
 mochi config registry list                              # show all
 ```
 
-Configuration lives in `~/.config/mochi/registries.toml`:
+Configuration lives at `$MOCHI_HOME/config/registries.toml` (canonical
+layout: [phase 0 §conventions](./phase-00-skeleton#files-changed)):
 
 ```toml
 [default]
@@ -363,7 +366,7 @@ See the canonical [error registry](./errors).
 
 - Whether to support `If-Modified-Since` as a secondary cache key; current plan: ETag is sufficient.
 - Whether to negotiate `application/vnd.mochi.index+jsonl;v=1` content negotiation; deferred.
-- Whether to expose the cache directory via `mochi config index-cache <path>`; current plan: yes, defaults to `~/.cache/mochi/index`.
+- Whether to expose the cache directory via `mochi pkg config index-cache <path>`; current plan: yes, defaults to `$MOCHI_HOME/index`.
 
 ## Cross-references
 
