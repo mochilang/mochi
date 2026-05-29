@@ -34,6 +34,7 @@ type runtimeFlags struct {
 	listSortAsc bool // mochi_list_sort_asc($xs) → ascending stable copy
 	streams     bool // Phase 10: MochiStream/MochiSub classes + helpers
 	async       bool // Phase 11: MochiFuture class + future helpers
+	llm         bool // Phase 13: mochi_llm_generate cassette helper
 }
 
 type lowerer struct {
@@ -372,6 +373,55 @@ final class MochiFuture
 			ReturnType: "array",
 			Body: []ptree.Stmt{
 				&ptree.RawStmt{Text: `return array_map(fn(MochiFuture $f) => $f->value, $fs);`},
+			},
+		})
+	}
+	if l.runtime.llm {
+		// Phase 13: cassette-only LLM dispatch. Mirrors the C runtime's
+		// DJB2-keyed lookup so the same cassette directory works
+		// across targets. Each key is the DJB2 hash of the byte
+		// sequence "<provider>\0<model>\0<prompt>", base-10. A single
+		// trailing newline on the cassette file is stripped so files
+		// written with a final newline (normal for text editors) round-
+		// trip cleanly. Live providers are deferred to a later phase;
+		// missing MOCHI_LLM_CASSETTE_DIR returns "" with a stderr note.
+		out = append(out, &ptree.FuncDecl{
+			PhpDoc:     []string{"Phase 13: DJB2 hash over `<provider>\\0<model>\\0<prompt>`, computed in uint64 via GMP so cassette keys above PHP_INT_MAX still round-trip."},
+			Name:       "mochi_llm_cassette_key",
+			Params:     []ptree.FuncParam{{TypeName: "string", Name: "provider"}, {TypeName: "string", Name: "model"}, {TypeName: "string", Name: "prompt"}},
+			ReturnType: "string",
+			Body: []ptree.Stmt{
+				&ptree.RawStmt{Text: `$buf = $provider . "\0" . $model . "\0" . $prompt;`},
+				&ptree.RawStmt{Text: `$h = gmp_init(5381);`},
+				&ptree.RawStmt{Text: `$mask = gmp_init('FFFFFFFFFFFFFFFF', 16);`},
+				&ptree.RawStmt{Text: `$len = strlen($buf);`},
+				&ptree.RawStmt{Text: `for ($i = 0; $i < $len; $i++) {`},
+				&ptree.RawStmt{Text: `    $h = gmp_and(gmp_mul($h, 33), $mask);`},
+				&ptree.RawStmt{Text: `    $h = gmp_xor($h, gmp_init(ord($buf[$i])));`},
+				&ptree.RawStmt{Text: `}`},
+				&ptree.RawStmt{Text: `return gmp_strval($h, 10);`},
+			},
+		})
+		out = append(out, &ptree.FuncDecl{
+			PhpDoc:     []string{"Phase 13: cassette-backed LLM dispatch. Looks up `<MOCHI_LLM_CASSETTE_DIR>/<djb2>.txt` and returns its contents (one trailing newline stripped)."},
+			Name:       "mochi_llm_generate",
+			Params:     []ptree.FuncParam{{TypeName: "string", Name: "provider"}, {TypeName: "string", Name: "model"}, {TypeName: "string", Name: "prompt"}},
+			ReturnType: "string",
+			Body: []ptree.Stmt{
+				&ptree.RawStmt{Text: `$dir = getenv('MOCHI_LLM_CASSETTE_DIR');`},
+				&ptree.RawStmt{Text: `if ($dir === false || $dir === '') {`},
+				&ptree.RawStmt{Text: `    fwrite(STDERR, "mochi_llm_generate: MOCHI_LLM_CASSETTE_DIR not set; live mode not yet implemented for PHP\n");`},
+				&ptree.RawStmt{Text: `    return '';`},
+				&ptree.RawStmt{Text: `}`},
+				&ptree.RawStmt{Text: `$key = mochi_llm_cassette_key($provider, $model, $prompt);`},
+				&ptree.RawStmt{Text: `$path = rtrim($dir, '/') . '/' . $key . '.txt';`},
+				&ptree.RawStmt{Text: `$data = @file_get_contents($path);`},
+				&ptree.RawStmt{Text: `if ($data === false) {`},
+				&ptree.RawStmt{Text: `    fwrite(STDERR, "mochi_llm_generate: cassette not found: $path\n");`},
+				&ptree.RawStmt{Text: `    return '';`},
+				&ptree.RawStmt{Text: `}`},
+				&ptree.RawStmt{Text: `if ($data !== '' && substr($data, -1) === "\n") { $data = substr($data, 0, -1); }`},
+				&ptree.RawStmt{Text: `return $data;`},
 			},
 		})
 	}
@@ -1554,6 +1604,28 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 		return &ptree.CallExpr{
 			Callee: &ptree.IdentExpr{Name: "mochi_sub_recv"},
 			Args:   []ptree.Expr{s},
+		}, nil
+	case *aotir.LLMGenerateExpr:
+		// Phase 13: `generate openai { prompt: ... }` lowers to a
+		// runtime helper that reads a cassette file keyed by the DJB2
+		// hash of `<provider>\0<model>\0<prompt>`. Live providers are
+		// deferred; all Phase 13 fixtures supply a cassette directory.
+		l.runtime.llm = true
+		model, err := l.lowerExpr(v.Model)
+		if err != nil {
+			return nil, err
+		}
+		prompt, err := l.lowerExpr(v.Prompt)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "mochi_llm_generate"},
+			Args: []ptree.Expr{
+				&ptree.StringLit{Value: v.Provider},
+				model,
+				prompt,
+			},
 		}, nil
 	case *aotir.ReadFileExpr:
 		// Phase 12: `readFile(path)` becomes PHP's
