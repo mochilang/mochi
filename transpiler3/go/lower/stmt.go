@@ -74,6 +74,10 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (gotree.Stmt, error) {
 		return l.lowerAppendFileStmt(s)
 	case *aotir.SaveCSVStmt:
 		return l.lowerSaveCSVStmt(s)
+	case *aotir.TryCatchStmt:
+		return l.lowerTryCatchStmt(s)
+	case *aotir.PanicStmt:
+		return l.lowerPanicStmt(s)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle stmt %T", s)
 	}
@@ -538,4 +542,56 @@ func (l *lowerer) lowerReturnStmt(s *aotir.ReturnStmt) (gotree.Stmt, error) {
 		return nil, err
 	}
 	return &gotree.ReturnStmt{Results: []gotree.Expr{val}}, nil
+}
+
+// lowerTryCatchStmt emits `mochiTry(func() { try }, func(<catchVar> int64) { catch })`.
+// The helper installs defer+recover and dispatches mochiPanicValue (user panic)
+// to its code field; runtime.Error from a Go runtime panic is translated to a
+// matching Mochi error code (4=index, 5=divzero, 9=other). Other recover
+// values are re-raised so they cannot be silently swallowed.
+func (l *lowerer) lowerTryCatchStmt(s *aotir.TryCatchStmt) (gotree.Stmt, error) {
+	tryBody, err := l.lowerBlock(s.TryBody)
+	if err != nil {
+		return nil, fmt.Errorf("try body: %w", err)
+	}
+	catchBody, err := l.lowerBlock(s.CatchBody)
+	if err != nil {
+		return nil, fmt.Errorf("catch body: %w", err)
+	}
+	l.addHelper("mochiPanicValue")
+	l.addHelper("mochiPanic")
+	l.addHelper("mochiTry")
+	l.addImport("runtime")
+	l.addImport("strings")
+	tryLit := &gotree.FuncLit{Type: &gotree.FuncType{}, Body: tryBody}
+	catchLit := &gotree.FuncLit{
+		Type: &gotree.FuncType{Params: []gotree.Field{{
+			Names: []string{mangleIdent(s.CatchVar)},
+			Type:  &gotree.Ident{Name: "int64"},
+		}}},
+		Body: catchBody,
+	}
+	return &gotree.ExprStmt{X: &gotree.CallExpr{
+		Fun:  &gotree.Ident{Name: "mochiTry"},
+		Args: []gotree.Expr{tryLit, catchLit},
+	}}, nil
+}
+
+// lowerPanicStmt emits `mochiPanic(code, msg)` so the value propagates as
+// mochiPanicValue, recognised by the mochiTry recover handler.
+func (l *lowerer) lowerPanicStmt(s *aotir.PanicStmt) (gotree.Stmt, error) {
+	code, err := l.lowerExpr(s.Code)
+	if err != nil {
+		return nil, fmt.Errorf("panic code: %w", err)
+	}
+	msg, err := l.lowerExpr(s.Msg)
+	if err != nil {
+		return nil, fmt.Errorf("panic msg: %w", err)
+	}
+	l.addHelper("mochiPanicValue")
+	l.addHelper("mochiPanic")
+	return &gotree.ExprStmt{X: &gotree.CallExpr{
+		Fun:  &gotree.Ident{Name: "mochiPanic"},
+		Args: []gotree.Expr{code, msg},
+	}}, nil
 }

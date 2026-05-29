@@ -665,6 +665,41 @@ func helperDecl(name string) gotree.Decl {
 	_ = w.WriteAll(data)
 	w.Flush()
 }`}
+	case "mochiPanicValue":
+		return &gotree.RawDecl{Code: `type mochiPanicValue struct {
+	code int64
+	msg  string
+}`}
+	case "mochiPanic":
+		return &gotree.RawDecl{Code: `func mochiPanic(code int64, msg string) {
+	panic(mochiPanicValue{code: code, msg: msg})
+}`}
+	case "mochiTry":
+		return &gotree.RawDecl{Code: `func mochiTry(try func(), catch func(code int64)) {
+	defer func() {
+		r := recover()
+		if r == nil {
+			return
+		}
+		switch v := r.(type) {
+		case mochiPanicValue:
+			catch(v.code)
+		case runtime.Error:
+			s := v.Error()
+			switch {
+			case strings.Contains(s, "out of range"):
+				catch(4)
+			case strings.Contains(s, "divide by zero"):
+				catch(5)
+			default:
+				catch(9)
+			}
+		default:
+			panic(r)
+		}
+	}()
+	try()
+}`}
 	}
 	return nil
 }
