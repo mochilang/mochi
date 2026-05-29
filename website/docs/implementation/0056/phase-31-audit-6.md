@@ -15,7 +15,7 @@ description: "MEP-56 Phase 31, lock in byte-equal reproducible emission across r
 | Landed         | 2026-05-29 14:20 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | [#22510](https://github.com/mochilang/mochi/pull/22510) |
-| Commit         | TBD |
+| Commit         | 13e42c2a33 |
 
 ## Gate
 
