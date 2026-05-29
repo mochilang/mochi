@@ -34,9 +34,9 @@ type lowerer struct {
 }
 
 // Lower translates an aotir.Program into a pysrc.Module covering the
-// Phase 2 surface: scalar arithmetic, comparison, bool short-circuit,
-// string concat/index/contains/len, if/while/for-range, break/continue,
-// user-defined functions (including recursion), int cast.
+// Phase 2 surface (scalars, control flow, user functions) plus the
+// Phase 3.1 list surface: literal, index, len, for-each, append,
+// slice, filter/map via the lifted-closure plumbing the c lower built.
 func Lower(prog *aotir.Program) (*pysrc.Module, error) {
 	mod := &pysrc.Module{FutureAnnotations: true}
 	l := &lowerer{}
@@ -86,13 +86,13 @@ func Lower(prog *aotir.Program) (*pysrc.Module, error) {
 func (l *lowerer) lowerFunction(fn *aotir.Function) (pysrc.Stmt, error) {
 	params := make([]pysrc.Param, 0, len(fn.Params))
 	for _, p := range fn.Params {
-		params = append(params, pysrc.Param{Name: p.Name, Type: pyTypeFor(p.Type)})
+		params = append(params, pysrc.Param{Name: p.Name, Type: pyTypeForFull(p.Type, p.ElemType)})
 	}
 	body, err := l.lowerBlock(fn.Body)
 	if err != nil {
 		return nil, fmt.Errorf("function %s: %w", fn.Name, err)
 	}
-	ret := pyTypeFor(fn.ReturnType)
+	ret := pyTypeForFull(fn.ReturnType, fn.ReturnElemType)
 	if fn.ReturnType == aotir.TypeUnit {
 		ret = pysrc.TypeNone
 	}
@@ -137,6 +137,8 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (pysrc.Stmt, error) {
 		return l.lowerWhileStmt(v)
 	case *aotir.ForRangeStmt:
 		return l.lowerForRangeStmt(v)
+	case *aotir.ForEachStmt:
+		return l.lowerForEachStmt(v)
 	case *aotir.BreakStmt:
 		return &pysrc.BreakStmt{}, nil
 	case *aotir.ContinueStmt:
@@ -202,7 +204,7 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (pysrc.Stmt, error) {
 	}
 	return &pysrc.AssignStmt{
 		Target: s.Name,
-		Type:   pyTypeFor(s.VarType),
+		Type:   pyTypeForFull(s.VarType, s.ElemType),
 		Value:  val,
 	}, nil
 }
@@ -237,6 +239,18 @@ func (l *lowerer) lowerWhileStmt(s *aotir.WhileStmt) (pysrc.Stmt, error) {
 		return nil, err
 	}
 	return &pysrc.WhileStmt{Cond: cond, Body: body}, nil
+}
+
+func (l *lowerer) lowerForEachStmt(s *aotir.ForEachStmt) (pysrc.Stmt, error) {
+	iter, err := l.lowerExpr(s.List)
+	if err != nil {
+		return nil, err
+	}
+	body, err := l.lowerBlock(s.Body)
+	if err != nil {
+		return nil, err
+	}
+	return &pysrc.ForEachStmt{Var: s.Var, Iter: iter, Body: body}, nil
 }
 
 func (l *lowerer) lowerForRangeStmt(s *aotir.ForRangeStmt) (pysrc.Stmt, error) {
@@ -323,6 +337,102 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (pysrc.Expr, error) {
 		// vm3 semantics: truncate toward zero. Python int(float) truncates toward zero
 		// for both positive and negative values (per PEP 237 / 3141), matching vm3.
 		return &pysrc.Call{Func: &pysrc.Name{Id: "int"}, Args: []pysrc.Expr{operand}}, nil
+	case *aotir.ListLit:
+		elems, err := l.lowerExprs(v.Elems)
+		if err != nil {
+			return nil, err
+		}
+		return &pysrc.ListLit{Elems: elems}, nil
+	case *aotir.IndexExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		idx, err := l.lowerExpr(v.Index)
+		if err != nil {
+			return nil, err
+		}
+		return &pysrc.IndexExpr{Receiver: recv, Index: idx}, nil
+	case *aotir.LenExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &pysrc.Call{Func: &pysrc.Name{Id: "len"}, Args: []pysrc.Expr{recv}}, nil
+	case *aotir.AppendExpr:
+		// Mochi append returns a new list (functional semantics). Python
+		// `xs + [v]` produces a fresh list and leaves the input untouched,
+		// matching vm3 byte-for-byte (no aliasing into the original).
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		val, err := l.lowerExpr(v.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &pysrc.BinaryExpr{
+			Left:  recv,
+			Op:    "+",
+			Right: &pysrc.ListLit{Elems: []pysrc.Expr{val}},
+		}, nil
+	case *aotir.ListSliceExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		start, err := l.lowerExpr(v.Start)
+		if err != nil {
+			return nil, err
+		}
+		end, err := l.lowerExpr(v.End)
+		if err != nil {
+			return nil, err
+		}
+		return &pysrc.SliceExpr{Receiver: recv, Start: start, End: end}, nil
+	case *aotir.ListFilterExpr:
+		list, err := l.lowerExpr(v.List)
+		if err != nil {
+			return nil, err
+		}
+		fn, err := l.lowerExpr(v.Fn)
+		if err != nil {
+			return nil, err
+		}
+		// list(filter(fn, xs)) — Python filter preserves order, matching vm3.
+		return &pysrc.Call{
+			Func: &pysrc.Name{Id: "list"},
+			Args: []pysrc.Expr{&pysrc.Call{
+				Func: &pysrc.Name{Id: "filter"},
+				Args: []pysrc.Expr{fn, list},
+			}},
+		}, nil
+	case *aotir.ListMapExpr:
+		list, err := l.lowerExpr(v.List)
+		if err != nil {
+			return nil, err
+		}
+		fn, err := l.lowerExpr(v.Fn)
+		if err != nil {
+			return nil, err
+		}
+		return &pysrc.Call{
+			Func: &pysrc.Name{Id: "list"},
+			Args: []pysrc.Expr{&pysrc.Call{
+				Func: &pysrc.Name{Id: "map"},
+				Args: []pysrc.Expr{fn, list},
+			}},
+		}, nil
+	case *aotir.FunLit:
+		// Closure-converted FunLit. The c lower lifts the closure body
+		// to a top-level aotir.Function emitted by lowerFunction above,
+		// so the Python name resolves to a first-class callable.
+		// Capturing closures (non-empty Captures) are deferred to Phase 6;
+		// fail loudly so they cannot silently regress as `Name`.
+		if len(v.Captures) > 0 {
+			return nil, fmt.Errorf("python/lower: capturing closure %q not supported until phase 6", v.FuncName)
+		}
+		return &pysrc.Name{Id: v.FuncName}, nil
 	default:
 		return nil, fmt.Errorf("python/lower: unsupported expression %T", e)
 	}
@@ -398,7 +508,9 @@ var binOpToPython = map[aotir.BinOp]string{
 	aotir.BinOrBool:  "or",
 }
 
-// pyTypeFor maps an aotir.Type to a Python annotation.
+// pyTypeFor maps a scalar aotir.Type to its PEP 585 Python annotation.
+// Returns an empty TypeRef (no annotation) for compound types; callers
+// holding the compound's element identity should use pyTypeForFull.
 func pyTypeFor(t aotir.Type) pysrc.TypeRef {
 	switch t {
 	case aotir.TypeString:
@@ -412,4 +524,20 @@ func pyTypeFor(t aotir.Type) pysrc.TypeRef {
 	default:
 		return pysrc.TypeRef{}
 	}
+}
+
+// pyTypeForFull resolves a (Type, ElemType) pair into the matching
+// Python annotation. For scalar types ElemType is ignored. For
+// TypeList it emits `list[<elem>]` (PEP 585 built-in generic),
+// which under `from __future__ import annotations` is a lazy string
+// at runtime and so does not require any imports.
+func pyTypeForFull(t, elem aotir.Type) pysrc.TypeRef {
+	if t == aotir.TypeList {
+		inner := pyTypeFor(elem)
+		if inner.Name == "" {
+			return pysrc.TypeRef{}
+		}
+		return pysrc.TypeRef{Name: "list[" + inner.Name + "]"}
+	}
+	return pyTypeFor(t)
 }

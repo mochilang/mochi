@@ -1,0 +1,5 @@
+let xs = [1, 2, 3, 4]
+let ys = map(xs, fun(x: int): int => x * x)
+for y in ys {
+  print(y)
+}
