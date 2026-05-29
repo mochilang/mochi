@@ -13,8 +13,8 @@ description: "MEP-52 Phase 16, byte-identical .tgz SHA256 across same-host rebui
 | Status         | LANDED (same-host gate; 16.4 two-host CI matrix deferred) |
 | Started        | 2026-05-30 01:33 (GMT+7) |
 | Landed         | 2026-05-30 01:39 (GMT+7) |
-| Tracking issue | (pending) |
-| Tracking PR    | (pending) |
+| Tracking issue | [#23023](https://github.com/mochilang/mochi/issues/23023) |
+| Tracking PR    | [#23024](https://github.com/mochilang/mochi/pull/23024) |
 
 ## Gate
 
