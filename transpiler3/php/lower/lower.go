@@ -570,7 +570,12 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]ptree.Stmt, error) {
 		}
 		return []ptree.Stmt{&ptree.ReturnStmt{Value: e}}, nil
 	default:
-		return nil, fmt.Errorf("php lower: phase 2 cannot lower %T", s)
+		// Misattributed phase label ("phase 2") was misleading: the
+		// stmt switch above covers cases up through Phase 14. Hitting
+		// this fallthrough means the aotir surface grew a node the
+		// PHP lowerer has not been taught about; route the actual
+		// type into the error so the spec can be cross-referenced.
+		return nil, fmt.Errorf("php lower: unhandled aotir stmt %T (no MEP-55 phase lowers this yet)", s)
 	}
 }
 
@@ -1788,7 +1793,11 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 		}
 		return &ptree.ArrayLit{Elems: elems}, nil
 	default:
-		return nil, fmt.Errorf("php lower: phase 4 cannot lower %T", e)
+		// Misattributed phase label ("phase 4") was misleading: the
+		// expr switch above covers cases through Phase 8 datalog.
+		// Hitting this fallthrough means the aotir surface grew an
+		// expression node the PHP lowerer has not been taught about.
+		return nil, fmt.Errorf("php lower: unhandled aotir expr %T (no MEP-55 phase lowers this yet)", e)
 	}
 }
 
