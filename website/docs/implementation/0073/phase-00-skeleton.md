@@ -13,9 +13,9 @@ description: "MEP-73 Phase 0 lands package3/rust/ skeleton: Driver / Workspace t
 | Status         | LANDED |
 | Started        | 2026-05-29 20:30 (GMT+7) |
 | Landed         | 2026-05-29 20:46 (GMT+7) |
-| Tracking issue | (pending) |
-| Tracking PR    | (pending) |
-| Commit         | (pending) |
+| Tracking issue | [#22736](https://github.com/mochilang/mochi/issues/22736) |
+| Tracking PR    | [#22737](https://github.com/mochilang/mochi/pull/22737) |
+| Commit         | [2dc3b34f](https://github.com/mochilang/mochi/commit/2dc3b34f) |
 
 ## Gate
 

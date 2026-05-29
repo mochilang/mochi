@@ -305,7 +305,8 @@
   {
     "label": "MEP-73 phases",
     "items": [
-      "implementation/0073/phase-00-skeleton"
+      "implementation/0073/phase-00-skeleton",
+      "implementation/0073/phase-01-sparse-index"
     ]
   },
   "implementation/0074/index"
