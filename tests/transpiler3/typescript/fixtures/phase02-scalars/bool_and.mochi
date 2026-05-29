@@ -1,0 +1,6 @@
+let t = true
+let f = false
+print(t && t)
+print(t && f)
+print(f && t)
+print(f && f)

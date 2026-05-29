@@ -189,24 +189,8 @@ func TestPhase1DeterministicEmit(t *testing.T) {
 	}
 }
 
-// TestPhase1UnsupportedFails ensures Phase 1 returns an explicit
-// error on language constructs it doesn't yet lower (a let stmt,
-// a binary expression, etc.). This pins the "fail clear, not
-// silent" contract: Phase 2 onward removes these errors as it
-// adds support; Phase 1 must reject so users don't ship broken
-// .ts thinking the pipeline succeeded.
-func TestPhase1UnsupportedFails(t *testing.T) {
-	d := &Driver{CacheDir: t.TempDir(), NoCache: true}
-	dir := t.TempDir()
-	src := filepath.Join(dir, "let.mochi")
-	if err := os.WriteFile(src, []byte("let x = 1\nprint(x)\n"), 0o644); err != nil {
-		t.Fatalf("write fixture: %v", err)
-	}
-	_, err := d.Build(src, t.TempDir(), TargetTypeScriptSource)
-	if err == nil {
-		t.Fatalf("expected ts lower to reject `let` at Phase 1; got nil")
-	}
-	if !strings.Contains(err.Error(), "unsupported") {
-		t.Errorf("error should mention 'unsupported'; got %v", err)
-	}
-}
+// Phase 1's TestPhase1UnsupportedFails (which asserted `let` was
+// rejected) was retired when Phase 2 landed and started lowering
+// `let`. The "fail clear, not silent" contract now lives in
+// TestPhase2UnsupportedFails in phase02_test.go, which uses a
+// Phase 3+ construct (list literal) as the failing surface.
