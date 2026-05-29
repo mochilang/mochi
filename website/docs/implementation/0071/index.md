@@ -39,11 +39,15 @@ A phase is LANDED only when its gate is green for every target (consume directio
 | 12.1 | Wire asyncbridge into wrapper synthesiser so async surfaces emit sync shims end-to-end | NOT STARTED | — | [phase-12](/docs/implementation/0071/phase-12-async-bridge) |
 | 12.2 | Free-threaded GIL handling around the persistent loop cache (PyMutex on `cp3XYt`) | NOT STARTED | — | [phase-12](/docs/implementation/0071/phase-12-async-bridge) |
 | 12.3 | Cancellation + timeout propagation (`mochi_async_timeout` ContextVar -> `asyncio.wait_for`) | NOT STARTED | — | [phase-12](/docs/implementation/0071/phase-12-async-bridge) |
-| 13 | abi3 wheel slimming + auditwheel-equivalent platform tag validation | LANDED | (pending merge) | [phase-13](/docs/implementation/0071/phase-13-abi3) |
+| 13 | abi3 wheel slimming + auditwheel-equivalent platform tag validation | LANDED | `d09e2919` | [phase-13](/docs/implementation/0071/phase-13-abi3) |
 | 13.1 | Live ELF / Mach-O / PE reader behind `SymbolReader` | NOT STARTED | — | [phase-13](/docs/implementation/0071/phase-13-abi3) |
 | 13.2 | Py_LIMITED_API discipline check before promoting to abi3 | NOT STARTED | — | [phase-13](/docs/implementation/0071/phase-13-abi3) |
 | 13.3 | `mochi pkg audit --wheel <path>` + `mochi pkg slim --abi3` CLI verbs | NOT STARTED | — | [phase-13](/docs/implementation/0071/phase-13-abi3) |
-| 14 | Subprocess runtime mode (`[python].runtime-mode = "subprocess"` with JSON-RPC protocol) | NOT STARTED | — | [phase-14](/docs/implementation/0071/phase-14-subprocess-mode) |
+| 14 | Subprocess runtime mode (`[python].runtime-mode = "subprocess"` with JSON-RPC protocol) | LANDED | (pending merge) | [phase-14](/docs/implementation/0071/phase-14-subprocess-mode) |
+| 14.1 | Live `os/exec` spawn + stderr forwarding + worker lifetime management | NOT STARTED | — | [phase-14](/docs/implementation/0071/phase-14-subprocess-mode) |
+| 14.2 | Request pipelining (multiple in-flight requests demultiplexed by ID) | NOT STARTED | — | [phase-14](/docs/implementation/0071/phase-14-subprocess-mode) |
+| 14.3 | `mochi pkg run --runtime=subprocess` CLI verb + `[python].runtime-mode` dispatch | NOT STARTED | — | [phase-14](/docs/implementation/0071/phase-14-subprocess-mode) |
+| 14.4 | Mixed sync + async worker surfaces | NOT STARTED | — | [phase-14](/docs/implementation/0071/phase-14-subprocess-mode) |
 | 15 | Attestation verification at install time + `--require-attestations` enforcement | NOT STARTED | — | [phase-15](/docs/implementation/0071/phase-15-attestation-verify) |
 | 16 | Pyodide / WASI target support (`wasm32-emscripten`, `wasm32-wasip2` wheel resolution + WIT interface) | NOT STARTED | — | [phase-16](/docs/implementation/0071/phase-16-pyodide-wasi) |
 | 17 | Free-threaded CPython 3.13t / 3.14t (`cp3XYt` ABI tag, PyMutex, atomic refcount) | NOT STARTED | — | [phase-17](/docs/implementation/0071/phase-17-free-threaded) |
@@ -99,6 +103,7 @@ package3/python/
   publish/                # PyPI publish + Sigstore + PEP 740 attestations (phase 11)
   asyncbridge/            # async-fn -> sync-fn shim renderer + cross-loop guard (phase 12)
   abi3/                   # abi3 wheel slimming + auditwheel-equivalent platform validator (phase 13)
+  subproc/                # JSON-RPC 2.0 stdio protocol + Python worker source renderer (phase 14)
   attest/                 # attestation verification (phase 15)
   pyodide/                # wasm32-emscripten + WASI Preview 2 target support (phase 16)
   freethread/             # free-threaded mode wrapper variants (phase 17)
@@ -109,7 +114,7 @@ The `package3/python/` location is shared with the broader MEP-57 polyglot packa
 
 ## Status snapshot
 
-As of 2026-05-30 00:51 (GMT+7): MEP-71 spec and research bundle landed; phases 0-13 LANDED (8.1, 8.2, 10.1, 10.2, 10.3, 11.1, 11.2, 11.3, 12.1, 12.2, 12.3, 13.1, 13.2, 13.3 deferred sub-phases); phases 14-18 NOT STARTED. The implementation proceeds one phase per PR with auto-merge, following the MEP-73 cadence.
+As of 2026-05-30 00:58 (GMT+7): MEP-71 spec and research bundle landed; phases 0-14 LANDED (8.1, 8.2, 10.1, 10.2, 10.3, 11.1, 11.2, 11.3, 12.1, 12.2, 12.3, 13.1, 13.2, 13.3, 14.1, 14.2, 14.3, 14.4 deferred sub-phases); phases 15-18 NOT STARTED. The implementation proceeds one phase per PR with auto-merge, following the MEP-73 cadence.
 
 ## Cross-references
 
