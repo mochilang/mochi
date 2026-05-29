@@ -260,9 +260,8 @@ func (c *Call) PyString() string {
 	return sb.String()
 }
 
-// BinaryEq is `left == right`. Phase 1 uses it only for the
-// `__name__ == "__main__"` guard; Phase 2 widens to the full
-// BinOp/CmpOp lattice.
+// BinaryEq is `left == right`. Kept as an alias for clarity at the
+// __name__ == "__main__" guard site; equivalent to a BinaryExpr with Op="==".
 type BinaryEq struct {
 	Left  Expr
 	Right Expr
@@ -273,6 +272,157 @@ func (*BinaryEq) isExpr() {}
 // PyString renders the equality comparison.
 func (b *BinaryEq) PyString() string {
 	return b.Left.PyString() + " == " + b.Right.PyString()
+}
+
+// BinaryExpr is `left op right` for arithmetic, comparison, and boolean
+// operators. Phase 2 only emits the operator forms; the operator string
+// must already be the Python token (`+`, `-`, `*`, `/`, `//`, `%`,
+// `==`, `!=`, `<`, `<=`, `>`, `>=`, `and`, `or`).
+type BinaryExpr struct {
+	Left  Expr
+	Op    string
+	Right Expr
+}
+
+func (*BinaryExpr) isExpr() {}
+
+// PyString renders the binary expression, parenthesising children so
+// nested arithmetic and boolean expressions print unambiguously.
+// Phase 2 keeps a conservative bracket policy (always parenthesise),
+// matching what `ruff format` produces for these structures.
+func (b *BinaryExpr) PyString() string {
+	switch b.Op {
+	case "and", "or":
+		return "(" + b.Left.PyString() + " " + b.Op + " " + b.Right.PyString() + ")"
+	}
+	return "(" + b.Left.PyString() + " " + b.Op + " " + b.Right.PyString() + ")"
+}
+
+// UnaryExpr is `op operand`. Phase 2 ships `-` (negation) and `not`.
+type UnaryExpr struct {
+	Op      string
+	Operand Expr
+}
+
+func (*UnaryExpr) isExpr() {}
+
+// PyString renders the unary expression.
+func (u *UnaryExpr) PyString() string {
+	if u.Op == "not" {
+		return "(not " + u.Operand.PyString() + ")"
+	}
+	return "(" + u.Op + u.Operand.PyString() + ")"
+}
+
+// IndexExpr is `receiver[index]`.
+type IndexExpr struct {
+	Receiver Expr
+	Index    Expr
+}
+
+func (*IndexExpr) isExpr() {}
+
+// PyString renders the index expression.
+func (i *IndexExpr) PyString() string {
+	return i.Receiver.PyString() + "[" + i.Index.PyString() + "]"
+}
+
+// WhileStmt is `while cond:` followed by a body.
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+func (*WhileStmt) isStmt() {}
+
+// PyString renders the while statement.
+func (s *WhileStmt) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	var sb strings.Builder
+	sb.WriteString(pad)
+	sb.WriteString("while ")
+	sb.WriteString(s.Cond.PyString())
+	sb.WriteString(":\n")
+	for i, st := range s.Body {
+		if i > 0 {
+			sb.WriteByte('\n')
+		}
+		sb.WriteString(st.PyString(indent + 1))
+	}
+	if len(s.Body) == 0 {
+		sb.WriteString(pad)
+		sb.WriteString("    pass")
+	}
+	return sb.String()
+}
+
+// ForRangeStmt is `for var in range(start, end):`.
+type ForRangeStmt struct {
+	Var   string
+	Start Expr
+	End   Expr
+	Body  []Stmt
+}
+
+func (*ForRangeStmt) isStmt() {}
+
+// PyString renders the for-range statement.
+func (s *ForRangeStmt) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	var sb strings.Builder
+	sb.WriteString(pad)
+	sb.WriteString("for ")
+	sb.WriteString(s.Var)
+	sb.WriteString(" in range(")
+	sb.WriteString(s.Start.PyString())
+	sb.WriteString(", ")
+	sb.WriteString(s.End.PyString())
+	sb.WriteString("):\n")
+	for i, st := range s.Body {
+		if i > 0 {
+			sb.WriteByte('\n')
+		}
+		sb.WriteString(st.PyString(indent + 1))
+	}
+	if len(s.Body) == 0 {
+		sb.WriteString(pad)
+		sb.WriteString("    pass")
+	}
+	return sb.String()
+}
+
+// BreakStmt is `break`.
+type BreakStmt struct{}
+
+func (*BreakStmt) isStmt() {}
+
+// PyString renders `break`.
+func (s *BreakStmt) PyString(indent int) string {
+	return strings.Repeat("    ", indent) + "break"
+}
+
+// ContinueStmt is `continue`.
+type ContinueStmt struct{}
+
+func (*ContinueStmt) isStmt() {}
+
+// PyString renders `continue`.
+func (s *ContinueStmt) PyString(indent int) string {
+	return strings.Repeat("    ", indent) + "continue"
+}
+
+// ReassignStmt is plain `target = value` without a PEP 526 annotation,
+// used when reassigning an already-declared mutable variable.
+type ReassignStmt struct {
+	Target string
+	Value  Expr
+}
+
+func (*ReassignStmt) isStmt() {}
+
+// PyString renders the bare assignment.
+func (s *ReassignStmt) PyString(indent int) string {
+	return strings.Repeat("    ", indent) + s.Target + " = " + s.Value.PyString()
 }
 
 // Name is a bare identifier.
