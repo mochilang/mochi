@@ -68,9 +68,65 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (gotree.Stmt, error) {
 		return &gotree.BranchStmt{Tok: "continue"}, nil
 	case *aotir.ReturnStmt:
 		return l.lowerReturnStmt(s)
+	case *aotir.WriteFileStmt:
+		return l.lowerWriteFileStmt(s)
+	case *aotir.AppendFileStmt:
+		return l.lowerAppendFileStmt(s)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle stmt %T", s)
 	}
+}
+
+// lowerWriteFileStmt emits `os.WriteFile(path, []byte(content), 0644)` and
+// discards the returned error to match the Mochi semantics that `writeFile`
+// is a fire-and-forget statement (the C runtime also ignores errors here).
+func (l *lowerer) lowerWriteFileStmt(s *aotir.WriteFileStmt) (gotree.Stmt, error) {
+	path, err := l.lowerExpr(s.Path)
+	if err != nil {
+		return nil, fmt.Errorf("writeFile path: %w", err)
+	}
+	content, err := l.lowerExpr(s.Content)
+	if err != nil {
+		return nil, fmt.Errorf("writeFile content: %w", err)
+	}
+	l.addImport("os")
+	bytesCall := &gotree.CallExpr{
+		Fun:  &gotree.ArrayType{Elt: &gotree.Ident{Name: "byte"}},
+		Args: []gotree.Expr{content},
+	}
+	call := &gotree.CallExpr{
+		Fun: &gotree.SelectorExpr{X: &gotree.Ident{Name: "os"}, Sel: "WriteFile"},
+		Args: []gotree.Expr{
+			path,
+			bytesCall,
+			&gotree.BasicLit{Kind: gotree.IntLit, Value: "0644"},
+		},
+	}
+	return &gotree.AssignStmt{
+		Lhs: []gotree.Expr{&gotree.Ident{Name: "_"}},
+		Tok: "=",
+		Rhs: []gotree.Expr{call},
+	}, nil
+}
+
+// lowerAppendFileStmt emits a tiny helper call mochiAppendFile(path, content)
+// because Go's stdlib has no one-liner for "open in append mode, write, close,
+// ignore errors". The helper is registered via addHelper.
+func (l *lowerer) lowerAppendFileStmt(s *aotir.AppendFileStmt) (gotree.Stmt, error) {
+	path, err := l.lowerExpr(s.Path)
+	if err != nil {
+		return nil, fmt.Errorf("appendFile path: %w", err)
+	}
+	content, err := l.lowerExpr(s.Content)
+	if err != nil {
+		return nil, fmt.Errorf("appendFile content: %w", err)
+	}
+	l.addImport("os")
+	l.addHelper("mochiAppendFile")
+	return &gotree.ExprStmt{X: &gotree.CallExpr{
+		Fun:  &gotree.Ident{Name: "mochiAppendFile"},
+		Args: []gotree.Expr{path, content},
+	}}, nil
 }
 
 // lowerCallStmt handles the print runtime shims emitted by the

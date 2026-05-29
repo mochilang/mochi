@@ -606,6 +606,39 @@ func helperDecl(name string) gotree.Decl {
 	}
 	return x
 }`}
+	case "mochiAppendFile":
+		return &gotree.RawDecl{Code: `func mochiAppendFile(path, content string) {
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return
+	}
+	defer f.Close()
+	_, _ = f.WriteString(content)
+}`}
+	case "mochiReadFile":
+		return &gotree.RawDecl{Code: `func mochiReadFile(path string) string {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return ""
+	}
+	return string(b)
+}`}
+	case "mochiLines":
+		return &gotree.RawDecl{Code: `func mochiLines(path string) []string {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return nil
+	}
+	s := string(b)
+	if s == "" {
+		return nil
+	}
+	parts := strings.Split(s, "\n")
+	if len(parts) > 0 && parts[len(parts)-1] == "" {
+		parts = parts[:len(parts)-1]
+	}
+	return parts
+}`}
 	}
 	return nil
 }

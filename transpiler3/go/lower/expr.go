@@ -118,6 +118,10 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerStrJoinExpr(e)
 	case *aotir.MathCallExpr:
 		return l.lowerMathCallExpr(e)
+	case *aotir.ReadFileExpr:
+		return l.lowerReadFileExpr(e)
+	case *aotir.LinesExpr:
+		return l.lowerLinesExpr(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
@@ -1185,4 +1189,31 @@ func (l *lowerer) lowerMathCallExpr(e *aotir.MathCallExpr) (gotree.Expr, error) 
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: math builtin %q not supported", e.Func)
 	}
+}
+
+// lowerReadFileExpr emits mochiReadFile(path) which wraps os.ReadFile,
+// returns the contents as a string and discards the error (matching the
+// C runtime, which returns "" on read failure).
+func (l *lowerer) lowerReadFileExpr(e *aotir.ReadFileExpr) (gotree.Expr, error) {
+	path, err := l.lowerExpr(e.Path)
+	if err != nil {
+		return nil, err
+	}
+	l.addImport("os")
+	l.addHelper("mochiReadFile")
+	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiReadFile"}, Args: []gotree.Expr{path}}, nil
+}
+
+// lowerLinesExpr emits mochiLines(path) which reads the file and splits
+// on '\n', dropping a single trailing empty token to match the C runtime's
+// behaviour for trailing-newline files.
+func (l *lowerer) lowerLinesExpr(e *aotir.LinesExpr) (gotree.Expr, error) {
+	path, err := l.lowerExpr(e.Path)
+	if err != nil {
+		return nil, err
+	}
+	l.addImport("os")
+	l.addImport("strings")
+	l.addHelper("mochiLines")
+	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiLines"}, Args: []gotree.Expr{path}}, nil
 }

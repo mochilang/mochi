@@ -1,0 +1,3 @@
+writeFile("/tmp/mochi3_go_lines_empty.txt", "")
+let xs = lines("/tmp/mochi3_go_lines_empty.txt")
+print(len(xs))

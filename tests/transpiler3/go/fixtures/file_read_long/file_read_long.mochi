@@ -1,0 +1,4 @@
+let s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+writeFile("/tmp/mochi3_go_long.txt", s)
+let content = readFile("/tmp/mochi3_go_long.txt")
+print(len(content))
