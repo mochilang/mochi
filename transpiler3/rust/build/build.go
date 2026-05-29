@@ -33,7 +33,8 @@ const (
 	TargetLinuxStaticX64
 	// TargetLinuxStaticArm64: cargo zigbuild --target aarch64-unknown-linux-musl.
 	TargetLinuxStaticArm64
-	// TargetWasm32WASI: cargo build --target wasm32-wasi.
+	// TargetWasm32WASI: cargo build --target wasm32-wasip1.
+	// (wasm32-wasi was renamed to wasm32-wasip1 in Rust 1.78+.)
 	TargetWasm32WASI
 	// TargetRustCrate: emit the full Cargo crate (Cargo.toml + src/ +
 	// any sidecar cffi/build.rs) into outDir without invoking cargo.
@@ -185,7 +186,7 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 	case TargetLinuxStaticArm64:
 		buildArgs = []string{"zigbuild", "--release", "--target", "aarch64-unknown-linux-musl"}
 	case TargetWasm32WASI:
-		buildArgs = append(buildArgs, "--target", "wasm32-wasi")
+		buildArgs = append(buildArgs, "--target", "wasm32-wasip1")
 	}
 
 	buildCmd := exec.Command(d.cargoPath, buildArgs...)
@@ -408,7 +409,7 @@ func findBinary(workDir string, target Target, crateName, binName string) (strin
 	case TargetLinuxStaticArm64:
 		subPath = filepath.Join("target", "aarch64-unknown-linux-musl", "release", binName)
 	case TargetWasm32WASI:
-		subPath = filepath.Join("target", "wasm32-wasi", "release", binName)
+		subPath = filepath.Join("target", "wasm32-wasip1", "release", binName)
 	default:
 		subPath = filepath.Join("target", "release", binName)
 	}
