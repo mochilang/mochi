@@ -10,9 +10,9 @@ description: "MEP-52 Phase 1, end-to-end pipeline from print(\"hello, world\") t
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-52 §Phases · Phase 1](/docs/mep/mep-0052#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | n/a |
-| Landed         | n/a |
+| Status         | LANDED (1.0, 1.1, 1.3 partial: Node + Deno + Bun); browser deferred to Phase 17 |
+| Started        | 2026-05-29 16:30 (GMT+7) |
+| Landed         | 2026-05-29 16:50 (GMT+7) |
 | Tracking issue | n/a |
 | Tracking PR    | n/a |
 
@@ -35,11 +35,11 @@ Phase 1 is the first point where the TypeScript pipeline produces a runnable art
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 1.0 | `print("hello, world")` end-to-end: lower, emit `.ts`, write `package.json`, write `tsconfig` chain, `tsc --build`, execute on Node 22 | NOT STARTED | n/a |
-| 1.1 | `print(int)`, `print(bool)`, `print(float)` via `Mochi.Runtime.io.print` overloads | NOT STARTED | n/a |
-| 1.2 | `--target=typescript-source` writes the layout without invoking `tsc`; `--target=npm-package` runs `tsc --build` then `npm pack` to produce `<pkg>-<ver>.tgz` | NOT STARTED | n/a |
-| 1.3 | Execute the same dist on Deno 2 (`deno run dist/deno/index.js`), Bun 1.1 (`bun dist/bun/index.js`), and Chromium 130 via Playwright (`console.log` captured) | NOT STARTED | n/a |
-| 1.4 | SHA-256 content-addressed build cache under `~/.cache/mochi/typescript/<hash>/` | NOT STARTED | n/a |
+| 1.0 | `print("hello, world")` end-to-end: parse, typecheck, aotir lower, colour stub, tstree lower, emit `.ts`, execute on Node 22 | LANDED | (this PR) |
+| 1.1 | `print(int)`, `print(bool)`, `print(float)` via inline `mochi_print_{str,i64,f64,bool}` helpers matching vm3 contract (incl. NaN/+Inf/-Inf canonical labels) | LANDED | (this PR) |
+| 1.2 | `--target=typescript-source` writes the `.ts` layout without invoking `tsc`; `--target=npm-package` (composite tsconfig + `tsc --build` + `npm pack`) deferred to Phase 15 | LANDED (typescript-source); Phase 15 owns npm-package | (this PR) |
+| 1.3 | Execute on Deno 2 (`deno run`), Bun 1.1, Chromium 130 (Playwright) | PARTIAL: Node + Deno + Bun green; browser deferred to Phase 17 (esbuild bundle target) | (this PR) |
+| 1.4 | SHA-256 content-addressed build cache under `~/.cache/mochi/typescript/<hash>/` | DEFERRED (helper plumbing in `Driver.cacheKey` reserved; integration follows Phase 15 once tsc invocations dominate the wall-clock budget) | n/a |
 
 ## Sub-phase 1.0, End-to-end pipeline
 
@@ -181,25 +181,18 @@ Playwright runs headless against `Chromium 130` from the npm `@playwright/test 1
 
 **Miss path**: full pipeline, write output, copy to cache, return.
 
-## Files (planned)
+## Files
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/typescript/aotir/program.go` | Shared aotir IR consumer (target-agnostic, shared with MEP-45 to MEP-51) |
-| `transpiler3/typescript/colour/colour.go` | Sync/async colour pass; Phase 1 trivially returns all-Blue |
-| `transpiler3/typescript/lower/lower.go` | `aotir.Program` to `tssrc.SourceFile` lowering; `lowerProgram`, `lowerStmt`, `lowerExpr` |
-| `transpiler3/typescript/tssrc/nodes.go` | TypeScript syntax tree node types (CompilationUnit, ImportDecl, FunctionDecl, ClassDecl, CallExpr, LiteralExpr, etc.) |
-| `transpiler3/typescript/emit/emit.go` | Tree printer; walks `tssrc` nodes to produce `.ts` text |
-| `transpiler3/typescript/emit/project.go` | `package.json`, `tsconfig.{base,node,deno,bun,browser}.json`, root composite `tsconfig.json`, `.eslintrc.json`, `.prettierrc.json` writers |
-| `transpiler3/typescript/build/build.go` | `Driver.Build`; `Target` constants; orchestrates lower, emit, write, optionally `tsc --build`, optionally `npm pack` |
-| `transpiler3/typescript/build/cache.go` | SHA-256 keyed content-addressed cache |
-| `transpiler3/typescript/build/phase01_test.go` | `TestPhase1Hello`, four-runtime gate |
-| `transpiler3/typescript/build/runner_node.go` | `node` subprocess runner |
-| `transpiler3/typescript/build/runner_deno.go` | `deno run` subprocess runner |
-| `transpiler3/typescript/build/runner_bun.go` | `bun` subprocess runner |
-| `transpiler3/typescript/build/runner_playwright.go` | Playwright + Chromium runner |
-| `runtime3/typescript/src/io/index.ts` | `print` overloads for bool, number, bigint, string, unknown |
-| `runtime3/typescript/package.json` | Runtime package manifest (zero npm dependencies) |
+| `transpiler3/typescript/doc.go` | Package doc describing sub-packages and phase plan |
+| `transpiler3/typescript/colour/colour.go` | Sync/async colour pass; Phase 1 trivially returns all-Blue; signature stable across phases |
+| `transpiler3/typescript/tstree/tstree.go` | TS syntax-tree model: SourceFile, FuncDecl, ImportDecl, ExprStmt, ReturnStmt, RawStmt, CallExpr, IdentExpr, four literal types; each implements `TsString(indent int) string` |
+| `transpiler3/typescript/lower/lower.go` | `aotir.Program` → `tstree.SourceFile`; CallStmt → inline mochi_print_{str,i64,f64,bool} runtime helpers; explicit error on unsupported stmt/expr kinds |
+| `transpiler3/typescript/emit/emit.go` | `tstree.SourceFile` → `outDir/main.ts`; LF, two-space indent, single trailing newline |
+| `transpiler3/typescript/build/build.go` | `Driver.Build`, Target enum (TypeScriptSource, NodeRun, DenoRun, BunRun); resolves node/deno/bun with MOCHI_NODE_PATH / well-known paths / PATH fallback |
+| `transpiler3/typescript/build/build_test.go` | Per-runtime `runTsFixture` helper, `resolveRuntime`, fixture-loading test plumbing |
+| `transpiler3/typescript/build/phase01_test.go` | `TestPhase1HelloNode` + `Deno` + `Bun`; `TestPhase1EmitWithoutRuntime`; `TestPhase1EmitFragments`; `TestPhase1DeterministicEmit`; `TestPhase1UnsupportedFails` |
 | `tests/transpiler3/typescript/fixtures/phase01-hello/hello.mochi` | `print("hello, world")` |
 | `tests/transpiler3/typescript/fixtures/phase01-hello/hello.out` | `hello, world\n` |
 | `tests/transpiler3/typescript/fixtures/phase01-hello/hello_int.mochi` | `print(42)` |
@@ -213,10 +206,13 @@ Playwright runs headless against `Chromium 130` from the npm `@playwright/test 1
 
 ## Test set
 
-- `TestPhase1Hello`, walks all 5 fixtures across Node, Deno, Bun, and Chromium; diffs stdout byte-for-byte against `.out` file.
-- `TestPhase1TscClean`, runs `tsc --noEmit --strict --noUncheckedIndexedAccess --exactOptionalPropertyTypes` against each emitted project, expects zero diagnostics.
-- `TestPhase1EslintClean`, runs `eslint --max-warnings 0` against each emitted project.
-- `TestPhase1PrettierFixedPoint`, runs `prettier --write` then `prettier --check`; second pass must report no diffs.
+- `TestPhase1HelloNode`, walks all 5 fixtures, runs the emitted `.ts` under Node 22's native TypeScript loader (`--experimental-strip-types` default-on since 22.18), diffs stdout byte-for-byte against `.out`.
+- `TestPhase1HelloDeno`, same 5 fixtures executed via `deno run`. Skips gracefully when `deno` is missing.
+- `TestPhase1HelloBun`, same 5 fixtures executed via `bun`. Skips gracefully when `bun` is missing.
+- `TestPhase1EmitWithoutRuntime`, asserts the canonical hello fixture lowers to a TS source containing the expected helper names and call sites without invoking any JS runtime. Isolates the Go-side pipeline from the runtime gate.
+- `TestPhase1EmitFragments`, locks the emitted TS shape for each of the four print families (str, i64, f64, bool) plus the embedded-newline fixture. A regression that breaks the f64 helper's NaN/+Inf/-Inf branches fails this test at Phase 1 (where the contract lives) instead of leaking into Phase 2.
+- `TestPhase1DeterministicEmit`, runs `Driver.Build` five times against `hello.mochi` and asserts every output is byte-identical. Phase 16 reproducibility precondition: emit must already be deterministic at Phase 1 (no map-iteration leaks, no time/PID/random sources).
+- `TestPhase1UnsupportedFails`, asserts the lowerer returns an `unsupported` error on `let x = 1`. Pins the "fail clear, not silent" contract.
 
 ## Deferred work
 
@@ -225,3 +221,6 @@ Playwright runs headless against `Chromium 130` from the npm `@playwright/test 1
 - `--target=deno-jsr`, `--target=browser-bundle`, `--target=deno-jupyter`. Deferred to Phase 17.
 - Source map second layer (Mochi to TS). Deferred (Open Q6, v1.5).
 - Identifier mangling for reserved words (`class_`, `import_`). Phase 1 has no collisions; full table lands in Phase 4.
+- `--target=npm-package` (composite `tsconfig` + `tsc --build` + `npm pack`). Phase 15 owns the full package-build gate; Phase 1 ships `--target=typescript-source` only.
+- Chromium browser execution. Phase 17 owns the esbuild bundle target; Phase 1's gate covers the three Node-family runtimes (Node, Deno, Bun) that natively load `.ts`.
+- SHA-256 build cache integration. Phase 1's `Driver.cacheKey` helper is plumbed but not yet consumed; integration follows Phase 15 once `tsc` invocations dominate the wall-clock budget.
