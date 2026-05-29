@@ -13,8 +13,8 @@ description: "MEP-52 Phase 6, Mochi closures to TypeScript arrow functions, nest
 | Status         | LANDED (Node + Deno + Bun) |
 | Started        | 2026-05-29 (GMT+7) |
 | Landed         | 2026-05-29 22:40 (GMT+7) |
-| Tracking issue | mochilang/mochi#22754 |
-| Tracking PR    | mochilang/mochi#22755 |
+| Tracking issue | mochilang/mochi#22780 |
+| Tracking PR    | mochilang/mochi#22781 |
 
 ## Gate
 
