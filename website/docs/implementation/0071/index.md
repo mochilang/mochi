@@ -20,8 +20,8 @@ A phase is LANDED only when its gate is green for every target (consume directio
 | 2 | uv resolver bridge (subprocess + lockfile parsing) + PEP 751 pylock.toml round-trip | LANDED | `a38cb023` | [phase-02](/docs/implementation/0071/phase-02-uv-resolver) |
 | 3 | PEP 561 stub discovery (4-tier precedence, typeshed pin, stubgen sandbox) + `.pyi` parser | LANDED | `55469e50` | [phase-03](/docs/implementation/0071/phase-03-stub-ingest) |
 | 4 | Closed type-mapping table (scalars / strings / collections / Optional / Union / dataclass / TypedDict / Protocol) | LANDED | `39d45ea4` | [phase-04](/docs/implementation/0071/phase-04-type-mapping) |
-| 5 | Wrapper module synthesiser (`<pkg>_externs.py` + `.pyi` + `_mochi_wrap.py` runtime) | LANDED | (pending merge) | [phase-05](/docs/implementation/0071/phase-05-wrapper) |
-| 6 | Mochi-side extern fn emitter + alias shim file generation + sidecar (`*_externs.py`) loader | NOT STARTED | — | [phase-06](/docs/implementation/0071/phase-06-extern-emit) |
+| 5 | Wrapper module synthesiser (`<pkg>_externs.py` + `.pyi` + `_mochi_wrap.py` runtime) | LANDED | `627e3267` | [phase-05](/docs/implementation/0071/phase-05-wrapper) |
+| 6 | Mochi-side extern fn emitter (`<pkg>_shim.mochi` with `extern python fun` + `type ... = { ... }`) | LANDED | (pending merge) | [phase-06](/docs/implementation/0071/phase-06-extern-emit) |
 | 7 | `import python "<package>@<semver>" as <alias>` grammar + parser | NOT STARTED | — | [phase-07](/docs/implementation/0071/phase-07-import-grammar) |
 | 8 | Build orchestration: workspace synth + libpython link + wheel install + wrapper compile | NOT STARTED | — | [phase-08](/docs/implementation/0071/phase-08-build) |
 | 9 | `mochi.lock` `[[python-package]]` integration + `--check` mode + capability database | NOT STARTED | — | [phase-09](/docs/implementation/0071/phase-09-lockfile) |
@@ -78,7 +78,7 @@ package3/python/
   stubs/                  # PEP 561 stub discovery + typeshed pin + stubgen sandbox + .pyi parser (phase 3)
   typemap/                # closed type table + Mochi/Python rendering (phase 4)
   wrapper/                # <pkg>_externs.py + .pyi + _mochi_wrap.py synthesiser (phase 5)
-  emit/                   # Mochi extern fn emitter (phase 6)
+  emit/                   # Mochi shim emitter — <pkg>_shim.mochi with extern python fun + type aliases (phase 6)
   publish/                # PyPI publish + Sigstore + PEP 740 attestations (phase 11)
   attest/                 # attestation verification (phase 15)
   pyodide/                # wasm32-emscripten + WASI Preview 2 target support (phase 16)
@@ -90,7 +90,7 @@ The `package3/python/` location is shared with the broader MEP-57 polyglot packa
 
 ## Status snapshot
 
-As of 2026-05-29 23:48 (GMT+7): MEP-71 spec and research bundle landed; phases 0-5 LANDED; phases 6-18 NOT STARTED. The implementation proceeds one phase per PR with auto-merge, following the MEP-73 cadence.
+As of 2026-05-29 23:56 (GMT+7): MEP-71 spec and research bundle landed; phases 0-6 LANDED; phases 7-18 NOT STARTED. The implementation proceeds one phase per PR with auto-merge, following the MEP-73 cadence.
 
 ## Cross-references
 
