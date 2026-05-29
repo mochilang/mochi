@@ -16,7 +16,7 @@
         "phpstan/phpstan": "^1.12",
         "phpstan/phpstan-strict-rules": "^1.6",
         "phpstan/phpstan-deprecation-rules": "^1.2",
-        "vimeo/psalm": "^5.26",
+        "vimeo/psalm": "^6.0",
         "friendsofphp/php-cs-fixer": "^3.65",
         "phpunit/phpunit": "^11.3"
     },

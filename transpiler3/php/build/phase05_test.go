@@ -31,9 +31,11 @@ func TestPhase5Sums(t *testing.T) {
 }
 
 // TestPhase5EmitFragments asserts the lowerer emits the expected PHP
-// shape for the sealed-hierarchy sum-type lowering: one abstract base
-// class plus one final readonly variant subclass, with match arms
-// becoming an `instanceof` discriminator chain. The fragments cover
+// shape for the sealed-hierarchy sum-type lowering: one abstract
+// readonly base class plus one final readonly variant subclass, with
+// match arms becoming an `instanceof` discriminator chain. The base
+// must be `abstract readonly` because PHP 8.4 forbids a readonly
+// subclass from extending a non-readonly parent. The fragments cover
 // the four feature shapes Phase 5.0 ships: variant with int field,
 // nullary variants, match-as-expression result temp, and string
 // arm bodies.
@@ -45,7 +47,7 @@ func TestPhase5EmitFragments(t *testing.T) {
 		{
 			fixture: "sum_basic.mochi",
 			wants: []string{
-				`abstract class Shape`,
+				`abstract readonly class Shape`,
 				`final readonly class Shape_Circle extends Shape`,
 				`final readonly class Shape_Square extends Shape`,
 				`public int $r,`,
@@ -74,7 +76,7 @@ func TestPhase5EmitFragments(t *testing.T) {
 		{
 			fixture: "sum_nullary.mochi",
 			wants: []string{
-				`abstract class Color`,
+				`abstract readonly class Color`,
 				`final readonly class Color_Red extends Color`,
 				`final readonly class Color_Green extends Color`,
 				`final readonly class Color_Blue extends Color`,
