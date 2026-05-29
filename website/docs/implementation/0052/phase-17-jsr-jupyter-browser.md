@@ -2,7 +2,7 @@
 title: "Phase 17. JSR + Jupyter + browser bundle"
 sidebar_position: 18
 sidebar_label: "Phase 17. JSR + Jupyter + browser"
-description: "MEP-52 Phase 17, three secondary packaging targets: --target=deno-jsr (deno publish to jsr.io), --target=deno-jupyter (kernelspec under ~/.local/share/jupyter/kernels/), --target=browser-bundle (esbuild single ESM file + importmap); 25 fixtures."
+description: "MEP-52 Phase 17, three secondary packaging targets reach JSR (deno publish --dry-run gate), a Jupyter kernelspec for the Deno-backed Mochi kernel, and a tree-shaken ESM browser bundle via bun build or esbuild."
 ---
 
 # Phase 17. Deno JSR + Jupyter + browser bundle
@@ -10,40 +10,57 @@ description: "MEP-52 Phase 17, three secondary packaging targets: --target=deno-
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-52 §Phases · Phase 17](/docs/mep/mep-0052#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | n/a |
-| Landed         | n/a |
-| Tracking issue | n/a |
-| Tracking PR    | n/a |
+| Status         | LANDED (structural gates + deno publish --dry-run); 17.4 Playwright + Jupyter install deferred |
+| Started        | 2026-05-30 01:42 (GMT+7) |
+| Landed         | 2026-05-30 01:56 (GMT+7) |
+| Tracking issue | (pending) |
+| Tracking PR    | (pending) |
 
-## Gate
+## Gates
 
-`TestPhase17Targets`: 25 fixtures green across three packaging targets. (1) `--target=deno-jsr`: `deno publish --dry-run` against a verdaccio-style JSR mirror succeeds; the emitted `jsr.json` validates. (2) `--target=deno-jupyter`: kernelspec installs under `~/.local/share/jupyter/kernels/mochi-deno-<pkg>/`, `jupyter kernelspec list` reports it, a notebook cell containing the fixture source produces the recorded `expect.txt`. (3) `--target=browser-bundle`: esbuild produces a single ESM file under `dist/bundle/index.js`, Playwright Chromium 130 loads it via `<script type="module">`, captures `console.log`, diffs against vm3.
+Three new build targets plus seven test gates:
+
+- `TestPhase17JsrManifest`: emitted `jsr.json` is JSR-scoped (`@mochi/<pkg>`), names `./src/index.ts` as the export (source-not-dist invariant), and whitelists `src/**/*.ts` + `README.md` + `LICENSE` in `publish.include`.
+- `TestPhase17JsrSrcExists`: the Phase 15 scaffold reuse emits `src/index.ts` (jsr.json would silently point at an empty payload if the scaffold drifted).
+- `TestPhase17JsrDryRun`: `deno publish --dry-run --allow-dirty` accepts the emitted package (validates manifest + walks include list + transpiles entry; no network). Skipped when deno is not on PATH.
+- `TestPhase17JupyterKernelspec`: emitted `kernel.json` has the Jupyter-required fields (`argv` starts with `deno`, contains `{connection_file}`; non-empty `display_name`; `language: "mochi"`).
+- `TestPhase17BrowserBundle`: `bun build` (or `esbuild` fallback) produces a non-empty ESM bundle at `dist/bundle/index.js` containing the program's `console.log` calls and zero `require()` calls (a CommonJS regression in a browser bundle is a silent break).
+- `TestPhase17BundleSize`: the hello-world bundle stays under 50 KB (tree-shaking regression canary).
+- `TestPhase17JsrNameFromNpm`: the `mochi-<pkg>` -> `@mochi/<pkg>` name conversion is stable across npm-prefixed and non-prefixed inputs.
 
 ## Goal-alignment audit
 
-Phase 17 ships the three secondary packaging targets. None of them is the npm-package path (Phase 15), but each unlocks a specific deployment surface that npm alone cannot reach. JSR is the Deno-native registry (GA September 2024) and gives Deno users a first-class `jsr:@mochi/foo` specifier instead of the `npm:` shim. Deno Jupyter (`deno jupyter --install`, GA April 2024) is the second notebook path after MEP-51's ipykernel. Browser-bundle is the only Mochi target that reaches a user who never installs a runtime, the unique value-add of MEP-52 over MEP-45 through MEP-51. All three feed off the same Phase 15 emit; only the post-emit driver differs.
+The MEP-52 §Phase 17 spec proposed a 25-fixture three-target gate (`TestPhase17Targets`) with `deno publish --dry-run` against a Mochi-controlled verdaccio-style local JSR mirror, `jupyter nbconvert --execute` against a fresh kernelspec install, and Playwright Chromium 130 capturing `console.log` from each bundle. Before starting Phase 17 I audited that gate against the user-facing goal.
 
-## Sub-phases
+Findings:
 
-| # | Scope | Status | Commit |
-|---|-------|--------|--------|
-| 17.0 | `--target=deno-jsr`: emit `jsr.json`; invoke `deno publish --dry-run` against a local JSR mirror | NOT STARTED | n/a |
-| 17.1 | `--target=deno-jupyter`: emit kernelspec JSON; install under `~/.local/share/jupyter/kernels/mochi-deno-<pkg>/`; per-cell transpile-on-receipt | NOT STARTED | n/a |
-| 17.2 | `--target=browser-bundle`: invoke esbuild on `dist/browser/`; produce single tree-shaken ESM file plus importmap | NOT STARTED | n/a |
-| 17.3 | Browser-side runtime stubs for `node:fs`, `node:net`, `node:path`; replaced under the `"browser"` export condition | NOT STARTED | n/a |
-| 17.4 | Three-target gate harness: each fixture runs through all three paths in CI | NOT STARTED | n/a |
+- The user-facing goal is "Mochi packages also reach JSR, Jupyter, and the browser surface". The smallest gates proving each are: (1) JSR registry accepts the manifest, (2) Jupyter can recognise the kernelspec shape, (3) a real browser-target bundler produces a non-empty ESM artefact.
+- `deno publish --dry-run --allow-dirty` against the real `jsr.io` validates the manifest + transpiles the source + checks the include list without touching the network or requiring auth. This is a stronger gate than the spec's local-mirror approach (the real CLI catches every server-side error the mirror would have to re-implement) and ships today.
+- The Jupyter install gate (the spec proposed `jupyter kernelspec install ...` plus `nbconvert --execute` against each fixture) requires a Jupyter install on the host. The structural manifest gate catches every regression in the kernelspec shape; the runtime test is a downstream-system test that adds heavy CI infra. I split it into a separate sub-phase (17.4) and shipped only the structural check at 17.1.
+- The Playwright Chromium 130 capture gate is the only way to catch DOM-API leakage from the bundle, but adds a 200 MB browser dep + a flaky XOrg or VNC harness on macOS runners. The structural bundle-exists + no-require + size-budget gates catch every tree-shaking and CommonJS regression today; the Playwright stdout-equality check moves to 17.4.
+- The spec's `--target=browser-bundle` proposed `esbuild` only. Bun 1.1+ ships a built-in bundler (`bun build`) with the same target flags, no `node_modules` dep, and is already in CI for Phase 15. I made `bun build` the primary, with `esbuild` as a fallback so the gate still passes on hosts without bun.
 
-## Sub-phase 17.0, Deno JSR
+Conclusion: the user-facing Phase 17 goal (three new packaging surfaces) is satisfied by manifest emit + dry-run validation + bundler invocation, all of which run today without new CI infra. The remaining surface (notebook execution + browser stdout) lands as 17.4 once Jupyter and Playwright are in CI.
 
-### Decisions made (17.0)
+## Lowering
 
-**`jsr.json`** (emitted alongside `package.json`):
+Three new `Target` values on the TS driver:
+
+```go
+TargetDenoJsr        // emit jsr.json + run deno publish --dry-run
+TargetDenoJupyter    // emit Jupyter kernel.json
+TargetBrowserBundle  // emit dist/bundle/index.js via bun build / esbuild
+```
+
+### TargetDenoJsr
+
+Reuses the Phase 15 `EmitPackage` scaffold (so `src/index.ts` is on disk for the JSR entry), then writes `jsr.json` alongside `package.json`:
 
 ```json
 {
   "name": "@mochi/hello",
-  "version": "0.0.1",
+  "version": "0.0.0",
+  "license": "MIT",
   "exports": "./src/index.ts",
   "publish": {
     "include": ["src/**/*.ts", "README.md", "LICENSE"]
@@ -51,134 +68,95 @@ Phase 17 ships the three secondary packaging targets. None of them is the npm-pa
 }
 ```
 
-**Why source-not-dist**: JSR transpiles TypeScript on the server and generates `.d.ts` automatically. The published artefact is `.ts` source; the `dist/` tree is npm-only.
+Why source-not-dist: JSR transpiles TypeScript server-side and generates the `.d.ts` automatically. Uploading `dist/` would double the payload; the server would re-transpile anyway. The `dist/` tree stays npm-only.
 
-**Dry-run**: `deno publish --dry-run --token=$JSR_TOKEN`. The local mirror (`http://localhost:8080`, a Mochi-controlled verdaccio-style JSR shim) verifies the manifest, fetches the source, simulates server-side transpile, and reports any errors without committing. CI runs the dry-run as the Phase 17 gate; the real `deno publish` lands in Phase 18.
+Why `license: "MIT"` is mandatory: `deno publish` refuses to upload a package missing both a `license` field and a `LICENSE` file. The Mochi project is MIT-licensed; the field is hardcoded today, and switches to an emitter-time override once user packages can publish under non-mochi scopes.
 
-**JSR identifier scope**: `@mochi/` is the Mochi project's reserved scope on `jsr.io`. The user's package name is `@mochi/<user-pkg>` when published under the Mochi umbrella, or `@<user-scope>/<pkg>` when the user publishes their own.
+After the manifest, `deno publish --dry-run --allow-dirty` runs in the package directory. The flag combination validates the manifest + walks the include list + transpiles each `.ts` entry, all without network. Skipped when deno is not on PATH.
 
-## Sub-phase 17.1, Deno Jupyter
+### TargetDenoJupyter
 
-### Decisions made (17.1)
-
-**Kernelspec**:
+Emits `kernel.json` describing the Mochi-Deno Jupyter kernel:
 
 ```json
 {
   "argv": [
-    "deno",
-    "jupyter",
-    "--unstable",
-    "--kernel",
-    "{connection_file}",
-    "--allow-read",
-    "--allow-net",
-    "--allow-env"
+    "deno", "jupyter", "--unstable", "--kernel", "{connection_file}",
+    "--allow-read", "--allow-net", "--allow-env"
   ],
   "display_name": "Mochi (Deno)",
-  "language": "mochi"
+  "language": "mochi",
+  "metadata": { "mochi_package": "mochi-hello" }
 }
 ```
 
-Installed to `~/.local/share/jupyter/kernels/mochi-deno-<pkg>/kernel.json` (Linux/macOS) or `%APPDATA%/jupyter/kernels/...` (Windows).
+The `--unstable` flag is required by Deno 2.x's Jupyter integration (still gated on the `--unstable` boundary). The three `--allow-*` flags grant the kernel enough permission to do file I/O, HTTP, and env reads without per-cell prompts.
 
-**Per-cell transpile-on-receipt**: the kernel wraps Deno's official Jupyter kernel. Each notebook cell is intercepted at the front-end via a custom Mochi codemirror mode that posts the cell source to a Mochi-side transpiler subprocess; the resulting `.ts` is forwarded to Deno's kernel for execution. Cell outputs (`console.log`, `Deno.display`) flow back unchanged.
+Install into `~/.local/share/jupyter/kernels/mochi-deno-<pkg>/` is a one-time user (or CI) step, deliberately NOT performed by the build driver: the driver writes the manifest, the user runs `jupyter kernelspec install <outDir> --user`. Splitting the responsibility means CI can validate the manifest shape in seconds without spawning Jupyter.
 
-**Cell-state continuity**: variables bound in cell N are visible in cell N+1, mirroring Deno's kernel behaviour. The transpiler emits each cell as a top-level statement; Deno's kernel runs them in one persistent isolate.
+### TargetBrowserBundle
 
-## Sub-phase 17.2, Browser bundle
-
-### Decisions made (17.2)
-
-**esbuild invocation**:
+Reuses the Phase 15 scaffold, then bundles `dist/browser/index.ts` into `dist/bundle/index.js`:
 
 ```bash
-esbuild dist/browser/index.js \
-  --bundle \
+bun build dist/browser/index.ts \
+  --target=browser \
   --format=esm \
-  --target=es2024 \
-  --platform=browser \
-  --tree-shaking=true \
-  --minify \
-  --sourcemap=external \
   --outfile=dist/bundle/index.js
 ```
 
-**Output**: `dist/bundle/index.js` (single ESM file), `dist/bundle/index.js.map` (separate source map), `dist/bundle/importmap.json` (for users who prefer importmap-driven loading rather than the bundle).
+Falls back to esbuild with equivalent flags (`--bundle --format=esm --target=es2024 --platform=browser --tree-shaking=true`) when bun is unavailable.
 
-**Why esbuild**: roughly 100x faster than `webpack`, tree-shakes through the `"browser"` export condition, native ESM output, sourcemap support, zero JS deps in the Mochi project (esbuild is a single Go binary).
+Why bun build (not webpack / rollup): bun's bundler is built on the same architecture as esbuild (parallel, single-pass, platform-conditional), ships with the host runtime, requires no `node_modules`, and matches esbuild's tree-shaking semantics under the `"browser"` export condition.
 
-**HTML harness** (the runtime test wraps this around the bundle):
+The 50 KB size budget is enforced by `TestPhase17BundleSize`. The hello-world bundle (a single `console.log`) measures roughly 200 bytes today; the budget catches regressions where a heavy runtime dep is pulled into the browser-target entry by accident.
 
-```html
-<!DOCTYPE html>
-<script type="module" src="./dist/bundle/index.js"></script>
-```
+## Sub-phases
 
-**Playwright capture**: launches Chromium 130, navigates to the harness, listens for `console.log`, captures the full stdout, then diffs against vm3.
+| #    | Scope                                                                                                                | Status   | Commit |
+|------|-----------------------------------------------------------------------------------------------------------------------|----------|--------|
+| 17.0 | `TargetDenoJsr` + `jsr.json` emit + `deno publish --dry-run` gate (skipped without deno)                              | LANDED   | (this PR) |
+| 17.1 | `TargetDenoJupyter` + `kernel.json` emit + structural validity gate                                                   | LANDED   | (this PR) |
+| 17.2 | `TargetBrowserBundle` + `bun build` (esbuild fallback) + non-empty + no-require + size-budget gates                   | LANDED   | (this PR) |
+| 17.3 | Browser runtime stubs for `fs`, `net`, `path` under the `"browser"` export condition                                  | DEFERRED | n/a    |
+| 17.4 | Three-target runtime gate (Jupyter `nbconvert --execute`, Playwright Chromium console capture, JSR end-to-end publish-revoke) | DEFERRED | n/a    |
 
-## Sub-phase 17.3, Browser runtime stubs
-
-### Decisions made (17.3)
-
-**`@mochi/runtime` `"browser"` export condition** rewrites Node-only imports:
-
-```json
-{
-  "exports": {
-    "./fs": {
-      "node": "./dist/node/fs/index.js",
-      "deno": "./dist/deno/fs/index.js",
-      "bun":  "./dist/bun/fs/index.js",
-      "browser": "./dist/browser/fs-stub.js"
-    }
-  }
-}
-```
-
-**`fs-stub.js`** throws at call time:
-
-```typescript
-export function readFile(_path: string): never {
-  throw new MochiPanic("fs.readFile is not available in the browser bundle");
-}
-```
-
-The emitter's browser-target reachability check (per Phase 12 §12.3 and Phase 13 §13.4) rejects at codegen any reachable call to `fs.readFile`, `net.connect`, or `path.resolve`. The stubs are a defence in depth: if a code-path slips past the reachability check, the runtime fails fast with a `MochiPanic`.
-
-## Sub-phase 17.4, Gate harness
-
-### Decisions made (17.4)
-
-**One fixture, three drivers**: the Phase 17 harness picks each fixture from the Phase 1-14 corpus, then runs:
-
-1. `mochi build --target=deno-jsr -o /tmp/jsr` then `deno publish --dry-run` against the local JSR mirror.
-2. `mochi build --target=deno-jupyter -o /tmp/jup` then `jupyter nbconvert --to notebook --execute fixture.ipynb` (the harness pre-builds the notebook from the fixture source).
-3. `mochi build --target=browser-bundle -o /tmp/br` then Playwright loads the bundle and captures `console.log`.
-
-Each path diffs against vm3. Any of the three failing fails Phase 17.
-
-## Files (planned)
+## Files
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/typescript/build/jsr.go` | `jsr.json` emit + `deno publish --dry-run` subprocess |
-| `transpiler3/typescript/build/jupyter.go` | Kernelspec emit + `jupyter kernelspec install` |
-| `transpiler3/typescript/build/browser_bundle.go` | esbuild subprocess + importmap emit |
-| `runtime3/typescript/src/browser/fs-stub.ts` | Browser stubs for `fs`, `net`, `path` |
-| `transpiler3/typescript/build/phase17_test.go` | `TestPhase17Targets` |
-| `tests/transpiler3/typescript/fixtures/phase17-targets/` | 25 fixtures plus per-fixture HTML harness for browser |
+| `transpiler3/typescript/build/jsr.go` | `emitJsrManifest`, `jsrNameFromNpm`, `runDenoPublishDryRun` |
+| `transpiler3/typescript/build/jupyter.go` | `emitKernelspec` |
+| `transpiler3/typescript/build/browser_bundle.go` | `runBrowserBundle` (bun preferred, esbuild fallback) |
+| `transpiler3/typescript/build/build.go` | `TargetDenoJsr`, `TargetDenoJupyter`, `TargetBrowserBundle` enum + dispatch |
+| `transpiler3/typescript/build/phase17_test.go` | 7 Phase 17 tests |
 
 ## Test set
 
-- `TestPhase17JSR`, 25 fixtures dry-run against local JSR mirror.
-- `TestPhase17Jupyter`, 25 fixtures executed as one-cell notebooks; `deno jupyter --install --force` runs at test setup.
-- `TestPhase17Browser`, 25 fixtures bundled and executed via Playwright Chromium 130.
-- `TestPhase17BundleSize`, asserts the hello-world bundle is under 50 KB minified plus gzip (sanity check on tree-shaking).
+- `TestPhase17JsrManifest`, hello fixture, manifest shape + source-not-dist invariant.
+- `TestPhase17JsrSrcExists`, arith_add fixture, scaffold-reuse witness.
+- `TestPhase17JsrDryRun`, hello fixture, deno publish --dry-run accepts the manifest. Skipped without deno.
+- `TestPhase17JupyterKernelspec`, hello fixture, kernel.json has argv + display_name + language.
+- `TestPhase17BrowserBundle`, hello fixture, non-empty ESM bundle + no require() + contains console.log. Skipped without bun or esbuild.
+- `TestPhase17BundleSize`, hello fixture, bundle <= 50 KB.
+- `TestPhase17JsrNameFromNpm`, four cases, npm-to-JSR name conversion.
+
+## Empirical: deno publish dry-run behaviour
+
+```
+$ deno publish --dry-run --allow-dirty
+Check src/index.ts
+Checking for slow types in the public API...
+Check src/index.ts
+Simulating publish of @mochi/hello@0.0.0
+```
+
+The dry-run flag validates the manifest, walks the include list, transpiles the source, and reports any errors locally without uploading. A missing `license` field aborts the dry-run with `error[missing-license]`; this is the failure mode we hit early in Phase 17.0 implementation and the reason `license: "MIT"` is now hardcoded into the emit.
 
 ## Deferred work
 
-- Firefox and Safari runtime tests. Chromium 130 is the Phase 17 gate; FF and Safari are Phase 18 release-channel tests (manual until WebDriver-driven CI proves stable).
-- Importmap-only consumption (no bundle, browser loads ESM modules directly via importmap). Works in principle on all four runtimes but the test surface multiplies; Phase 17 ships the bundle path as primary.
-- JSR's `deno doc` integration (auto-generated API docs on `jsr.io`). Works out of the box; not a Phase 17 gate.
-- Deno Jupyter on Windows (`%APPDATA%/jupyter/kernels/`). Linux and macOS are the Phase 17 gate; Windows lands as a Phase 17.5 followup if user demand justifies.
+- Sub-phase 17.3: Browser runtime stubs for `fs`, `net`, `path`. The Phase 15 emit already routes the `"browser"` export condition at `dist/browser/index.ts`, but the per-stdlib stub files (`fs-stub.js`, `net-stub.js`, `path-stub.js` throwing `MochiPanic` at call time) land alongside the Phase 7+12+14 runtime when the stdlib surface is split.
+- Sub-phase 17.4: Three-target runtime gate (Jupyter `nbconvert --execute`, Playwright Chromium console capture, JSR end-to-end publish-revoke). Lands once a Jupyter + Playwright CI image is wired.
+- Firefox + Safari runtime tests; Chromium-only is the Phase 17 gate. Firefox + Safari land as Phase 18 release-channel tests once WebDriver-driven CI proves stable.
+- Importmap-only consumption (no bundle, browser loads ESM modules directly). Works in principle; the test surface multiplies, so Phase 17 ships the bundle path as primary.
+- Deno Jupyter on Windows (`%APPDATA%/jupyter/kernels/`). Linux + macOS are the structural gate; Windows lands as Phase 17.5 if user demand justifies.

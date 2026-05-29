@@ -69,6 +69,39 @@ const (
 	// canonical `tsc --build` -> real .js + .d.ts pipeline lands
 	// in sub-phase 15.1.
 	TargetNpmPackage
+
+	// TargetDenoJsr emits the npm package skeleton plus a JSR
+	// `jsr.json` manifest, then (optionally) runs `deno publish
+	// --dry-run --allow-dirty` to validate the manifest before
+	// upload. The returned path is the absolute path of the
+	// emitted `jsr.json`.
+	//
+	// Phase 17.0 ships the manifest + the structural dry-run; the
+	// real `deno publish` against jsr.io lands in Phase 18 wired
+	// behind OIDC.
+	TargetDenoJsr
+
+	// TargetDenoJupyter emits a Jupyter kernelspec
+	// (`kernel.json`) for the Deno-based Mochi kernel. The
+	// returned path is the absolute path of the emitted
+	// `kernel.json`.
+	//
+	// Phase 17.1 ships the manifest only; physical installation
+	// into `~/.local/share/jupyter/kernels/` is documented but
+	// not performed by the build driver (it is a one-time user
+	// step, mirrored by `jupyter kernelspec install`).
+	TargetDenoJupyter
+
+	// TargetBrowserBundle emits the npm package skeleton, then
+	// invokes a JS bundler (`bun build` preferred, `esbuild` as
+	// fallback) against `dist/browser/index.ts` to produce
+	// `dist/bundle/index.js` (single tree-shaken ESM file). The
+	// returned path is the absolute path of the bundle.
+	//
+	// Phase 17.2 ships the bundler invocation + a sanity-check
+	// gate that the bundle is non-empty ESM. Playwright Chromium
+	// end-to-end execution lands in sub-phase 17.4.
+	TargetBrowserBundle
 )
 
 // Driver is the TypeScript transpiler pipeline entry point.
@@ -166,6 +199,57 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 		}
 		_ = srcBytes
 		return tarball, nil
+	}
+
+	// Phase 17.0: TargetDenoJsr emits the npm package skeleton plus
+	// a JSR-shaped `jsr.json` manifest (source-not-dist), then runs
+	// `deno publish --dry-run` against the local source when deno
+	// is on PATH (skipped otherwise). Returns the jsr.json path.
+	if target == TargetDenoJsr {
+		pkgName := npmPackageNameFromSrc(src)
+		if _, err := emit.EmitPackage(file, outDir, emit.PackageInfo{Name: pkgName, Version: "0.0.0"}); err != nil {
+			return "", fmt.Errorf("ts build: emit pkg: %w", err)
+		}
+		manifestPath, err := emitJsrManifest(outDir, jsrManifestInfo{Name: jsrNameFromNpm(pkgName), Version: "0.0.0"})
+		if err != nil {
+			return "", fmt.Errorf("ts build: jsr emit: %w", err)
+		}
+		if err := runDenoPublishDryRun(outDir); err != nil {
+			return manifestPath, fmt.Errorf("ts build: deno publish --dry-run: %w", err)
+		}
+		_ = srcBytes
+		return manifestPath, nil
+	}
+
+	// Phase 17.1: TargetDenoJupyter emits a Jupyter kernelspec
+	// JSON describing the Deno-backed Mochi kernel. The returned
+	// path is the kernel.json file; physical install into the
+	// user's Jupyter data dir is a separate (documented) step.
+	if target == TargetDenoJupyter {
+		pkgName := npmPackageNameFromSrc(src)
+		manifestPath, err := emitKernelspec(outDir, pkgName)
+		if err != nil {
+			return "", fmt.Errorf("ts build: kernelspec emit: %w", err)
+		}
+		_ = srcBytes
+		return manifestPath, nil
+	}
+
+	// Phase 17.2: TargetBrowserBundle emits the npm package
+	// skeleton, then invokes `bun build` (or `esbuild` fallback) on
+	// dist/browser/index.ts to produce dist/bundle/index.js. The
+	// returned path is the absolute path of the bundle.
+	if target == TargetBrowserBundle {
+		pkgName := npmPackageNameFromSrc(src)
+		if _, err := emit.EmitPackage(file, outDir, emit.PackageInfo{Name: pkgName, Version: "0.0.0"}); err != nil {
+			return "", fmt.Errorf("ts build: emit pkg: %w", err)
+		}
+		bundlePath, err := runBrowserBundle(outDir)
+		if err != nil {
+			return "", fmt.Errorf("ts build: browser bundle: %w", err)
+		}
+		_ = srcBytes
+		return bundlePath, nil
 	}
 
 	emittedPath, err := emit.Emit(file, outDir, "main")
