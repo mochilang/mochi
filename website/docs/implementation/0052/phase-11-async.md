@@ -13,8 +13,8 @@ description: "MEP-52 Phase 11, panic + try-catch lowered to native JS throw with
 | Status         | LANDED (Node + Deno + Bun) |
 | Started        | 2026-05-30 00:05 (GMT+7) |
 | Landed         | 2026-05-30 00:35 (GMT+7) |
-| Tracking issue | (pending PR) |
-| Tracking PR    | (pending PR) |
+| Tracking issue | [#22922](https://github.com/mochilang/mochi/issues/22922) |
+| Tracking PR    | [#22924](https://github.com/mochilang/mochi/pull/22924) |
 
 ## Gate
 
