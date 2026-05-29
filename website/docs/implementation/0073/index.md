@@ -24,8 +24,8 @@ A phase is LANDED only when its gate is green for every target (consume directio
 | 6 | `import rust "<crate>@<semver>" as <alias>` grammar + parser | LANDED | [8a4e5b8d](https://github.com/mochilang/mochi/commit/8a4e5b8d) | [phase-06](/docs/implementation/0073/phase-06-import-grammar) |
 | 7 | Build orchestration: workspace synth + cargo build invocation + artifact link | LANDED | [8f611d65](https://github.com/mochilang/mochi/commit/8f611d65) | [phase-07](/docs/implementation/0073/phase-07-build) |
 | 8 | mochi.lock `[[rust-package]]` integration + `--check` mode | LANDED | [d50fc563](https://github.com/mochilang/mochi/commit/d50fc563) | [phase-08](/docs/implementation/0073/phase-08-lockfile) |
-| 9 | `TargetRustLibrary` emit (rlib + cdylib + Cargo.toml + cbindgen) | LANDED | (pending) | [phase-09](/docs/implementation/0073/phase-09-rust-library-emit) |
-| 10 | Trusted publishing (`mochi pkg publish --to=crates.io`) Sigstore OIDC flow | NOT STARTED | — | [phase-10](/docs/implementation/0073/phase-10-trusted-publish) |
+| 9 | `TargetRustLibrary` emit (rlib + cdylib + Cargo.toml + cbindgen) | LANDED | [6e966397](https://github.com/mochilang/mochi/commit/6e966397) | [phase-09](/docs/implementation/0073/phase-09-rust-library-emit) |
+| 10 | Trusted publishing (`mochi pkg publish --to=crates.io`) Sigstore OIDC flow | LANDED | (pending) | [phase-10](/docs/implementation/0073/phase-10-trusted-publish) |
 | 11 | Async bridge (tokio runtime singleton + block_on entry) | NOT STARTED | — | [phase-11](/docs/implementation/0073/phase-11-async-bridge) |
 | 12 | Monomorphisation (`[rust.monomorphise]` manifest + per-instantiation wrapper) | NOT STARTED | — | [phase-12](/docs/implementation/0073/phase-12-monomorphise) |
 | 13 | Embedded / no_std subset (`profile = "embedded"` + alloc opt-in) | NOT STARTED | — | [phase-13](/docs/implementation/0073/phase-13-embedded) |
@@ -71,7 +71,7 @@ The `package3/rust/` location is shared with the broader MEP-57 polyglot package
 
 ## Status snapshot
 
-As of 2026-05-29 23:53 (GMT+7): phases 0-9 LANDED (skeleton + sparse-index client + cargo semver + rustdoc-JSON ingest + closed type-mapping table + extern-C wrapper synthesiser + Mochi extern-fn emitter + `import rust` grammar + build orchestration pipeline + mochi.lock `[[rust-package]]` schema + drift checker + TargetRustLibrary publish-direction emit with cbindgen header). Phases 10-13 pending. The MEP spec and research bundle are landed; implementation is progressing one phase per PR with auto-merge.
+As of 2026-05-30 00:06 (GMT+7): phases 0-10 LANDED (skeleton + sparse-index client + cargo semver + rustdoc-JSON ingest + closed type-mapping table + extern-C wrapper synthesiser + Mochi extern-fn emitter + `import rust` grammar + build orchestration pipeline + mochi.lock `[[rust-package]]` schema + drift checker + TargetRustLibrary publish-direction emit with cbindgen header + trusted-publishing flow with Sigstore-keyless attestation bundle and crates.io upload wire-format). Phases 11-13 pending. The MEP spec and research bundle are landed; implementation is progressing one phase per PR with auto-merge.
 
 ## Cross-references
 
