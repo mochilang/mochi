@@ -1,0 +1,5 @@
+let xs = ["apple", "banana", "cherry", "avocado"]
+let a = from s in xs where s != "banana" select s
+for v in a {
+  print(v)
+}

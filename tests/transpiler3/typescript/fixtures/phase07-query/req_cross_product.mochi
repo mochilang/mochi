@@ -1,0 +1,6 @@
+let xs = [1, 2]
+let ys = [10, 20]
+let pairs = from x in xs from y in ys select x + y
+for v in pairs {
+  print(v)
+}

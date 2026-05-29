@@ -1,0 +1,5 @@
+let xs = [10, 20, 30, 40, 50]
+let r = from x in xs order by x skip 2 select x
+for v in r {
+  print(v)
+}

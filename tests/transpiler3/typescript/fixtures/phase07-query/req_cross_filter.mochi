@@ -1,0 +1,5 @@
+let xs = [1, 2, 3, 4]
+let pairs = from x in xs from y in xs where x < y select x * 10 + y
+for v in pairs {
+  print(v)
+}

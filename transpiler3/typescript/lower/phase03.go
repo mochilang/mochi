@@ -78,15 +78,27 @@ func tsTypeForCompound(t aotir.Type, elem aotir.Type) (string, error) {
 
 // tsTypeForMapSlot returns the TS type for a map slot (`Map<K, V>`).
 // Phase 3.2 only handles scalar key/value types (int / float / bool /
-// string); record-valued maps land with sub-phase 3.4.
-func tsTypeForMapSlot(key aotir.Type, value aotir.Type) (string, error) {
+// string); record-valued maps land with sub-phase 3.4. Phase 7 widens
+// the value side to allow list values (`Map<K, T[]>`) so that the
+// hash-join optimisation lowered by the aotir query pass type-checks.
+// listValueElem is meaningful only when value == TypeList.
+func tsTypeForMapSlot(key aotir.Type, value aotir.Type, listValueElem aotir.Type) (string, error) {
 	ks, err := tsTypeForList(key)
 	if err != nil {
 		return "", fmt.Errorf("ts lower: map key: %w", err)
 	}
-	vs, err := tsTypeForList(value)
-	if err != nil {
-		return "", fmt.Errorf("ts lower: map value: %w", err)
+	var vs string
+	if value == aotir.TypeList {
+		es, err := tsTypeForList(listValueElem)
+		if err != nil {
+			return "", fmt.Errorf("ts lower: map list value elem: %w", err)
+		}
+		vs = es + "[]"
+	} else {
+		vs, err = tsTypeForList(value)
+		if err != nil {
+			return "", fmt.Errorf("ts lower: map value: %w", err)
+		}
 	}
 	return "Map<" + ks + ", " + vs + ">", nil
 }
@@ -110,6 +122,13 @@ func tsTypeForSetSlot(elem aotir.Type) (string, error) {
 // RecordName (Phase 3.4); unions use UnionName (Phase 5); every
 // other VarType falls through to tsTypeFor.
 func tsTypeForLetSlot(t, elem, key, value aotir.Type, recordName, elemRecordName, unionName string) (string, error) {
+	return tsTypeForLetSlotV2(t, elem, key, value, aotir.TypeInvalid, recordName, elemRecordName, unionName)
+}
+
+// tsTypeForLetSlotV2 extends tsTypeForLetSlot with a listValueElem
+// argument used when the slot is a map whose value type is a list of
+// scalars (`Map<K, T[]>`). Phase 7 hash-join introduces this shape.
+func tsTypeForLetSlotV2(t, elem, key, value, listValueElem aotir.Type, recordName, elemRecordName, unionName string) (string, error) {
 	switch t {
 	case aotir.TypeList:
 		if elem == aotir.TypeRecord {
@@ -121,7 +140,7 @@ func tsTypeForLetSlot(t, elem, key, value aotir.Type, recordName, elemRecordName
 		}
 		return tsTypeForCompound(t, elem)
 	case aotir.TypeMap:
-		return tsTypeForMapSlot(key, value)
+		return tsTypeForMapSlot(key, value, listValueElem)
 	case aotir.TypeSet:
 		return tsTypeForSetSlot(elem)
 	case aotir.TypeRecord:
@@ -338,9 +357,18 @@ func (l *lowerer) lowerMapLit(e *aotir.MapLit) (tstree.Expr, error) {
 	if err != nil {
 		return nil, fmt.Errorf("ts lower: map literal key: %w", err)
 	}
-	valTy, err := tsTypeForList(e.ValueType)
-	if err != nil {
-		return nil, fmt.Errorf("ts lower: map literal value: %w", err)
+	var valTy string
+	if e.ValueType == aotir.TypeList {
+		es, err := tsTypeForList(e.ListValueElemType)
+		if err != nil {
+			return nil, fmt.Errorf("ts lower: map literal list-value elem: %w", err)
+		}
+		valTy = es + "[]"
+	} else {
+		valTy, err = tsTypeForList(e.ValueType)
+		if err != nil {
+			return nil, fmt.Errorf("ts lower: map literal value: %w", err)
+		}
 	}
 	keys := make([]tstree.Expr, 0, len(e.Keys))
 	vals := make([]tstree.Expr, 0, len(e.Values))

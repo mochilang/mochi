@@ -1,0 +1,6 @@
+let xs = ["a", "b", "c"]
+let ys = ["b", "c", "d"]
+let r = from x in xs join y in ys on x == y select x
+for v in r {
+  print(v)
+}

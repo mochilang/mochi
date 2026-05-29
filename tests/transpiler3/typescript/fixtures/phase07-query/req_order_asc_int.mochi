@@ -1,0 +1,5 @@
+let xs = [5, 2, 4, 1, 3]
+let sorted = from x in xs order by x select x
+for v in sorted {
+  print(v)
+}
