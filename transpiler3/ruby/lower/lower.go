@@ -945,6 +945,38 @@ func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 			return nil, err
 		}
 		return &rtree.MethodCall{Receiver: recv, Method: "size"}, nil
+	case *aotir.MathCallExpr:
+		arg, err := lowerExpr(e.Arg)
+		if err != nil {
+			return nil, err
+		}
+		switch e.Func {
+		case "abs_i64", "abs_f64":
+			return &rtree.MethodCall{Receiver: arg, Method: "abs"}, nil
+		case "floor":
+			return &rtree.MethodCall{Receiver: arg, Method: "floor"}, nil
+		case "ceil":
+			return &rtree.MethodCall{Receiver: arg, Method: "ceil"}, nil
+		}
+		return nil, fmt.Errorf("ruby lower: unknown math func %q", e.Func)
+	case *aotir.MapLenExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "size"}, nil
+	case *aotir.MapKeysExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "keys"}, nil
+	case *aotir.MapValuesExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "values"}, nil
 	}
 	return nil, fmt.Errorf("ruby lower: unsupported expression type %T", e)
 }
