@@ -1,0 +1,9 @@
+let s: stream<int> = make_stream(10)
+let sub = subscribe(s)
+for i in 0..4 {
+    emit(s, i * i)
+}
+for i in 0..4 {
+    let v = recv_sub(sub)
+    print(v)
+}

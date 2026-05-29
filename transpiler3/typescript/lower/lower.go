@@ -73,6 +73,16 @@ type runtimeFlags struct {
 	// emits exactly when a match site lacks a wildcard arm so the
 	// helper opts in on first use and stays absent otherwise.
 	unreachable bool
+	// Phase 10 inline runtime classes. `chanClass` opts in
+	// `MochiChan<T>` (bounded FIFO); `streamClass` opts in
+	// `MochiStream<T>` plus its companion `MochiSub<T>` (the
+	// subscriber is always emitted alongside the stream because a
+	// stream is useless without subscribers, and every fixture that
+	// reaches for `make_stream` later calls `subscribe`). The flags
+	// gate emission so a program that uses only `chan` does not
+	// carry the stream bytes (Phase 15 package budget).
+	chanClass   bool
+	streamClass bool
 }
 
 type lowerer struct {
@@ -188,6 +198,12 @@ func Lower(prog *aotir.Program, colours colour.ColourMap) (*tstree.SourceFile, e
 	decls = append(decls, l.runtimeListDecls()...)
 	decls = append(decls, l.runtimeMapDecls()...)
 	decls = append(decls, l.runtimeSetDecls()...)
+	// Phase 10: inline chan/stream/sub runtime classes. Emitted after
+	// the container helpers (which are pure functions) and before the
+	// equality helpers (which depend on no runtime). Each class is
+	// gated on its own runtime flag so a chan-only program does not
+	// carry the stream/sub bytes.
+	decls = append(decls, l.chanStreamDecls()...)
 	// Phase 4.2: per-record equality helpers. Emitted after the
 	// record ClassDecls (so the `R` type is in scope) and after
 	// the runtime helpers (so the prelude reads top-to-bottom as
@@ -442,8 +458,12 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]tstree.Stmt, error) {
 		return l.lowerRawCStmt(v)
 	case *aotir.AgentIntentCallStmt:
 		return l.lowerAgentIntentCallStmt(v)
+	case *aotir.ChanSendStmt:
+		return l.lowerChanSendStmt(v)
+	case *aotir.StreamEmitStmt:
+		return l.lowerStreamEmitStmt(v)
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 9 surface)", s)
+		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 10 surface)", s)
 	}
 }
 
@@ -504,6 +524,16 @@ func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) ([]tstree.Stmt, error) {
 			return nil, fmt.Errorf("ts lower: let %q: agent-typed binding missing AgentName", s.Name)
 		}
 		tn = s.AgentName
+	case s.VarType == aotir.TypeChan:
+		// Phase 10: `let ch: chan<T>` -> `let ch: MochiChan<T>`.
+		// The element type rides on s.ChanElemType (not s.ElemType).
+		tn, err = chanStreamTypeFor(aotir.TypeChan, s.ChanElemType)
+	case s.VarType == aotir.TypeStream:
+		// Phase 10: `let s: stream<T>` -> `let s: MochiStream<T>`.
+		tn, err = chanStreamTypeFor(aotir.TypeStream, s.StreamElemType)
+	case s.VarType == aotir.TypeSub:
+		// Phase 10: `let sub = subscribe(s)` -> `let sub: MochiSub<T>`.
+		tn, err = chanStreamTypeFor(aotir.TypeSub, s.SubElemType)
 	default:
 		tn, err = tsTypeForLetSlotV2(s.VarType, s.ElemType, s.KeyType, s.ValueType, s.ListValueElemType, s.RecordName, s.ElemRecordName, s.UnionName)
 	}
@@ -788,8 +818,20 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (tstree.Expr, error) {
 		return l.lowerAgentLit(v)
 	case *aotir.AgentIntentCallExpr:
 		return l.lowerAgentIntentCallExpr(v)
+	case *aotir.ChanMakeExpr:
+		return l.lowerChanMakeExpr(v)
+	case *aotir.ChanRecvExpr:
+		return l.lowerChanRecvExpr(v)
+	case *aotir.StreamMakeExpr:
+		return l.lowerStreamMakeExpr(v)
+	case *aotir.SubMakeExpr:
+		return l.lowerSubMakeExpr(v)
+	case *aotir.SubMakeLimitExpr:
+		return l.lowerSubMakeLimitExpr(v)
+	case *aotir.SubRecvExpr:
+		return l.lowerSubRecvExpr(v)
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 9 surface)", e)
+		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 10 surface)", e)
 	}
 }
 

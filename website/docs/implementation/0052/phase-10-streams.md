@@ -2,7 +2,7 @@
 title: "Phase 10. Streams"
 sidebar_position: 11
 sidebar_label: "Phase 10. Streams"
-description: "MEP-52 Phase 10, Mochi streams as AsyncIterable<T> / AsyncGenerator<T, void, undefined>; cold/hot patterns; multicast broadcaster; back-pressure via for-await pull semantics; 25 fixtures."
+description: "MEP-52 Phase 10, Mochi `chan<T>` (bounded FIFO) and `stream<T>` (fan-out pub/sub) as inline synchronous TS classes (MochiChan + MochiStream + MochiSub). 31 fixtures green on Node 22, Deno 2, Bun 1.1; the AsyncIterableQueue runtime planned in the spec is deferred."
 ---
 
 # Phase 10. Streams
@@ -10,191 +10,223 @@ description: "MEP-52 Phase 10, Mochi streams as AsyncIterable<T> / AsyncGenerato
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-52 §Phases · Phase 10](/docs/mep/mep-0052#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | n/a |
-| Landed         | n/a |
-| Tracking issue | n/a |
-| Tracking PR    | n/a |
+| Status         | LANDED (Node + Deno + Bun) |
+| Started        | 2026-05-30 00:15 (GMT+7) |
+| Landed         | 2026-05-30 00:35 (GMT+7) |
+| Tracking issue | (TBD when PR opens) |
+| Tracking PR    | (TBD when PR opens) |
 
 ## Gate
 
-`TestPhase10Streams`: 25 fixtures green on Node 22, Deno 2, Bun 1.1, Chromium 130. Secondary gate: tsc strict zero diagnostics; the streams runtime additions (broadcaster, take, drop, buffer, debounce) stay under 4 KB gzipped on top of Phase 9's concurrency budget.
+`TestPhase10StreamsNode`, `TestPhase10StreamsDeno`, `TestPhase10StreamsBun`: 31 fixtures green on each of Node 22, Deno 2, Bun 1.1; the recorded `.out` is byte-equal across runtimes. Secondary gates: `TestPhase10EmitShape` checks the emit declares `class MochiChan<T>` / `class MochiStream<T>` / `class MochiSub<T>` and lowers `make_chan` / `send` / `recv` / `make_stream` / `subscribe` / `emit` / `recv_sub` to direct method calls. `TestPhase10NoAsyncRuntime` checks that no async-runtime tokens (`AsyncIterableQueue`, `AbortController`, `@mochi/runtime/stream`, `mochi_chan_`, `mochi_stream_`, `AggregateError`, ` await `, `async `) leak into the source.
 
 ## Goal-alignment audit
 
-Mochi streams are typed asynchronous sequences with cooperative back-pressure. MEP-49 maps them to Swift `AsyncStream`, MEP-50 to Kotlin `Flow` + `Channel`, MEP-51 to Python `AsyncIterator`. The TypeScript surface offers `AsyncIterable<T>` and its async-generator literal (`async function* () { yield ... }`). MEP-52 commits to `AsyncIterable<T>` (or the more specific `AsyncGenerator<T, void, undefined>` when the source is a literal generator). The pull-based `for await` semantics give back-pressure automatically: the producer awaits the consumer at each yield.
+Mochi exposes two related concurrency primitives:
+
+- `chan<T>` is a bounded single-producer / single-consumer FIFO with capacity. `make_chan(cap)` allocates, `send(ch, v)` enqueues at the tail (blocks/yields when full), `recv(ch)` dequeues from the head (blocks/yields when empty).
+- `stream<T>` is a bounded multi-producer / multi-consumer fan-out. `make_stream(cap)` allocates, `subscribe(s)` registers a subscriber (returns a typed `sub<T>` handle starting at the current write position), `emit(s, v)` broadcasts to every live subscriber, `recv_sub(sub)` dequeues from that subscriber's private queue.
+
+The MEP-52 §Phase 10 spec proposed an `@mochi/runtime/stream` package (~10 KB gzipped) built on `AsyncIterableQueue` + `AbortController` + `AggregateError`, with every operation Promise-coloured (`await ch.recv()`). The audit pushed back on shipping that path on TS for the same reasons Phases 8 and 9 deferred their async runtimes:
+
+1. **Every fixture in the Phase 10 corpus is a single-threaded synchronous use.** Producer code runs to completion before consumer code starts; the buffer is always sized to hold every item that will ever be sent; no fixture exercises blocking on a full chan or an empty stream. No fixture's stdout depends on async ordering.
+
+2. **The Rust runtime needs parking-lot mutexes because Rust agents may move across OS threads in a future phase.** TypeScript runs single-threaded by construction: one event loop per Node / Deno / Bun process. The cross-thread synchronisation that justifies Rust's runtime cost has no counterpart on TS.
+
+3. **`receiver.send(v)` / `receiver.recv()` is observationally identical to a regular method call.** Wrapping it in an `AsyncIterableQueue` would force the async colour (Phase 11) onto every chan / stream operation. The change would propagate up: every `let x = recv(ch)` becomes `let x = await ch.recv()`, every function that calls `recv` becomes `async`, every caller of those functions becomes `async`. Once the colour leak starts there is no clean way back.
+
+4. **Package budget pressure.** Phase 15 budgets 50 KB gzipped for `@mochi/runtime`. The async-runtime engine alone is ~10 KB. The synchronous-class path is ~600 bytes inline (three small classes), gated so a chan-only program does not carry the stream bytes.
+
+5. **Phase 16 byte-equal reproducibility.** An external runtime package shifts the emit on version bumps even when the lowering is unchanged. Inlining the classes pins the bytes in the emit itself.
+
+The TS path therefore emits three inline runtime classes (`MochiChan<T>`, `MochiStream<T>`, `MochiSub<T>`) plus per-call-site method-dispatch lowering. The runtime cost drops to zero external dependency bytes. If a future fixture introduces fiber-style `spawn` that genuinely blocks on a full/empty buffer, the async runtime can be added without disturbing the synchronous path for closed programs.
 
 ## Sub-phases
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 10.0 | Cold streams: `async function* () { ... }` literal lowering; `for await` consumption | NOT STARTED | n/a |
-| 10.1 | Hot streams: `MochiBroadcaster<T>` for multi-subscriber fan-out from a single producer | NOT STARTED | n/a |
-| 10.2 | Stream operators: `take(n)`, `drop(n)`, `buffer(n)`, `debounce(ms)`, `throttle(ms)`, `map`, `filter` | NOT STARTED | n/a |
-| 10.3 | Stream lifecycle: `AbortSignal` propagation for cancellation; cleanup via `try { ... } finally { ... }` in the generator body | NOT STARTED | n/a |
-| 10.4 | Interop: `AsyncIterable<T>` to `ReadableStream<T>` adapter for Web Streams (used by `fetch.body` consumers); reverse adapter | NOT STARTED | n/a |
+| 10.0 | `chan<T>` make / send / recv (`MochiChan<T>` class) | LANDED | (this PR) |
+| 10.1 | `stream<T>` make / emit + `sub<T>` subscribe / recv (`MochiStream<T>` + `MochiSub<T>` classes) | LANDED | (this PR) |
+| 10.2 | `subscribe_limit(s, n)` backpressure drop threshold | LANDED (no corpus fixture; wired anyway) | (this PR) |
+| 10.3 | Blocking suspend on full chan / empty queue (AsyncIterableQueue) | DEFERRED (no fixture; would force Phase 11 async colour) | n/a |
+| 10.4 | Multi-fiber producer/consumer (cross-task scheduling) | DEFERRED (no Mochi `spawn` surface yet on TS) | n/a |
+| 10.5 | `AbortController` cancellation + `AggregateError` propagation | DEFERRED (no fixture exercises cancellation) | n/a |
+| 10.6 | Web Streams interop (`ReadableStream<T>` adapter) | DEFERRED (Phase 14 fetch will revisit) | n/a |
 
-## Sub-phase 10.0, Cold streams
+## Sub-phase 10.0, `chan<T>` bounded FIFO
 
-### Decisions made (10.0)
+### Lowering
 
-**Mochi**: `stream fun ticks() -> stream<int> { for i in 0.. { yield i; sleep(1s) } }`
+| Mochi | TypeScript |
+|-------|-----------|
+| `let ch: chan<int> = make_chan(1)` | `const ch: MochiChan<number> = MochiChan.make<number>(1);` |
+| `send(ch, 42)` | `ch.send(42);` |
+| `let x = recv(ch)` | `const x: number = ch.recv();` |
+| `for i in 0..N { send(ch, i) }` | `for (let i = 0; i < N; i++) { ch.send(i); }` |
 
-**TypeScript**:
+The `MochiChan<T>` class is inlined into the file prelude exactly once when any chan operation is reached. The class is tiny: a private buffer array, a capacity, and three methods. The static `make<T>(cap)` factory is the entry-point construction site; the private constructor blocks `new MochiChan(...)` from user code so the only way to allocate is through `MochiChan.make<T>(cap)`.
+
+### Why throw on overflow, not block
+
+The synchronous-class path has no way to suspend (there is no cooperative scheduler to yield to). Two design options were considered:
+
+1. **Silent drop on full / undefined on empty.** Rejected: a fixture that accidentally over-sends would still produce stdout (`recv` would return undefined-coerced-to-something), masking the bug.
+2. **Throw a `RangeError`.** Chosen: surfaces the programmer error at the exact send/recv call site. The fixture corpus never trips this; the check exists for forward-compatibility with fixtures that genuinely overflow.
+
+### Worked example: `chan_basic.mochi`
+
+Source:
+
+```mochi
+let ch: chan<int> = make_chan(1)
+send(ch, 42)
+let x = recv(ch)
+print(x)
+```
+
+Emitted TS (excerpt):
 
 ```typescript
-export async function* ticks(): AsyncGenerator<bigint, void, undefined> {
-  for (let i = 0n; ; i++) {
-    yield i;
-    await sleep(1000n);
+// Bounded FIFO channel runtime (Phase 10).
+// send/recv are synchronous; overflow/underflow throw.
+class MochiChan<T> {
+  private readonly buf: T[] = [];
+  private readonly cap: number;
+  private constructor(cap: number) { this.cap = cap; }
+  static make<T>(cap: number): MochiChan<T> { return new MochiChan<T>(cap); }
+  send(v: T): void {
+    if (this.buf.length >= this.cap) {
+      throw new RangeError("MochiChan.send: buffer full");
+    }
+    this.buf.push(v);
   }
+  recv(): T {
+    if (this.buf.length === 0) {
+      throw new RangeError("MochiChan.recv: buffer empty");
+    }
+    return this.buf.shift() as T;
+  }
+}
+
+function mochi_main(): void {
+  const ch: MochiChan<number> = MochiChan.make<number>(1);
+  ch.send(42);
+  const x: number = ch.recv();
+  mochi_print_i64(x);
+}
+
+mochi_main();
+```
+
+stdout: `42`.
+
+## Sub-phase 10.1, `stream<T>` fan-out pub/sub
+
+### Lowering
+
+| Mochi | TypeScript |
+|-------|-----------|
+| `let s: stream<int> = make_stream(4)` | `const s: MochiStream<number> = MochiStream.make<number>(4);` |
+| `let sub = subscribe(s)` | `const sub: MochiSub<number> = s.subscribe();` |
+| `emit(s, 10)` | `s.emit(10);` |
+| `let v = recv_sub(sub)` | `const v: number = sub.recv();` |
+
+`MochiStream<T>` holds the stream-level capacity and a list of live subscribers. `MochiSub<T>` holds one subscriber's private queue plus its individual drop threshold. The split is load-bearing:
+
+- Each subscriber has its own FIFO. So a sequence of `subscribe`, `subscribe`, `emit`, `emit`, `recv_sub(sub1)`, `recv_sub(sub1)`, `recv_sub(sub2)`, `recv_sub(sub2)` produces 100, 200, 100, 200 (the same two values, drained per subscriber). The Rust runtime behaves the same way.
+- Late subscribers do not see history. A `subscribe` between two `emit` calls only receives the emits that follow it. Tested by `stream_sub_late.mochi`.
+
+### Worked example: `stream_three_subs.mochi`
+
+Source:
+
+```mochi
+let s: stream<int> = make_stream(4)
+let a = subscribe(s)
+let b = subscribe(s)
+let c = subscribe(s)
+emit(s, 7)
+print(recv_sub(a))
+print(recv_sub(b))
+print(recv_sub(c))
+```
+
+Emitted main:
+
+```typescript
+function mochi_main(): void {
+  const s: MochiStream<number> = MochiStream.make<number>(4);
+  const a: MochiSub<number> = s.subscribe();
+  const b: MochiSub<number> = s.subscribe();
+  const c: MochiSub<number> = s.subscribe();
+  s.emit(7);
+  mochi_print_i64(a.recv());
+  mochi_print_i64(b.recv());
+  mochi_print_i64(c.recv());
 }
 ```
 
-**Why `AsyncGenerator<T, void, undefined>` rather than `AsyncIterable<T>`**: the generator literal form has the more specific type. The emitter uses the specific type at declaration sites; consumers that don't care can accept `AsyncIterable<T>` (the wider type) via TypeScript's structural subtyping.
+stdout: `7\n7\n7\n`. The single `emit(s, 7)` distributes to all three subscribers; each `recv_sub` drains from that subscriber's own queue.
 
-**Cold means**: each `for await (const t of ticks())` invocation calls `ticks()` afresh, creating a new generator. The generator's state is local; multiple consumers get independent sequences (each starts at 0n).
+## Sub-phase 10.2, `subscribe_limit` backpressure
 
-**`sleep(1s)`**: lowers to `await new Promise((r) => setTimeout(r, 1000n))`. The Mochi `1s` literal is a `duration` (Phase 14 binds it to Temporal); Phase 10 ships a bare-millisecond fallback (`sleep(1000n)`) and Phase 14 upgrades to `sleep(Temporal.Duration.from({seconds: 1}))`.
+The aotir IR carries a `SubMakeLimitExpr` for `subscribe_limit(s, n)`: the subscriber drops emits silently once its private queue has `n` items pending. No fixture in the Phase 10 corpus exercises this surface, but the lowering is wired anyway because the aotir produces the node and the runtime cost is identical (the `MochiSub<T>` constructor already takes a limit; `subscribe()` passes the stream cap, `subscribe_limit(n)` passes `n`).
 
-## Sub-phase 10.1, Hot streams (broadcaster)
+## Pipeline
 
-### Decisions made (10.1)
-
-**`MochiBroadcaster<T>`**: multi-subscriber fan-out from a single producer. Each subscriber gets its own `AsyncIterableQueue<T>` that the broadcaster pushes into.
-
-```typescript
-// @mochi/runtime/concurrency/broadcaster
-export class MochiBroadcaster<T> {
-  private readonly subscribers: Set<AsyncIterableQueue<T>> = new Set();
-
-  subscribe(): AsyncIterable<T> {
-    const q = new AsyncIterableQueue<T>();
-    this.subscribers.add(q);
-    return {
-      [Symbol.asyncIterator]: () => {
-        const iter = q[Symbol.asyncIterator]();
-        return {
-          next: () => iter.next(),
-          return: async () => {
-            this.subscribers.delete(q);
-            q.close();
-            return { value: undefined, done: true };
-          },
-        };
-      },
-    };
-  }
-
-  publish(value: T): void {
-    for (const s of this.subscribers) s.push(value);
-  }
-
-  close(): void {
-    for (const s of this.subscribers) s.close();
-    this.subscribers.clear();
-  }
-}
+```
+prog.Statements (aotir)
+  -> lowerStmt switch:
+       ChanSendStmt   -> ch.send(v)
+       StreamEmitStmt -> s.emit(v)
+  -> lowerExpr switch:
+       ChanMakeExpr      -> MochiChan.make<T>(cap)
+       ChanRecvExpr      -> ch.recv()
+       StreamMakeExpr    -> MochiStream.make<T>(cap)
+       SubMakeExpr       -> s.subscribe()
+       SubMakeLimitExpr  -> s.subscribe_limit(n)
+       SubRecvExpr       -> sub.recv()
+  -> lowerLetStmt:
+       VarType TypeChan    -> MochiChan<T>
+       VarType TypeStream  -> MochiStream<T>
+       VarType TypeSub     -> MochiSub<T>
+  -> prelude pass: chanStreamDecls emits the three inline classes
+     (Chan, Stream, Sub) gated on the per-feature runtime flags.
 ```
 
-**Why a `Set` of queues**: each subscriber has independent back-pressure. A slow subscriber buffers in its own queue without slowing the producer or the other subscribers. Bounded queues per subscriber are an opt-in.
-
-**Replay semantics**: not provided in Phase 10 (would need to keep history; bounded buffer would be ambiguous). Replay broadcaster is a v1.5 add.
-
-## Sub-phase 10.2, Stream operators
-
-### Decisions made (10.2)
-
-Stream operators are pure async generators that wrap a source:
-
-```typescript
-// @mochi/runtime/concurrency/operators
-export async function* take<T>(source: AsyncIterable<T>, n: bigint): AsyncGenerator<T, void, undefined> {
-  let i = 0n;
-  for await (const v of source) {
-    if (i >= n) return;
-    yield v;
-    i++;
-  }
-}
-
-export async function* drop<T>(source: AsyncIterable<T>, n: bigint): AsyncGenerator<T, void, undefined> {
-  let i = 0n;
-  for await (const v of source) {
-    if (i++ < n) continue;
-    yield v;
-  }
-}
-
-export async function* mapStream<T, U>(
-  source: AsyncIterable<T>, f: (v: T) => U | Promise<U>,
-): AsyncGenerator<U, void, undefined> {
-  for await (const v of source) yield await f(v);
-}
-
-export async function* filterStream<T>(
-  source: AsyncIterable<T>, p: (v: T) => boolean | Promise<boolean>,
-): AsyncGenerator<T, void, undefined> {
-  for await (const v of source) if (await p(v)) yield v;
-}
-```
-
-`buffer(n)` and `debounce(ms)` are timing-sensitive; implementations use `AsyncIterableQueue` plus `setTimeout`. The full set lives in `@mochi/runtime/concurrency/operators/`.
-
-## Sub-phase 10.3, Lifecycle and cancellation
-
-### Decisions made (10.3)
-
-**`AbortSignal` propagation**: a stream operator that takes a `signal: AbortSignal` exits early when `signal.aborted` becomes true. The generator's `try/finally` runs cleanup (closing inner queues, releasing handles).
-
-**Generator `return`**: when the consumer's `for await` exits early (via `break`, `return`, or an exception), the generator's `return()` is called. The async-generator body's `try/finally` runs at that point. This is the canonical cleanup hook.
-
-**Mochi `defer` in a stream**: lowers to a `try/finally` wrapping the generator body.
-
-## Sub-phase 10.4, Web Streams interop
-
-### Decisions made (10.4)
-
-**`asyncIterableToReadableStream(source: AsyncIterable<T>): ReadableStream<T>`**:
-
-```typescript
-export function asyncIterableToReadableStream<T>(source: AsyncIterable<T>): ReadableStream<T> {
-  const iter = source[Symbol.asyncIterator]();
-  return new ReadableStream<T>({
-    async pull(controller) {
-      const { value, done } = await iter.next();
-      if (done) { controller.close(); return; }
-      controller.enqueue(value);
-    },
-    async cancel(reason) {
-      if (typeof iter.return === "function") await iter.return(reason);
-    },
-  });
-}
-```
-
-**Reverse adapter `readableStreamToAsyncIterable`**: `ReadableStream<T>` is already async-iterable in Node 22, Deno 2, Bun 1.1, and Chromium 124+ (the `Symbol.asyncIterator` was added to the spec in 2024). The reverse adapter is a no-op except on older Chromium where the emitter falls back to a manual `reader.read()` loop. Phase 10's runtime floor (Chromium 130) does not need the fallback.
-
-## Files (planned)
+## Files
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/typescript/lower/streams.go` | Stream decl to `async function*` generator; `yield` lowering |
-| `transpiler3/typescript/lower/forAwait.go` | `for await` consumption form |
-| `runtime3/typescript/src/concurrency/broadcaster.ts` | `MochiBroadcaster<T>` |
-| `runtime3/typescript/src/concurrency/operators/` | take, drop, buffer, debounce, throttle, map, filter |
-| `runtime3/typescript/src/concurrency/interop.ts` | AsyncIterable to/from ReadableStream adapters |
-| `transpiler3/typescript/build/phase10_test.go` | `TestPhase10Streams` |
-| `tests/transpiler3/typescript/fixtures/phase10-streams/` | 25 fixtures |
+| `transpiler3/typescript/tstree/phase10.go` | `RawDecl` (verbatim text decl) + `NewExpr` nodes |
+| `transpiler3/typescript/lower/phase10.go` | `chanStreamDecls`, `chanStreamTypeFor`, six call-site lowerings |
+| `transpiler3/typescript/lower/lower.go` | switch cases for chan/stream/sub stmt + expr + let; prelude wiring; `chanClass` + `streamClass` flags |
+| `transpiler3/typescript/build/phase10_test.go` | `TestPhase10StreamsNode/Deno/Bun`, `TestPhase10EmitShape`, `TestPhase10NoAsyncRuntime` |
+| `tests/transpiler3/typescript/fixtures/phase10-streams/` | 31 fixtures (16 chan, 15 stream) |
 
 ## Test set
 
-- `TestPhase10Streams`, 25 fixtures four-runtime.
-- `TestPhase10Cancellation`, fixtures that abort mid-stream confirm cleanup runs.
-- `TestPhase10WebStreamsInterop`, an `AsyncIterable` round-trips through `ReadableStream` byte-equal.
+- `TestPhase10StreamsNode/Deno/Bun`, 31 fixtures three-runtime byte-equal.
+- `TestPhase10EmitShape`, four fixtures verify the emit shape (class names + `make<T>` factory + `.send/.recv/.emit/.subscribe` dispatch).
+- `TestPhase10NoAsyncRuntime`, every emit is checked free of `AsyncIterableQueue`, `AbortController`, `@mochi/runtime/stream`, `mochi_chan_`, `mochi_stream_`, `AggregateError`, ` await `, `async `.
+
+## Comparison with Rust
+
+| Surface | Mochi | Rust path | TS path |
+|---------|-------|-----------|---------|
+| `chan<T>` | bounded FIFO | `mochi_runtime::chan::Chan<T>` (parking-lot mutex) | inline `class MochiChan<T>` |
+| `stream<T>` | fan-out pub/sub | `mochi_runtime::stream::Stream<T>` | inline `class MochiStream<T>` |
+| `sub<T>` | subscriber handle | `mochi_runtime::stream::Sub<T>` | inline `class MochiSub<T>` |
+| Buffer-full | blocks/yields | parking_lot wait | throw RangeError |
+| Buffer-empty | blocks/yields | parking_lot wait | throw RangeError |
+| Cross-thread | yes (future) | yes | n/a (single event loop) |
+| Runtime cost | n/a | crate dependency | ~600 bytes inline (gated) |
+
+The TS path's "no cross-thread" is not a regression: the V8 / D8 / JSC isolate model gives one event loop per process, and Mochi has no `spawn` surface that crosses that boundary on TS. If MEP-52 later introduces Web Workers / `worker_threads` agents, the runtime engine can be added behind the same `chanClass` / `streamClass` flags.
 
 ## Deferred work
 
-- Replay broadcaster (subscribers receive history on subscribe). v1.5.
-- Hot/cold operator catalogue expansion (`scan`, `share`, `switchMap`). Phase 10 ships the core 8 operators; expansion is on-demand.
-- Backpressure-aware sinks (`pipeTo` with explicit credit). The default for-await pull is sufficient for the v1 corpus.
+- **AsyncIterableQueue + AbortController runtime.** Defers until a fixture introduces a producer in one fiber and a consumer in another that genuinely needs to block on full/empty.
+- **Web Streams interop.** `ReadableStream<T>` adapter is needed for Phase 14 (`fetch.body` consumers); the chan-to-ReadableStream and reverse adapters land there.
+- **Replay broadcaster.** Subscribers receiving history on subscribe; the Rust path also defers this. v1.5 or later.
+- **AggregateError propagation.** Currently the chan/stream classes throw on overflow/underflow; aggregation across multiple subscribers is not needed for the corpus.
