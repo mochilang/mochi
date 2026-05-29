@@ -254,6 +254,260 @@ pub mod panic {
     }
 }
 
+pub mod fetch {
+    //! Minimal HTTP/1.1 GET client using std::net::TcpStream. Phase 14.
+    //!
+    //! Only supports plain http:// URLs (no TLS) which is enough for the
+    //! Phase 14 httptest harness. Returns the response body verbatim.
+    use std::io::{Read, Write};
+    use std::net::TcpStream;
+
+    pub fn get<U: AsRef<str>>(url: U) -> String {
+        let url = url.as_ref();
+        let (host, port, path) = match parse_url(url) {
+            Some(t) => t,
+            None => super::panic::raise(98),
+        };
+        let addr = format!("{}:{}", host, port);
+        let mut stream = match TcpStream::connect(&addr) {
+            Ok(s) => s,
+            Err(_) => super::panic::raise(98),
+        };
+        let req = format!(
+            "GET {} HTTP/1.1\r\nHost: {}\r\nConnection: close\r\nUser-Agent: mochi-rust/0.1\r\n\r\n",
+            path, host_header(&host, port)
+        );
+        if stream.write_all(req.as_bytes()).is_err() {
+            super::panic::raise(98);
+        }
+        let mut buf = Vec::new();
+        if stream.read_to_end(&mut buf).is_err() {
+            super::panic::raise(98);
+        }
+        let split = match find_header_end(&buf) {
+            Some(i) => i,
+            None => super::panic::raise(98),
+        };
+        let header_str = match std::str::from_utf8(&buf[..split]) {
+            Ok(s) => s,
+            Err(_) => super::panic::raise(98),
+        };
+        if let Some(status) = parse_status(header_str) {
+            if status >= 400 {
+                super::panic::raise(98);
+            }
+        }
+        let body = &buf[split + 4..];
+        if is_chunked(header_str) {
+            return match decode_chunked(body) {
+                Some(s) => s,
+                None => super::panic::raise(98),
+            };
+        }
+        match std::str::from_utf8(body) {
+            Ok(s) => s.to_string(),
+            Err(_) => super::panic::raise(98),
+        }
+    }
+
+    fn host_header(host: &str, port: u16) -> String {
+        if port == 80 { host.to_string() } else { format!("{}:{}", host, port) }
+    }
+
+    fn parse_url(url: &str) -> Option<(String, u16, String)> {
+        let rest = url.strip_prefix("http://")?;
+        let (host_part, path_part) = match rest.find('/') {
+            Some(i) => (&rest[..i], &rest[i..]),
+            None => (rest, "/"),
+        };
+        let (host, port) = match host_part.rfind(':') {
+            Some(i) => {
+                let p: u16 = host_part[i + 1..].parse().ok()?;
+                (host_part[..i].to_string(), p)
+            }
+            None => (host_part.to_string(), 80u16),
+        };
+        Some((host, port, path_part.to_string()))
+    }
+
+    fn find_header_end(buf: &[u8]) -> Option<usize> {
+        for i in 0..buf.len().saturating_sub(3) {
+            if &buf[i..i + 4] == b"\r\n\r\n" {
+                return Some(i);
+            }
+        }
+        None
+    }
+
+    fn parse_status(headers: &str) -> Option<u16> {
+        let line = headers.lines().next()?;
+        let mut parts = line.split_whitespace();
+        parts.next()?;
+        parts.next()?.parse().ok()
+    }
+
+    fn is_chunked(headers: &str) -> bool {
+        for line in headers.lines().skip(1) {
+            let lower = line.to_ascii_lowercase();
+            if let Some(v) = lower.strip_prefix("transfer-encoding:") {
+                if v.trim() == "chunked" {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+
+    fn decode_chunked(body: &[u8]) -> Option<String> {
+        let mut out = Vec::new();
+        let mut i = 0;
+        while i < body.len() {
+            let mut j = i;
+            while j < body.len() && body[j] != b'\r' {
+                j += 1;
+            }
+            let size_str = std::str::from_utf8(&body[i..j]).ok()?;
+            let size = usize::from_str_radix(size_str.trim(), 16).ok()?;
+            if j + 2 > body.len() {
+                return None;
+            }
+            i = j + 2;
+            if size == 0 {
+                break;
+            }
+            if i + size > body.len() {
+                return None;
+            }
+            out.extend_from_slice(&body[i..i + size]);
+            i += size + 2;
+        }
+        String::from_utf8(out).ok()
+    }
+}
+
+pub mod json {
+    //! Minimal JSON object decoder. Returns HashMap<String, String> matching
+    //! the Mochi `json_decode` contract: top-level object with non-string
+    //! values coerced to their string representation. Phase 14.
+    use std::collections::HashMap;
+
+    pub fn decode<S: AsRef<str>>(input: S) -> HashMap<String, String> {
+        let s = input.as_ref();
+        let mut out = HashMap::new();
+        let bytes = s.as_bytes();
+        let mut i = skip_ws(bytes, 0);
+        if i >= bytes.len() || bytes[i] != b'{' {
+            super::panic::raise(97);
+        }
+        i += 1;
+        loop {
+            i = skip_ws(bytes, i);
+            if i < bytes.len() && bytes[i] == b'}' {
+                return out;
+            }
+            let (k, n1) = match parse_string(bytes, i) {
+                Some(t) => t,
+                None => super::panic::raise(97),
+            };
+            i = skip_ws(bytes, n1);
+            if i >= bytes.len() || bytes[i] != b':' {
+                super::panic::raise(97);
+            }
+            i = skip_ws(bytes, i + 1);
+            let (v, n2) = match parse_value(bytes, i) {
+                Some(t) => t,
+                None => super::panic::raise(97),
+            };
+            out.insert(k, v);
+            i = skip_ws(bytes, n2);
+            if i < bytes.len() && bytes[i] == b',' {
+                i += 1;
+                continue;
+            }
+            if i < bytes.len() && bytes[i] == b'}' {
+                return out;
+            }
+            super::panic::raise(97);
+        }
+    }
+
+    fn skip_ws(bytes: &[u8], mut i: usize) -> usize {
+        while i < bytes.len() {
+            match bytes[i] {
+                b' ' | b'\t' | b'\r' | b'\n' => i += 1,
+                _ => break,
+            }
+        }
+        i
+    }
+
+    fn parse_string(bytes: &[u8], i: usize) -> Option<(String, usize)> {
+        if i >= bytes.len() || bytes[i] != b'"' {
+            return None;
+        }
+        let mut out = String::new();
+        let mut j = i + 1;
+        while j < bytes.len() {
+            match bytes[j] {
+                b'"' => return Some((out, j + 1)),
+                b'\\' => {
+                    if j + 1 >= bytes.len() {
+                        return None;
+                    }
+                    match bytes[j + 1] {
+                        b'"' => out.push('"'),
+                        b'\\' => out.push('\\'),
+                        b'/' => out.push('/'),
+                        b'n' => out.push('\n'),
+                        b'r' => out.push('\r'),
+                        b't' => out.push('\t'),
+                        b'b' => out.push('\x08'),
+                        b'f' => out.push('\x0c'),
+                        _ => return None,
+                    }
+                    j += 2;
+                }
+                c => {
+                    out.push(c as char);
+                    j += 1;
+                }
+            }
+        }
+        None
+    }
+
+    fn parse_value(bytes: &[u8], i: usize) -> Option<(String, usize)> {
+        if i >= bytes.len() {
+            return None;
+        }
+        match bytes[i] {
+            b'"' => parse_string(bytes, i),
+            b't' if bytes[i..].starts_with(b"true") => Some(("true".to_string(), i + 4)),
+            b'f' if bytes[i..].starts_with(b"false") => Some(("false".to_string(), i + 5)),
+            b'n' if bytes[i..].starts_with(b"null") => Some(("".to_string(), i + 4)),
+            b'-' | b'0'..=b'9' => parse_number(bytes, i),
+            _ => None,
+        }
+    }
+
+    fn parse_number(bytes: &[u8], i: usize) -> Option<(String, usize)> {
+        let mut j = i;
+        if bytes[j] == b'-' {
+            j += 1;
+        }
+        while j < bytes.len() {
+            match bytes[j] {
+                b'0'..=b'9' | b'.' | b'e' | b'E' | b'+' | b'-' => j += 1,
+                _ => break,
+            }
+        }
+        if j == i {
+            return None;
+        }
+        Some((std::str::from_utf8(&bytes[i..j]).ok()?.to_string(), j))
+    }
+}
+
 pub mod llm {
     use std::env;
     use std::fs;

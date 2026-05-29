@@ -1296,6 +1296,18 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 			Func: "mochi_runtime::llm::call",
 			Args: []rtree.Expr{&rtree.StringLit{Value: n.Provider}, prompt},
 		}, nil
+	case *aotir.HttpGetExpr:
+		url, err := l.lowerExpr(n.URL)
+		if err != nil {
+			return nil, fmt.Errorf("fetch url: %w", err)
+		}
+		return &rtree.CallExpr{Func: "mochi_runtime::fetch::get", Args: []rtree.Expr{url}}, nil
+	case *aotir.JsonDecodeExpr:
+		in, err := l.lowerExpr(n.Input)
+		if err != nil {
+			return nil, fmt.Errorf("json_decode input: %w", err)
+		}
+		return &rtree.CallExpr{Func: "mochi_runtime::json::decode", Args: []rtree.Expr{in}}, nil
 	}
 	return nil, fmt.Errorf("rust lower: unsupported expr %T", e)
 }
