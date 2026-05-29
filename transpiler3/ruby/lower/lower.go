@@ -578,6 +578,21 @@ func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 		return &rtree.MethodCall{Receiver: recv, Method: e.FieldName}, nil
 	case *aotir.DatalogQueryExpr:
 		return lowerDatalogQueryExpr(e)
+	case *aotir.AsyncExpr:
+		body, err := lowerExpr(e.Body)
+		if err != nil {
+			return nil, err
+		}
+		// Ruby Thread is the simplest fit: Thread.new { body }.value blocks
+		// until the body returns and yields its result. Async then becomes
+		// a Thread handle; Await calls .value.
+		return &rtree.RawExpr{Text: "Thread.new { " + body.RubyExprString() + " }"}, nil
+	case *aotir.AwaitExpr:
+		fut, err := lowerExpr(e.Future)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: fut, Method: "value"}, nil
 	case *aotir.AgentLit:
 		args := make([]string, 0, len(e.Fields))
 		for _, f := range e.Fields {
