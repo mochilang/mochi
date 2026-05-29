@@ -13,8 +13,8 @@ description: "MEP-52 Phase 10, Mochi `chan<T>` (bounded FIFO) and `stream<T>` (f
 | Status         | LANDED (Node + Deno + Bun) |
 | Started        | 2026-05-30 00:15 (GMT+7) |
 | Landed         | 2026-05-30 00:35 (GMT+7) |
-| Tracking issue | (TBD when PR opens) |
-| Tracking PR    | (TBD when PR opens) |
+| Tracking issue | [#22880](https://github.com/mochilang/mochi/issues/22880) |
+| Tracking PR    | [#22881](https://github.com/mochilang/mochi/pull/22881) |
 
 ## Gate
 
