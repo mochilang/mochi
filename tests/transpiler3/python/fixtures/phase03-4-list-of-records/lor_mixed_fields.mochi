@@ -1,0 +1,16 @@
+type Row {
+  label: string
+  value: float
+  active: bool
+}
+
+let rs = [
+  Row { label: "a", value: 1.5, active: true },
+  Row { label: "b", value: 2.5, active: false },
+]
+print(rs[0].label)
+print(rs[0].value)
+print(rs[0].active)
+print(rs[1].label)
+print(rs[1].value)
+print(rs[1].active)
