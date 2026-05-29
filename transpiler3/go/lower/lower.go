@@ -59,6 +59,24 @@ func (l *lowerer) lowerProgram() (*gotree.File, error) {
 		return nil, err
 	}
 
+	// Lower every non-Main top-level function before main. Each is a
+	// user-defined Mochi `fun` with a mangled name (mochi__<name>).
+	// Phase 6.0 ships scalar / record / union parameters and returns;
+	// lifted closure functions (IsLifted=true) land in 6.1.
+	for i, fn := range l.prog.Functions {
+		if i == l.prog.Main {
+			continue
+		}
+		if fn == nil {
+			return nil, fmt.Errorf("transpiler3/go/lower: function %d is nil", i)
+		}
+		decl, err := l.lowerFunction(fn)
+		if err != nil {
+			return nil, fmt.Errorf("function %s: %w", fn.Name, err)
+		}
+		f.Decls = append(f.Decls, decl)
+	}
+
 	body, err := l.lowerBlock(mainFn.Body)
 	if err != nil {
 		return nil, err
@@ -72,6 +90,98 @@ func (l *lowerer) lowerProgram() (*gotree.File, error) {
 
 	f.Imports = l.emittedImports()
 	return f, nil
+}
+
+// lowerFunction lowers one aotir.Function to a Go FuncDecl. The
+// function name is taken verbatim from Function.Name (already mangled
+// to mochi__<source> by the shared aotir lowerer). Each Param is
+// rendered through paramTypeText. Unit returns omit the Results clause.
+func (l *lowerer) lowerFunction(fn *aotir.Function) (gotree.Decl, error) {
+	params := make([]gotree.Field, 0, len(fn.Params))
+	for _, p := range fn.Params {
+		pt, err := l.paramTypeText(p)
+		if err != nil {
+			return nil, fmt.Errorf("param %s: %w", p.Name, err)
+		}
+		params = append(params, gotree.Field{
+			Names: []string{mangleIdent(p.Name)},
+			Type:  &gotree.Ident{Name: pt},
+		})
+	}
+	ft := &gotree.FuncType{Params: params}
+	if fn.ReturnType != aotir.TypeUnit {
+		rt, err := l.returnTypeText(fn)
+		if err != nil {
+			return nil, fmt.Errorf("return type: %w", err)
+		}
+		ft.Results = []gotree.Field{{Type: &gotree.Ident{Name: rt}}}
+	}
+	body, err := l.lowerBlock(fn.Body)
+	if err != nil {
+		return nil, fmt.Errorf("body: %w", err)
+	}
+	return &gotree.FuncDecl{Name: fn.Name, Type: ft, Body: body}, nil
+}
+
+// paramTypeText picks the Go type-expression text for one Param.
+// Mirrors letTypeText's dispatch on compound types.
+func (l *lowerer) paramTypeText(p aotir.Param) (string, error) {
+	switch p.Type {
+	case aotir.TypeList:
+		if p.ElemType == aotir.TypeRecord {
+			if p.ElemRecordName == "" {
+				return "", fmt.Errorf("list<record> param missing ElemRecordName")
+			}
+			return "[]" + p.ElemRecordName, nil
+		}
+		return l.lowerListType(p.ElemType)
+	case aotir.TypeMap:
+		return l.lowerMapType(p.KeyType, p.ValueType)
+	case aotir.TypeSet:
+		return l.lowerSetType(p.ElemType)
+	case aotir.TypeRecord:
+		if p.RecordName == "" {
+			return "", fmt.Errorf("record param missing RecordName")
+		}
+		return p.RecordName, nil
+	case aotir.TypeUnion:
+		if p.UnionName == "" {
+			return "", fmt.Errorf("union param missing UnionName")
+		}
+		return p.UnionName, nil
+	}
+	return l.lowerType(p.Type)
+}
+
+// returnTypeText picks the Go type-expression text for a Function's
+// return type. Compound returns dispatch on ReturnType the same way
+// letTypeText does for bindings.
+func (l *lowerer) returnTypeText(fn *aotir.Function) (string, error) {
+	switch fn.ReturnType {
+	case aotir.TypeList:
+		if fn.ReturnElemType == aotir.TypeRecord {
+			if fn.ReturnElemRecordName == "" {
+				return "", fmt.Errorf("list<record> return missing ReturnElemRecordName")
+			}
+			return "[]" + fn.ReturnElemRecordName, nil
+		}
+		return l.lowerListType(fn.ReturnElemType)
+	case aotir.TypeMap:
+		return l.lowerMapType(fn.ReturnKeyType, fn.ReturnValueType)
+	case aotir.TypeSet:
+		return l.lowerSetType(fn.ReturnElemType)
+	case aotir.TypeRecord:
+		if fn.ReturnRecordName == "" {
+			return "", fmt.Errorf("record return missing ReturnRecordName")
+		}
+		return fn.ReturnRecordName, nil
+	case aotir.TypeUnion:
+		if fn.ReturnUnionName == "" {
+			return "", fmt.Errorf("union return missing ReturnUnionName")
+		}
+		return fn.ReturnUnionName, nil
+	}
+	return l.lowerType(fn.ReturnType)
 }
 
 // lowerRecordDecl emits `type Name struct { Field T; ... }` per

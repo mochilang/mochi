@@ -1,0 +1,10 @@
+fun sq(x: int): int {
+  return x * x
+}
+
+let n = 5
+if sq(n) > 20 {
+  print("big")
+} else {
+  print("small")
+}

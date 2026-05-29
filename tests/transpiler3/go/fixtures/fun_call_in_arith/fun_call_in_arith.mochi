@@ -1,0 +1,5 @@
+fun two(): int {
+  return 2
+}
+
+print(two() + two() * two())

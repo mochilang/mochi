@@ -74,7 +74,20 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) (gotree.Stmt, error) {
 			Args: []gotree.Expr{arg},
 		}}, nil
 	default:
-		return nil, fmt.Errorf("transpiler3/go/lower: Phase 2 does not handle call %q", s.Func)
+		// User-defined function call as a statement. Func is the
+		// already-mangled mochi__<source> name; args lower as usual.
+		args := make([]gotree.Expr, 0, len(s.Args))
+		for i, a := range s.Args {
+			v, err := l.lowerExpr(a)
+			if err != nil {
+				return nil, fmt.Errorf("call %s arg %d: %w", s.Func, i, err)
+			}
+			args = append(args, v)
+		}
+		return &gotree.ExprStmt{X: &gotree.CallExpr{
+			Fun:  &gotree.Ident{Name: s.Func},
+			Args: args,
+		}}, nil
 	}
 }
 

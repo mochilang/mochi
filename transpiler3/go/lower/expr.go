@@ -79,9 +79,30 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 			return nil, fmt.Errorf("variant field access receiver: %w", err)
 		}
 		return &gotree.SelectorExpr{X: recv, Sel: variantFieldName(e.VariantName, e.FieldName)}, nil
+	case *aotir.CallExpr:
+		return l.lowerCallExpr(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
+}
+
+// lowerCallExpr emits a Go call expression for a user-defined function.
+// Builtins like the print family are surfaced as CallStmts, so any
+// CallExpr that reaches the lowerer is a user-defined Function whose
+// mangled name is already stored verbatim in Func.
+func (l *lowerer) lowerCallExpr(e *aotir.CallExpr) (gotree.Expr, error) {
+	args := make([]gotree.Expr, 0, len(e.Args))
+	for i, a := range e.Args {
+		v, err := l.lowerExpr(a)
+		if err != nil {
+			return nil, fmt.Errorf("call %s arg %d: %w", e.Func, i, err)
+		}
+		args = append(args, v)
+	}
+	return &gotree.CallExpr{
+		Fun:  &gotree.Ident{Name: e.Func},
+		Args: args,
+	}, nil
 }
 
 // lowerRecordLit emits a struct composite literal with explicit

@@ -1,0 +1,5 @@
+fun half(x: float): float {
+  return x / 2.0
+}
+
+print(half(7.5))
