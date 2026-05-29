@@ -17,8 +17,8 @@ A phase is LANDED only when its gate is green for every target (consume directio
 |-------|-------|--------|--------|---------------|
 | 0 | Skeleton: package3/rust/ layout + cargo workspace plumbing | LANDED | [2dc3b34f](https://github.com/mochilang/mochi/commit/2dc3b34f) | [phase-00](/docs/implementation/0073/phase-00-skeleton) |
 | 1 | Sparse-index client (`index.crates.io` reader, sha256 + blake3 download verify) | LANDED | [a3c263fb](https://github.com/mochilang/mochi/commit/a3c263fb) | [phase-01](/docs/implementation/0073/phase-01-sparse-index) |
-| 2 | Rustdoc-JSON ingest + ApiSurface emit | LANDED | (pending) | [phase-02](/docs/implementation/0073/phase-02-rustdoc-ingest) |
-| 3 | Closed type-mapping table (scalars / strings / collections / Option / Result / Tuple / Struct / Enum) | NOT STARTED | — | [phase-03](/docs/implementation/0073/phase-03-type-mapping) |
+| 2 | Rustdoc-JSON ingest + ApiSurface emit | LANDED | [1cd97c1b](https://github.com/mochilang/mochi/commit/1cd97c1b) | [phase-02](/docs/implementation/0073/phase-02-rustdoc-ingest) |
+| 3 | Closed type-mapping table (scalars / strings / collections / Option / Result / Tuple / Struct / Enum) | LANDED | (pending) | [phase-03](/docs/implementation/0073/phase-03-type-mapping) |
 | 4 | Wrapper crate synthesiser (extern "C" surface, MochiString / MochiSlice / opaque handles) | NOT STARTED | — | [phase-04](/docs/implementation/0073/phase-04-wrapper) |
 | 5 | Mochi-side extern fn emitter + alias shim file generation | NOT STARTED | — | [phase-05](/docs/implementation/0073/phase-05-extern-emit) |
 | 6 | `import rust "<crate>@<semver>" as <alias>` grammar + parser | NOT STARTED | — | [phase-06](/docs/implementation/0073/phase-06-import-grammar) |
@@ -60,7 +60,7 @@ package3/rust/
   semver/                 # cargo-flavoured semver parser (phase 1)
   sparse/                 # sparse-index client + content-addressed cache (phase 1)
   rustdoc/                # rustdoc-types Go parser + ApiSurface walker (phase 2)
-  typemap/                # closed type table (phase 3)
+  typemap/                # closed type table + Mochi/FFI rendering (phase 3)
   wrapper/                # extern-C wrapper synthesiser (phase 4)
   emit/                   # Mochi extern fn emitter (phase 5)
   publish/                # crates.io publish + Sigstore (phase 10)
@@ -71,7 +71,7 @@ The `package3/rust/` location is shared with the broader MEP-57 polyglot package
 
 ## Status snapshot
 
-As of 2026-05-29 21:17 (GMT+7): phases 0, 1, and 2 LANDED (skeleton + sparse-index client + cargo semver + rustdoc-JSON ingest). Phases 3-13 pending. The MEP spec and research bundle are landed; implementation is progressing one phase per PR with auto-merge.
+As of 2026-05-29 21:30 (GMT+7): phases 0, 1, 2, and 3 LANDED (skeleton + sparse-index client + cargo semver + rustdoc-JSON ingest + closed type-mapping table). Phases 4-13 pending. The MEP spec and research bundle are landed; implementation is progressing one phase per PR with auto-merge.
 
 ## Cross-references
 
