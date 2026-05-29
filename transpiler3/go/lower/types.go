@@ -43,3 +43,21 @@ func (l *lowerer) lowerListType(elem aotir.Type) (string, error) {
 	}
 	return "[]" + et, nil
 }
+
+// lowerMapType produces the Go type expression `map[K]V` for a
+// map<K, V> value. Phase 3.2 accepts the eight (K, V) scalar
+// combinations enumerated by the verifier.
+func (l *lowerer) lowerMapType(key, value aotir.Type) (string, error) {
+	kt, err := l.lowerType(key)
+	if err != nil {
+		return "", fmt.Errorf("map key: %w", err)
+	}
+	vt, err := l.lowerType(value)
+	if err != nil {
+		return "", fmt.Errorf("map value: %w", err)
+	}
+	if kt == "" || vt == "" {
+		return "", fmt.Errorf("transpiler3/go/lower: map key/value type cannot be unit")
+	}
+	return "map[" + kt + "]" + vt, nil
+}

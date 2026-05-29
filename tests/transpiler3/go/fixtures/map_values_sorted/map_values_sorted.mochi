@@ -1,0 +1,4 @@
+let m = {"banana": 2, "apple": 1, "cherry": 3}
+for v in values(m) {
+  print(v)
+}

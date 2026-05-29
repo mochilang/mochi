@@ -1,0 +1,3 @@
+let flags = {"on": true, "off": false}
+print(flags["on"])
+print(flags["off"])

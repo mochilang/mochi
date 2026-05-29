@@ -39,6 +39,8 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (gotree.Stmt, error) {
 		return l.lowerForEachStmt(s)
 	case *aotir.ListSetStmt:
 		return l.lowerListSetStmt(s)
+	case *aotir.MapPutStmt:
+		return l.lowerMapPutStmt(s)
 	case *aotir.BreakStmt:
 		return &gotree.BranchStmt{Tok: "break"}, nil
 	case *aotir.ContinueStmt:
@@ -179,11 +181,14 @@ func (l *lowerer) lowerForRangeStmt(s *aotir.ForRangeStmt) (gotree.Stmt, error) 
 
 // letTypeText returns the Go type-expression text for a LetStmt's
 // binding type, dispatching on VarType so compound types (lists
-// today, maps and records later) can carry their element / field
-// metadata through the type renderer.
+// and maps today, records and sums later) can carry their element
+// / field metadata through the type renderer.
 func (l *lowerer) letTypeText(s *aotir.LetStmt) (string, error) {
-	if s.VarType == aotir.TypeList {
+	switch s.VarType {
+	case aotir.TypeList:
 		return l.lowerListType(s.ElemType)
+	case aotir.TypeMap:
+		return l.lowerMapType(s.KeyType, s.ValueType)
 	}
 	return l.lowerType(s.VarType)
 }
@@ -223,6 +228,26 @@ func (l *lowerer) lowerListSetStmt(s *aotir.ListSetStmt) (gotree.Stmt, error) {
 		Lhs: []gotree.Expr{&gotree.IndexExpr{
 			X:     &gotree.Ident{Name: mangleIdent(s.Name)},
 			Index: narrowToInt(idx),
+		}},
+		Tok: "=",
+		Rhs: []gotree.Expr{val},
+	}, nil
+}
+
+// lowerMapPutStmt lowers Mochi `m[k] = v` to the same Go form.
+func (l *lowerer) lowerMapPutStmt(s *aotir.MapPutStmt) (gotree.Stmt, error) {
+	key, err := l.lowerExpr(s.Key)
+	if err != nil {
+		return nil, err
+	}
+	val, err := l.lowerExpr(s.Value)
+	if err != nil {
+		return nil, err
+	}
+	return &gotree.AssignStmt{
+		Lhs: []gotree.Expr{&gotree.IndexExpr{
+			X:     &gotree.Ident{Name: mangleIdent(s.Name)},
+			Index: key,
 		}},
 		Tok: "=",
 		Rhs: []gotree.Expr{val},
