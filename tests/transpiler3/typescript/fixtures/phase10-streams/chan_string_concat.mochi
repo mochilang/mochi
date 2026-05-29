@@ -1,0 +1,8 @@
+let ch: chan<string> = make_chan(3)
+send(ch, "a")
+send(ch, "b")
+send(ch, "c")
+let x = recv(ch)
+let y = recv(ch)
+let z = recv(ch)
+print(x + y + z)
