@@ -158,7 +158,18 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*tstree.FuncDecl, error) {
 	if err != nil {
 		return nil, fmt.Errorf("ts lower: body of %q: %w", fn.Name, err)
 	}
+	// Phase 14 async colouring. A function whose body reaches an
+	// HttpGetExpr (transitively through other calls) is emitted as
+	// `async function` with a `Promise<RET>` return type so the
+	// inner `await mochi_http_get(...)` is well-typed and every
+	// caller `await`s the result (see lowerCallExpr).
+	var modifiers []string
+	if l.asyncFuncs[fn.Name] {
+		modifiers = []string{"async"}
+		ret = "Promise<" + ret + ">"
+	}
 	return &tstree.FuncDecl{
+		Modifiers:  modifiers,
 		Name:       fn.Name,
 		Params:     params,
 		ReturnType: ret,

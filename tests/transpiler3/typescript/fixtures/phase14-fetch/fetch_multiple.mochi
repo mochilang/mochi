@@ -1,0 +1,4 @@
+fetch "HTTPTEST_URL/multi" into a
+fetch "HTTPTEST_URL/multi2" into b
+print(a)
+print(b)

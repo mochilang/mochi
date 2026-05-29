@@ -1,0 +1,5 @@
+fetch "HTTPTEST_URL/json" into body
+let data = json_decode(body)
+let name = data["name"]
+let greeting = "Hello, " + name + "!"
+print(greeting)
