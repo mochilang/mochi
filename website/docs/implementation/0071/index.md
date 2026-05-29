@@ -60,7 +60,7 @@ A phase is LANDED only when its gate is green for every target (consume directio
 | 17.1 | Live ELF / Mach-O / PE module-marker reader (PEP 703 `Py_mod_gil` slot) | NOT STARTED | — | [phase-17](/docs/implementation/0071/phase-17-free-threaded) |
 | 17.2 | Wire RenderLockShim into wrapper synthesiser so `extern python` shims pick the right primitive | NOT STARTED | — | [phase-17](/docs/implementation/0071/phase-17-free-threaded) |
 | 17.3 | `mochi pkg install --runtime=free-threaded` + `--allow-untested-freethread` + deny-list config | NOT STARTED | — | [phase-17](/docs/implementation/0071/phase-17-free-threaded) |
-| 18 | abi2026 transition (`abi-tag-policy = "legacy" | "abi2026" | "both"`) + 2026-Q1 rollout | LANDED | (pending merge) | [phase-18](/docs/implementation/0071/phase-18-abi2026) |
+| 18 | abi2026 transition (`abi-tag-policy = "legacy" | "abi2026" | "both"`) + 2026-Q1 rollout | LANDED | `795a28e2` | [phase-18](/docs/implementation/0071/phase-18-abi2026) |
 | 18.1 | `mochi.lock` `[python].abi-tag-policy` field + `mochi.toml` mirror | NOT STARTED | — | [phase-18](/docs/implementation/0071/phase-18-abi2026) |
 | 18.2 | `mochi pkg promote --to=abi2026` CLI verb + `.dist-info/` interpreter-tag relink | NOT STARTED | — | [phase-18](/docs/implementation/0071/phase-18-abi2026) |
 | 18.3 | Live PyPI two-tag publish (cp32-abi3 + cp314-abi2026 side-by-side during migration window) | NOT STARTED | — | [phase-18](/docs/implementation/0071/phase-18-abi2026) |
@@ -127,7 +127,7 @@ The `package3/python/` location is shared with the broader MEP-57 polyglot packa
 
 ## Status snapshot
 
-As of 2026-05-30 01:31 (GMT+7): MEP-71 spec and research bundle landed; phases 0-18 LANDED (8.1, 8.2, 10.1, 10.2, 10.3, 11.1, 11.2, 11.3, 12.1, 12.2, 12.3, 13.1, 13.2, 13.3, 14.1, 14.2, 14.3, 14.4, 15.1, 15.2, 15.3, 16.1, 16.2, 16.3, 17.1, 17.2, 17.3, 18.1, 18.2, 18.3 deferred sub-phases). Every umbrella phase shipped one-PR-per-phase with auto-merge, following the MEP-73 cadence; only the deferred sub-phases (live IO, CLI verbs, live crypto) remain.
+As of 2026-05-30 01:35 (GMT+7): MEP-71 spec and research bundle landed; **all 19 umbrella phases (0-18) LANDED on `main`** (8.1, 8.2, 10.1, 10.2, 10.3, 11.1, 11.2, 11.3, 12.1, 12.2, 12.3, 13.1, 13.2, 13.3, 14.1, 14.2, 14.3, 14.4, 15.1, 15.2, 15.3, 16.1, 16.2, 16.3, 17.1, 17.2, 17.3, 18.1, 18.2, 18.3 deferred sub-phases). Every umbrella phase shipped one-PR-per-phase with auto-merge, following the MEP-73 cadence; only the deferred sub-phases (live IO, CLI verbs, live crypto) remain.
 
 ## Cross-references
 

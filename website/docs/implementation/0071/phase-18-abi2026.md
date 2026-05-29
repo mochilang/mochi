@@ -14,7 +14,7 @@ description: "Phase 18 of MEP-71: 2026-Q1 stable-ABI transition. ClassifyABITag 
 | Field | Value |
 |-------|-------|
 | **Status** | LANDED (offline-deterministic gate green; phase 18 PR auto-merged) |
-| **Commit** | (pending merge) |
+| **Commit** | `795a28e2` (PR #23020) |
 | **Branch** | `mep/0071-phase-18` |
 | **Gate** | `go test ./package3/python/abi2026/... -count=1` green (45+ table cases across `TagClass`, `Policy`, `Selector`, `PromoteToABI2026` / `DowngradeToABI3`); umbrella `TestPhase18Umbrella` sentinel proves all four end-to-end paths (PolicyLegacy hatches, PolicyAbi2026 end-state, PolicyBoth migration-window preference, Promote round-trip) |
 
