@@ -1,21 +1,10 @@
-name: Deploy website to Cloudflare Pages
+name: Sync docs to mochilang/docs
 
-# Deploy only on push to main (or manual trigger).
+# Syncs website/ to mochilang/docs on push to main, which then triggers
+# the deploy workflow there (isolated from all other mochi CI runners).
 #
-# PR builds were removed because they were the primary cause of runner
-# queue starvation: every website-touching PR triggered a full deploy,
-# creating 10-20 concurrent jobs and 25-50 min queue waits. Cloudflare
-# Pages provides native branch-preview URLs without needing Actions.
-#
-# Build time budget (target <5 min end-to-end):
-#   checkout:          ~5s   (fetch-depth: 1, no full history)
-#   node setup:        ~3s   (npm cache hit)
-#   npm ci:            ~8s   (node_modules cached)
-#   docusaurus build: ~45s   (webpack cache hit: .docusaurus + node_modules/.cache)
-#   wrangler deploy:  ~20s
-#   total:            ~81s   well under 5 min even on cold cache
-#
-# First run after cache miss: ~3.5 min (webpack cold build ~140s).
+# Required secret in mochilang/mochi:
+#   DOCS_DEPLOY_TOKEN — fine-grained PAT with Contents:Write on mochilang/docs
 
 on:
   push:
@@ -27,60 +16,49 @@ on:
 
 permissions:
   contents: read
-  deployments: write
 
-# Only one production deploy at a time; cancel any superseded run.
 concurrency:
-  group: cloudflare-pages-deploy
+  group: sync-docs
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    name: Build and deploy website
+  sync:
+    name: Sync website to mochilang/docs
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: website
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - name: Checkout mochi
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
+      - name: Checkout mochilang/docs
+        uses: actions/checkout@v4
         with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: website/package-lock.json
+          repository: mochilang/docs
+          token: ${{ secrets.DOCS_DEPLOY_TOKEN }}
+          path: docs-repo
+          fetch-depth: 1
 
-      - name: Install dependencies
-        run: npm ci --prefer-offline
+      - name: Sync website/ content
+        run: |
+          rsync -a --delete \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='.docusaurus' \
+            --exclude='build' \
+            website/ docs-repo/
 
-      # Cache the Docusaurus webpack incremental build artefacts.
-      # Key rotates when package-lock.json changes (new deps = cold build).
-      # The fallback key reuses the most recent build cache on cache miss
-      # so even a package bump only does an incremental rebuild.
-      - name: Restore Docusaurus build cache
-        uses: actions/cache@v5
-        with:
-          path: |
-            website/.docusaurus
-            website/node_modules/.cache
-          key: docusaurus-build-${{ runner.os }}-${{ hashFiles('website/package-lock.json') }}-${{ hashFiles('website/docs/**', 'website/src/**', 'website/docusaurus.config.js', 'website/sidebars.js') }}
-          restore-keys: |
-            docusaurus-build-${{ runner.os }}-${{ hashFiles('website/package-lock.json') }}-
-            docusaurus-build-${{ runner.os }}-
-
-      - name: Build website
-        run: npm run build
-
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy website/build --project-name=mochi-lang --branch=main
-          workingDirectory: .
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit and push
+        run: |
+          cd docs-repo
+          git config user.name "mochi-bot"
+          git config user.email "bot@mochi-lang.dev"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes — docs repo already up to date."
+            exit 0
+          fi
+          MOCHI_SHA="${{ github.sha }}"
+          git commit -m "sync: website from mochi@${MOCHI_SHA:0:8}"
+          git push
