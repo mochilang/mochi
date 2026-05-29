@@ -1,0 +1,3 @@
+writeFile("/tmp/mochi_swift_fn.txt", "line1\nline2\nline3")
+let r = fetch("file:///tmp/mochi_swift_fn.txt")
+print(r)

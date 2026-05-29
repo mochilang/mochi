@@ -1,0 +1,4 @@
+extern python fun py_add(x: float, y: float): float
+
+let result: float = py_add(1.5, 2.5)
+print(result)

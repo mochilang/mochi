@@ -1,0 +1,9 @@
+fact edge("a", "b")
+fact edge("b", "c")
+fact edge("a", "c")
+rule path(X, Y) :- edge(X, Y)
+rule path(X, Y) :- edge(X, M), path(M, Y)
+let pairs = query path(X, Y)
+for p in pairs {
+  print(p)
+}

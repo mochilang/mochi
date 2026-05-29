@@ -214,12 +214,31 @@
       "implementation/0054/phase-00-skeleton",
       "implementation/0054/phase-01-hello",
       "implementation/0054/phase-02-scalars",
+      "implementation/0054/phase-03-1-lists",
+      "implementation/0054/phase-03-2-maps",
+      "implementation/0054/phase-03-3-sets",
+      "implementation/0054/phase-03-4-list-of-records",
       "implementation/0054/phase-03-collections",
       "implementation/0054/phase-04-records",
       "implementation/0054/phase-05-sums",
+      "implementation/0054/phase-06-1-closures",
       "implementation/0054/phase-06-closures",
+      "implementation/0054/phase-06-functions",
+      "implementation/0054/phase-07-1-query-filter-map",
+      "implementation/0054/phase-07-10-try-catch",
+      "implementation/0054/phase-07-11-omap",
+      "implementation/0054/phase-07-12-list-hofs",
+      "implementation/0054/phase-07-2-query-order-skip-take",
+      "implementation/0054/phase-07-3-query-string-ops",
+      "implementation/0054/phase-07-4-query-joins",
+      "implementation/0054/phase-07-5-list-aggregations",
+      "implementation/0054/phase-07-6-string-builtins",
+      "implementation/0054/phase-07-7-math-builtins",
+      "implementation/0054/phase-07-8-file-io",
+      "implementation/0054/phase-07-9-csv-io",
       "implementation/0054/phase-07-query",
       "implementation/0054/phase-08-datalog",
+      "implementation/0054/phase-09-1-channels",
       "implementation/0054/phase-09-agents",
       "implementation/0054/phase-10-streams",
       "implementation/0054/phase-11-async",
@@ -270,7 +289,8 @@
       "implementation/0056/phase-28-audit",
       "implementation/0056/phase-29-runtime-matrix",
       "implementation/0056/phase-30-runtime-gem-tests",
-      "implementation/0056/phase-31-audit-6"
+      "implementation/0056/phase-31-audit-6",
+      "implementation/0056/phase-32-audit-7"
     ]
   },
   "implementation/0057/index",
@@ -299,5 +319,36 @@
       "implementation/0057/phase-18-offline",
       "implementation/0057/phase-19-cache-perf"
     ]
-  }
+  },
+  "implementation/0071/index",
+  {
+    "label": "MEP-71 phases",
+    "items": [
+      "implementation/0071/phase-00-skeleton"
+    ]
+  },
+  "implementation/0073/index",
+  {
+    "label": "MEP-73 phases",
+    "items": [
+      "implementation/0073/phase-00-skeleton",
+      "implementation/0073/phase-01-sparse-index",
+      "implementation/0073/phase-02-rustdoc-ingest",
+      "implementation/0073/phase-03-type-mapping",
+      "implementation/0073/phase-04-wrapper",
+      "implementation/0073/phase-05-extern-emit"
+    ]
+  },
+  "implementation/0074/index",
+  {
+    "label": "MEP-74 phases",
+    "items": [
+      "implementation/0074/phase-00-skeleton",
+      "implementation/0074/phase-01-module-proxy",
+      "implementation/0074/phase-02-sumdb",
+      "implementation/0074/phase-03-gopackages-ingest",
+      "implementation/0074/phase-04-apisurface"
+    ]
+  },
+  "implementation/0076/index"
 ]

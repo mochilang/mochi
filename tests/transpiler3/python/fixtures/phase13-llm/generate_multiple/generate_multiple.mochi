@@ -1,0 +1,4 @@
+let a = generate openai { prompt: "Say foo." }
+let b = generate openai { prompt: "Is Mochi great?" }
+print(a)
+print(b)

@@ -38,15 +38,32 @@ type lowerer struct {
 	needsStrFrom    bool // true once `str(x)` lowers to mochi_runtime.fmt.str_from (Phase 7.0)
 	needsSumI64     bool // true once `sum(xs:int)` lowers to mochi_runtime.query.sum_i64 (Phase 7.0)
 	needsSumF64     bool // true once `sum(xs:float)` lowers to mochi_runtime.query.sum_f64 (Phase 7.0)
+	needsDeque      bool // true once a chan<T> lowers to collections.deque (Phase 9.0)
+	needsStream     bool // true once a stream<T> / sub<T> needs the mochi_runtime.stream surface (Phase 10.0)
+	needsExcept     bool // true once a panic/try-catch needs the mochi_runtime.except_ surface (Phase 11.0)
+	needsLLM        bool // true once a `generate <provider> {...}` lowers to mochi_runtime.llm (Phase 13.0)
+	needsFetch      bool // true once `fetch(url)` or `writeFile(...)` lowers to mochi_runtime.fetch (Phase 14.0)
+	moduleName      string          // Mochi module name (drives the externs module import in Phase 12.0)
+	pythonExterns   map[string]bool // Phase 12.0: registered `extern python fun` names
 }
 
 // Lower translates an aotir.Program into a pysrc.Module covering the
 // Phase 2 surface (scalars, control flow, user functions) plus the
 // Phase 3.1 list surface: literal, index, len, for-each, append,
 // slice, filter/map via the lifted-closure plumbing the c lower built.
-func Lower(prog *aotir.Program) (*pysrc.Module, error) {
+// moduleName is the Mochi module name (e.g. "py_add_floats"); it drives
+// the externs import emitted when prog.PythonFuncs is non-empty
+// (Phase 12.0).
+func Lower(prog *aotir.Program, moduleName string) (*pysrc.Module, error) {
 	mod := &pysrc.Module{FutureAnnotations: true}
-	l := &lowerer{}
+	l := &lowerer{
+		moduleName:    moduleName,
+		pythonExterns: map[string]bool{},
+	}
+	if err := rejectNonPythonExterns(prog); err != nil {
+		return nil, err
+	}
+	l.registerPythonExterns(prog)
 
 	mainFn := prog.Functions[prog.Main]
 	mainBody, err := l.lowerBlock(mainFn.Body)
@@ -62,6 +79,13 @@ func Lower(prog *aotir.Program) (*pysrc.Module, error) {
 	for _, u := range prog.Unions {
 		l.needsDataclass = true
 		defs = append(defs, lowerUnionDecl(u)...)
+	}
+	for _, a := range prog.Agents {
+		def, err := l.lowerAgentDecl(a)
+		if err != nil {
+			return nil, err
+		}
+		defs = append(defs, def)
 	}
 	for i, fn := range prog.Functions {
 		if i == prog.Main {
@@ -129,6 +153,39 @@ func Lower(prog *aotir.Program) (*pysrc.Module, error) {
 	}
 	if l.needsStrFrom {
 		mod.Imports = append(mod.Imports, pysrc.ImportStmt{From: "mochi_runtime.fmt", Names: []string{"str_from"}})
+	}
+	if l.needsDeque {
+		mod.Imports = append(mod.Imports, pysrc.ImportStmt{From: "collections", Names: []string{"deque"}})
+	}
+	if l.needsStream {
+		mod.Imports = append(mod.Imports, pysrc.ImportStmt{
+			From:  "mochi_runtime.stream",
+			Names: []string{"MochiStream", "MochiSub", "mochi_emit", "mochi_make_stream", "mochi_recv_sub", "mochi_subscribe"},
+		})
+	}
+	if l.needsExcept {
+		mod.Imports = append(mod.Imports, pysrc.ImportStmt{
+			From:  "mochi_runtime.except_",
+			Names: []string{"MochiPanic", "_panic_code"},
+		})
+	}
+	if l.needsLLM {
+		mod.Imports = append(mod.Imports, pysrc.ImportStmt{
+			From:  "mochi_runtime.llm",
+			Names: []string{"mochi_llm_generate"},
+		})
+	}
+	if l.needsFetch {
+		mod.Imports = append(mod.Imports, pysrc.ImportStmt{
+			From:  "mochi_runtime.fetch",
+			Names: []string{"mochi_fetch", "mochi_write_file"},
+		})
+	}
+	if names := l.pythonExternNames(); len(names) > 0 {
+		mod.Imports = append(mod.Imports, pysrc.ImportStmt{
+			From:  "mochi_user_" + l.moduleName + "_externs",
+			Names: names,
+		})
 	}
 	return mod, nil
 }
@@ -224,6 +281,14 @@ func (l *lowerer) lowerBlock(blk *aotir.Block) ([]pysrc.Stmt, error) {
 			out = append(out, body...)
 			continue
 		}
+		// RawCStmt is the C-backend setup for DatalogQueryExpr (and a few
+		// other backends-specific raw emissions). Python evaluates Datalog
+		// at compile time on the Go side, so the raw C is meaningless here
+		// and is dropped wholesale. The DatalogQueryExpr alongside it lowers
+		// to a static list[str] literal.
+		if _, ok := s.(*aotir.RawCStmt); ok {
+			continue
+		}
 		ps, err := l.lowerStmt(s)
 		if err != nil {
 			return nil, err
@@ -248,6 +313,15 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (pysrc.Stmt, error) {
 		val, err := l.lowerExpr(v.Value)
 		if err != nil {
 			return nil, err
+		}
+		// C lower bakes agent intent self-field assignments as
+		// AssignStmt.Name = "__self->fieldname". Rewrite to `self.fieldname = val`.
+		if field, ok := strings.CutPrefix(v.Name, "__self->"); ok {
+			return &pysrc.AttrAssignStmt{
+				Target: &pysrc.Name{Id: "self"},
+				Attr:   field,
+				Value:  val,
+			}, nil
 		}
 		return &pysrc.ReassignStmt{Target: v.Name, Value: val}, nil
 	case *aotir.IfStmt:
@@ -285,6 +359,18 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (pysrc.Stmt, error) {
 			return nil, err
 		}
 		return &pysrc.ReturnStmt{Value: val}, nil
+	case *aotir.AgentIntentCallStmt:
+		return l.lowerAgentIntentCallStmt(v)
+	case *aotir.ChanSendStmt:
+		return l.lowerChanSendStmt(v)
+	case *aotir.StreamEmitStmt:
+		return l.lowerStreamEmitStmt(v)
+	case *aotir.PanicStmt:
+		return l.lowerPanicStmt(v)
+	case *aotir.TryCatchStmt:
+		return l.lowerTryCatchStmt(v)
+	case *aotir.WriteFileStmt:
+		return l.lowerWriteFileStmt(v)
 	default:
 		return nil, fmt.Errorf("python/lower: unsupported statement %T", s)
 	}
@@ -318,6 +404,16 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) (pysrc.Stmt, error) {
 			Args: []pysrc.Expr{arg},
 		}}, nil
 	default:
+		// Phase 12.0: Python FFI call statement (return value discarded).
+		// Same prefix-strip as the expression case; the import is emitted
+		// at the module level.
+		if bare, ok := stripPythonExternPrefix(s.Func); ok {
+			args, err := l.lowerExprs(s.Args)
+			if err != nil {
+				return nil, err
+			}
+			return &pysrc.ExprStmt{X: &pysrc.Call{Func: &pysrc.Name{Id: bare}, Args: args}}, nil
+		}
 		if strings.HasPrefix(s.Func, "mochi_") {
 			return nil, fmt.Errorf("python/lower: unsupported builtin %q", s.Func)
 		}
@@ -332,6 +428,30 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) (pysrc.Stmt, error) {
 
 func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (pysrc.Stmt, error) {
 	annot := pyTypeForUnion(s.VarType, s.ElemType, s.RecordName, s.ElemRecordName, s.UnionName, "", s.KeyType, s.ValueType)
+	if s.VarType == aotir.TypeAgent && s.AgentName != "" {
+		annot = pysrc.TypeRef{Name: s.AgentName}
+	}
+	if s.VarType == aotir.TypeChan {
+		inner := pyTypeFor(s.ChanElemType)
+		if inner.Name != "" {
+			l.needsDeque = true
+			annot = pysrc.TypeRef{Name: "deque[" + inner.Name + "]"}
+		}
+	}
+	if s.VarType == aotir.TypeStream {
+		inner := pyTypeFor(s.StreamElemType)
+		if inner.Name != "" {
+			l.needsStream = true
+			annot = pysrc.TypeRef{Name: "MochiStream[" + inner.Name + "]"}
+		}
+	}
+	if s.VarType == aotir.TypeSub {
+		inner := pyTypeFor(s.SubElemType)
+		if inner.Name != "" {
+			l.needsStream = true
+			annot = pysrc.TypeRef{Name: "MochiSub[" + inner.Name + "]"}
+		}
+	}
 	// Init==nil happens when the c lower introduces a mutable result var
 	// for a match expression: the LetStmt declares the binding and the
 	// following MatchStmt assigns into it from every arm. Emit a PEP 526
@@ -487,6 +607,11 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (pysrc.Expr, error) {
 	case *aotir.BoolLit:
 		return &pysrc.BoolLit{Value: v.Value}, nil
 	case *aotir.VarRef:
+		// C lower bakes agent intent self-field references as
+		// VarRef.Name = "__self->fieldname". Rewrite to `self.fieldname`.
+		if field, ok := strings.CutPrefix(v.Name, "__self->"); ok {
+			return &pysrc.Attribute{Value: &pysrc.Name{Id: "self"}, Attr: field}, nil
+		}
 		return &pysrc.Name{Id: v.Name}, nil
 	case *aotir.BinaryExpr:
 		return l.lowerBinaryExpr(v)
@@ -496,6 +621,12 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (pysrc.Expr, error) {
 		args, err := l.lowerExprs(v.Args)
 		if err != nil {
 			return nil, err
+		}
+		// Phase 12.0: a `mochi_py_<name>` call expression is a Python FFI
+		// call. Strip the C-target mangling and call the bare name; the
+		// import is emitted at the module level.
+		if bare, ok := stripPythonExternPrefix(v.Func); ok {
+			return &pysrc.Call{Func: &pysrc.Name{Id: bare}, Args: args}, nil
 		}
 		return &pysrc.Call{Func: &pysrc.Name{Id: v.Func}, Args: args}, nil
 	case *aotir.FunCallExpr:
@@ -809,9 +940,46 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (pysrc.Expr, error) {
 			return nil, err
 		}
 		return &pysrc.Attribute{Value: recv, Attr: v.FieldName}, nil
+	case *aotir.DatalogQueryExpr:
+		return l.lowerDatalogQueryExpr(v)
+	case *aotir.AgentLit:
+		return l.lowerAgentLit(v)
+	case *aotir.AgentIntentCallExpr:
+		return l.lowerAgentIntentCallExpr(v)
+	case *aotir.ChanMakeExpr:
+		return l.lowerChanMakeExpr(v)
+	case *aotir.ChanRecvExpr:
+		return l.lowerChanRecvExpr(v)
+	case *aotir.StreamMakeExpr:
+		return l.lowerStreamMakeExpr(v)
+	case *aotir.SubMakeExpr:
+		return l.lowerSubMakeExpr(v)
+	case *aotir.SubRecvExpr:
+		return l.lowerSubRecvExpr(v)
+	case *aotir.LLMGenerateExpr:
+		return l.lowerLLMGenerateExpr(v)
+	case *aotir.HttpGetExpr:
+		return l.lowerHttpGetExpr(v)
 	default:
 		return nil, fmt.Errorf("python/lower: unsupported expression %T", e)
 	}
+}
+
+// lowerDatalogQueryExpr evaluates the Datalog program at compile time
+// (matching the BEAM backend's strategy) and emits the result as a static
+// Python list[str] literal. Mochi Datalog facts/rules cannot be reloaded
+// at runtime so compile-time evaluation is lossless and avoids shipping
+// a runtime evaluator in the wheel.
+func (l *lowerer) lowerDatalogQueryExpr(e *aotir.DatalogQueryExpr) (pysrc.Expr, error) {
+	if e.Prog == nil {
+		return &pysrc.ListLit{}, nil
+	}
+	results := datalogEval(e)
+	items := make([]pysrc.Expr, len(results))
+	for i, s := range results {
+		items[i] = &pysrc.StrLit{Value: s}
+	}
+	return &pysrc.ListLit{Elems: items}, nil
 }
 
 // lowerVariantLit emits `VariantName(field=v, ...)`. For nullary variants

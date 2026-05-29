@@ -1,0 +1,12 @@
+try {
+  panic(7, "ffi failure")
+} catch e {
+  print("ffi")
+  print(e)
+}
+try {
+  panic(9, "assertion failed")
+} catch e {
+  print("assert")
+  print(e)
+}

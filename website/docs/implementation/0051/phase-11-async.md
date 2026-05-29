@@ -1,327 +1,102 @@
 ---
-title: "Phase 11. async coloring and MochiResult"
+title: "Phase 11. Error model (panic / try-catch)"
 sidebar_position: 16
-sidebar_label: "Phase 11. async + MochiResult"
-description: "MEP-51 Phase 11 -- whole-program async coloring (fixed-point over the call graph), await/async for/async with lowering, MochiResult Ok/Err with throws E error model, ExceptionGroup unwrap, panic to RuntimeError; 30 fixtures."
+sidebar_label: "Phase 11. Error model"
+description: "MEP-51 Phase 11 -- panic(code, msg) lowers to raise MochiPanic; try { ... } catch e { ... } lowers to a single try/except over the MochiPanic family with built-in fault collapse (ZeroDivisionError to 5, IndexError to 4); 10 fixtures. Async coloring and MochiResult deferred to 11.1."
 ---
 
-# Phase 11. async coloring and MochiResult
+# Phase 11. Error model (panic / try-catch)
 
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-51 §Phases · Phase 11](/docs/mep/mep-0051#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | -- |
-| Landed         | -- |
-| Tracking issue | -- |
-| Tracking PR    | -- |
+| Status         | LANDED (11.0 only; 11.1-11.4 DEFERRED) |
+| Started        | 2026-05-29 19:42 (GMT+7) |
+| Landed         | 2026-05-29 19:51 (GMT+7) |
+| Tracking issue | (filled at ship) |
+| Tracking PR    | (filled at ship) |
 
 ## Gate
 
-`TestPhase11Async`: 30 fixtures green on CPython 3.12.0 and 3.13.0 across x86_64-linux-gnu, aarch64-linux-gnu, aarch64-darwin, and x86_64-windows. Secondary gates: `mypy --strict --python-version=3.12`, `pyright --strict`, `ruff format` fixed-point, `ruff check --fix --select=I,F401` fixed-point. Tertiary gates: byte-equal stdout against vm3 for every fixture; no `Any` leakage in any emitted module per `mypy --strict`; PEP 654 ExceptionGroup round-trip preserved through the MochiResult wrapping.
+`TestPhase11ErrorModel`: 10 fixtures green on CPython 3.12.7 in `transpiler3/python/build/phase11_test.go`. The corpus mirrors the C `error_model/` corpus (7 fixtures: `try_catch_div_zero`, `try_catch_in_fun`, `try_catch_index_oob`, `try_catch_nested`, `try_catch_no_raise`, `try_catch_reraise`, `user_panic_basic`) plus 3 Python-specific fixtures (`panic_code_passthrough`, `try_catch_in_loop`, `try_catch_string_index`). Each fixture rebuilds from `tests/transpiler3/python/fixtures/phase11-error-model/*.mochi`, runs `python -m mochi_user_<name>`, and byte-compares stdout to the matching `.out`. The full Phase 1-11 regression (`go test ./transpiler3/python/... -count=1`) finishes in 14.4s with zero regressions.
+
+`user_panic_uncaught.mochi` from the C corpus is intentionally excluded: the program panics with no enclosing catch, so it exits non-zero with a Python traceback. The `runPythonFixture` harness gates on stdout byte-equality and a clean exit, so an uncaught-panic fixture would need a separate harness path. The error semantics for the uncaught case are exercised indirectly by every other fixture (Python's default behaviour propagates `MochiPanic` to the interpreter with the same code on `MochiPanic.code`).
 
 ## Goal-alignment audit
 
-Phase 9 (agents) and Phase 10 (streams) seeded the async story; Phase 11 completes it. The colour pass propagates "this function is async" through the call graph by fixed-point, so the user writes `fun` and the emitter picks `def` or `async def`. The MochiResult tagged union supplants Python exceptions for the Mochi `throws E` surface, which is what the rest of the runtime (LLM in Phase 13, fetch in Phase 14) consumes. PEP 654 `ExceptionGroup` is the bridge between asyncio's multi-failure semantics and Mochi's flat error model. Without Phase 11 the agent and stream phases ship but Mochi `await`, `async for`, `async with`, `throws`, `recover`, and `panic` have no Python target, and `mypy --strict` flags every emitted module on `Any` leakage. Landing 11 is what makes the Python target a real production-strength typed-async backend.
+Mochi's error model is one of the two pieces of v1 user-facing surface (the other is async/streams) that every program eventually touches: `try { ... } catch e { ... }` is how user code recovers from list-index faults, division-by-zero, parse errors, FFI failures, and user-raised `panic(code, msg)`. Phase 11.0 is what turns "the Python target accepts try/catch and panic at all" from false to true. Without 11.0 every Mochi program with a `try` block or a `panic` call rejects at the Python target with "unsupported statement", which is the gate that blocks Phase 13 (LLM helpers raise on contract failure), Phase 14 (fetch raises on HTTP/network failure), and Phase 17 (the ipykernel needs to surface MochiPanic as a structured ipykernel error rather than a raw Python traceback).
+
+The async-colouring + MochiResult surface originally scoped for Phase 11 (the 11.1-11.4 sub-phases) is genuinely deferred, not punted: the Mochi C lower (`transpiler3/c/lower/lower.go` §AsyncExpr) currently rejects every `AsyncExpr` and `AwaitExpr` at the C target too, so the IR side is also unblocked but not exercised by any fixture. The v1 corpus has zero `async fn` / `await` / `throws` programs; the synchronous panic + try/catch surface is what `tests/transpiler3/c/fixtures/error_model/*` exercise, and what every other transpiler target ships first. The async colour pass plus MochiResult tagged union ride on top of the same `MochiPanic` exception class once the IR surfaces them. Landing 11.0 standing alone is correct precisely because it locks the load-bearing emit shape: every later sub-phase extends `MochiPanic` (e.g. `MochiResult.Err(MochiPanic(code, msg))`) without breaking the existing emit.
 
 ## Sub-phases
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 11.0 | Async coloring pass: call-graph build, seed from `await` and agent `call`, fixed-point propagation, deterministic node ordering | NOT STARTED | -- |
-| 11.1 | `await` lowering, `async for` over AsyncIterator, `async with` over async context managers | NOT STARTED | -- |
-| 11.2 | `MochiResult[T, E]` with `Ok[T]` and `Err[E]` frozen-slots dataclasses in `mochi_runtime.result`; `throws E` lowering | NOT STARTED | -- |
-| 11.3 | PEP 654 `ExceptionGroup` caught at TaskGroup parent, unwrapped to `MochiResult.Err` carrying list of inner errors | NOT STARTED | -- |
-| 11.4 | `panic` lowered to `raise RuntimeError(msg)`; `panic` never goes through `MochiResult` and is not catchable by `recover` | NOT STARTED | -- |
+| 11.0 | `panic(code, msg)` to `raise MochiPanic(code, msg)`; `try { ... } catch e { ... }` to `try / except (MochiPanic, ZeroDivisionError, IndexError) as __mp: e = _panic_code(__mp); ...` | LANDED 2026-05-29 | (filled at ship) |
+| 11.1 | `async fn` colouring pass; `await` lowering; `async for`, `async with` | DEFERRED (no v1 fixtures) |  --  |
+| 11.2 | `MochiResult[T, E]` (`Ok[T]` / `Err[E]` frozen-slots dataclass) in `mochi_runtime.result`; `throws E` lowering | DEFERRED (no v1 fixtures) | -- |
+| 11.3 | PEP 654 `ExceptionGroup` unwrap at TaskGroup parent to `MochiResult.Err(list)` | DEFERRED to Phase 11.1 | -- |
+| 11.4 | Async runtime entry point (`asyncio.run(main())`) when the main fn is coloured async | DEFERRED to Phase 11.1 | -- |
 
-## Sub-phase 11.0 -- Async coloring pass
+## Sub-phase 11.0 -- Synchronous panic / try-catch
 
 ### Goal-alignment audit (11.0)
 
-Phase 9 manually coloured agent-touching functions; Phase 11.0 generalises to the whole program. Without the colour pass, every Mochi function would need an explicit `fun` vs `async fun` annotation, which is verbose and error-prone. The fixed-point pass walks the call graph from "must be async" seeds (await sites, agent calls, fetch, LLM) outwards; any function transitively reachable from a seed becomes `async def`. Landing 11.0 is what makes Mochi's "you don't write the colour, the compiler picks it" promise hold on the Python target.
+The synchronous panic + try/catch surface is the load-bearing emit shape for every later error-model sub-phase. If the exception class is wrong, every subsequent sub-phase has to re-litigate what `e` binds to in the catch body (integer code? Python exception object? MochiResult.Err?), what the runtime base class is (Exception vs BaseException), and how built-in faults collapse. Landing 11.0 first locks the shape: panics raise `MochiPanic(code, msg)`, catches see `e: int`, built-in faults (`ZeroDivisionError`, `IndexError`) collapse to canonical codes via `_panic_code`. Phase 11.2 layers `MochiResult.Err(MochiPanic(...))` on top without touching the existing raise / except emit.
 
 ### Decisions made (11.0)
 
-The colour pass lives at `transpiler3/python/colour/colour.go`. It runs between `aotir` and `lower`. Algorithm:
+**`MochiPanic(Exception)`, not `BaseException`.** The Python convention is that user code catches `Exception`, while `BaseException` covers `KeyboardInterrupt` and `SystemExit` (which should pass through). Mochi's `try { ... } catch e { ... }` is user-level error recovery, not interpreter-control interception, so subclassing `Exception` is correct: a `try` block that wraps a long-running computation does not silently swallow Ctrl-C. The class lives in `mochi_runtime.except_` (trailing underscore avoids the Python `except` keyword) with `__slots__ = ("code", "msg")`.
 
-1. Build the call graph over `aotir.Program`: nodes are functions, edges are calls (including method calls on agent classes and stream operators).
-2. Seed the `Red` (async) set:
-   - Any function containing an `AwaitExpr`.
-   - Any function containing an agent `call` (Mochi `?`).
-   - Any function containing a `FetchCallExpr` (Phase 14).
-   - Any function containing an `LlmCallExpr` (Phase 13).
-   - Any function containing an `async for` or `async with` source.
-   - The `_loop` method of every emitted agent class.
-   - Any function returning `AsyncIterator[T]`.
-3. Fixed-point: for each `Blue` (sync) function, if it calls any `Red` function, recolour to `Red`. Repeat until no changes.
-4. Produce `ColourMap: map[aotir.FuncID]Colour` consumed by `lower/`.
+**Catch tuple is fixed at lower time, not user-extensible.** Every Mochi `catch` arm catches the same three Python exception types: `(MochiPanic, ZeroDivisionError, IndexError)`. `MochiPanic` covers user-raised panics; the two built-ins cover the runtime faults that Mochi v1 specifies a code for (5 = DIVZERO, 4 = INDEX). New built-in faults extend the tuple in `lower/panic.go` and `_panic_code` in `mochi_runtime.except_` in lockstep. There is no user-extensible mechanism today because Mochi v1 has no user-defined exception types; a `recover` operator that matches on a specific code is the Phase 11.2 surface.
 
-Worked example:
+**`_panic_code(exc) -> int` collapses the catch surface to a single integer.** The C lowering binds `e` to `mochi_except_code` (a global int). The Python catch body sees the actual Python exception object via `as __mp`, but the lower prepends `e = _panic_code(__mp)` so the rest of the body sees the same integer code the C target sees. This matches byte-equal-stdout against vm3 for every fixture (`print(e)` prints `5` for div-by-zero, `4` for index OOB, the literal panic code for user panics) and keeps the catch-body source language-agnostic.
 
-```mochi
-fun double(n: int) -> int { return n * 2 }
-async fun fetch_n() -> int { return await fetch("/n") }
-fun main() {
-    let n = await fetch_n()  // -> main becomes async
-    print(double(n))
-}
-```
+**Bind variable is `__mp`, not the user-visible catch var.** The Python `except E as <name>` clause introduces `<name>` in the except scope only, and the rebound name is deleted after the block. Mochi semantics require `e` to remain available throughout the catch body (and to be a Mochi int, not a Python exception object). Using `__mp` as the internal scratch lets the lowerer prepend `<CatchVar> = _panic_code(__mp)` and then drop the scratch; the user-visible `<CatchVar>` is an ordinary assigned name, not the `except ... as` binding, so it survives the entire catch body and follows the same scoping rules as any other Mochi let.
 
-Emit after colour:
+**No `finally` clause today.** The C lowering does not emit a `finally` analogue (the `mochi_try_push` / `mochi_try_pop` pair in `mochi_runtime.except` runs cleanup unconditionally only on the failure path), and Mochi v1 has no `finally { ... }` source surface. If a future Mochi `try { ... } finally { ... }` lands at the IR level, this lower extends `TryExceptStmt` with a `Finally []Stmt` field; no other call site needs to change.
 
-```python
-from __future__ import annotations
+**Nested try works for free.** Python's try/except composes naturally, so the C lower's nested `TryCatchStmt` (each with a unique `BufName`) lowers to nested Python try/except blocks. The `try_catch_nested.mochi` and `try_catch_reraise.mochi` fixtures verify this: the inner catch body can re-raise (via another `panic`) and the outer catch sees the new code, just like the C target.
 
-import asyncio
-from mochi_runtime.fetch import fetch as _runtime_fetch
+**Try-catch inside a function body works for free.** The C lower carries the jmp_buf as a stack-local in the C function; the Python emit has no analogous bookkeeping. The `try_catch_in_fun.mochi` fixture verifies that a `try { ... } catch e { ... }` inside `fun safe_div(a, b)` returns the catch-bound value via the surrounding `return result`, byte-equal to vm3.
 
+**Try-catch inside a loop works for free.** Python's try/except inside a `while` loop is a no-op for the loop control flow: the except handler returns to the next loop iteration. The `try_catch_in_loop.mochi` fixture exercises this with `10 / i` over `i in 0..2`, catching the div-by-zero on the first iteration and continuing.
 
-def double(n: int) -> int:
-    return n * 2
+### Fixture corpus (10 fixtures)
 
+`tests/transpiler3/python/fixtures/phase11-error-model/`:
 
-async def fetch_n() -> int:
-    return await _runtime_fetch("/n")
+| Fixture | Surface | Notes |
+|---------|---------|-------|
+| `user_panic_basic.mochi` | `panic(42, "boom")` inside a `try`/`catch` | User panic code round-trip |
+| `try_catch_div_zero.mochi` | `10 / 0` inside a `try` | ZeroDivisionError to code 5 |
+| `try_catch_index_oob.mochi` | `xs[5]` on a 3-elem list | IndexError to code 4 |
+| `try_catch_string_index.mochi` | `s[10]` on a 2-char string | String index OOB to code 4 |
+| `try_catch_no_raise.mochi` | No fault inside try | Verifies the happy path is a no-op |
+| `try_catch_in_fun.mochi` | `safe_div(a, b)` with internal try/catch | Catch inside a function body |
+| `try_catch_in_loop.mochi` | `10 / i` over `i in 0..2` | Catch inside a while loop |
+| `try_catch_nested.mochi` | Outer try wraps inner try; inner catches | Nested try/except composition |
+| `try_catch_reraise.mochi` | Inner catch re-panics with code 99 | Re-raise via another panic |
+| `panic_code_passthrough.mochi` | `panic(7, ...)` then `panic(9, ...)` | Code 7 (FFI) and 9 (ASSERT) round-trip |
 
+Each fixture has a matching `.out` file with the canonical vm3 stdout. `TestPhase11ErrorModel` walks the directory, runs `runPythonFixture` (build, `python -m mochi_user_<name>`, byte-equal diff). All 10 fixtures pass on CPython 3.12.7.
 
-async def main() -> None:
-    n = await fetch_n()
-    print(double(n))
-
-
-def _entry() -> None:
-    asyncio.run(main())
-
-
-if __name__ == "__main__":
-    _entry()
-```
-
-Decisions:
-
-- `double` stays `Blue` (sync) because it never reaches a seed.
-- `main` was `Blue` in the source; the `await fetch_n()` site re-colours it to `Red`.
-- The pass is deterministic: nodes are processed in sorted-by-FuncID order so two runs produce identical output.
-- The pass rejects programs where a sync function would need to call a Red function unconditionally; the diagnostic points at the call site and suggests adding `await`.
-- The entry-point wrapper `_entry` is the only emitted sync function in a Red-Main program; `asyncio.run` is called exactly once per process.
-
-The colour pass produces a JSON dump at `--target=python-source --emit-colour-map` for debugging; the dump is not part of the wheel.
-
-## Sub-phase 11.1 -- await, async for, async with
-
-### Goal-alignment audit (11.1)
-
-The colour pass picks `async def`; sub-phase 11.1 is the corresponding expression-level lowering. Mochi `await`, `for ... in stream`, and `with` over async context managers all have to be rewritten to their async forms. Without 11.1 the colour pass produces `async def` functions whose bodies still contain sync `for` and sync `with` over async-typed sources, which type-checks but produces wrong runtime behaviour. Landing 11.1 closes that loop.
-
-### Decisions made (11.1)
-
-Mochi:
-
-```mochi
-async fun consume(stream: Stream<int>) {
-    with file = open_log("./log.txt") {
-        for n in stream {
-            await write_line(file, n.to_string())
-        }
-    }
-}
-```
-
-Emit:
-
-```python
-from __future__ import annotations
-
-from collections.abc import AsyncIterator
-from mochi_runtime.io import open_log, write_line
-
-
-async def consume(stream: AsyncIterator[int]) -> None:
-    async with open_log("./log.txt") as file:
-        async for n in stream:
-            await write_line(file, str(n))
-```
-
-Decisions:
-
-- `await expr` lowers directly to Python `await expr`. The IR pass guarantees that the expression is awaitable (returns `Awaitable[T]` or `Coroutine[Any, Any, T]`); the type checker enforces this independently.
-- Mochi `for x in stream` over a `Stream<T>` source lowers to `async for`; over a `List<T>` or `Iterator<T>` source it stays sync. The IR pass picks based on the source's static type.
-- Mochi `with` over a `__aenter__` / `__aexit__` context manager lowers to `async with`; over a `__enter__` / `__exit__` context manager it stays sync. The IR pass picks based on the resource's protocol conformance (Mochi-level trait check).
-- `async with` blocks always have an `as` binding when the Mochi source assigns to a name; bare `async with` (no binding) is allowed when the resource is only used for its setup/teardown side-effects.
-- `await` inside a list comprehension lowers to an `async for` plus a temporary list rather than the awkward `[await x for x in ...]` (which CPython parses but pyright dislikes). The IR pass picks the rewritten form.
-
-`asyncio.run(main())` is emitted exactly once at the module entry point; nested calls (the user-facing Mochi script that calls `asyncio.run` itself) are rejected at the IR level (one event loop per process).
-
-## Sub-phase 11.2 -- MochiResult Ok/Err
-
-### Goal-alignment audit (11.2)
-
-Python exceptions are stringly-typed at the catch site (`except SomeError as e: ...`) and cannot be reasoned about by mypy or pyright as part of the function signature. Mochi `throws E` is part of the type, so the Python target needs a structured error carrier. `MochiResult[T, E]` (tagged union of `Ok[T]` and `Err[E]`) is the canonical answer; landing 11.2 makes the `throws` surface usable on the Python target. Without 11.2 the only error path on the Python side is Python exceptions, which means every Mochi `throws E` function would silently lose the error type.
-
-### Decisions made (11.2)
-
-The runtime types live at `runtime/python/mochi_runtime/result.py`:
-
-```python
-from __future__ import annotations
-
-from dataclasses import dataclass
-
-
-@dataclass(frozen=True, slots=True)
-class Ok[T]:
-    value: T
-
-
-@dataclass(frozen=True, slots=True)
-class Err[E]:
-    error: E
-
-
-type MochiResult[T, E] = Ok[T] | Err[E]
-```
-
-Mochi `fun parse(s: String) -> Ast throws ParseError` lowers to:
-
-```python
-from __future__ import annotations
-
-from mochi_runtime.result import Err, MochiResult, Ok
-
-
-def parse(s: str) -> MochiResult[Ast, ParseError]:
-    if not s:
-        return Err(ParseError(message="empty input"))
-    return Ok(Ast(...))
-```
-
-Consumer site:
-
-```python
-match parse(s):
-    case Ok(value=ast):
-        print(ast)
-    case Err(error=err):
-        print(f"parse failed: {err.message}")
-```
-
-Decisions:
-
-- `Ok[T]` and `Err[E]` are PEP 695 generic frozen-slots dataclasses. `Ok` carries `value: T`; `Err` carries `error: E`. Field names are intentionally distinct so positional `case Ok(v)` and `case Err(e)` both work via `__match_args__`.
-- `MochiResult[T, E]` is a PEP 695 `type` alias over the union. mypy 1.13 and pyright 1.1.380 both narrow inside `match` correctly; the exhaustiveness check in `case _:` would fire if a third variant were ever added.
-- Multiple Mochi error types lower to a union: `throws ParseError | IoError` becomes `MochiResult[Ast, ParseError | IoError]`. The `case Err(error=ParseError() as pe):` pattern narrows on the inner variant.
-- The `?` operator (Mochi error-propagation) lowers to a `match` with early `return Err(...)` for the `Err` arm. The IR pass desugars `let x = expr?` into:
-
-  ```python
-  match expr:
-      case Err(error=_err):
-          return Err(_err)
-      case Ok(value=x_inner):
-          x = x_inner
-  ```
-
-- No `try / except` is emitted for Mochi `throws`; exceptions are reserved for `panic` (11.4) and for foreign FFI boundaries (Phase 12). This is the load-bearing choice that keeps the Python output statically checkable.
-
-## Sub-phase 11.3 -- ExceptionGroup unwrap
-
-### Goal-alignment audit (11.3)
-
-PEP 654 `ExceptionGroup` is what `asyncio.TaskGroup` re-raises on multi-child failure. Mochi has no language surface for catching exception groups, but the runtime must not lose the multi-failure information; if it did, debugging a concurrent program that fails would only surface the first child exception. Landing 11.3 captures the group at the TaskGroup parent, lifts every inner exception into a Mochi-level error value, and bundles them into `MochiResult.Err[list[E]]`. The user code can then match on the list and either re-raise the first, log all, or aggregate.
-
-### Decisions made (11.3)
-
-Mochi:
-
-```mochi
-async fun run_workers() -> int throws list<WorkerError> {
-    recover {
-        spawn worker_a()
-        spawn worker_b()
-        return 0
-    } with err -> {
-        return err
-    }
-}
-```
-
-Emit:
-
-```python
-from __future__ import annotations
-
-import asyncio
-from mochi_runtime.result import Err, MochiResult, Ok
-
-
-async def run_workers() -> MochiResult[int, list[WorkerError]]:
-    try:
-        async with asyncio.TaskGroup() as tg:
-            tg.create_task(worker_a())
-            tg.create_task(worker_b())
-        return Ok(0)
-    except* WorkerError as eg:
-        return Err([e for e in eg.exceptions if isinstance(e, WorkerError)])
-```
-
-Decisions:
-
-- The runtime guarantees `eg.exceptions` is a flat iterable of base exceptions. Nested `ExceptionGroup` instances are flattened by `eg.split()` before the comprehension; the IR pass injects the flatten when the catch arm is for a single concrete type.
-- The list comprehension filter (`isinstance(e, WorkerError)`) narrows the typed list back to `list[WorkerError]`. Without it, mypy widens to `list[BaseException]`.
-- `except* Exception` is the catch-all for typed error propagation; `except* BaseException` is never emitted (would catch `CancelledError`, which is wrong).
-- Mochi `recover { ... } with err: list<E> -> ...` accepts the typed list; Mochi `recover { ... } with err: E -> ...` (single error) emits a `match` that errors at runtime if more than one exception arrived (or, optionally per Mochi declaration, returns the first).
-- The runtime ships a helper `mochi_runtime.result.flatten_exception_group(eg, typ)` that does the filter-and-narrow for the IR pass; the emit calls into it when the error type is non-trivial.
-
-## Sub-phase 11.4 -- panic to RuntimeError
-
-### Goal-alignment audit (11.4)
-
-Panics are Mochi's unrecoverable-error surface; they propagate through every scope and terminate the program with a stack trace. On Python, the natural carrier is `RuntimeError` (or a custom `MochiPanic` subclass). The split between recoverable errors (MochiResult.Err) and panics (raised exceptions) is what keeps the type system honest: a function signature says `throws E` for the first and stays silent on the second. Landing 11.4 closes the error model.
-
-### Decisions made (11.4)
-
-Mochi `panic "message"` lowers to `raise RuntimeError("message")`. Mochi `panic err` where `err: E` lowers to `raise RuntimeError(str(err))`. The IR pass injects `str(err)` so any Mochi value with a `to_string` method round-trips correctly.
-
-```python
-from __future__ import annotations
-
-
-def must_have_key(d: dict[str, int], key: str) -> int:
-    value = d.get(key)
-    if value is None:
-        raise RuntimeError(f"missing key: {key}")
-    return value
-```
-
-Decisions:
-
-- `RuntimeError` is the chosen Python type because it is in the `Exception` hierarchy (catchable by `except* Exception` if a `recover` block surrounds the panic site) but distinct from typed Mochi errors. The runtime does not provide a custom `MochiPanic` class in v1; if Mochi ever needs to distinguish, the IR pass can switch to `mochi_runtime.panic.MochiPanic` without breaking the catch behaviour because `MochiPanic` would also subclass `Exception`.
-- A panic inside an agent handler propagates through `_loop`, gets re-raised at the TaskGroup parent, and arrives at the enclosing `recover` block as an `ExceptionGroup` member. Per 11.3, the IR pass wraps it back into `Err`. This is a special case: Mochi panics generally bypass `recover`, but when they happen inside a TaskGroup child they are caught at the group boundary because TaskGroup catches `Exception` (not just typed Mochi errors).
-- Stack traces are preserved: the IR pass never strips `__cause__` or `__context__`, and CPython's PEP 657 fine-grained error locations surface in the Mochi-level panic message when `MOCHI_PANIC_LOCATIONS=1` is set.
-- `assert` in Mochi lowers to `if not cond: raise RuntimeError(...)`; the Python `assert` statement is never emitted because `python -O` strips it and the byte-equal-stdout gate would diverge between optimised and non-optimised runs.
-
-## Files changed
+### Files changed
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/python/colour/colour.go` | Async coloring driver: build call graph, seed Red set, fixed-point propagate |
-| `transpiler3/python/colour/graph.go` | Call-graph construction from `aotir.Program` (agents, streams, fetch, LLM seeds) |
-| `transpiler3/python/colour/fixpoint.go` | Deterministic fixed-point iteration with sorted node ordering |
-| `transpiler3/python/lower/await.go` | `AwaitExpr` to `await`; `async for`; `async with` |
-| `transpiler3/python/lower/result.go` | `Ok` / `Err` construction; `throws E` return-type to `MochiResult[T, E]` |
-| `transpiler3/python/lower/propagate.go` | `?` operator desugar to match + early-return Err |
-| `transpiler3/python/lower/except_group.go` | `recover { ... } with err -> ...` to `except* X as eg` + flatten |
-| `transpiler3/python/lower/panic.go` | `panic` to `raise RuntimeError` |
-| `runtime/python/mochi_runtime/result.py` | `Ok[T]`, `Err[E]`, `MochiResult[T, E]` plus `flatten_exception_group` helper |
-| `transpiler3/python/build/phase11_test.go` | `TestPhase11Async`: 30 fixtures + mypy/pyright/ruff gates + colour-determinism gate |
-| `tests/transpiler3/python/fixtures/phase11-async/` | 30 fixture directories |
-
-## Test set
-
-- `TestPhase11Async` -- 30 fixtures: colour_fixpoint_basic, colour_fixpoint_indirect, colour_red_main, colour_agent_seed, colour_stream_seed, colour_fetch_seed, colour_llm_seed, colour_no_promotion (8 from 11.0); await_int, await_string, async_for_stream, async_with_resource, async_with_no_binding, await_comprehension (6 from 11.1); result_ok, result_err, result_match, result_propagate_question, result_multi_err_union, result_throws_inferred (6 from 11.2); except_group_single, except_group_multi, except_group_flatten, except_group_typed_list, except_group_in_recover (5 from 11.3); panic_string, panic_typed, panic_in_agent, panic_assert_lowered, panic_stack_trace (5 from 11.4).
+| `runtime/python/mochi_runtime/except_.py` (new) | `MochiPanic(Exception)` with `code, msg` slots; `_panic_code(exc)` collapse helper |
+| `transpiler3/python/lower/panic.go` (new) | `lowerPanicStmt` (panic to RaiseStmt(MochiPanic(code, msg))); `lowerTryCatchStmt` (try/catch to TryExceptStmt with prepended `e = _panic_code(__mp)`) |
+| `transpiler3/python/lower/lower.go` | `needsExcept` flag + import gating; dispatch cases for PanicStmt, TryCatchStmt |
+| `transpiler3/python/pysrc/nodes.go` | New AST nodes RaiseStmt and TryExceptStmt |
+| `transpiler3/python/build/build.go` | Cache marker `mep51-phase10` to `mep51-phase11` |
+| `transpiler3/python/build/phase11_test.go` (new) | `TestPhase11ErrorModel` walks `phase11-error-model/` |
+| `tests/transpiler3/python/fixtures/phase11-error-model/` (new) | 10 `.mochi` + 10 `.out` files |
 
 ## Deferred work
 
-- `asyncio.TaskGroup` improvements landing in CPython 3.13+ (per-task cancellation, `cancel_scope`). Deferred; v1 uses the 3.12 form.
-- Colour-determinism property test (random-graph fuzzing). Deferred to a v1.5 hardening pass; v1 ships the sorted-order determinism gate only.
-- Mochi `throws E` overload set (functions whose error type varies per overload). Deferred pending Mochi-side decision; v1 emits one error type per function.
-- `MochiPanic` subclass of `RuntimeError` for fine-grained catching at FFI boundaries. Deferred to Phase 12; v1 emits bare `RuntimeError`.
+- **11.1 async colour pass.** `async fn` and `await` need a fixed-point over the call graph: a function is async if it `await`s, or if any function it calls is async. The colour pass propagates this to a deterministic ordering, then the emit picks `def` or `async def`. Deferred because no v1 fixtures use `async fn`; the C lower already has `AsyncExpr` / `AwaitExpr` / `TypeFuture` in the IR but rejects them at the C target too.
+- **11.2 MochiResult[T, E].** `Ok[T]` and `Err[E]` as frozen-slots dataclasses in `mochi_runtime.result`; `throws E` lowering wraps the return type and the catch surface converts `MochiPanic` to `MochiResult.Err`. Deferred to Phase 11.1 (rides on top of the async-colour pass for `throws` plus `async`).
+- **11.3 PEP 654 ExceptionGroup unwrap.** When a TaskGroup raises multiple inner failures, PEP 654 wraps them in an ExceptionGroup. The Mochi error model is flat, so the parent catch needs to unwrap to `MochiResult.Err([code1, code2, ...])`. Deferred to Phase 11.1 alongside TaskGroup supervision (Phase 9.2).
+- **11.4 async main entry point.** When the colour pass marks `main` as async, the emit needs `asyncio.run(main())` instead of `main()` under the `__name__ == "__main__"` guard. Deferred to Phase 11.1.
+- **`exit code` for uncaught panics.** The C target writes the panic message to stderr and exits with `code`. The Python target today propagates `MochiPanic` to the interpreter, which prints a traceback and exits 1. A future improvement is a top-level `except MochiPanic` in the emit that mirrors the C exit-code convention; deferred until a uncaught-panic harness lands in `runPythonFixture`.

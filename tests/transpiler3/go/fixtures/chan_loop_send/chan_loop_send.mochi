@@ -1,0 +1,11 @@
+let ch: chan<int> = make_chan(4)
+var i: int = 0
+while i < 4 {
+    send(ch, i * 10)
+    i = i + 1
+}
+var j: int = 0
+while j < 4 {
+    print(recv(ch))
+    j = j + 1
+}

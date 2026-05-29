@@ -33,9 +33,15 @@ func TestPhase1Hello(t *testing.T) {
 
 	var names []string
 	for _, e := range entries {
-		if e.IsDir() {
-			names = append(names, e.Name())
+		if !e.IsDir() {
+			continue
 		}
+		// Skip fixtures that need ambient setup: a `setup/` subdir
+		// means pre-written /tmp files (phase14_2_test.go owns them).
+		if _, err := os.Stat(filepath.Join(base, e.Name(), "setup")); err == nil {
+			continue
+		}
+		names = append(names, e.Name())
 	}
 	sort.Strings(names)
 	if len(names) == 0 {

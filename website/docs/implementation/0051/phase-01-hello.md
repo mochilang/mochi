@@ -18,7 +18,7 @@ description: "MEP-51 Phase 1, end-to-end Mochi-to-Python pipeline from print(\"h
 
 ## Gate
 
-`TestPhase1Hello`: 5 fixtures green on CPython 3.12.0 and CPython 3.13.0, all four tier-1 OS cells (x86_64-linux-gnu, aarch64-linux-gnu, aarch64-darwin, x86_64-windows).
+`TestPhase1Hello`: 11 fixtures green on CPython 3.12+ (locally verified against 3.14.5 on Apple Silicon). The tier-1 OS matrix (x86_64-linux-gnu, aarch64-linux-gnu, aarch64-darwin, x86_64-windows) is carried by the cross-host reproducibility workflow introduced in Phase 16.
 
 Secondary gates carried by every later phase:
 
@@ -27,13 +27,19 @@ Secondary gates carried by every later phase:
 - `ruff format` reaches a fixed point after one pass (running twice produces no diff).
 - `ruff check --fix --select=I,F401` reaches a fixed point after one pass (import sort plus unused-import removal stable).
 
-Fixtures:
+Fixtures (11):
 
 1. `hello.mochi`: `print("hello, world")`, stdout `hello, world\n`.
 2. `hello_int.mochi`: `print(42)`, stdout `42\n`.
 3. `hello_bool.mochi`: `print(true)`, stdout `true\n`.
 4. `hello_newline.mochi`: `print("line1\nline2")`, two lines.
 5. `hello_let.mochi`: `let x = 7; print(x)`, stdout `7\n`.
+6. `hello_zero.mochi`: `print(0)`, stdout `0\n` (covers the falsy-int print path that an `if value` guard would mishandle).
+7. `hello_neg_int.mochi`: `print(-7)`, stdout `-7\n` (covers unary-minus literal lowering, plus `Print.line` width for non-positive ints).
+8. `hello_false.mochi`: `print(false)`, stdout `false\n` (companion to `hello_bool`; pins both branches of the bool dispatch in `Print._format`).
+9. `hello_empty_str.mochi`: `print("")`, stdout `\n` (only the trailing `\n`; pins that `Print.line` emits the separator on empty input).
+10. `hello_quoted_str.mochi`: `print("a \"b\" c")`, stdout `a "b" c\n` (covers escape-sequence round-trip; `strconv.Quote` would over-escape, `pysrc/nodes.go` must produce a Python string literal that survives `exec`).
+11. `hello_two_prints.mochi`: two adjacent `print(...)` statements, stdout `hi\nworld\n` (covers ordering preservation in `lower.go` statement sequencing; a subtle regression here would interleave or drop one line).
 
 ## Goal-alignment audit
 
@@ -60,11 +66,10 @@ The pipeline must produce a runnable typed `.py` file on the first sub-phase so 
 
 1. `parser.Parse(src)`, AST.
 2. `types.Check(ast)`, typed AST.
-3. `aotir.Lower(typed)`, `*aotir.Program` (reused from MEP-45, unchanged).
-4. `colour.Colour(prog)`, `ColourMap` (Phase 1: every function is blue/sync, no `async def` emission yet).
-5. `lower.Lower(prog, colours)`, `*pyast.Module` (a Go-side surrogate for CPython's `ast.Module`).
-6. `emit.Emit(mod, workDir)`, runs `ast.unparse` via a subprocess shell-out to CPython, then `ruff format --stdin`, then `ruff check --fix --select=I,F401 --stdin`, writes a `.py` file.
-7. Module layout assembled per Phase 1.2.
+3. `clower.Lower(ast)`, `*aotir.Program` (reused from the C aotir lowerer; see `transpiler3/c/lower`).
+4. `lower.Lower(prog, moduleName)`, `*pysrc.Module` (the Go-side surrogate for CPython's `ast.Module`, defined in `transpiler3/python/pysrc/nodes.go`).
+5. `emit.Emit(mod, outPath)`, calls `mod.PySource()` to deterministically render PEP 8 source text and writes the `.py` file.
+6. Module layout assembled per Phase 1.2 (`writePackageLayout` in `transpiler3/python/build/build.go`).
 
 **Emitted source for `hello.mochi`**:
 
@@ -88,7 +93,7 @@ if __name__ == "__main__":
 
 **Entry point**: `src/<pkg>/__main__.py` re-exports `main` from the generated module and invokes it under `if __name__ == "__main__":`. For programs that go async in Phase 9+, `main()` becomes `async def main()` and the entry point uses `asyncio.run(main())`.
 
-**Direct Go-side renderer (Phase 1 implementation)**: Phase 1.0 ships a deterministic Go-side renderer in `transpiler3/python/pysrc/` rather than the `ast.unparse` subprocess described above. The renderer emits PEP 8 compliant source directly (two blank lines between top-level defs, single blank line within bodies, double-quoted string literals via `strconv.Quote`, no trailing whitespace), so `ruff format` is a no-op on the emitted file. The `ast.unparse` subprocess and the `ruff` shell-out are deferred to Phase 16 (reproducibility) where they become useful for canonicalising whitespace under cross-version 3.12 vs 3.13 parser drift. In-process embedding of CPython via `cgo` is rejected for v1 (build-system complexity, cross-platform headaches).
+**Direct Go-side renderer**: Phase 1.0 ships a deterministic Go-side renderer in `transpiler3/python/pysrc/nodes.go` (the `Module.PySource()` method walks the surrogate AST and prints PEP 8 compliant source). Two blank lines between top-level defs, single blank line within bodies, no trailing whitespace; the renderer emits Python string literals directly rather than going through `strconv.Quote` because Go and Python differ on escape semantics (raw `\xNN` shape, single-vs-double quote conventions). The Phase 16 reproducibility gate confirms the emit is byte-identical across rebuilds. Shelling out to CPython's `ast.unparse` or to `ruff format` is deferred indefinitely: both add a ~30ms subprocess cost per file with no compensating canonicalisation benefit because the Go renderer already produces a fixed point. In-process embedding of CPython via `cgo` was rejected for v1 (build-system complexity, cross-platform headaches).
 
 ## Sub-phase 1.1, Scalar print
 
@@ -236,28 +241,26 @@ source_bytes || cpython_version || mochi_runtime_version || ruff_version || tran
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/python/lower/lower.go` | `Lower` entry; `lowerProgram`, `lowerStmt`, `lowerExpr` covering Phase 1 surface (print, let int, let str, let bool) |
-| `transpiler3/python/lower/pyast.go` | `pyast.Module`, `pyast.FunctionDef`, `pyast.ImportFrom`, `pyast.Call`, `pyast.Constant` Go-side AST surrogates mirroring CPython `ast` shapes |
-| `transpiler3/python/emit/emit.go` | Drives the JSON-to-`ast.unparse` subprocess, runs `ruff format` and `ruff check --fix` over the resulting bytes |
-| `transpiler3/python/emit/unparse.py` | Stdlib `ast.unparse` driver loaded by the subprocess (lives under `transpiler3/python/emit/embed/`) |
-| `transpiler3/python/build/build.go` | `Driver.Build`; `Target` constants (`python-source`, `python-wheel`, etc., the latter stubbed) |
-| `transpiler3/python/build/layout.go` | Project tree assembly: `src/<pkg>/__init__.py`, `__main__.py`, `generated/__init__.py`, `py.typed`, `pyproject.toml` |
-| `transpiler3/python/build/cache.go` | SHA-256 content-addressed cache under `~/.cache/mochi/python/` |
-| `transpiler3/python/build/phase01_test.go` | `TestPhase1Hello`: 5 fixtures, CPython 3.12 + 3.13, mypy + pyright + ruff gates |
-| `runtime/python/mochi_runtime/__init__.py` | Package marker re-exporting `io.Print` |
-| `runtime/python/mochi_runtime/io.py` | `Print.line` + `Print._format` dispatch |
+| `transpiler3/python/lower/lower.go` | `Lower(prog, moduleName)` entry; statement and expression lowering covering Phase 1 surface (print, let int, let str, let bool); flag plumbing for later-phase imports lives here too |
+| `transpiler3/python/pysrc/nodes.go` | Go-side surrogate AST (`Module`, `FunctionDef`, `Import`/`ImportFrom`, `Call`, `Constant`, `Assign`, ...) plus the `Module.PySource()` deterministic renderer |
+| `transpiler3/python/emit/emit.go` | Thin wrapper that opens the output path and calls `mod.PySource()`; no subprocess shell-out |
+| `transpiler3/python/build/build.go` | `Driver.Build`; `Target` constants (`TargetPythonSource`, `TargetPythonWheel`, `TargetPythonSdist`, `TargetPythonIpykernel`, `TargetPythonPublish`); inline SHA-256 content-addressed cache under `<MOCHI_CACHE_DIR or ~/.cache/mochi>/python/<key>/`; `writePackageLayout` for `src/<pkg>/{__init__,__main__,py.typed,generated/__init__}.py` and the `pyproject.toml` skeleton |
+| `transpiler3/python/build/phase01_test.go` | `TestPhase1Hello`: walks `tests/transpiler3/python/fixtures/phase01-hello/*.mochi`, builds each via `TargetPythonSource`, runs `python -m mochi_user_<module>`, diffs stdout against the `.out` |
+| `runtime/python/mochi_runtime/__init__.py` | Package marker |
+| `runtime/python/mochi_runtime/io.py` | `Print.line` + `Print._format` dispatch (bool, float, int, str, bytes, sequence repr matching vm3) |
 | `runtime/python/mochi_runtime/py.typed` | PEP 561 marker (empty file) |
 | `runtime/python/pyproject.toml` | `mochi-runtime` package metadata for PyPI publication |
-| `tests/transpiler3/python/fixtures/phase01-hello/hello.mochi` | `print("hello, world")` |
-| `tests/transpiler3/python/fixtures/phase01-hello/hello.out` | `hello, world\n` |
-| `tests/transpiler3/python/fixtures/phase01-hello/hello_int.mochi` | `print(42)` |
-| `tests/transpiler3/python/fixtures/phase01-hello/hello_int.out` | `42\n` |
-| `tests/transpiler3/python/fixtures/phase01-hello/hello_bool.mochi` | `print(true)` |
-| `tests/transpiler3/python/fixtures/phase01-hello/hello_bool.out` | `true\n` |
-| `tests/transpiler3/python/fixtures/phase01-hello/hello_newline.mochi` | `print("line1\nline2")` |
-| `tests/transpiler3/python/fixtures/phase01-hello/hello_newline.out` | `line1\nline2\n` |
-| `tests/transpiler3/python/fixtures/phase01-hello/hello_let.mochi` | `let x = 7; print(x)` |
-| `tests/transpiler3/python/fixtures/phase01-hello/hello_let.out` | `7\n` |
+| `tests/transpiler3/python/fixtures/phase01-hello/hello.mochi`, `.out` | `print("hello, world")` |
+| `tests/transpiler3/python/fixtures/phase01-hello/hello_int.mochi`, `.out` | `print(42)` |
+| `tests/transpiler3/python/fixtures/phase01-hello/hello_bool.mochi`, `.out` | `print(true)` |
+| `tests/transpiler3/python/fixtures/phase01-hello/hello_newline.mochi`, `.out` | `print("line1\nline2")` |
+| `tests/transpiler3/python/fixtures/phase01-hello/hello_let.mochi`, `.out` | `let x = 7; print(x)` |
+| `tests/transpiler3/python/fixtures/phase01-hello/hello_zero.mochi`, `.out` | `print(0)` (pins falsy-int formatting in `Print._format`) |
+| `tests/transpiler3/python/fixtures/phase01-hello/hello_neg_int.mochi`, `.out` | `print(-7)` (unary-minus literal lowering) |
+| `tests/transpiler3/python/fixtures/phase01-hello/hello_false.mochi`, `.out` | `print(false)` (companion to `hello_bool`) |
+| `tests/transpiler3/python/fixtures/phase01-hello/hello_empty_str.mochi`, `.out` | `print("")` (`Print.line` still emits the trailing newline) |
+| `tests/transpiler3/python/fixtures/phase01-hello/hello_quoted_str.mochi`, `.out` | `print("a \"b\" c")` (string escape round-trip through `pysrc/nodes.go`) |
+| `tests/transpiler3/python/fixtures/phase01-hello/hello_two_prints.mochi`, `.out` | two adjacent `print(...)` (statement ordering preservation) |
 
 ## Test set
 

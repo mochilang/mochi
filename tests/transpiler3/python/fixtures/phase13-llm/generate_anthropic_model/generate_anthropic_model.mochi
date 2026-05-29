@@ -1,0 +1,2 @@
+let r = generate anthropic { model: "claude-3-haiku-20240307", prompt: "Repeat: hello world" }
+print(r)

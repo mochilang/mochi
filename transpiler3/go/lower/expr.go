@@ -122,8 +122,12 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerReadFileExpr(e)
 	case *aotir.LinesExpr:
 		return l.lowerLinesExpr(e)
+	case *aotir.HttpGetExpr:
+		return l.lowerHttpGetExpr(e)
 	case *aotir.LoadCSVExpr:
 		return l.lowerLoadCSVExpr(e)
+	case *aotir.JsonDecodeExpr:
+		return l.lowerJsonDecodeExpr(e)
 	case *aotir.OMapLiteralExpr:
 		return l.lowerOMapLiteralExpr(e)
 	case *aotir.OMapGetExpr:
@@ -140,6 +144,28 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerListFilterExpr(e)
 	case *aotir.ListFoldlExpr:
 		return l.lowerListFoldlExpr(e)
+	case *aotir.ChanMakeExpr:
+		return l.lowerChanMakeExpr(e)
+	case *aotir.ChanRecvExpr:
+		return l.lowerChanRecvExpr(e)
+	case *aotir.StreamMakeExpr:
+		return l.lowerStreamMakeExpr(e)
+	case *aotir.SubMakeExpr:
+		return l.lowerSubMakeExpr(e)
+	case *aotir.SubMakeLimitExpr:
+		return l.lowerSubMakeLimitExpr(e)
+	case *aotir.SubRecvExpr:
+		return l.lowerSubRecvExpr(e)
+	case *aotir.AgentLit:
+		return l.lowerAgentLit(e)
+	case *aotir.AgentSpawnExpr:
+		return l.lowerAgentSpawnExpr(e)
+	case *aotir.AgentIntentCallExpr:
+		return l.lowerAgentIntentCallExpr(e)
+	case *aotir.AsyncExpr:
+		return l.lowerAsyncExpr(e)
+	case *aotir.AwaitExpr:
+		return l.lowerAwaitExpr(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
@@ -247,13 +273,21 @@ func (l *lowerer) lowerStrJoinExpr(e *aotir.StrJoinExpr) (gotree.Expr, error) {
 
 // varRefExpr maps an aotir.VarRef.Name to a gotree expression. The
 // shared C lowerer rewrites captured-variable references inside lifted
-// closure bodies to `__e->FieldName` (C member-access syntax). For Go
-// we translate that back to `__mochi_env.FieldName` (with FieldName
-// capitalised so it matches the env struct's exported field).
+// closure bodies to `__e->FieldName` (C member-access syntax) and
+// agent intent bodies see their fields as `__self->FieldName`. For Go
+// we translate those back to selectors on the synthetic receiver:
+// captures hit `__mochi_env.Field`, agent fields hit `self.Field`,
+// with FieldName capitalised so it matches the struct's exported field.
 func varRefExpr(name string) gotree.Expr {
 	if rest, ok := strings.CutPrefix(name, "__e->"); ok {
 		return &gotree.SelectorExpr{
 			X:   &gotree.Ident{Name: envParamName},
+			Sel: exportIdent(rest),
+		}
+	}
+	if rest, ok := strings.CutPrefix(name, "__self->"); ok {
+		return &gotree.SelectorExpr{
+			X:   &gotree.Ident{Name: agentSelfName},
 			Sel: exportIdent(rest),
 		}
 	}
@@ -391,7 +425,13 @@ func (l *lowerer) lowerFunCallExpr(e *aotir.FunCallExpr) (gotree.Expr, error) {
 // Builtins like the print family are surfaced as CallStmts, so any
 // CallExpr that reaches the lowerer is a user-defined Function whose
 // mangled name is already stored verbatim in Func.
+//
+// Phase 11.2: the synthetic `__await_all__` builtin is intercepted
+// here and lowered to a loop-receive IIFE over a `[]chan T`.
 func (l *lowerer) lowerCallExpr(e *aotir.CallExpr) (gotree.Expr, error) {
+	if e.Func == "__await_all__" {
+		return l.lowerAwaitAllCall(e)
+	}
 	args := make([]gotree.Expr, 0, len(e.Args))
 	for i, a := range e.Args {
 		v, err := l.lowerExpr(a)
@@ -401,8 +441,120 @@ func (l *lowerer) lowerCallExpr(e *aotir.CallExpr) (gotree.Expr, error) {
 		args = append(args, v)
 	}
 	return &gotree.CallExpr{
-		Fun:  &gotree.Ident{Name: e.Func},
+		Fun:  &gotree.Ident{Name: stripFFIPrefix(e.Func)},
 		Args: args,
+	}, nil
+}
+
+// lowerAwaitAllCall lowers `await_all(futs)` to:
+//
+//	func(__futs []chan T) []T {
+//	    __out := make([]T, len(__futs))
+//	    for __i, __f := range __futs {
+//	        __out[__i] = <-__f
+//	    }
+//	    return __out
+//	}(futs)
+//
+// The list of futures is gathered sequentially. The producer
+// goroutines run concurrently (seeded by `async`); the receives
+// merely wait for each one to be done.
+func (l *lowerer) lowerAwaitAllCall(e *aotir.CallExpr) (gotree.Expr, error) {
+	if len(e.Args) != 1 {
+		return nil, fmt.Errorf("__await_all__: expected 1 arg, got %d", len(e.Args))
+	}
+	elemType, err := l.lowerType(e.ResultElemType)
+	if err != nil {
+		return nil, fmt.Errorf("__await_all__ element: %w", err)
+	}
+	if elemType == "" {
+		return nil, fmt.Errorf("transpiler3/go/lower: __await_all__ element type cannot be unit")
+	}
+	listType := "[]" + elemType
+	chanListType := "[]chan " + elemType
+
+	// The argument is a list<future<T>> whose element type isn't carried
+	// on ListLit (it just records ElemType=TypeFuture). Build the slice
+	// literal in place so the Go side gets the right type annotation.
+	var arg gotree.Expr
+	if ll, ok := e.Args[0].(*aotir.ListLit); ok && ll.ElemType == aotir.TypeFuture {
+		elts := make([]gotree.Expr, 0, len(ll.Elems))
+		for i, x := range ll.Elems {
+			ge, err := l.lowerExpr(x)
+			if err != nil {
+				return nil, fmt.Errorf("__await_all__ elem %d: %w", i, err)
+			}
+			elts = append(elts, ge)
+		}
+		arg = &gotree.CompositeLit{
+			Type: &gotree.RawExpr{Src: chanListType},
+			Elts: elts,
+		}
+	} else {
+		arg, err = l.lowerExpr(e.Args[0])
+		if err != nil {
+			return nil, fmt.Errorf("__await_all__ arg: %w", err)
+		}
+	}
+
+	futsName := "__futs"
+	outName := "__out"
+	idxName := "__i"
+	chName := "__f"
+
+	makeOut := &gotree.AssignStmt{
+		Lhs: []gotree.Expr{&gotree.Ident{Name: outName}},
+		Tok: ":=",
+		Rhs: []gotree.Expr{&gotree.CallExpr{
+			Fun: &gotree.Ident{Name: "make"},
+			Args: []gotree.Expr{
+				&gotree.Ident{Name: listType},
+				&gotree.CallExpr{
+					Fun:  &gotree.Ident{Name: "len"},
+					Args: []gotree.Expr{&gotree.Ident{Name: futsName}},
+				},
+			},
+		}},
+	}
+
+	body := &gotree.BlockStmt{List: []gotree.Stmt{
+		&gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.IndexExpr{
+				X:     &gotree.Ident{Name: outName},
+				Index: &gotree.Ident{Name: idxName},
+			}},
+			Tok: "=",
+			Rhs: []gotree.Expr{&gotree.UnaryExpr{
+				Op: "<-",
+				X:  &gotree.Ident{Name: chName},
+			}},
+		},
+	}}
+
+	rangeLoop := &gotree.RangeStmt{
+		Key:   &gotree.Ident{Name: idxName},
+		Value: &gotree.Ident{Name: chName},
+		Tok:   ":=",
+		X:     &gotree.Ident{Name: futsName},
+		Body:  body,
+	}
+
+	ret := &gotree.ReturnStmt{Results: []gotree.Expr{&gotree.Ident{Name: outName}}}
+
+	fn := &gotree.FuncLit{
+		Type: &gotree.FuncType{
+			Params: []gotree.Field{{
+				Names: []string{futsName},
+				Type:  &gotree.Ident{Name: chanListType},
+			}},
+			Results: []gotree.Field{{Type: &gotree.Ident{Name: listType}}},
+		},
+		Body: &gotree.BlockStmt{List: []gotree.Stmt{makeOut, rangeLoop, ret}},
+	}
+
+	return &gotree.CallExpr{
+		Fun:  fn,
+		Args: []gotree.Expr{arg},
 	}, nil
 }
 
@@ -1054,7 +1206,7 @@ func (l *lowerer) lowerStrConvertExpr(e *aotir.StrConvertExpr) (gotree.Expr, err
 	case aotir.TypeInt:
 		l.addImport("strconv")
 		return &gotree.CallExpr{
-			Fun: &gotree.SelectorExpr{X: &gotree.Ident{Name: "strconv"}, Sel: "FormatInt"},
+			Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "strconv"}, Sel: "FormatInt"},
 			Args: []gotree.Expr{operand, &gotree.BasicLit{Kind: gotree.IntLit, Value: "10"}},
 		}, nil
 	case aotir.TypeFloat:
@@ -1240,6 +1392,24 @@ func (l *lowerer) lowerLinesExpr(e *aotir.LinesExpr) (gotree.Expr, error) {
 	l.addImport("strings")
 	l.addHelper("mochiLines")
 	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiLines"}, Args: []gotree.Expr{path}}, nil
+}
+
+// lowerHttpGetExpr emits mochiHttpGet(url) which dispatches between
+// `file://` URLs (handled with os.ReadFile) and http(s):// URLs
+// (handled with net/http.Get). The helper trims a single trailing
+// newline so the result matches the Swift/BEAM runtime behaviour.
+// Phase 14.1.
+func (l *lowerer) lowerHttpGetExpr(e *aotir.HttpGetExpr) (gotree.Expr, error) {
+	url, err := l.lowerExpr(e.URL)
+	if err != nil {
+		return nil, err
+	}
+	l.addImport("io")
+	l.addImport("net/http")
+	l.addImport("os")
+	l.addImport("strings")
+	l.addHelper("mochiHttpGet")
+	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiHttpGet"}, Args: []gotree.Expr{url}}, nil
 }
 
 // lowerOMapLiteralExpr emits an IIFE that allocates a fresh *mochiOMap[K, V]
@@ -1573,4 +1743,22 @@ func (l *lowerer) lowerLoadCSVExpr(e *aotir.LoadCSVExpr) (gotree.Expr, error) {
 	l.addImport("encoding/csv")
 	l.addHelper("mochiLoadCSV")
 	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiLoadCSV"}, Args: []gotree.Expr{path}}, nil
+}
+
+// lowerJsonDecodeExpr emits mochiJsonDecode(s) which uses encoding/json
+// to parse a JSON object literal into map[string]string. All scalar
+// values are coerced to their string representation so the call site
+// can use the result as a `map<string, string>` (matching the C
+// runtime's mochi_json_decode and BEAM's mochi_json:decode/1).
+// Returns an empty map on parse error so the program can inspect len(m)
+// rather than handling a panic. Phase 14.2.
+func (l *lowerer) lowerJsonDecodeExpr(e *aotir.JsonDecodeExpr) (gotree.Expr, error) {
+	input, err := l.lowerExpr(e.Input)
+	if err != nil {
+		return nil, fmt.Errorf("json_decode input: %w", err)
+	}
+	l.addImport("encoding/json")
+	l.addImport("fmt")
+	l.addHelper("mochiJsonDecode")
+	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiJsonDecode"}, Args: []gotree.Expr{input}}, nil
 }

@@ -98,8 +98,9 @@ type Driver struct {
 // gotree.File, renders it via emit, writes go.mod, invokes
 // `go build`, and writes the produced binary to out.
 //
-// target and profile are accepted for forward compatibility;
-// Phase 1 builds only for the host tuple.
+// When target == TargetGoModule, Build skips `go build` and
+// instead copies the work directory (go.mod + main.go) into
+// out as a publish-ready Go module. profile is informational.
 func (d *Driver) Build(src, out string, target, profile string) error {
 	if src == "" {
 		return errors.New("transpiler3/go/build: source path is required")
@@ -145,6 +146,13 @@ func (d *Driver) Build(src, out string, target, profile string) error {
 	}
 	if err := gemit.Emit(file, workDir, "main.go"); err != nil {
 		return fmt.Errorf("transpiler3/go/build: emit main.go: %w", err)
+	}
+	// Phase 10.2 Go FFI: copy any sibling *.go files next to the
+	// .mochi source into the work dir as `package main` companions.
+	// `extern go fun NAME(...)` declarations in the .mochi resolve
+	// against these copied files at link time.
+	if err := copySiblingGoFiles(src, workDir); err != nil {
+		return fmt.Errorf("transpiler3/go/build: copy sibling go files: %w", err)
 	}
 
 	absOut, err := filepath.Abs(out)

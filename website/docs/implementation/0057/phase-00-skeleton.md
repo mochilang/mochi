@@ -94,11 +94,12 @@ type Dep struct {
     Rev      string   `toml:"rev,omitempty"`            // git commit-ish
     Tag      string   `toml:"tag,omitempty"`            // git tag
     Branch   string   `toml:"branch,omitempty"`         // git branch
-    Optional bool     `toml:"optional,omitempty"`
-    Features []string `toml:"features,omitempty"`       // pkg feature set
-    Default  *bool    `toml:"default-features,omitempty"`
-    Registry string   `toml:"registry,omitempty"`       // mirror override
-    Targets  []string `toml:"targets,omitempty"`        // limit to listed transpiler targets
+    Optional  bool     `toml:"optional,omitempty"`
+    Features  []string `toml:"features,omitempty"`       // pkg feature set
+    Default   *bool    `toml:"default-features,omitempty"`
+    Registry  string   `toml:"registry,omitempty"`       // mirror override
+    Targets   []string `toml:"targets,omitempty"`        // limit to listed transpiler targets
+    Workspace bool     `toml:"workspace,omitempty"`      // inherit from [workspace.dependencies]
 }
 
 type Capabilities struct {
@@ -129,10 +130,16 @@ type Provenance struct {
     SourceDate  *time.Time `toml:"source-date,omitempty"`
 }
 
+// Workspace stub; Phase 1 promotes it to pkg/pkgmanifest/workspace.go
+// and Phase 3 adds DefaultTarget, Dependencies, Targets, AllowMultiVer.
 type Workspace struct {
-    Members  []string `toml:"members,omitempty"`
-    Exclude  []string `toml:"exclude,omitempty"`
-    Resolver string   `toml:"resolver,omitempty"`       // "pubgrub" (default) or "mvs"
+    Members        []string            `toml:"members,omitempty"`
+    Exclude        []string            `toml:"exclude,omitempty"`
+    Resolver       string              `toml:"resolver,omitempty"`         // "pubgrub" (default) or "mvs"
+    DefaultTarget  []string            `toml:"default-target,omitempty"`   // added Phase 3
+    Dependencies   map[string]Dep      `toml:"dependencies,omitempty"`     // added Phase 3
+    Targets        map[string][]string `toml:"targets,omitempty"`          // added Phase 3
+    AllowMultiVer  []string            `toml:"allow-multi-version,omitempty"` // added Phase 3
 }
 ```
 

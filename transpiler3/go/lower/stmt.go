@@ -23,6 +23,13 @@ func (l *lowerer) lowerBlock(b *aotir.Block) (*gotree.BlockStmt, error) {
 		if _, ok := s.(*aotir.ClosureEnvStmt); ok {
 			continue
 		}
+		if _, ok := s.(*aotir.RawCStmt); ok {
+			// Phase 8.0: Datalog setup is a RawCStmt the C backend
+			// uses for runtime engine wiring. The Go backend evaluates
+			// Datalog at compile time inside lowerDatalogQueryExpr, so
+			// the raw-C statement carries no information here.
+			continue
+		}
 		if qs, ok := s.(*aotir.QueryScopeStmt); ok {
 			inner, err := l.lowerBlock(qs.Body)
 			if err != nil {
@@ -78,8 +85,14 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (gotree.Stmt, error) {
 		return l.lowerTryCatchStmt(s)
 	case *aotir.PanicStmt:
 		return l.lowerPanicStmt(s)
+	case *aotir.ChanSendStmt:
+		return l.lowerChanSendStmt(s)
+	case *aotir.StreamEmitStmt:
+		return l.lowerStreamEmitStmt(s)
 	case *aotir.OMapPutStmt:
 		return l.lowerOMapPutStmt(s)
+	case *aotir.AgentIntentCallStmt:
+		return l.lowerAgentIntentCallStmt(s)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle stmt %T", s)
 	}
@@ -180,6 +193,11 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) (gotree.Stmt, error) {
 	default:
 		// User-defined function call as a statement. Func is the
 		// already-mangled mochi__<source> name; args lower as usual.
+		// Phase 10.2: Go FFI calls arrive with a `mochi_go_` prefix
+		// from the shared aotir lowerer (used by the C target for
+		// its subprocess-RPC trampoline). The Go target calls the
+		// user-supplied Go function directly, so the prefix is
+		// stripped here.
 		args := make([]gotree.Expr, 0, len(s.Args))
 		for i, a := range s.Args {
 			v, err := l.lowerExpr(a)
@@ -189,10 +207,23 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) (gotree.Stmt, error) {
 			args = append(args, v)
 		}
 		return &gotree.ExprStmt{X: &gotree.CallExpr{
-			Fun:  &gotree.Ident{Name: s.Func},
+			Fun:  &gotree.Ident{Name: stripFFIPrefix(s.Func)},
 			Args: args,
 		}}, nil
 	}
+}
+
+// stripFFIPrefix removes the C-target-specific FFI mangling
+// (mochi_go_, mochi_py_, mochi_js_) from a function name so
+// the Go target calls the user's Go function directly. User
+// Mochi functions carry a `mochi__` prefix; that one stays.
+func stripFFIPrefix(name string) string {
+	for _, p := range []string{"mochi_go_", "mochi_py_", "mochi_js_"} {
+		if len(name) > len(p) && name[:len(p)] == p {
+			return name[len(p):]
+		}
+	}
+	return name
 }
 
 func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (gotree.Stmt, error) {
@@ -238,16 +269,38 @@ func (l *lowerer) lowerAssignStmt(s *aotir.AssignStmt) (gotree.Stmt, error) {
 	if err != nil {
 		return nil, err
 	}
+	var lhs gotree.Expr = &gotree.Ident{Name: mangleIdent(s.Name)}
+	// Agent intent bodies see field writes as AssignStmt with
+	// Name="__self->field"; lower the LHS to self.Field so the
+	// pointer-receiver method mutates the receiver in place.
+	if rest, ok := stripSelfPrefix(s.Name); ok {
+		lhs = &gotree.SelectorExpr{
+			X:   &gotree.Ident{Name: agentSelfName},
+			Sel: exportIdent(rest),
+		}
+	}
 	return &gotree.AssignStmt{
-		Lhs: []gotree.Expr{&gotree.Ident{Name: mangleIdent(s.Name)}},
+		Lhs: []gotree.Expr{lhs},
 		Tok: "=",
 		Rhs: []gotree.Expr{val},
 	}, nil
 }
 
+// stripSelfPrefix returns the field name after `__self->`, matching the
+// emitName encoding the shared C lowerer uses inside agent intent bodies.
+func stripSelfPrefix(name string) (string, bool) {
+	const p = "__self->"
+	if len(name) > len(p) && name[:len(p)] == p {
+		return name[len(p):], true
+	}
+	return "", false
+}
+
 // lowerQuerySortInPlace recognises the post-query patterns
-//   __queryN = ListSortAscExpr(__queryN)
-//   __queryN = ListSliceExpr(__queryN, start, end)
+//
+//	__queryN = ListSortAscExpr(__queryN)
+//	__queryN = ListSliceExpr(__queryN, start, end)
+//
 // emitted by the shared C lowerer for `order by` / `skip` / `take`,
 // and rewrites them to in-place Go forms (`slices.Sort(xs)` and
 // `xs = xs[start:end]`). The receiver and LHS always alias the same
@@ -262,7 +315,7 @@ func (l *lowerer) lowerQuerySortInPlace(s *aotir.AssignStmt) (gotree.Stmt, bool,
 		}
 		l.addImport("slices")
 		return &gotree.ExprStmt{X: &gotree.CallExpr{
-			Fun: &gotree.SelectorExpr{X: &gotree.Ident{Name: "slices"}, Sel: "Sort"},
+			Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "slices"}, Sel: "Sort"},
 			Args: []gotree.Expr{&gotree.Ident{Name: mangleIdent(s.Name)}},
 		}}, true, nil
 	case *aotir.ListSliceExpr:
@@ -377,6 +430,21 @@ func (l *lowerer) letTypeText(s *aotir.LetStmt) (string, error) {
 	case aotir.TypeOMap:
 		l.addHelper("mochiOMap")
 		return l.lowerOMapType(s.KeyType, s.ValueType)
+	case aotir.TypeChan:
+		return l.lowerChanType(s.ChanElemType)
+	case aotir.TypeStream:
+		l.addHelper("mochiStream")
+		return l.lowerStreamType(s.StreamElemType)
+	case aotir.TypeSub:
+		l.addHelper("mochiSub")
+		return l.lowerSubType(s.SubElemType)
+	case aotir.TypeFuture:
+		return l.lowerFutureType(s.FutureElemType)
+	case aotir.TypeAgent:
+		if s.AgentName == "" {
+			return "", fmt.Errorf("agent let missing AgentName")
+		}
+		return "*" + s.AgentName, nil
 	case aotir.TypeRecord:
 		if s.RecordName == "" {
 			return "", fmt.Errorf("record let missing RecordName")
@@ -603,6 +671,44 @@ func (l *lowerer) lowerOMapPutStmt(s *aotir.OMapPutStmt) (gotree.Stmt, error) {
 	}}, nil
 }
 
+// lowerChanSendStmt lowers `send(c, v)` (Phase 9.1) to Go's `c <- v`.
+// Like ChanMake / ChanRecv the mapping is direct because Mochi's send
+// semantics (block on full, no error) match Go's native channel send.
+func (l *lowerer) lowerChanSendStmt(s *aotir.ChanSendStmt) (gotree.Stmt, error) {
+	ch, err := l.lowerExpr(s.Chan)
+	if err != nil {
+		return nil, fmt.Errorf("chan send chan: %w", err)
+	}
+	val, err := l.lowerExpr(s.Val)
+	if err != nil {
+		return nil, fmt.Errorf("chan send value: %w", err)
+	}
+	return &gotree.SendStmt{Chan: ch, Value: val}, nil
+}
+
+// lowerStreamEmitStmt lowers `emit(stream, val)` (Phase 9.2) to a
+// call into the mochiStreamEmit runtime helper which fans val out
+// to every subscriber: unbounded subscribers block until they can
+// receive, bounded (subscribe_limit) subscribers drop on full.
+func (l *lowerer) lowerStreamEmitStmt(s *aotir.StreamEmitStmt) (gotree.Stmt, error) {
+	stream, err := l.lowerExpr(s.Stream)
+	if err != nil {
+		return nil, fmt.Errorf("emit stream: %w", err)
+	}
+	val, err := l.lowerExpr(s.Val)
+	if err != nil {
+		return nil, fmt.Errorf("emit value: %w", err)
+	}
+	l.addHelper("mochiStream")
+	l.addHelper("mochiSub")
+	l.addHelper("mochiStreamEmit")
+	l.addImport("sync")
+	return &gotree.ExprStmt{X: &gotree.CallExpr{
+		Fun:  &gotree.Ident{Name: "mochiStreamEmit"},
+		Args: []gotree.Expr{stream, val},
+	}}, nil
+}
+
 // lowerPanicStmt emits `mochiPanic(code, msg)` so the value propagates as
 // mochiPanicValue, recognised by the mochiTry recover handler.
 func (l *lowerer) lowerPanicStmt(s *aotir.PanicStmt) (gotree.Stmt, error) {
@@ -619,5 +725,28 @@ func (l *lowerer) lowerPanicStmt(s *aotir.PanicStmt) (gotree.Stmt, error) {
 	return &gotree.ExprStmt{X: &gotree.CallExpr{
 		Fun:  &gotree.Ident{Name: "mochiPanic"},
 		Args: []gotree.Expr{code, msg},
+	}}, nil
+}
+
+// lowerAgentIntentCallStmt lowers a discard-result intent call to a Go
+// method-call expression statement: `recv.IntentName(args...)`. Lowers
+// identically to AgentIntentCallExpr but wraps the call as an ExprStmt
+// so the void value is correctly dropped.
+func (l *lowerer) lowerAgentIntentCallStmt(s *aotir.AgentIntentCallStmt) (gotree.Stmt, error) {
+	recv, err := l.lowerExpr(s.Receiver)
+	if err != nil {
+		return nil, fmt.Errorf("intent %s.%s receiver: %w", s.AgentName, s.IntentName, err)
+	}
+	args := make([]gotree.Expr, 0, len(s.Args))
+	for i, a := range s.Args {
+		v, err := l.lowerExpr(a)
+		if err != nil {
+			return nil, fmt.Errorf("intent %s.%s arg %d: %w", s.AgentName, s.IntentName, i, err)
+		}
+		args = append(args, v)
+	}
+	return &gotree.ExprStmt{X: &gotree.CallExpr{
+		Fun:  &gotree.SelectorExpr{X: recv, Sel: exportIdent(s.IntentName)},
+		Args: args,
 	}}, nil
 }

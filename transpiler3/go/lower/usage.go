@@ -299,13 +299,37 @@ func exprReferencesVar(e aotir.Expr, name string) bool {
 	case *aotir.ChanRecvExpr:
 		return exprReferencesVar(v.Chan, name)
 	case *aotir.StreamMakeExpr:
-		return false
+		return exprReferencesVar(v.Cap, name)
 	case *aotir.SubMakeExpr:
 		return exprReferencesVar(v.Stream, name)
 	case *aotir.SubMakeLimitExpr:
 		return exprReferencesVar(v.Stream, name) || exprReferencesVar(v.Limit, name)
 	case *aotir.SubRecvExpr:
 		return exprReferencesVar(v.Sub, name)
+	case *aotir.AgentLit:
+		for _, f := range v.Fields {
+			if exprReferencesVar(f.Value, name) {
+				return true
+			}
+		}
+		return false
+	case *aotir.AgentSpawnExpr:
+		for _, a := range v.InitArgs {
+			if exprReferencesVar(a, name) {
+				return true
+			}
+		}
+		return false
+	case *aotir.AgentIntentCallExpr:
+		if exprReferencesVar(v.Receiver, name) {
+			return true
+		}
+		for _, a := range v.Args {
+			if exprReferencesVar(a, name) {
+				return true
+			}
+		}
+		return false
 	}
 	return true
 }
