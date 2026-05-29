@@ -150,7 +150,7 @@ func (d *Driver) Build(src, out string, target Target) error {
 	moduleName := lower.ModuleName(src)
 	pkgName := d.packageName(src)
 
-	pyMod, err := lower.Lower(prog)
+	pyMod, err := lower.Lower(prog, moduleName)
 	if err != nil {
 		return fmt.Errorf("python build: python lower: %w", err)
 	}
@@ -172,6 +172,23 @@ func (d *Driver) Build(src, out string, target Target) error {
 	}
 	if err := writePackageLayout(workDir, pkgName, moduleName); err != nil {
 		return err
+	}
+
+	// Phase 12.0: when the program declares `extern python fun` entries,
+	// copy the sidecar `<moduleName>_externs.py` from next to the .mochi
+	// source into `src/<pkgName>_externs.py` so the generated module's
+	// `from <pkgName>_externs import ...` resolves. Missing-sidecar is a
+	// build error: the FFI surface is opt-in and an undeclared sidecar
+	// is the user's mistake to fix.
+	if len(prog.PythonFuncs) > 0 {
+		sidecar := filepath.Join(filepath.Dir(src), moduleName+"_externs.py")
+		if _, err := os.Stat(sidecar); err != nil {
+			return fmt.Errorf("python build: extern python fun declared but sidecar %s not found: %w", sidecar, err)
+		}
+		dst := filepath.Join(workDir, "src", pkgName+"_externs.py")
+		if err := copyFile(dst, sidecar); err != nil {
+			return fmt.Errorf("python build: copy externs sidecar: %w", err)
+		}
 	}
 
 	if target != TargetPythonSource {
@@ -218,7 +235,7 @@ func (d *Driver) cacheKey(srcBytes []byte) string {
 	if d.tc != nil {
 		fmt.Fprintf(h, "%d.%d.%d", d.tc.Major, d.tc.Minor, d.tc.Patch)
 	}
-	h.Write([]byte("mep51-phase11"))
+	h.Write([]byte("mep51-phase12"))
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
