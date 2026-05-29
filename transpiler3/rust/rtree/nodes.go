@@ -365,6 +365,31 @@ func (f *ForRangeStmt) RustString(ind int) string {
 	return sb.String()
 }
 
+// ---- ForEachStmt ----
+
+// ForEachStmt is `for var in iter { body }`. Iter is rendered raw, so the
+// lowerer can choose `xs.iter().cloned()` or `&xs` depending on element
+// type and ownership.
+type ForEachStmt struct {
+	Var  string
+	Iter Expr
+	Body []Stmt
+}
+
+func (*ForEachStmt) rustStmt() {}
+
+func (f *ForEachStmt) RustString(ind int) string {
+	pad := indent(ind)
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%sfor %s in %s {\n", pad, f.Var, f.Iter.RustExpr())
+	for _, s := range f.Body {
+		sb.WriteString(s.RustString(ind + 1))
+		sb.WriteString("\n")
+	}
+	sb.WriteString(pad + "}")
+	return sb.String()
+}
+
 // ---- BreakStmt / ContinueStmt ----
 
 // BreakStmt is `break;`.
@@ -589,4 +614,123 @@ func (*FieldAccess) rustExpr() {}
 
 func (f *FieldAccess) RustExpr() string {
 	return fmt.Sprintf("%s.%s", f.Receiver.RustExpr(), f.Field)
+}
+
+// ---- IndexExpr ----
+
+// IndexExpr is `receiver[index]`. Renders the index as raw so callers can
+// insert an `as usize` cast where required.
+type IndexExpr struct {
+	Receiver Expr
+	Index    Expr
+}
+
+func (*IndexExpr) rustExpr() {}
+
+func (i *IndexExpr) RustExpr() string {
+	return fmt.Sprintf("%s[%s]", i.Receiver.RustExpr(), i.Index.RustExpr())
+}
+
+// ---- RawExpr ----
+
+// RawExpr is a verbatim Rust expression. Use sparingly; the renderer
+// emits Code as-is, so the caller is responsible for syntax.
+type RawExpr struct {
+	Code string
+}
+
+func (*RawExpr) rustExpr() {}
+
+func (r *RawExpr) RustExpr() string { return r.Code }
+
+// ---- MacroVecLit ----
+
+// MacroVecLit is `vec![e1, e2, ...]`.
+type MacroVecLit struct {
+	Elems []Expr
+}
+
+func (*MacroVecLit) rustExpr() {}
+
+func (m *MacroVecLit) RustExpr() string {
+	var sb strings.Builder
+	sb.WriteString("vec![")
+	for i, e := range m.Elems {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(e.RustExpr())
+	}
+	sb.WriteByte(']')
+	return sb.String()
+}
+
+// ---- BlockExpr ----
+
+// BlockExpr is `{ stmt1; stmt2; ...; tail_expr }`. Useful for building
+// a map literal as `{ let mut m = HashMap::new(); m.insert(...); m }`.
+type BlockExpr struct {
+	Stmts []Stmt
+	Tail  Expr // optional trailing expression (no semicolon)
+}
+
+func (*BlockExpr) rustExpr() {}
+
+func (b *BlockExpr) RustExpr() string {
+	var sb strings.Builder
+	sb.WriteString("{ ")
+	for _, s := range b.Stmts {
+		sb.WriteString(s.RustString(0))
+		sb.WriteByte(' ')
+	}
+	if b.Tail != nil {
+		sb.WriteString(b.Tail.RustExpr())
+		sb.WriteByte(' ')
+	}
+	sb.WriteString("}")
+	return sb.String()
+}
+
+// ---- CastExpr ----
+
+// CastExpr is `expr as type`.
+type CastExpr struct {
+	Expr     Expr
+	TypeName string
+}
+
+func (*CastExpr) rustExpr() {}
+
+func (c *CastExpr) RustExpr() string {
+	return fmt.Sprintf("(%s as %s)", c.Expr.RustExpr(), c.TypeName)
+}
+
+// ---- RefExpr ----
+
+// RefExpr is `&expr` or `&mut expr`.
+type RefExpr struct {
+	Mut bool
+	Expr Expr
+}
+
+func (*RefExpr) rustExpr() {}
+
+func (r *RefExpr) RustExpr() string {
+	if r.Mut {
+		return "&mut " + r.Expr.RustExpr()
+	}
+	return "&" + r.Expr.RustExpr()
+}
+
+// ---- CloneExpr ----
+
+// CloneExpr is `expr.clone()`.
+type CloneExpr struct {
+	Expr Expr
+}
+
+func (*CloneExpr) rustExpr() {}
+
+func (c *CloneExpr) RustExpr() string {
+	return c.Expr.RustExpr() + ".clone()"
 }

@@ -137,8 +137,63 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (rtree.Stmt, error) {
 		return &rtree.ContinueStmt{}, nil
 	case *aotir.ReturnStmt:
 		return l.lowerReturnStmt(n)
+	case *aotir.ForEachStmt:
+		return l.lowerForEachStmt(n)
+	case *aotir.MapPutStmt:
+		return l.lowerMapPutStmt(n)
+	case *aotir.ListSetStmt:
+		return l.lowerListSetStmt(n)
 	}
 	return nil, fmt.Errorf("rust lower: unsupported stmt %T", s)
+}
+
+func (l *lowerer) lowerForEachStmt(s *aotir.ForEachStmt) (rtree.Stmt, error) {
+	iter, err := l.lowerExpr(s.List)
+	if err != nil {
+		return nil, err
+	}
+	body, err := l.lowerBlock(s.Body)
+	if err != nil {
+		return nil, err
+	}
+	// Iterate by value via `.clone()` to keep semantics simple for primitives.
+	// For Strings, `.iter().cloned()` works; for primitives, `.iter().copied()`.
+	wrapped := &rtree.RawExpr{Code: iter.RustExpr() + ".iter().cloned()"}
+	return &rtree.ForEachStmt{Var: s.Var, Iter: wrapped, Body: body}, nil
+}
+
+func (l *lowerer) lowerMapPutStmt(s *aotir.MapPutStmt) (rtree.Stmt, error) {
+	k, err := l.lowerExpr(s.Key)
+	if err != nil {
+		return nil, err
+	}
+	v, err := l.lowerExpr(s.Value)
+	if err != nil {
+		return nil, err
+	}
+	return &rtree.ExprStmt{Expr: &rtree.MethodCall{
+		Receiver: &rtree.Ident{Name: s.Name},
+		Method:   "insert",
+		Args:     []rtree.Expr{k, v},
+	}}, nil
+}
+
+func (l *lowerer) lowerListSetStmt(s *aotir.ListSetStmt) (rtree.Stmt, error) {
+	idx, err := l.lowerExpr(s.Index)
+	if err != nil {
+		return nil, err
+	}
+	v, err := l.lowerExpr(s.Value)
+	if err != nil {
+		return nil, err
+	}
+	return &rtree.AssignStmt{
+		Target: &rtree.IndexExpr{
+			Receiver: &rtree.Ident{Name: s.Name},
+			Index:    &rtree.CastExpr{Expr: idx, TypeName: "usize"},
+		},
+		Value: v,
+	}, nil
 }
 
 func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (rtree.Stmt, error) {
@@ -349,8 +404,225 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 			return &rtree.MethodCall{Receiver: op, Method: "ceil"}, nil
 		}
 		return nil, fmt.Errorf("rust lower: unknown math fn %s", n.Func)
+	case *aotir.ListLit:
+		elems := make([]rtree.Expr, 0, len(n.Elems))
+		for _, el := range n.Elems {
+			le, err := l.lowerExpr(el)
+			if err != nil {
+				return nil, err
+			}
+			elems = append(elems, le)
+		}
+		return &rtree.MacroVecLit{Elems: elems}, nil
+	case *aotir.IndexExpr:
+		r, err := l.lowerExpr(n.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		i, err := l.lowerExpr(n.Index)
+		if err != nil {
+			return nil, err
+		}
+		// xs[i as usize].clone() handles both Copy primitives and owned Strings.
+		return &rtree.CloneExpr{Expr: &rtree.IndexExpr{
+			Receiver: r,
+			Index:    &rtree.CastExpr{Expr: i, TypeName: "usize"},
+		}}, nil
+	case *aotir.LenExpr:
+		r, err := l.lowerExpr(n.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.CastExpr{Expr: &rtree.MethodCall{Receiver: r, Method: "len"}, TypeName: "i64"}, nil
+	case *aotir.AppendExpr:
+		r, err := l.lowerExpr(n.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		v, err := l.lowerExpr(n.Value)
+		if err != nil {
+			return nil, err
+		}
+		// Functional append: { let mut __t = xs.clone(); __t.push(v); __t }
+		return &rtree.BlockExpr{
+			Stmts: []rtree.Stmt{
+				&rtree.LetStmt{Mutable: true, Name: "__t", Value: &rtree.CloneExpr{Expr: r}},
+				&rtree.ExprStmt{Expr: &rtree.MethodCall{
+					Receiver: &rtree.Ident{Name: "__t"},
+					Method:   "push",
+					Args:     []rtree.Expr{v},
+				}},
+			},
+			Tail: &rtree.Ident{Name: "__t"},
+		}, nil
+	case *aotir.MapLit:
+		return l.lowerMapLit(n)
+	case *aotir.MapGetExpr:
+		r, err := l.lowerExpr(n.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		k, err := l.lowerExpr(n.Key)
+		if err != nil {
+			return nil, err
+		}
+		// m.get(&k).cloned().unwrap_or_default()
+		return &rtree.MethodCall{
+			Receiver: &rtree.MethodCall{
+				Receiver: &rtree.MethodCall{
+					Receiver: r,
+					Method:   "get",
+					Args:     []rtree.Expr{&rtree.RefExpr{Expr: k}},
+				},
+				Method: "cloned",
+			},
+			Method: "unwrap_or_default",
+		}, nil
+	case *aotir.MapHasExpr:
+		r, err := l.lowerExpr(n.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		k, err := l.lowerExpr(n.Key)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{
+			Receiver: r,
+			Method:   "contains_key",
+			Args:     []rtree.Expr{&rtree.RefExpr{Expr: k}},
+		}, nil
+	case *aotir.MapLenExpr:
+		r, err := l.lowerExpr(n.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.CastExpr{Expr: &rtree.MethodCall{Receiver: r, Method: "len"}, TypeName: "i64"}, nil
+	case *aotir.MapKeysExpr:
+		r, err := l.lowerExpr(n.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		// sorted Vec of cloned keys for deterministic iteration order
+		return &rtree.RawExpr{Code: "{ let mut __k: Vec<_> = " + r.RustExpr() + ".keys().cloned().collect(); __k.sort(); __k }"}, nil
+	case *aotir.MapValuesExpr:
+		r, err := l.lowerExpr(n.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawExpr{Code: "{ let mut __kv: Vec<_> = " + r.RustExpr() + ".iter().collect(); __kv.sort_by(|a,b| a.0.cmp(b.0)); __kv.into_iter().map(|(_,v)| v.clone()).collect::<Vec<_>>() }"}, nil
+	case *aotir.SetLiteralExpr:
+		elems := make([]rtree.Expr, 0, len(n.Elems))
+		for _, el := range n.Elems {
+			le, err := l.lowerExpr(el)
+			if err != nil {
+				return nil, err
+			}
+			elems = append(elems, le)
+		}
+		// HashSet::from_iter(vec![...])
+		return &rtree.RawExpr{
+			Code: "std::collections::HashSet::<_>::from_iter(" + (&rtree.MacroVecLit{Elems: elems}).RustExpr() + ")",
+		}, nil
+	case *aotir.SetAddExpr:
+		r, err := l.lowerExpr(n.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		v, err := l.lowerExpr(n.Elem)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.BlockExpr{
+			Stmts: []rtree.Stmt{
+				&rtree.LetStmt{Mutable: true, Name: "__s", Value: &rtree.CloneExpr{Expr: r}},
+				&rtree.ExprStmt{Expr: &rtree.MethodCall{
+					Receiver: &rtree.Ident{Name: "__s"},
+					Method:   "insert",
+					Args:     []rtree.Expr{v},
+				}},
+			},
+			Tail: &rtree.Ident{Name: "__s"},
+		}, nil
+	case *aotir.SetHasExpr:
+		r, err := l.lowerExpr(n.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		v, err := l.lowerExpr(n.Elem)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{
+			Receiver: r,
+			Method:   "contains",
+			Args:     []rtree.Expr{&rtree.RefExpr{Expr: v}},
+		}, nil
+	case *aotir.SetLenExpr:
+		r, err := l.lowerExpr(n.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.CastExpr{Expr: &rtree.MethodCall{Receiver: r, Method: "len"}, TypeName: "i64"}, nil
+	case *aotir.ListContainsExpr:
+		r, err := l.lowerExpr(n.List)
+		if err != nil {
+			return nil, err
+		}
+		v, err := l.lowerExpr(n.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{
+			Receiver: r,
+			Method:   "contains",
+			Args:     []rtree.Expr{&rtree.RefExpr{Expr: v}},
+		}, nil
+	case *aotir.ListSumExpr:
+		r, err := l.lowerExpr(n.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawExpr{Code: r.RustExpr() + ".iter().copied().sum::<i64>()"}, nil
+	case *aotir.ListMinExpr:
+		r, err := l.lowerExpr(n.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawExpr{Code: "*" + r.RustExpr() + ".iter().min().unwrap()"}, nil
+	case *aotir.ListMaxExpr:
+		r, err := l.lowerExpr(n.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawExpr{Code: "*" + r.RustExpr() + ".iter().max().unwrap()"}, nil
 	}
 	return nil, fmt.Errorf("rust lower: unsupported expr %T", e)
+}
+
+func (l *lowerer) lowerMapLit(m *aotir.MapLit) (rtree.Expr, error) {
+	stmts := make([]rtree.Stmt, 0, len(m.Keys)+1)
+	stmts = append(stmts, &rtree.LetStmt{
+		Mutable: true,
+		Name:    "__m",
+		Value:   &rtree.RawExpr{Code: "std::collections::HashMap::new()"},
+	})
+	for i, k := range m.Keys {
+		kk, err := l.lowerExpr(k)
+		if err != nil {
+			return nil, err
+		}
+		vv, err := l.lowerExpr(m.Values[i])
+		if err != nil {
+			return nil, err
+		}
+		stmts = append(stmts, &rtree.ExprStmt{Expr: &rtree.MethodCall{
+			Receiver: &rtree.Ident{Name: "__m"},
+			Method:   "insert",
+			Args:     []rtree.Expr{kk, vv},
+		}})
+	}
+	return &rtree.BlockExpr{Stmts: stmts, Tail: &rtree.Ident{Name: "__m"}}, nil
 }
 
 func (l *lowerer) lowerBinaryExpr(b *aotir.BinaryExpr) (rtree.Expr, error) {
