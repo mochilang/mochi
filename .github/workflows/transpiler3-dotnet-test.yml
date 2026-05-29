@@ -51,7 +51,7 @@ jobs:
           cache-dependency-path: go.sum
 
       - name: Set up .NET ${{ matrix.dotnet }}
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ matrix.dotnet }}
 

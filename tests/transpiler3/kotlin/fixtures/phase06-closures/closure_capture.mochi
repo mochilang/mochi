@@ -1,0 +1,6 @@
+fun make_multiplier(factor: int): fun(int): int {
+    return fun(x: int): int => x * factor
+}
+let times3 = make_multiplier(3)
+print(times3(4))
+print(times3(7))

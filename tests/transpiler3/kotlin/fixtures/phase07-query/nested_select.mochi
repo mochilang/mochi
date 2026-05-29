@@ -1,0 +1,6 @@
+let outer = [1, 2, 3]
+let inner_r = from x in outer where x > 1 select x
+let result = from y in inner_r select y * 2
+for r in result {
+  print(r)
+}

@@ -1,0 +1,7 @@
+type Num {
+  n: int
+}
+let xs = [Num { n: 10 }, Num { n: 20 }, Num { n: 30 }]
+for item in xs {
+  print(item.n)
+}

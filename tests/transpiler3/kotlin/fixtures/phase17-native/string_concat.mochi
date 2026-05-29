@@ -1,0 +1,2 @@
+let s = "native" + " binary"
+print(s)
