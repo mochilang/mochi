@@ -342,11 +342,19 @@ A mismatch is a P0 forensic signal.
 
 | Code | Trigger |
 |------|---------|
-| `M057_BLOB_E001` | BLAKE3 of downloaded bytes does not match URL hex. |
-| `M057_BLOB_E002` | SHA-256 of downloaded bytes does not match index `s2`. |
-| `M057_BLOB_E003` | Tar entry violates safety policy. |
-| `M057_BLOB_NOT_FOUND` | 404 from blob endpoint. |
-| `M057_CACHE_LOCKED` | Could not acquire per-blob lock (timeout). |
+Sources (see [error registry](./errors)). The Phase 9 BLOB_E002
+mapping is registry-name reuse: the registry's `M057_BLOB_E002` is the
+generic "fetch partial / connection reset" sentinel. SHA-256 disagreement
+falls under `M057_BLOB_E001` (dual-hash family) plus the integrity
+sidecar. Verbal aliases used in early drafts:
+
+| Code | Trigger |
+|------|---------|
+| `M057_BLOB_E001` | BLAKE3 (or SHA-256 sidecar) of downloaded bytes does not match URL hex / index `s2`. |
+| `M057_BLOB_E002` | Blob fetch partial / connection reset (auto-retried). |
+| `M057_BLOB_E003` | Tar entry violates safety policy (path escape, absolute path). |
+| `M057_BLOB_E007` | 404 from local registry blob endpoint. |
+| `M057_RESOLVE_E008` | Could not acquire per-blob lock (timeout). |
 
 ## Test set
 

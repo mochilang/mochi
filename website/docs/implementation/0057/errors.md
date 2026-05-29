@@ -53,6 +53,7 @@ Conventions:
 | M057_RESOLVE_E007 | 2.2 | Cold-cache sentinel (internal) | internal |
 | M057_RESOLVE_E008 | 2.3 | Cache lock contention exceeded timeout | "another mochi process holds the lock" |
 | M057_RESOLVE_E009 | 2.3 | Cache integrity check failed | "run `mochi pkg cache verify`" |
+| M057_RESOLVE_E010 | 2.0 | Both `mochi.toml` and `mochi.workspace.toml` in the same directory | "rename or delete one" |
 
 ## WORKSPACE (Phase 3)
 
@@ -181,6 +182,7 @@ specific target failed").
 | M057_SBOM_E001 | 15.6 | CycloneDX schema validation failed | "see emitted message for field" |
 | M057_SBOM_E002 | 15.6 | SPDX schema validation failed | "see emitted message for field" |
 | M057_SBOM_E003 | 15.3 | in-toto Statement does not match resolved tree | "re-run publish from a clean tree" |
+| M057_SBOM_E004 | 15.4 | PURL malformed (invalid scope, version, or qualifier) | "fix the manifest field surfaced in the message" |
 
 ## ADV (Phase 16 advisory)
 

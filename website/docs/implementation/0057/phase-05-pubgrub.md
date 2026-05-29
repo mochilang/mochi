@@ -397,13 +397,16 @@ PubGrub's correctness guarantee says it always terminates on finite registries; 
 
 ## Error code surface
 
+Sources (see [error registry](./errors)). Verbal aliases from early
+drafts are renamed to the canonical `M057_SOLVER_E<NNN>` form:
+
 | Code | Trigger |
 |------|---------|
 | `M057_SOLVER_E001` | Solver exceeded wall-clock or iteration limit. |
-| `M057_SOLVER_UNSAT` | No solution exists. Phase 6 produces the explanation. |
-| `M057_CAPABILITY_DENIED` | Candidate version requires capabilities not in consumer pin. |
-| `M057_TARGET_UNSUPPORTED` | Candidate version's target set is not a superset. |
-| `M057_COMPILER_INCOMPAT` | Candidate version's `mochi` range excludes running compiler. |
+| `M057_SOLVER_E002` | No solution exists. Phase 6 produces the explanation. |
+| `M057_SOLVER_E003` | Candidate version requires capabilities not in consumer pin. |
+| `M057_SOLVER_E004` | Candidate version's target set is not a superset. |
+| `M057_SOLVER_E005` | Candidate version's `mochi` range excludes running compiler. |
 
 ## Test set
 

@@ -246,7 +246,7 @@ This is the cheap insurance against Phase 8 protocol drift.
 
 Cases:
 
-- `Versions("@nonexistent/pkg")` returns `M057_PKG_NOT_FOUND`.
+- `Versions("@nonexistent/pkg")` returns `M057_INDEX_E008` (package not found in local index).
 - A JSONL file with a malformed line raises `M057_INDEX_E002` and the error mentions the line number.
 - A file whose JSONL contains an unknown field (forward-compat) is *accepted* with a warning under `Manifest.Warnings`; old clients must not refuse to parse new fields (research note 07 §14, E003 reserved but not used at v1).
 - A `Blob(notfound)` returns `M057_BLOB_E007` (local registry 404). The
