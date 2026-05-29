@@ -639,6 +639,32 @@ func helperDecl(name string) gotree.Decl {
 	}
 	return parts
 }`}
+	case "mochiLoadCSV":
+		return &gotree.RawDecl{Code: `func mochiLoadCSV(path string) [][]string {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil
+	}
+	defer f.Close()
+	r := csv.NewReader(f)
+	r.FieldsPerRecord = -1
+	rows, err := r.ReadAll()
+	if err != nil {
+		return nil
+	}
+	return rows
+}`}
+	case "mochiSaveCSV":
+		return &gotree.RawDecl{Code: `func mochiSaveCSV(path string, data [][]string) {
+	f, err := os.Create(path)
+	if err != nil {
+		return
+	}
+	defer f.Close()
+	w := csv.NewWriter(f)
+	_ = w.WriteAll(data)
+	w.Flush()
+}`}
 	}
 	return nil
 }

@@ -72,6 +72,8 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (gotree.Stmt, error) {
 		return l.lowerWriteFileStmt(s)
 	case *aotir.AppendFileStmt:
 		return l.lowerAppendFileStmt(s)
+	case *aotir.SaveCSVStmt:
+		return l.lowerSaveCSVStmt(s)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle stmt %T", s)
 	}
@@ -126,6 +128,27 @@ func (l *lowerer) lowerAppendFileStmt(s *aotir.AppendFileStmt) (gotree.Stmt, err
 	return &gotree.ExprStmt{X: &gotree.CallExpr{
 		Fun:  &gotree.Ident{Name: "mochiAppendFile"},
 		Args: []gotree.Expr{path, content},
+	}}, nil
+}
+
+// lowerSaveCSVStmt emits mochiSaveCSV(path, data) which writes the
+// list<list<string>> using encoding/csv (RFC 4180 quoting). The helper
+// ignores errors to match the C runtime's fire-and-forget semantics.
+func (l *lowerer) lowerSaveCSVStmt(s *aotir.SaveCSVStmt) (gotree.Stmt, error) {
+	path, err := l.lowerExpr(s.Path)
+	if err != nil {
+		return nil, fmt.Errorf("saveCSV path: %w", err)
+	}
+	data, err := l.lowerExpr(s.Data)
+	if err != nil {
+		return nil, fmt.Errorf("saveCSV data: %w", err)
+	}
+	l.addImport("os")
+	l.addImport("encoding/csv")
+	l.addHelper("mochiSaveCSV")
+	return &gotree.ExprStmt{X: &gotree.CallExpr{
+		Fun:  &gotree.Ident{Name: "mochiSaveCSV"},
+		Args: []gotree.Expr{path, data},
 	}}, nil
 }
 
@@ -332,6 +355,13 @@ func (l *lowerer) letTypeText(s *aotir.LetStmt) (string, error) {
 				return "", fmt.Errorf("list<record> missing ElemRecordName")
 			}
 			return "[]" + s.ElemRecordName, nil
+		}
+		if s.ElemType == aotir.TypeList {
+			inner, err := l.lowerListType(s.InnerElemType)
+			if err != nil {
+				return "", fmt.Errorf("list<list>: %w", err)
+			}
+			return "[]" + inner, nil
 		}
 		return l.lowerListType(s.ElemType)
 	case aotir.TypeMap:
