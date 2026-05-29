@@ -1,11 +1,18 @@
 name: Kotlin transpiler tests
 
 # MEP-50: CI gate for the Mochi-to-Kotlin transpiler test suite.
-# Phases 1-14 run on every push/PR on JVM (kotlinc + java).
-# Phase 15 (Android) requires ANDROID_HOME and is nightly-only.
-# Phase 16 (reproducibility) runs on every push/PR.
-# Phase 17 (K/Native) is nightly-only (requires large K/Native toolchain).
-# Phase 18 (Play Console) is label-gated (needs-play-validate).
+#
+# Blocking gates (fail the PR):
+#   Phases 1-14: unconditional (JVM-only, no external SDKs needed).
+#   Phase 16: reproducible-build verification (pure computation, always runs).
+#
+# Skip gates (skip gracefully when env is absent, never fail):
+#   Phase 14: skips when MOCHI_TEST_HTTP_BASE not set (no HTTP server in CI).
+#   Phase 15: skips project generation structure test; Android gradle build
+#              requires ANDROID_HOME, absent in standard CI.
+#   Phase 17: skips when KOTLIN_NATIVE_HOME/KOTLINC_NATIVE_PATH not set.
+#   Phase 18: skips gradle build without ANDROID_HOME; skips Play API without
+#              MOCHI_PLAY_SERVICE_ACCOUNT_JSON.
 
 on:
   push:
@@ -28,11 +35,7 @@ jobs:
       matrix:
         include:
           - os: ubuntu-24.04
-            blocking: true
           - os: macos-15
-            blocking: true
-
-    continue-on-error: ${{ !matrix.blocking }}
 
     steps:
       - uses: actions/checkout@v4
@@ -47,24 +50,55 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install Kotlin compiler
+      - name: Install Kotlin 2.1.20 compiler
         run: |
-          if [[ "$RUNNER_OS" == "Linux" ]]; then
-            # Install kotlinc via SDKMAN or direct download
-            curl -Lo /tmp/kotlin.zip https://github.com/JetBrains/kotlin/releases/download/v2.1.20/kotlin-compiler-2.1.20.zip
-            unzip -q /tmp/kotlin.zip -d /tmp/kotlin
-            echo "/tmp/kotlin/kotlinc/bin" >> "$GITHUB_PATH"
-          elif [[ "$RUNNER_OS" == "macOS" ]]; then
-            brew install kotlin
-          fi
+          KOTLIN_VERSION=2.1.20
+          curl -fsSLo /tmp/kotlin.zip \
+            "https://github.com/JetBrains/kotlin/releases/download/v${KOTLIN_VERSION}/kotlin-compiler-${KOTLIN_VERSION}.zip"
+          unzip -q /tmp/kotlin.zip -d /tmp/kotlin
+          echo "/tmp/kotlin/kotlinc/bin" >> "$GITHUB_PATH"
 
       - name: Verify Kotlin compiler
         run: kotlinc -version
 
-      - name: Run Kotlin transpiler tests (phases 1-6)
-        run: go test -v -timeout 600s ./transpiler3/kotlin/build/... -run "TestPhase[1-6]"
+      # ── Blocking gate: phases 1-6 ─────────────────────────────────────────
+      # Hello, scalars, lists, maps, sets, records, sum types, closures.
+      # Anchored pattern ^TestPhase[1-6][A-Z] selects exactly phases 1-6
+      # (single-digit phase number immediately followed by an uppercase word),
+      # excluding the two-digit phases 10-18.
+      - name: Phases 1-6 (hello, scalars, collections, records, sums, closures)
+        run: |
+          go test -v -count=1 -timeout 300s \
+            ./transpiler3/kotlin/build/... \
+            -run "^TestPhase[1-6][A-Z]"
 
-      - name: Run Kotlin transpiler tests (phases 7+)
-        run: go test -v -timeout 600s ./transpiler3/kotlin/build/... -run "TestPhase[7-9]|TestPhase1[0-9]"
+      # ── Blocking gate: phases 7-14 ────────────────────────────────────────
+      # Query DSL, datalog, agents, streams, async, FFI, LLM (cassette),
+      # HTTP fetch (skips when MOCHI_TEST_HTTP_BASE not set).
+      # Anchored patterns select exactly phases 7-9 and 10-14.
+      - name: Phases 7-14 (query, datalog, agents, streams, async, FFI, LLM, fetch)
+        run: |
+          go test -v -count=1 -timeout 300s \
+            ./transpiler3/kotlin/build/... \
+            -run "^TestPhase[7-9][A-Z]|^TestPhase1[0-4][A-Z]"
+
+      # ── Blocking gate: phase 16 ───────────────────────────────────────────
+      # Reproducible-build check: build each fixture twice and assert
+      # SHA-256 equality. Pure computation; no external deps; always runs.
+      - name: Phase 16 (reproducible build — SHA-256 jar equality)
+        run: |
+          go test -v -count=1 -timeout 300s \
+            ./transpiler3/kotlin/build/... \
+            -run "^TestPhase16"
+
+      # ── Non-blocking: phases 15, 17, 18 ──────────────────────────────────
+      # Android App Bundle, Kotlin/Native, Play Console.
+      # Tests skip gracefully when ANDROID_HOME / KOTLIN_NATIVE_HOME /
+      # MOCHI_PLAY_SERVICE_ACCOUNT_JSON are absent. Failures are reported
+      # but do not block merging (infrastructure not present in standard CI).
+      - name: Phases 15, 17, 18 (Android, K/Native, Play Console — skip-gated)
+        run: |
+          go test -v -count=1 -timeout 60s \
+            ./transpiler3/kotlin/build/... \
+            -run "^TestPhase15|^TestPhase17|^TestPhase18"
         continue-on-error: true
-
