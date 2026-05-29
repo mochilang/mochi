@@ -16,6 +16,7 @@ import (
 
 	"mochi/package3/rust/asyncbridge"
 	"mochi/package3/rust/errors"
+	"mochi/package3/rust/monomorphise"
 	"mochi/package3/rust/rustdoc"
 	"mochi/package3/rust/typemap"
 )
@@ -101,12 +102,40 @@ type SynthParam struct {
 // Synth assumes the surface has already been filtered for visibility
 // by the phase-2 walker.
 func Synth(upstream, version string, surface *rustdoc.ApiSurface) *Crate {
+	return SynthWithSpec(upstream, version, surface, monomorphise.Spec{})
+}
+
+// SynthWithSpec is Synth plus an explicit monomorphisation spec. For
+// each fn whose path matches a Spec entry, SynthWithSpec emits one
+// SynthFn per Entry with a substituted signature (every Generic of
+// matching name swapped for its concrete type) and a mangled
+// extern-C symbol that carries the substitution suffix. Functions
+// without matching Spec entries take the default Synth path, which
+// will still SkipGeneric if the signature carries unconcretised
+// parameters; the Spec is the only escape hatch.
+func SynthWithSpec(upstream, version string, surface *rustdoc.ApiSurface, spec monomorphise.Spec) *Crate {
 	c := &Crate{
 		Name:            crateName(upstream),
 		Upstream:        upstream,
 		UpstreamVersion: version,
 	}
 	for _, fn := range surface.Functions {
+		entries := spec.Lookup(joinPath(fn.Path))
+		if len(entries) > 0 {
+			for _, e := range entries {
+				sf, sr, detail := synthFnMonomorphised(upstream, fn, e)
+				if sr != errors.SkipUnknown || detail != "" {
+					c.Skipped = append(c.Skipped, errors.SkipReport{
+						ItemPath: joinPath(fn.Path),
+						Reason:   sr,
+						Detail:   detail,
+					})
+					continue
+				}
+				c.Functions = append(c.Functions, *sf)
+			}
+			continue
+		}
 		sf, sr, detail := synthFn(upstream, fn)
 		if sr != errors.SkipUnknown || detail != "" {
 			c.Skipped = append(c.Skipped, errors.SkipReport{
@@ -149,6 +178,46 @@ func synthFn(upstream string, fn rustdoc.FunctionEntry) (*SynthFn, errors.SkipRe
 	return &SynthFn{
 		ExternName:   externName(upstream, fn.Path),
 		UpstreamPath: joinPath(fn.Path),
+		Params:       params,
+		Return:       ret,
+		IsAsync:      fn.Header.IsAsync,
+	}, errors.SkipUnknown, ""
+}
+
+// synthFnMonomorphised is synthFn with a substitution lens applied
+// to the inputs and output. The extern symbol and call-site path
+// come from monomorphise.ExternName / CallSite so multiple
+// instantiations of the same upstream item produce distinct,
+// byte-stable symbols.
+func synthFnMonomorphised(upstream string, fn rustdoc.FunctionEntry, e monomorphise.Entry) (*SynthFn, errors.SkipReason, string) {
+	params := make([]SynthParam, 0, len(fn.Inputs))
+	for i, in := range fn.Inputs {
+		subbed := monomorphise.Substitute(in.Type, e.TypeArgs)
+		m, sr, det := typemap.Map(subbed, typemap.DirectionIn)
+		if sr != errors.SkipUnknown || det != "" {
+			return nil, sr, fmt.Sprintf("param %d (%s): %s", i, in.Name, det)
+		}
+		name := in.Name
+		if name == "" {
+			name = fmt.Sprintf("arg%d", i)
+		}
+		params = append(params, SynthParam{Name: name, Mapping: *m})
+	}
+	var ret *typemap.Mapping
+	if fn.Output != nil {
+		subbed := monomorphise.Substitute(*fn.Output, e.TypeArgs)
+		m, sr, det := typemap.Map(subbed, typemap.DirectionOut)
+		if sr != errors.SkipUnknown || det != "" {
+			return nil, sr, fmt.Sprintf("return: %s", det)
+		}
+		if m.Kind != typemap.KindUnit {
+			ret = m
+		}
+	}
+	item := joinPath(fn.Path)
+	return &SynthFn{
+		ExternName:   monomorphise.ExternName(upstream, item, e.TypeArgs),
+		UpstreamPath: monomorphise.CallSite(item, e.TypeArgs),
 		Params:       params,
 		Return:       ret,
 		IsAsync:      fn.Header.IsAsync,
