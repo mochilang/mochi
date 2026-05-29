@@ -1,0 +1,5 @@
+import go "github.com/spf13/cobra@v1.8.0" as cobra
+import go "gopkg.in/yaml.v3@v3.0.1" as yaml
+import go "golang.org/x/tools@v0.20.0" as tools
+import go "fmt"
+import go "net/http" as http

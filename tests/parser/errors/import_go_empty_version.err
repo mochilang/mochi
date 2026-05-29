@@ -1,0 +1,8 @@
+error[P067]: go import path "github.com/spf13/cobra@" with `@` pin is not in `<module>@<semver>` form
+  --> tests/parser/errors/import_go_empty_version.mochi:1:1
+
+  1 | import go "github.com/spf13/cobra@" as cobra
+    | ^
+
+help:
+  An `import go "..." as <alias>` with a version pin names a Go module on proxy.golang.org plus a semver tag, eg. `import go "github.com/spf13/cobra@v1.8.0" as cobra`. The module path must be FQDN-style (the first path segment must contain a dot) and the version must be a semver tag (`v1.2.3`) or pseudo-version. Stdlib-only imports (`import go "fmt"`) remain valid without a pin.

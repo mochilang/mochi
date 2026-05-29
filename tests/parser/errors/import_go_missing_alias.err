@@ -1,0 +1,8 @@
+error[P068]: go import "github.com/spf13/cobra@v1.8.0" with `@` pin requires `as <alias>`
+  --> tests/parser/errors/import_go_missing_alias.mochi:1:1
+
+  1 | import go "github.com/spf13/cobra@v1.8.0"
+    | ^
+
+help:
+  MEP-74 requires the version-pinned form to carry an explicit alias so the Mochi caller can reference the extern fns under a single namespace. Add `as <alias>`, eg. `import go "github.com/spf13/cobra@v1.8.0" as cobra`.
