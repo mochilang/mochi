@@ -106,6 +106,16 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerStrUpperLower(e.Receiver, "ToUpper")
 	case *aotir.StrLowerExpr:
 		return l.lowerStrUpperLower(e.Receiver, "ToLower")
+	case *aotir.StrIndexExpr:
+		return l.lowerStrIndexExpr(e)
+	case *aotir.StrSubstringExpr:
+		return l.lowerStrSubstringExpr(e)
+	case *aotir.StrReverseExpr:
+		return l.lowerStrReverseExpr(e)
+	case *aotir.StrSplitExpr:
+		return l.lowerStrSplitExpr(e)
+	case *aotir.StrJoinExpr:
+		return l.lowerStrJoinExpr(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
@@ -124,6 +134,90 @@ func (l *lowerer) lowerStrUpperLower(recv aotir.Expr, fn string) (gotree.Expr, e
 	return &gotree.CallExpr{
 		Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "strings"}, Sel: fn},
 		Args: []gotree.Expr{r},
+	}, nil
+}
+
+// lowerStrIndexExpr emits `mochiStrIndex(s, i)`. The helper returns
+// the single-character string at rune index i (Mochi indexing is
+// rune-based, matching the C runtime). int64 -> int conversion lives
+// inside the helper so the call site stays compact.
+func (l *lowerer) lowerStrIndexExpr(e *aotir.StrIndexExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	idx, err := l.lowerExpr(e.Index)
+	if err != nil {
+		return nil, err
+	}
+	l.addHelper("mochiStrIndex")
+	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiStrIndex"}, Args: []gotree.Expr{recv, idx}}, nil
+}
+
+// lowerStrSubstringExpr emits `mochiStrSubstring(s, start, end)`. The
+// helper takes a rune-based half-open slice, matching the C runtime's
+// mochi_str_substring. Both bounds are clamped to the string length.
+func (l *lowerer) lowerStrSubstringExpr(e *aotir.StrSubstringExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	start, err := l.lowerExpr(e.Start)
+	if err != nil {
+		return nil, err
+	}
+	end, err := l.lowerExpr(e.End)
+	if err != nil {
+		return nil, err
+	}
+	l.addHelper("mochiStrSubstring")
+	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiStrSubstring"}, Args: []gotree.Expr{recv, start, end}}, nil
+}
+
+// lowerStrReverseExpr emits `mochiStrReverse(s)`, which reverses by
+// runes so multibyte characters survive the round trip.
+func (l *lowerer) lowerStrReverseExpr(e *aotir.StrReverseExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	l.addHelper("mochiStrReverse")
+	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiStrReverse"}, Args: []gotree.Expr{recv}}, nil
+}
+
+// lowerStrSplitExpr emits `strings.Split(s, sep)` for the Mochi
+// `split(s, sep)` builtin.
+func (l *lowerer) lowerStrSplitExpr(e *aotir.StrSplitExpr) (gotree.Expr, error) {
+	s, err := l.lowerExpr(e.Str)
+	if err != nil {
+		return nil, err
+	}
+	sep, err := l.lowerExpr(e.Sep)
+	if err != nil {
+		return nil, err
+	}
+	l.addImport("strings")
+	return &gotree.CallExpr{
+		Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "strings"}, Sel: "Split"},
+		Args: []gotree.Expr{s, sep},
+	}, nil
+}
+
+// lowerStrJoinExpr emits `strings.Join(xs, sep)` for the Mochi
+// `join(xs, sep)` builtin (xs must be list<string>).
+func (l *lowerer) lowerStrJoinExpr(e *aotir.StrJoinExpr) (gotree.Expr, error) {
+	xs, err := l.lowerExpr(e.List)
+	if err != nil {
+		return nil, err
+	}
+	sep, err := l.lowerExpr(e.Sep)
+	if err != nil {
+		return nil, err
+	}
+	l.addImport("strings")
+	return &gotree.CallExpr{
+		Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "strings"}, Sel: "Join"},
+		Args: []gotree.Expr{xs, sep},
 	}, nil
 }
 

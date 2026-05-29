@@ -1,0 +1,3 @@
+print(reverse("hello"))
+print(reverse("mochi"))
+print(reverse("abc"))

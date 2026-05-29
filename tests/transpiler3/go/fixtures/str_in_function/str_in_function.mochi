@@ -1,0 +1,12 @@
+fun label(n: int): string {
+    return "item-" + str(n)
+}
+
+fun bool_str(b: bool): string {
+    return str(b)
+}
+
+print(label(1))
+print(label(42))
+print(bool_str(true))
+print(bool_str(false))

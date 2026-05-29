@@ -1,0 +1,3 @@
+let xs = ["hello", "world", "foo"]
+let s = join(xs, ", ")
+print(s)
