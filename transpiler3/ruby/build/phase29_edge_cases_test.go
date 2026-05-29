@@ -148,4 +148,64 @@ func TestPhase29EdgeCases(t *testing.T) {
 			"print(f(5))\n"
 		runRubyFixture(t, tc, runtimeLib, "closure_capture_by_value", src, "15\n")
 	})
+
+	t.Run("break_exits_for_range", func(t *testing.T) {
+		// Coverage of aotir.BreakStmt; previously zero subtests exercised
+		// it. The Ruby lowering is `break` inside the `.each do ... end`
+		// block, which Ruby treats as exiting the enclosing iterator.
+		src := "for i in 0..10 {\n" +
+			"  if i == 3 { break }\n" +
+			"  print(i)\n" +
+			"}\n"
+		runRubyFixture(t, tc, runtimeLib, "break_exits_for_range",
+			src, "0\n1\n2\n")
+	})
+
+	t.Run("continue_skips_iteration", func(t *testing.T) {
+		// Coverage of aotir.ContinueStmt; previously zero subtests exercised
+		// it. Ruby lowering is `next` (the Ruby equivalent of `continue`).
+		src := "for i in 0..5 {\n" +
+			"  if i % 2 == 0 { continue }\n" +
+			"  print(i)\n" +
+			"}\n"
+		runRubyFixture(t, tc, runtimeLib, "continue_skips_iteration",
+			src, "1\n3\n")
+	})
+
+	t.Run("map_values_len", func(t *testing.T) {
+		// Coverage of aotir.MapValuesExpr; the lowering exists at
+		// lower.go for `values(m)` but no prior test called it.
+		src := "let m: map<string,int> = {\"a\": 1, \"b\": 2, \"c\": 3}\n" +
+			"print(len(values(m)))\n"
+		runRubyFixture(t, tc, runtimeLib, "map_values_len", src, "3\n")
+	})
+
+	t.Run("not_bool", func(t *testing.T) {
+		// Coverage of UnNotBool; prior tests only exercised UnNegI64.
+		src := "let t: bool = true\n" +
+			"let f: bool = false\n" +
+			"print(!t)\n" +
+			"print(!f)\n"
+		runRubyFixture(t, tc, runtimeLib, "not_bool", src, "false\ntrue\n")
+	})
+
+	t.Run("panic_code_carries_through_catch", func(t *testing.T) {
+		// Coverage of Mochi::Runtime::Panic#code via try/catch.
+		// Combined with phase 19 this locks the panic-code path
+		// from a nested function back to the catch site.
+		src := "fun boom(): int {\n" +
+			"  panic(42, \"boom\")\n" +
+			"  return 0\n" +
+			"}\n" +
+			"var caught: int = 0\n" +
+			"try {\n" +
+			"  let r: int = boom()\n" +
+			"  print(r)\n" +
+			"} catch e {\n" +
+			"  caught = e\n" +
+			"}\n" +
+			"print(caught)\n"
+		runRubyFixture(t, tc, runtimeLib, "panic_code_carries_through_catch",
+			src, "42\n")
+	})
 }

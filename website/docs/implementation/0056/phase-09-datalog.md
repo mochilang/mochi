@@ -19,7 +19,7 @@ description: "MEP-56 Phase 9, Datalog facts and rules evaluated at lower time vi
 
 ## Gate
 
-`TestPhase9Datalog` in `transpiler3/ruby/build/phase09_test.go`: three inline subtests, `dl_parent_basic`, `dl_ancestor`, and `dl_empty_result`. Each subtest compiles a Mochi source containing `fact` declarations and (for `dl_ancestor`) `rule` declarations, executes the `.rb` under the resolved Ruby toolchain with `-I mochi-runtime/lib`, and diffs stdout against the recorded expectation. `dl_parent_basic` covers a single-step query (`query parent("tom", Y)` returns `bob`), `dl_ancestor` covers a recursive rule reaching transitive closure (`ancestor("tom", Y)` returns `bob`, `ann`, `pat`), and `dl_empty_result` covers a no-match query that must surface as `len(xs) == 0`. There are no `wantInRb` assertions because the gate is purely behavioural: the rendered Ruby is a literal array of strings, and its shape is fully determined by the compile-time fixpoint.
+`TestPhase9Datalog` in `transpiler3/ruby/build/phase09_test.go`: five inline subtests, `dl_parent_basic`, `dl_ancestor`, `dl_empty_result`, `dl_neq_constraint`, and `dl_not_negation`. Each subtest compiles a Mochi source containing `fact` declarations and (for the rule-bearing subtests) `rule` declarations, executes the `.rb` under the resolved Ruby toolchain with `-I mochi-runtime/lib`, and diffs stdout against the recorded expectation. `dl_parent_basic` covers a single-step query (`query parent("tom", Y)` returns `bob`), `dl_ancestor` covers a recursive rule reaching transitive closure (`ancestor("tom", Y)` returns `bob`, `ann`, `pat`), `dl_empty_result` covers a no-match query that must surface as `len(xs) == 0`, `dl_neq_constraint` covers the `X != Y` body literal exercising the `IsNeq` path, and `dl_not_negation` covers the `not p(X)` body literal exercising the `IsNot` path. There are no `wantInRb` assertions because the gate is purely behavioural: the rendered Ruby is a literal array of strings, and its shape is fully determined by the compile-time fixpoint.
 
 ## Lowering decisions
 
@@ -43,7 +43,7 @@ Helpers `resolveArg` (lines 194 to 202), `isVar` (lines 204 to 212), `tupleInRel
 
 ## Test set
 
-- `TestPhase9Datalog/dl_parent_basic`, `dl_ancestor`, `dl_empty_result`.
+- `TestPhase9Datalog/dl_parent_basic`, `dl_ancestor`, `dl_empty_result`, `dl_neq_constraint`, `dl_not_negation`.
 
 ## Closeout notes
 

@@ -21,9 +21,10 @@ description: "MEP-56 Phase 28, audit sweep covering Driver.Build failure paths, 
 
 Three top-level Go tests close the audit gaps left by the per-feature phases:
 
-- `TestPhase28DriverErrorPaths` (`phase28_driver_errors_test.go`): four subtests cover `Driver.Build` failure branches (parse error, typecheck error, missing source file, unknown target). Each subtest asserts a non-nil error and asserts the message names the failing stage (`parse`, `typecheck`, `read`/`no such file`/`parse`, `not implemented`).
-- `TestPhase29EdgeCases` (`phase29_edge_cases_test.go`): 14 subtests build and execute Mochi sources covering collection-boundary, scalar, string-Unicode, query, and closure-capture scenarios that the per-feature phase tests intentionally kept happy-path only.
+- `TestPhase28DriverErrorPaths` (`phase28_driver_errors_test.go`): five subtests cover `Driver.Build` failure branches (parse error, typecheck error, missing source file, unknown target, output-dir is a file). Each subtest asserts a non-nil error and (for the four with stable wording) asserts the message names the failing stage (`parse`, `typecheck`, `read`/`no such file`/`parse`, `not implemented`).
+- `TestPhase29EdgeCases` (`phase29_edge_cases_test.go`): 19 subtests build and execute Mochi sources covering collection-boundary, scalar, string-Unicode, query, closure-capture, and previously-uncovered IR-node scenarios (`BreakStmt`, `ContinueStmt`, `MapValuesExpr`, `UnNotBool`, `Panic#code` round-trip) that the per-feature phase tests intentionally kept happy-path only.
 - `TestPhase30TargetEmittedSyntax` (`phase30_target_syntax_test.go`): seven subtests run `ruby -c` against the `.rb` every non-source build target emits, plus a JSON.parse round-trip against the IRuby notebook and a `.gem` archive walk that asserts `lib/<name>.rb` is present byte for byte.
+- `TestPhase31Integration` (`phase31_integration_test.go`): five cross-cutting subtests exercise multi-feature programs (`closure_over_query_result`, `nested_hof_filter_then_map_then_reduce`, `try_catch_around_record_field_access`, `list_of_records_query`, `match_arm_returns_distinct_per_variant`) that touch two or more phases at once, catching regressions per-feature tests would miss.
 
 Every subtest skips if `resolveToolchain` cannot find a Ruby; the `.gem` subtest additionally falls back to `$PATH` for `gem` or skips.
 
@@ -43,23 +44,33 @@ The shared exercise source in `TestPhase30TargetEmittedSyntax` (a `Sign` sum typ
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/ruby/build/phase28_driver_errors_test.go` | `TestPhase28DriverErrorPaths` (4 subtests): parse / typecheck / missing-file / unknown-target |
-| `transpiler3/ruby/build/phase29_edge_cases_test.go` | `TestPhase29EdgeCases` (14 subtests): collection, scalar, string, query, closure boundary scenarios |
+| `transpiler3/ruby/build/phase28_driver_errors_test.go` | `TestPhase28DriverErrorPaths` (5 subtests): parse / typecheck / missing-file / unknown-target / out-dir-is-file |
+| `transpiler3/ruby/build/phase29_edge_cases_test.go` | `TestPhase29EdgeCases` (19 subtests): collection, scalar, string, query, closure boundary scenarios plus uncovered IR nodes |
 | `transpiler3/ruby/build/phase30_target_syntax_test.go` | `TestPhase30TargetEmittedSyntax` (7 subtests): `ruby -c` on every emitted `.rb`, notebook JSON probe, `.gem` archive walk via `inspectGemContainsLib` helper |
+| `transpiler3/ruby/build/phase31_integration_test.go` | `TestPhase31Integration` (5 subtests): cross-cutting programs touching closures + queries + records + try/catch + match together |
+| `transpiler3/ruby/build/phase09_test.go` | `dl_neq_constraint` and `dl_not_negation` subtests added for previously-untested `IsNeq` and `IsNot` paths in `datalog.go` |
 
 ## Test set
 
 `phase28_driver_errors_test.go`:
 
-- `TestPhase28DriverErrorPaths/parse_error`, `typecheck_error`, `missing_file`, `unknown_target`.
+- `TestPhase28DriverErrorPaths/parse_error`, `typecheck_error`, `missing_file`, `unknown_target`, `out_dir_is_file`.
 
 `phase29_edge_cases_test.go`:
 
-- `TestPhase29EdgeCases/empty_list_len`, `empty_string_len`, `negative_arithmetic`, `large_integer`, `unicode_string_ops`, `list_with_one_element`, `nested_list`, `map_get_missing_default`, `omap_round_trip_multi_key`, `map_keys_iter_yields_all`, `for_range_zero_iterations`, `while_loop_zero_iterations`, `sum_neg_zero_pos_all_arms`, `closure_capture_by_value`.
+- `TestPhase29EdgeCases/empty_list_len`, `empty_string_len`, `negative_arithmetic`, `large_integer`, `unicode_string_ops`, `list_with_one_element`, `nested_list`, `map_get_missing_default`, `omap_round_trip_multi_key`, `map_keys_iter_yields_all`, `for_range_zero_iterations`, `while_loop_zero_iterations`, `sum_neg_zero_pos_all_arms`, `closure_capture_by_value`, `break_exits_for_range`, `continue_skips_iteration`, `map_values_len`, `not_bool`, `panic_code_carries_through_catch`.
 
 `phase30_target_syntax_test.go`:
 
 - `TestPhase30TargetEmittedSyntax/gem`, `bundle`, `tebako`, `truffle_native`, `mruby`, `notebook_json_round_trip`, `gem_unpack_round_trip`.
+
+`phase31_integration_test.go`:
+
+- `TestPhase31Integration/closure_over_query_result`, `nested_hof_filter_then_map_then_reduce`, `try_catch_around_record_field_access`, `list_of_records_query`, `match_arm_returns_distinct_per_variant`.
+
+`phase09_test.go` (additions):
+
+- `TestPhase9Datalog/dl_neq_constraint`, `dl_not_negation`.
 
 ## Closeout notes
 

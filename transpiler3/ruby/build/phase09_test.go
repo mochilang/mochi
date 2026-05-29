@@ -53,6 +53,34 @@ func TestPhase9Datalog(t *testing.T) {
 				"print(len(xs))\n",
 			want: "0\n",
 		},
+		{
+			// Coverage for IsNeq path in datalog.go (line 97). The rule
+			// body uses `X != Y` to require distinct values. Previously
+			// no subtest exercised this branch. The query result is a
+			// flat list of all unbound-arg projections, so a 2-arg
+			// query of N tuples yields 2*N entries.
+			name: "dl_neq_constraint",
+			src: "fact edge(\"a\", \"b\")\n" +
+				"fact edge(\"a\", \"a\")\n" +
+				"fact edge(\"b\", \"c\")\n" +
+				"rule distinct(X, Y) :- edge(X, Y), X != Y\n" +
+				"let xs = query distinct(X, Y)\n" +
+				"print(len(xs))\n",
+			want: "4\n",
+		},
+		{
+			// Coverage for IsNot path in datalog.go (line 109). The rule
+			// body uses `not p(X)` to require the absence of a tuple.
+			name: "dl_not_negation",
+			src: "fact node(\"a\")\n" +
+				"fact node(\"b\")\n" +
+				"fact node(\"c\")\n" +
+				"fact dead(\"b\")\n" +
+				"rule live(X) :- node(X), not dead(X)\n" +
+				"let xs = query live(X)\n" +
+				"print(len(xs))\n",
+			want: "2\n",
+		},
 	}
 
 	for _, c := range cases {

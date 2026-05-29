@@ -79,4 +79,25 @@ func TestPhase28DriverErrorPaths(t *testing.T) {
 			t.Fatalf("error message should mention not implemented: %v", err)
 		}
 	})
+
+	t.Run("out_dir_is_file", func(t *testing.T) {
+		// Coverage for emit failure: pass a file path as outDir; the
+		// emit pass calls MkdirAll/WriteFile and at least one of them
+		// fails. Confirms the Driver propagates I/O errors verbatim,
+		// rather than swallowing them as a successful build.
+		srcDir := t.TempDir()
+		src := filepath.Join(srcDir, "ok.mochi")
+		if err := os.WriteFile(src, []byte("print(\"hi\")\n"), 0o644); err != nil {
+			t.Fatalf("write src: %v", err)
+		}
+		outFile := filepath.Join(t.TempDir(), "not_a_dir")
+		if err := os.WriteFile(outFile, []byte("blocker"), 0o644); err != nil {
+			t.Fatalf("seed blocker file: %v", err)
+		}
+		d := &Driver{CacheDir: t.TempDir()}
+		err := d.Build(src, outFile, TargetRubySource)
+		if err == nil {
+			t.Fatalf("expected emit/mkdir error, got nil")
+		}
+	})
 }
