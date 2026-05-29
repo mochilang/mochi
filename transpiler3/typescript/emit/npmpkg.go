@@ -162,7 +162,10 @@ func buildPackageJSON(info PackageInfo) ([]byte, error) {
 			".":              json.RawMessage(exportsDot),
 			"./package.json": "./package.json",
 		},
-		"files":   []string{"dist/", "README.md", "LICENSE"},
+		// Phase 16.1: sorted lex order. npm 9.5+ packs in the
+		// listed order; the sort makes the tarball's entry order
+		// host-independent of readdir's filesystem-specific order.
+		"files":   []string{"LICENSE", "README.md", "dist/"},
 		"engines": map[string]string{"node": ">=22"},
 	}
 	b, err := json.MarshalIndent(pkg, "", "  ")

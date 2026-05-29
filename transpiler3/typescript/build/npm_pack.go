@@ -33,15 +33,24 @@ import (
 // absolute path of the resulting .tgz tarball. The tarball is
 // always written into pkgDir itself.
 //
+// env, when non-nil, replaces the subprocess environment. Phase 16
+// callers pass reproBuildEnv(...) to set SOURCE_DATE_EPOCH + TZ for
+// reproducible tar header timestamps. nil env inherits os.Environ
+// unchanged (Phase 15.0 default).
+//
 // On non-zero exit it returns an error including npm's stderr.
-func runNpmPack(pkgDir string) (string, error) {
+func runNpmPack(pkgDir string, env []string) (string, error) {
 	npm, err := resolveNpm()
 	if err != nil {
 		return "", err
 	}
 	cmd := exec.Command(npm, "pack", "--json")
 	cmd.Dir = pkgDir
-	cmd.Env = os.Environ()
+	if env != nil {
+		cmd.Env = env
+	} else {
+		cmd.Env = os.Environ()
+	}
 	out, err := cmd.Output()
 	if err != nil {
 		stderr := ""
