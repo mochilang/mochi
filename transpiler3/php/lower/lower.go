@@ -36,6 +36,10 @@ type runtimeFlags struct {
 type lowerer struct {
 	runtime runtimeFlags
 	prog    *aotir.Program
+	// matchSeq is a monotonic counter used to mint unique PHP temp
+	// variable names for nested or successive match statements within
+	// one function body.
+	matchSeq int
 }
 
 // Lower translates an aotir.Program into a ptree.PhpFile. The returned
@@ -61,6 +65,17 @@ func Lower(prog *aotir.Program, _ colour.ColourMap) (*ptree.PhpFile, error) {
 			return nil, err
 		}
 		classDecls = append(classDecls, d)
+	}
+
+	// Sum types: one abstract base + one final-readonly child per
+	// variant. Emitted before user functions so the function bodies
+	// can reference the class names.
+	for _, u := range prog.Unions {
+		ds, err := l.lowerUnion(u)
+		if err != nil {
+			return nil, err
+		}
+		classDecls = append(classDecls, ds...)
 	}
 
 	// Lower non-main user functions in source order so the emitted
@@ -242,6 +257,8 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]ptree.Stmt, error) {
 		return l.lowerForRangeStmt(v)
 	case *aotir.ForEachStmt:
 		return l.lowerForEachStmt(v)
+	case *aotir.MatchStmt:
+		return l.lowerMatchStmt(v)
 	case *aotir.MapPutStmt:
 		key, err := l.lowerExpr(v.Key)
 		if err != nil {
@@ -386,13 +403,13 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*ptree.FuncDecl, error) {
 	}
 	params := make([]ptree.FuncParam, 0, len(fn.Params))
 	for _, p := range fn.Params {
-		typeName, err := phpParamType(p.Type, p.RecordName)
+		typeName, err := phpParamType(p.Type, p.RecordName, p.UnionName)
 		if err != nil {
 			return nil, fmt.Errorf("php lower: param %q of %q: %w", p.Name, fn.Name, err)
 		}
 		params = append(params, ptree.FuncParam{TypeName: typeName, Name: p.Name})
 	}
-	ret, err := phpParamType(fn.ReturnType, fn.ReturnRecordName)
+	ret, err := phpParamType(fn.ReturnType, fn.ReturnRecordName, fn.ReturnUnionName)
 	if err != nil {
 		return nil, fmt.Errorf("php lower: return type of %q: %w", fn.Name, err)
 	}
@@ -429,14 +446,20 @@ func phpScalarType(t aotir.Type) (string, error) {
 func phpType(t aotir.Type) (string, error) { return phpScalarType(t) }
 
 // phpParamType maps a parameter type to its PHP type declaration,
-// including record class names and collection types (Phase 3+).
-func phpParamType(t aotir.Type, recordName string) (string, error) {
+// including record class names, sum-type base classes, and collection
+// types (Phase 3+, Phase 5 adds the TypeUnion branch).
+func phpParamType(t aotir.Type, recordName, unionName string) (string, error) {
 	switch t {
 	case aotir.TypeRecord:
 		if recordName == "" {
 			return "", fmt.Errorf("TypeRecord needs a RecordName")
 		}
 		return recordName, nil
+	case aotir.TypeUnion:
+		if unionName == "" {
+			return "", fmt.Errorf("TypeUnion needs a UnionName")
+		}
+		return unionName, nil
 	case aotir.TypeList, aotir.TypeMap, aotir.TypeSet:
 		return "array", nil
 	default:
@@ -444,10 +467,105 @@ func phpParamType(t aotir.Type, recordName string) (string, error) {
 	}
 }
 
+// variantClassName builds the PHP class name for one variant of a
+// sum type. e.g. union "Shape" variant "Circle" → "Shape_Circle".
+// The double-underscore form is reserved for closure env classes
+// (Phase 5.0+) so single-underscore here is collision-safe.
+func variantClassName(union, variant string) string {
+	return union + "_" + variant
+}
+
+func (l *lowerer) lowerUnion(u *aotir.UnionDecl) ([]ptree.Decl, error) {
+	out := make([]ptree.Decl, 0, 1+len(u.Variants))
+	out = append(out, &ptree.ClassDecl{
+		Name:     u.Name,
+		Abstract: true,
+		PhpDoc:   []string{"Mochi sum type `" + u.Name + "` base class. Generated; do not edit by hand."},
+	})
+	for _, v := range u.Variants {
+		fields := make([]ptree.ClassField, 0, len(v.Fields))
+		for _, f := range v.Fields {
+			typeName, err := phpParamType(f.FieldType, f.RecordName, f.UnionName)
+			if err != nil {
+				return nil, fmt.Errorf("union %q variant %q field %q: %w", u.Name, v.Name, f.Name, err)
+			}
+			fields = append(fields, ptree.ClassField{TypeName: typeName, Name: f.Name})
+		}
+		out = append(out, &ptree.ClassDecl{
+			Name:    variantClassName(u.Name, v.Name),
+			Extends: u.Name,
+			Fields:  fields,
+			PhpDoc:  []string{"Variant `" + v.Name + "` of `" + u.Name + "`."},
+		})
+	}
+	return out, nil
+}
+
+// lowerMatchStmt lowers an aotir.MatchStmt to a PHP chained-if. The
+// target is evaluated once into a fresh temp; each arm becomes one
+// `if ($tmp instanceof Union_Variant) { ... }` branch. Pattern
+// bindings are materialised at the top of each arm body as
+// `$<VarName> = $tmp-><FieldName>;` so the body's VarRefs resolve to
+// concrete locals. Wildcard arms become the trailing `else { ... }`.
+//
+// Guards (Phase 5.1) are intentionally rejected here; the PHP back-end
+// will add them in MEP-55 Phase 5.1.
+func (l *lowerer) lowerMatchStmt(s *aotir.MatchStmt) ([]ptree.Stmt, error) {
+	target, err := l.lowerExpr(s.Target)
+	if err != nil {
+		return nil, fmt.Errorf("match target: %w", err)
+	}
+	l.matchSeq++
+	tmp := fmt.Sprintf("__mochi_match_%d", l.matchSeq)
+	out := []ptree.Stmt{
+		&ptree.AssignStmt{Name: tmp, Value: target},
+	}
+
+	branches := make([]ptree.IfBranch, 0, len(s.Arms))
+	for _, arm := range s.Arms {
+		if arm.Guard != nil {
+			return nil, fmt.Errorf("php lower: guarded match arms (Phase 5.1) not yet supported (variant %q)", arm.VariantName)
+		}
+		cond := &ptree.InstanceOfExpr{
+			Receiver:  &ptree.VarExpr{Name: tmp},
+			ClassName: variantClassName(s.UnionName, arm.VariantName),
+		}
+		body := make([]ptree.Stmt, 0, len(arm.Bindings)+8)
+		for _, b := range arm.Bindings {
+			body = append(body, &ptree.AssignStmt{
+				Name: b.VarName,
+				Value: &ptree.PropAccessExpr{
+					Receiver: &ptree.VarExpr{Name: tmp},
+					Field:    b.FieldName,
+				},
+			})
+		}
+		armBody, err := l.lowerBlock(arm.Body)
+		if err != nil {
+			return nil, fmt.Errorf("match arm %q body: %w", arm.VariantName, err)
+		}
+		body = append(body, armBody...)
+		branches = append(branches, ptree.IfBranch{Cond: cond, Body: body})
+	}
+	var defaultBody []ptree.Stmt
+	if s.Default != nil {
+		if s.Default.Guard != nil {
+			return nil, fmt.Errorf("php lower: guarded wildcard match arm (Phase 5.1) not yet supported")
+		}
+		db, err := l.lowerBlock(s.Default.Body)
+		if err != nil {
+			return nil, fmt.Errorf("match default body: %w", err)
+		}
+		defaultBody = db
+	}
+	out = append(out, &ptree.ChainedIfStmt{Branches: branches, Default: defaultBody})
+	return out, nil
+}
+
 func (l *lowerer) lowerRecord(r *aotir.RecordDecl) (*ptree.ClassDecl, error) {
 	fields := make([]ptree.ClassField, 0, len(r.Fields))
 	for _, f := range r.Fields {
-		typeName, err := phpParamType(f.Type, f.RecordName)
+		typeName, err := phpParamType(f.Type, f.RecordName, "")
 		if err != nil {
 			return nil, fmt.Errorf("record %q field %q: %w", r.Name, f.Name, err)
 		}
@@ -473,6 +591,31 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 		return &ptree.BoolLit{Value: v.Value}, nil
 	case *aotir.VarRef:
 		return &ptree.VarExpr{Name: v.Name}, nil
+	case *aotir.UnionVarRef:
+		return &ptree.VarExpr{Name: v.Name}, nil
+	case *aotir.VariantLit:
+		args := make([]ptree.NamedArg, 0, len(v.Fields))
+		for _, f := range v.Fields {
+			val, err := l.lowerExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, ptree.NamedArg{Name: f.Name, Value: val})
+		}
+		return &ptree.NewExpr{
+			Class: variantClassName(v.UnionName, v.VariantName),
+			Args:  args,
+		}, nil
+	case *aotir.VariantFieldAccess:
+		// VariantFieldAccess outside a match arm is unusual but
+		// well-defined: the receiver is known to hold a specific
+		// variant, so we just access the field directly. PHP's
+		// dynamic dispatch handles the prop lookup at runtime.
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.PropAccessExpr{Receiver: recv, Field: v.FieldName}, nil
 	case *aotir.BinaryExpr:
 		return l.lowerBinaryExpr(v)
 	case *aotir.UnaryExpr:

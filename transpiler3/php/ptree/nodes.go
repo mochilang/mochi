@@ -674,13 +674,15 @@ type ClassField struct {
 	Name     string
 }
 
-// ClassDecl is `final readonly class Name { public function __construct(...) {} }`,
-// emitted for each Mochi record type. PHP 8.4 readonly classes give us
-// value semantics for free (== compares field-by-field for same-class
-// instances).
+// ClassDecl is a PHP class declaration. By default emits as a
+// `final readonly class Name`. Set Abstract=true for the base of a
+// sealed sum-type hierarchy (omits readonly + final, adds abstract).
+// Set Extends to chain to a parent class.
 type ClassDecl struct {
-	Name   string
-	Fields []ClassField
+	Name     string
+	Fields   []ClassField
+	Abstract bool   // emits as `abstract class Name`
+	Extends  string // optional parent class
 	// PhpDoc is the optional docblock written above the class keyword.
 	PhpDoc []string
 }
@@ -698,11 +700,21 @@ func (d *ClassDecl) PhpString(ind int) string {
 		sb.WriteString(pad + " */\n")
 	}
 	sb.WriteString(pad)
-	sb.WriteString("final readonly class ")
+	if d.Abstract {
+		sb.WriteString("abstract class ")
+	} else {
+		sb.WriteString("final readonly class ")
+	}
 	sb.WriteString(d.Name)
+	if d.Extends != "" {
+		sb.WriteString(" extends ")
+		sb.WriteString(d.Extends)
+	}
 	sb.WriteString("\n")
 	sb.WriteString(pad + "{\n")
-	if len(d.Fields) == 0 {
+	if d.Abstract {
+		// Abstract sum-type base: body is intentionally empty.
+	} else if len(d.Fields) == 0 {
 		sb.WriteString(indent(ind+1) + "public function __construct() {}\n")
 	} else {
 		sb.WriteString(indent(ind+1) + "public function __construct(\n")
@@ -712,6 +724,65 @@ func (d *ClassDecl) PhpString(ind int) string {
 		sb.WriteString(indent(ind+1) + ") {}\n")
 	}
 	sb.WriteString(pad + "}")
+	return sb.String()
+}
+
+// InstanceOfExpr is `(<receiver> instanceof <class>)`.
+type InstanceOfExpr struct {
+	Receiver  Expr
+	ClassName string
+}
+
+func (*InstanceOfExpr) phpExpr() {}
+
+func (e *InstanceOfExpr) PhpString() string {
+	return "(" + e.Receiver.PhpString() + " instanceof " + e.ClassName + ")"
+}
+
+// IfBranch is one conditional arm of a ChainedIfStmt.
+type IfBranch struct {
+	Cond Expr
+	Body []Stmt
+}
+
+// ChainedIfStmt is `if (c1) {} elseif (c2) {} else {}`. Used to
+// lower Mochi's `match` against a sealed sum type into a discriminator
+// chain that PHP's JIT can fold into a tagged jump.
+type ChainedIfStmt struct {
+	Branches []IfBranch
+	Default  []Stmt // nil means no else arm
+}
+
+func (*ChainedIfStmt) phpStmt() {}
+
+func (s *ChainedIfStmt) PhpString(ind int) string {
+	pad := indent(ind)
+	var sb strings.Builder
+	for i, br := range s.Branches {
+		if i == 0 {
+			sb.WriteString(pad)
+			sb.WriteString("if (")
+		} else {
+			sb.WriteString(" elseif (")
+		}
+		sb.WriteString(br.Cond.PhpString())
+		sb.WriteString(") {\n")
+		for _, st := range br.Body {
+			sb.WriteString(st.PhpString(ind + 1))
+			sb.WriteString("\n")
+		}
+		sb.WriteString(pad)
+		sb.WriteString("}")
+	}
+	if s.Default != nil {
+		sb.WriteString(" else {\n")
+		for _, st := range s.Default {
+			sb.WriteString(st.PhpString(ind + 1))
+			sb.WriteString("\n")
+		}
+		sb.WriteString(pad)
+		sb.WriteString("}")
+	}
 	return sb.String()
 }
 
