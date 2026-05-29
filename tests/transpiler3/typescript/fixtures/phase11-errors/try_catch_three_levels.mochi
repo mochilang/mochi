@@ -1,0 +1,18 @@
+try {
+  try {
+    try {
+      panic(1, "a")
+    } catch a {
+      print("a")
+      print(a)
+      panic(2, "b")
+    }
+  } catch b {
+    print("b")
+    print(b)
+    panic(3, "c")
+  }
+} catch c {
+  print("c")
+  print(c)
+}

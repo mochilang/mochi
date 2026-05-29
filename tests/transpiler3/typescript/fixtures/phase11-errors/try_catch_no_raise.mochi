@@ -1,0 +1,9 @@
+try {
+  print("in try")
+  let x: int = 42
+  print(x)
+} catch e {
+  print("should not reach here")
+  print(e)
+}
+print("ok")
