@@ -1,0 +1,10 @@
+// mochi_list_sort_asc must accept an empty list without erroring;
+// the loop body that prints elements simply never runs. Pins the
+// boundary case for the sort helper that all other order-by
+// fixtures (multi-element non-empty) skip.
+let nums: list<int> = []
+let sorted = from n in nums order by n select n
+print(len(sorted))
+for x in sorted {
+    print(x)
+}

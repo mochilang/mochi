@@ -99,6 +99,17 @@ func TestPhase2EmitFragments(t *testing.T) {
 			},
 		},
 		{
+			fixture: "float_neg_inf.mochi",
+			wants: []string{
+				// `-1.0 / 0.0` lowers to fdiv with a parenthesised
+				// negative numerator. The helper's is_infinite branch
+				// picks the sign based on the value, so the printed
+				// token is "-Inf" rather than "+Inf".
+				`fdiv((-1), 0)`,
+				`if (is_infinite($value)) { echo $value < 0 ? "-Inf\n" : "+Inf\n"; return; }`,
+			},
+		},
+		{
 			fixture: "for_range.mochi",
 			wants: []string{
 				`for ($i = 0; $i < 5; $i++) {`,
@@ -130,6 +141,18 @@ func TestPhase2EmitFragments(t *testing.T) {
 			wants: []string{
 				`function mochi_str_contains(string $haystack, string $needle): bool`,
 				`mochi_str_contains($s, "world")`,
+			},
+		},
+		{
+			fixture: "str_contains_empty.mochi",
+			wants: []string{
+				// Empty-needle short-circuit lives in the helper:
+				// `$needle === "" || str_contains(...)` returns true
+				// without consulting PHP's str_contains. Pinning this
+				// shape catches a regression that dropped the OR.
+				`return $needle === "" || str_contains($haystack, $needle);`,
+				`mochi_str_contains($s, "")`,
+				`mochi_str_contains($empty, "")`,
 			},
 		},
 		{

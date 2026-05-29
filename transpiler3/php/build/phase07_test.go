@@ -197,6 +197,21 @@ func TestPhase7EmitFragments(t *testing.T) {
 				`$lengths = $__query1;`,
 			},
 		},
+		{
+			fixture: "query_order_empty.mochi",
+			wants: []string{
+				// `order by n` over an empty source list still emits
+				// the gather loop, the sort call, and the bind. The
+				// sort helper must accept `[]` without erroring; the
+				// for-each below it iterates zero times. Other
+				// order-by fixtures only exercise multi-element
+				// non-empty inputs, so this pins the boundary.
+				`$nums = [];`,
+				`foreach ($nums as $n) {`,
+				`$__query1 = mochi_list_sort_asc($__query1);`,
+				`$sorted = $__query1;`,
+			},
+		},
 	}
 
 	for _, c := range cases {
