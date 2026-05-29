@@ -15,7 +15,7 @@ description: "MEP-56 Phase 29, add the transpiler3-ruby-test.yml CI matrix for C
 | Landed         | 2026-05-29 14:01 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | [#22510](https://github.com/mochilang/mochi/pull/22510) |
-| Commit         | TBD |
+| Commit         | e0956a4238 |
 
 ## Gate
 
