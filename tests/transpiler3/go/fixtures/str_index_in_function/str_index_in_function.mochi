@@ -1,0 +1,9 @@
+fun head(s: string): string {
+  return s[0]
+}
+fun tail_char(s: string): string {
+  let n = len(s)
+  return s[n - 1]
+}
+print(head("world"))
+print(tail_char("mochi"))

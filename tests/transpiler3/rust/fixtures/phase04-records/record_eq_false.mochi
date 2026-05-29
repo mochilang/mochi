@@ -1,0 +1,9 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let a = Pt { x: 1, y: 2 }
+let b = Pt { x: 3, y: 4 }
+print(a == b)
+print(a != b)

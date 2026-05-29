@@ -1,0 +1,8 @@
+var label: string = "ok"
+try {
+  let z: int = 1 / 0
+  print(z)
+} catch e {
+  label = "failed"
+}
+print(label)

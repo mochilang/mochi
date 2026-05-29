@@ -1,0 +1,4 @@
+writeFile("/tmp/mochi_swift_oc.txt", "original")
+writeFile("/tmp/mochi_swift_oc.txt", "replaced")
+let content = readFile("/tmp/mochi_swift_oc.txt")
+print(content)

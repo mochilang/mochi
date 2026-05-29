@@ -1,0 +1,7 @@
+type Name {
+  first: string
+  last: string
+}
+
+let n = Name { first: "Ada", last: "Lovelace" }
+print(n.first + " " + n.last)

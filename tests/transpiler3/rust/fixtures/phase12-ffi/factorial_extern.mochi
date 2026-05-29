@@ -1,0 +1,5 @@
+extern fun c_factorial(n: int): int
+print(c_factorial(0))
+print(c_factorial(1))
+print(c_factorial(5))
+print(c_factorial(10))

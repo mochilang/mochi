@@ -1,0 +1,3 @@
+extern fun c_zero(): int
+print(c_zero())
+print(c_zero() + 5)

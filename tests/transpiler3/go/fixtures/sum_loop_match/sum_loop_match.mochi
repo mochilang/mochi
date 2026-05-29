@@ -1,0 +1,13 @@
+type Item =
+  Coin { v: int }
+  | Gem { v: int }
+
+let it: Item = Coin { v: 7 }
+var i = 0
+while i < 3 {
+  match it {
+    Coin(v) => print(v + i)
+    Gem(v) => print(v + i)
+  }
+  i = i + 1
+}

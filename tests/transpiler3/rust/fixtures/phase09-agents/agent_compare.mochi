@@ -1,0 +1,14 @@
+agent Trace {
+    var hits: int = 0
+    intent check(n: int) {
+        if n > 5 {
+            hits = hits + 1
+        }
+    }
+    intent get(): int { return hits }
+}
+let t = Trace { hits: 0 }
+for i in 0..10 {
+    t.check(i)
+}
+print(t.get())

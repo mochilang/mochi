@@ -1,0 +1,6 @@
+fun square(x: int): int { return x * x }
+let f1 = async square(3)
+let f2 = async square(4)
+let a = await f1
+let b = await f2
+print(a + b)

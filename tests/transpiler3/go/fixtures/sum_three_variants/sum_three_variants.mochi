@@ -1,0 +1,11 @@
+type Shape =
+  Circle { r: float }
+  | Square { side: float }
+  | Triangle { base: float height: float }
+
+let s: Shape = Triangle { base: 3.0, height: 4.0 }
+match s {
+  Circle(r) => print(r)
+  Square(side) => print(side)
+  Triangle(base, height) => print(base * height)
+}

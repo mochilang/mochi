@@ -1,0 +1,10 @@
+type Side =
+  Left { v: int }
+  | Right { v: int }
+
+var s: Side = Left { v: 1 }
+s = Left { v: 42 }
+match s {
+  Left(v) => print(v)
+  _ => print(0)
+}

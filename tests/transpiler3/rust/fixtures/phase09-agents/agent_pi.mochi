@@ -1,0 +1,6 @@
+agent Approx {
+    var pi: float = 3.14
+    intent area(r: float): float { return pi * r * r }
+}
+let a = Approx { pi: 3.14 }
+print(a.area(2.0))

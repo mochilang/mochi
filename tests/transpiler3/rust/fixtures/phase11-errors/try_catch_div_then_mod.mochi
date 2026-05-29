@@ -1,0 +1,12 @@
+try {
+  let a: int = 10 / 0
+  print(a)
+} catch e1 {
+  print(e1)
+}
+try {
+  let b: int = 10 % 0
+  print(b)
+} catch e2 {
+  print(e2)
+}

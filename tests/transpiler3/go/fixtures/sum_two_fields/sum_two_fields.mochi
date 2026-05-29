@@ -1,0 +1,9 @@
+type Pair =
+  P { a: int b: int }
+  | Q { a: int b: int }
+
+let p: Pair = P { a: 3, b: 4 }
+match p {
+  P(a, b) => print(a + b)
+  Q(a, b) => print(a + b)
+}

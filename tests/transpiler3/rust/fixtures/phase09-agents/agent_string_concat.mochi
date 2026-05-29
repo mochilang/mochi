@@ -1,0 +1,10 @@
+agent Builder {
+    var buf: string = ""
+    intent push(s: string) { buf = buf + s }
+    intent get(): string { return buf }
+}
+let b = Builder { buf: "" }
+b.push("hello")
+b.push(", ")
+b.push("world")
+print(b.get())

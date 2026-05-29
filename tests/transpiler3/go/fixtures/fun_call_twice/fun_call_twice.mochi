@@ -1,0 +1,7 @@
+fun sq(x: int): int {
+  return x * x
+}
+
+print(sq(3))
+print(sq(4))
+print(sq(5))

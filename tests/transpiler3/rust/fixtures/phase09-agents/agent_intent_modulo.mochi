@@ -1,0 +1,11 @@
+agent ModSum {
+    var s: int = 0
+    intent push(n: int) { s = s + (n % 3) }
+    intent get(): int { return s }
+}
+let m = ModSum { s: 0 }
+m.push(7)
+m.push(8)
+m.push(9)
+m.push(10)
+print(m.get())

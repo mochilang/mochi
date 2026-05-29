@@ -1,0 +1,6 @@
+fun get_hello(): string {
+  fetch "HTTPTEST_URL/hello" into b
+  return b
+}
+
+print(get_hello())

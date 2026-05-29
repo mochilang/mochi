@@ -1,0 +1,5 @@
+writeFile("/tmp/mochi_swift_lines.txt", "alpha\nbeta\ngamma\n")
+let xs = lines("/tmp/mochi_swift_lines.txt")
+for line in xs {
+    print(line)
+}

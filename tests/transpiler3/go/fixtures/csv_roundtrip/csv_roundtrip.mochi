@@ -1,0 +1,10 @@
+writeFile("/tmp/mochi3_go_csv_round_in.csv", "x,y,z\n1,2,3\n4,5,6\n")
+let rows = loadCSV("/tmp/mochi3_go_csv_round_in.csv")
+saveCSV("/tmp/mochi3_go_csv_round_out.csv", rows)
+let rows2 = loadCSV("/tmp/mochi3_go_csv_round_out.csv")
+print(len(rows2))
+for row in rows2 {
+    print(row[0])
+    print(row[1])
+    print(row[2])
+}

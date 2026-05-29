@@ -1,0 +1,7 @@
+fun apply(f: fun(int): int, x: int): int {
+    return f(x)
+}
+
+let dbl: fun(int): int = fun(x: int): int => x * 2
+print(apply(dbl, 6))
+print(apply(dbl, 21))

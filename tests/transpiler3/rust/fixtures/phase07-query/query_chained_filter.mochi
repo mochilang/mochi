@@ -1,0 +1,6 @@
+let nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+let evens = from n in nums where n % 2 == 0 select n
+let big = from e in evens where e > 4 select e
+for x in big {
+  print(x)
+}

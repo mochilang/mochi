@@ -1,0 +1,6 @@
+ten
+twenty
+thirty
+3
+true
+false

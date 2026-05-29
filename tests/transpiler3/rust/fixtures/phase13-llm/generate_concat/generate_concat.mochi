@@ -1,0 +1,3 @@
+let topic = "2+2"
+let r = generate openai { prompt: "What is " + topic + "?" }
+print(r)

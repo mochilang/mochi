@@ -1,0 +1,8 @@
+let id_int = fun(x: int): int => x
+let id_float = fun(x: float): float => x
+let id_bool = fun(x: bool): bool => x
+let id_str = fun(s: string): string => s
+print(id_int(42))
+print(id_float(3.14))
+print(id_bool(true))
+print(id_str("ok"))

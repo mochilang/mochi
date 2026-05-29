@@ -1,0 +1,4 @@
+let s = "hello world"
+print(substring(s, 0, 5))
+print(substring(s, 6, 11))
+print(substring("abcdef", 2, 5))

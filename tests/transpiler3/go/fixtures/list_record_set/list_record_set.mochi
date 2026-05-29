@@ -1,0 +1,10 @@
+type P {
+  x: int
+}
+
+var xs: list<P> = [P { x: 1 }, P { x: 2 }, P { x: 3 }]
+xs[0] = P { x: 100 }
+xs[2] = P { x: 300 }
+for p in xs {
+  print(p.x)
+}

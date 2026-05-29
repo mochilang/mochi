@@ -1,0 +1,4 @@
+let s = set { 10, 20, 30 }
+print(has(s, 10))
+print(has(s, 99))
+print(has(s, 30))

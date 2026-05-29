@@ -1,0 +1,9 @@
+type Maybe =
+  Some { v: int }
+  | None { _u: int }
+
+let m: Maybe = Some { v: 42 }
+match m {
+  Some(v) => print(v)
+  None(_u) => print(0)
+}

@@ -1,0 +1,7 @@
+writeFile("/tmp/mochi3_go_csv_single.csv", "only,one,row\n")
+let rows = loadCSV("/tmp/mochi3_go_csv_single.csv")
+print(len(rows))
+print(len(rows[0]))
+print(rows[0][0])
+print(rows[0][1])
+print(rows[0][2])

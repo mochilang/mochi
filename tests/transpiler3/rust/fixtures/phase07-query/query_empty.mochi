@@ -1,0 +1,3 @@
+let nums: list<int> = []
+let r = from n in nums select n
+print(len(r))

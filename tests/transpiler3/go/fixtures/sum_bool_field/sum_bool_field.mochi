@@ -1,0 +1,9 @@
+type Toggle =
+  On { active: bool }
+  | Off { active: bool }
+
+let t: Toggle = On { active: true }
+match t {
+  On(active) => print(active)
+  Off(active) => print(active)
+}

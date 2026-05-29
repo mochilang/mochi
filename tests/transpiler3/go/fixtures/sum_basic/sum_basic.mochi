@@ -1,0 +1,9 @@
+type Shape =
+  Circle { r: float }
+  | Square { side: float }
+
+let s: Shape = Circle { r: 2.0 }
+match s {
+  Circle(r) => print(r)
+  Square(side) => print(side)
+}

@@ -1,0 +1,14 @@
+type Score {
+  v: int
+}
+
+let scores = [Score { v: 10 }, Score { v: 5 }, Score { v: 8 }, Score { v: 2 }, Score { v: 7 }]
+var keep: list<Score> = []
+for s in scores {
+  if s.v >= 5 {
+    keep = append(keep, s)
+  }
+}
+for s in keep {
+  print(s.v)
+}

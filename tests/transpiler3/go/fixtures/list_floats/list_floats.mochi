@@ -1,0 +1,4 @@
+let xs = [1.5, 2.5, 3.5]
+for x in xs {
+  print(x)
+}

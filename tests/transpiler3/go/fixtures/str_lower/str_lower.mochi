@@ -1,0 +1,2 @@
+let s = lower("HELLO WORLD")
+print(s)

@@ -1,0 +1,4 @@
+let greeting: string = "hello, "
+let greet: fun(string): string = fun(name: string): string => greeting + name
+print(greet("alice"))
+print(greet("bob"))

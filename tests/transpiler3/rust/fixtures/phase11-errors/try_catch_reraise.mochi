@@ -1,0 +1,15 @@
+try {
+  try {
+    let x: int = 10
+    let y: int = 0
+    let z: int = x / y
+    print(z)
+  } catch e {
+    print("inner caught")
+    print(e)
+    panic(99, "reraise")
+  }
+} catch outer {
+  print("outer caught")
+  print(outer)
+}

@@ -1,0 +1,9 @@
+var xs: list<int> = []
+print(len(xs))
+xs = append(xs, 7)
+print(len(xs))
+xs = append(xs, 14)
+print(len(xs))
+for x in xs {
+  print(x)
+}

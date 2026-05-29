@@ -1,0 +1,143 @@
+name: Publish mochi/runtime to Packagist
+
+# Phase 18 of MEP-55: signed releases for the PHP runtime Composer
+# package. Packagist auto-discovers tags via webhook, so the publish
+# step here is the trust-root work: GPG-sign the tag, attach a
+# Sigstore-backed provenance attestation, run composer audit on a fresh
+# install, and (optionally) emit a php-signify Ed25519 signature.
+#
+# Skipped silently when GPG_PRIVATE_KEY is not configured; this is the
+# same pattern jvm-publish.yml uses so fork CI does not break.
+
+on:
+  push:
+    tags:
+      - 'v0.*'
+      - 'v1.*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, gmp
+          coverage: none
+          tools: composer:v2
+
+      - name: Check GPG key
+        id: check
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          if [ -z "$GPG_PRIVATE_KEY" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::GPG_PRIVATE_KEY not configured; skipping signed publish"
+          elif echo "$GPG_PRIVATE_KEY" | gpg --batch --import 2>/dev/null; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::GPG_PRIVATE_KEY is not valid GPG data; skipping signed publish"
+          fi
+
+      - name: Verify signed tag
+        if: steps.check.outputs.configured == 'true' && startsWith(github.ref, 'refs/tags/')
+        run: |
+          tag="${GITHUB_REF#refs/tags/}"
+          git tag -v "$tag" || {
+            echo "::error::tag $tag is not GPG-signed; refusing to publish"
+            exit 1
+          }
+
+      - name: Composer install (no-dev)
+        working-directory: transpiler3/php/runtime
+        run: composer install --no-interaction --no-dev --prefer-dist --classmap-authoritative
+
+      - name: Composer audit
+        working-directory: transpiler3/php/runtime
+        # composer audit (Composer 2.4+) reports known-vulnerable deps
+        # from the FriendsOfPHP advisory database. Phase 18 requires a
+        # clean audit before tag publication.
+        run: composer audit --no-interaction
+
+      - name: Stage release tarball
+        id: stage
+        working-directory: transpiler3/php/runtime
+        run: |
+          mkdir -p ../../../dist
+          tarball="../../../dist/mochi-runtime-${GITHUB_REF#refs/tags/}.tar.gz"
+          tar --sort=name --owner=0 --group=0 --numeric-owner \
+              --mtime='2024-01-01 00:00:00 UTC' \
+              -czf "$tarball" \
+              composer.json src
+          echo "tarball=$tarball" >> "$GITHUB_OUTPUT"
+
+      - name: Attest build provenance
+        # GitHub Actions OIDC attestation (GA April 2024). Attaches a
+        # Sigstore-backed provenance statement to the release tarball.
+        # Consumers verify with `gh attestation verify <tarball>`.
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: ${{ steps.stage.outputs.tarball }}
+
+      - name: php-signify (optional Ed25519 signature)
+        if: steps.check.outputs.configured == 'true' && env.PHP_SIGNIFY_SECRET_KEY != ''
+        env:
+          PHP_SIGNIFY_SECRET_KEY: ${{ secrets.PHP_SIGNIFY_SECRET_KEY }}
+        run: |
+          # Drupal's php-signify ports OpenBSD signify(1) to PHP. The
+          # signature file is published alongside the tarball; key
+          # fingerprint is in SECURITY.md.
+          echo "$PHP_SIGNIFY_SECRET_KEY" > /tmp/release.key
+          composer global require drupal/php-signify
+          ~/.composer/vendor/bin/signify -S \
+            -s /tmp/release.key \
+            -m "${{ steps.stage.outputs.tarball }}"
+          rm -f /tmp/release.key
+
+      - name: Notify Packagist
+        # Packagist auto-discovers tags via the GitHub webhook the user
+        # configured in their Packagist account settings. This step is
+        # a defensive ping in case the webhook was disabled.
+        if: startsWith(github.ref, 'refs/tags/') && env.PACKAGIST_API_TOKEN != ''
+        env:
+          PACKAGIST_API_TOKEN: ${{ secrets.PACKAGIST_API_TOKEN }}
+          PACKAGIST_USERNAME: ${{ secrets.PACKAGIST_USERNAME }}
+        run: |
+          curl -X POST \
+            -H 'content-type:application/json' \
+            "https://packagist.org/api/update-package?username=${PACKAGIST_USERNAME}&apiToken=${PACKAGIST_API_TOKEN}" \
+            -d '{"repository":{"url":"https://github.com/mochilang/mochi"}}'
+
+  verify-gate:
+    # Defensive: independent job re-runs composer install + audit from
+    # a fresh checkout so a publish-job-side credential leak cannot mask
+    # a broken release.
+    runs-on: ubuntu-24.04
+    needs: publish
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, gmp
+          coverage: none
+          tools: composer:v2
+      - name: Composer install (no-dev, fresh)
+        working-directory: transpiler3/php/runtime
+        run: composer install --no-interaction --no-dev --prefer-dist
+      - name: Composer audit (fresh)
+        working-directory: transpiler3/php/runtime
+        run: composer audit --no-interaction

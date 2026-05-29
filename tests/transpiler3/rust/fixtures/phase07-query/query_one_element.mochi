@@ -1,0 +1,5 @@
+let nums = [42]
+let r = from n in nums select n * 2
+for x in r {
+  print(x)
+}

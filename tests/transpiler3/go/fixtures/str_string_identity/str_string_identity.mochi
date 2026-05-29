@@ -1,0 +1,4 @@
+print(str("hello"))
+let s = "world"
+print(str(s))
+print(str(""))

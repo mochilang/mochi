@@ -1,0 +1,17 @@
+type User {
+  id: int
+  name: string
+}
+
+let users = [
+  User { id: 1, name: "alice" },
+  User { id: 2, name: "bob" },
+  User { id: 3, name: "carol" },
+]
+var found: string = ""
+for u in users {
+  if u.id == 2 {
+    found = u.name
+  }
+}
+print(found)

@@ -1,0 +1,4 @@
+let add_one = fun(x: int): int => x + 1
+let double = fun(x: int): int => x * 2
+let r = double(add_one(5))
+print(r)

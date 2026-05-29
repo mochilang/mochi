@@ -1,0 +1,3 @@
+fetch "HTTPTEST_URL/json_name" into body
+let data = json_decode(body)
+print(data["name"])

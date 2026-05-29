@@ -1,0 +1,9 @@
+fun inc(x: int): int {
+  return x + 1
+}
+
+fun inc2(x: int): int {
+  return inc(inc(x))
+}
+
+print(inc2(10))

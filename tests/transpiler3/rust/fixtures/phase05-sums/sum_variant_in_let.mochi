@@ -1,0 +1,7 @@
+type Result = Ok(value: int) | Err(msg: string)
+
+let r: Result = Ok(42)
+match r {
+  Ok(v) => print(v)
+  Err(m) => print(m)
+}

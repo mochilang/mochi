@@ -1,0 +1,9 @@
+type Flag {
+  flag: bool
+}
+
+let a = Flag { flag: true }
+let b = Flag { flag: true }
+let c = Flag { flag: false }
+print(a == b)
+print(a == c)

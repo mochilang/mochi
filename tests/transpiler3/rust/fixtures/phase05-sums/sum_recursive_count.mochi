@@ -1,0 +1,17 @@
+type Nat = Zero | Succ(n: int)
+
+fun count_down(x: Nat): int {
+  return match x {
+    Zero => 0
+    Succ(n) => 1 + count_down(make_nat(n))
+  }
+}
+
+fun make_nat(start: int): Nat {
+  if start <= 0 {
+    return Zero
+  }
+  return Succ(start - 1)
+}
+
+print(count_down(make_nat(5)))

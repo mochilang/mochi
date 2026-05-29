@@ -1,0 +1,7 @@
+var m: omap<int,string> = omap{10: "ten", 20: "twenty", 30: "thirty"}
+print(m[10])
+print(m[20])
+print(m[30])
+print(len(m))
+print(has(m, 20))
+print(has(m, 99))

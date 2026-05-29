@@ -1,0 +1,18 @@
+type A =
+  A1 { v: int }
+  | A2 { v: int }
+
+type B =
+  B1 { w: int }
+  | B2 { w: int }
+
+let a: A = A1 { v: 10 }
+let b: B = B2 { w: 20 }
+match a {
+  A1(v) => print(v)
+  A2(v) => print(v)
+}
+match b {
+  B1(w) => print(w)
+  B2(w) => print(w)
+}

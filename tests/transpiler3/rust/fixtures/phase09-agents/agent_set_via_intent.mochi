@@ -1,0 +1,11 @@
+agent Cell {
+    var v: int = 0
+    intent setv(n: int) { v = n }
+    intent get(): int { return v }
+}
+let c = Cell { v: 0 }
+print(c.get())
+c.setv(7)
+print(c.get())
+c.setv(99)
+print(c.get())

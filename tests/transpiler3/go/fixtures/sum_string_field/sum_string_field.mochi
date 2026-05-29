@@ -1,0 +1,9 @@
+type Msg =
+  Greeting { text: string }
+  | Farewell { text: string }
+
+let m: Msg = Greeting { text: "hi" }
+match m {
+  Greeting(text) => print(text)
+  Farewell(text) => print(text)
+}

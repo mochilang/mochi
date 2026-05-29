@@ -1,0 +1,8 @@
+writeFile("/tmp/mochi3_go_csv_colcount.csv", "a,b,c,d,e\n1,2,3,4,5\n")
+let rows = loadCSV("/tmp/mochi3_go_csv_colcount.csv")
+let r0 = rows[0]
+let r1 = rows[1]
+print(len(r0))
+print(len(r1))
+print(r1[0])
+print(r1[4])

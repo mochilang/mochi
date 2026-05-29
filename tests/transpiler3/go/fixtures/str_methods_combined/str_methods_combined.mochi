@@ -1,0 +1,11 @@
+fun process(s: string): string {
+  let sub = substring(s, 0, 3)
+  let rev = reverse(sub)
+  return rev
+}
+let greeting = "hello world"
+print(greeting.contains("world"))
+print(greeting[6])
+print(substring(greeting, 6, 11))
+print(reverse("abc"))
+print(process("foobar"))

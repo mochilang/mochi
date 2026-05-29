@@ -1,0 +1,16 @@
+agent Max {
+    var v: int = 0
+    intent offer(n: int) {
+        if n > v {
+            v = n
+        }
+    }
+    intent get(): int { return v }
+}
+let m = Max { v: 0 }
+m.offer(3)
+m.offer(7)
+m.offer(2)
+m.offer(11)
+m.offer(5)
+print(m.get())

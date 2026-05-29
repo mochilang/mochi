@@ -1,0 +1,4 @@
+print(str(0))
+print(str(42))
+print(str(-1))
+print(str(1000000))
