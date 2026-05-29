@@ -23,12 +23,14 @@ import (
 // runtimeFlags tracks which inline runtime helpers the lowered program
 // needs so the emit pass only includes the ones that are actually used.
 type runtimeFlags struct {
-	printStr     bool
-	printInt     bool
-	printBool    bool
-	printF64     bool
-	strContains  bool
-	strCat       bool
+	printStr    bool
+	printInt    bool
+	printBool   bool
+	printF64    bool
+	strContains bool
+	strCat      bool
+	setMake     bool // mochi_set_make([1,2,1]) → [1=>true, 2=>true]
+	setAdd      bool // mochi_set_add($s, 4) → $s with 4 added
 }
 
 type lowerer struct {
@@ -158,6 +160,38 @@ func (l *lowerer) runtimeDecls() []ptree.Decl {
 			},
 		})
 	}
+	if l.runtime.setMake {
+		out = append(out, &ptree.FuncDecl{
+			PhpDoc: []string{
+				"Build a Mochi set from a list. Sets are PHP assoc arrays",
+				"keyed by element with `true` values, preserving insertion",
+				"order. Duplicates are dropped on first occurrence.",
+			},
+			Name:       "mochi_set_make",
+			Params:     []ptree.FuncParam{{TypeName: "array", Name: "elems"}},
+			ReturnType: "array",
+			Body: []ptree.Stmt{
+				&ptree.RawStmt{Text: `$out = [];`},
+				&ptree.RawStmt{Text: `foreach ($elems as $e) { $out[$e] = true; }`},
+				&ptree.RawStmt{Text: `return $out;`},
+			},
+		})
+	}
+	if l.runtime.setAdd {
+		out = append(out, &ptree.FuncDecl{
+			PhpDoc: []string{
+				"Return a copy of $s with $e added. Mochi semantics are",
+				"non-mutating; PHP's array copy-on-write makes this cheap.",
+			},
+			Name:       "mochi_set_add",
+			Params:     []ptree.FuncParam{{TypeName: "array", Name: "s"}, {Name: "e"}},
+			ReturnType: "array",
+			Body: []ptree.Stmt{
+				&ptree.RawStmt{Text: `$s[$e] = true;`},
+				&ptree.RawStmt{Text: `return $s;`},
+			},
+		})
+	}
 	return out
 }
 
@@ -192,6 +226,18 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]ptree.Stmt, error) {
 		return l.lowerWhileStmt(v)
 	case *aotir.ForRangeStmt:
 		return l.lowerForRangeStmt(v)
+	case *aotir.ForEachStmt:
+		return l.lowerForEachStmt(v)
+	case *aotir.MapPutStmt:
+		key, err := l.lowerExpr(v.Key)
+		if err != nil {
+			return nil, err
+		}
+		val, err := l.lowerExpr(v.Value)
+		if err != nil {
+			return nil, err
+		}
+		return []ptree.Stmt{&ptree.IndexAssignStmt{Name: v.Name, Key: key, Value: val}}, nil
 	case *aotir.BreakStmt:
 		return []ptree.Stmt{&ptree.BreakStmt{}}, nil
 	case *aotir.ContinueStmt:
@@ -302,6 +348,18 @@ func (l *lowerer) lowerForRangeStmt(s *aotir.ForRangeStmt) ([]ptree.Stmt, error)
 		return nil, err
 	}
 	return []ptree.Stmt{&ptree.ForRangeStmt{Var: s.Var, Start: start, End: end, Body: body}}, nil
+}
+
+func (l *lowerer) lowerForEachStmt(s *aotir.ForEachStmt) ([]ptree.Stmt, error) {
+	src, err := l.lowerExpr(s.List)
+	if err != nil {
+		return nil, err
+	}
+	body, err := l.lowerBlock(s.Body)
+	if err != nil {
+		return nil, err
+	}
+	return []ptree.Stmt{&ptree.ForEachStmt{Var: s.Var, Source: src, Body: body}}, nil
 }
 
 // lowerFunction translates one non-main aotir Function to a PHP FuncDecl.
@@ -429,8 +487,154 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 			Callee: &ptree.IdentExpr{Name: v.Func},
 			Args:   args,
 		}, nil
+	case *aotir.ListLit:
+		elems := make([]ptree.Expr, 0, len(v.Elems))
+		for _, el := range v.Elems {
+			lo, err := l.lowerExpr(el)
+			if err != nil {
+				return nil, err
+			}
+			elems = append(elems, lo)
+		}
+		return &ptree.ArrayLit{Elems: elems}, nil
+	case *aotir.AppendExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		val, err := l.lowerExpr(v.Value)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.ArrayAppendExpr{Inner: recv, Tail: val}, nil
+	case *aotir.IndexExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		idx, err := l.lowerExpr(v.Index)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.IndexExpr{Receiver: recv, Index: idx}, nil
+	case *aotir.LenExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "count"},
+			Args:   []ptree.Expr{recv},
+		}, nil
+	case *aotir.MapLit:
+		keys := make([]ptree.Expr, 0, len(v.Keys))
+		vals := make([]ptree.Expr, 0, len(v.Values))
+		for i := range v.Keys {
+			k, err := l.lowerExpr(v.Keys[i])
+			if err != nil {
+				return nil, err
+			}
+			vv, err := l.lowerExpr(v.Values[i])
+			if err != nil {
+				return nil, err
+			}
+			keys = append(keys, k)
+			vals = append(vals, vv)
+		}
+		return &ptree.ArrayLit{Keys: keys, Values: vals}, nil
+	case *aotir.MapGetExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		key, err := l.lowerExpr(v.Key)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.IndexExpr{Receiver: recv, Index: key}, nil
+	case *aotir.MapHasExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		key, err := l.lowerExpr(v.Key)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "array_key_exists"},
+			Args:   []ptree.Expr{key, recv},
+		}, nil
+	case *aotir.MapLenExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "count"},
+			Args:   []ptree.Expr{recv},
+		}, nil
+	case *aotir.MapKeysExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "array_keys"},
+			Args:   []ptree.Expr{recv},
+		}, nil
+	case *aotir.SetLiteralExpr:
+		l.runtime.setMake = true
+		elems := make([]ptree.Expr, 0, len(v.Elems))
+		for _, el := range v.Elems {
+			lo, err := l.lowerExpr(el)
+			if err != nil {
+				return nil, err
+			}
+			elems = append(elems, lo)
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "mochi_set_make"},
+			Args:   []ptree.Expr{&ptree.ArrayLit{Elems: elems}},
+		}, nil
+	case *aotir.SetAddExpr:
+		l.runtime.setAdd = true
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		el, err := l.lowerExpr(v.Elem)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "mochi_set_add"},
+			Args:   []ptree.Expr{recv, el},
+		}, nil
+	case *aotir.SetHasExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		el, err := l.lowerExpr(v.Elem)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "array_key_exists"},
+			Args:   []ptree.Expr{el, recv},
+		}, nil
+	case *aotir.SetLenExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "count"},
+			Args:   []ptree.Expr{recv},
+		}, nil
 	default:
-		return nil, fmt.Errorf("php lower: phase 2 cannot lower %T", e)
+		return nil, fmt.Errorf("php lower: phase 3 cannot lower %T", e)
 	}
 }
 

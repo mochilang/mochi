@@ -564,3 +564,105 @@ func (*CastExpr) phpExpr() {}
 func (e *CastExpr) PhpString() string {
 	return "(" + e.TargetType + ") " + e.Operand.PhpString()
 }
+
+// ArrayLit is a PHP array literal. When Keys is empty it renders as a
+// list literal `[a, b, c]`. When Keys is non-empty it renders as an
+// associative literal `[k1 => v1, k2 => v2]` (PHP preserves insertion
+// order, which matches Mochi map ordering).
+type ArrayLit struct {
+	Elems  []Expr // list form
+	Keys   []Expr // associative form (paired with Values)
+	Values []Expr
+}
+
+func (*ArrayLit) phpExpr() {}
+
+func (e *ArrayLit) PhpString() string {
+	var sb strings.Builder
+	sb.WriteByte('[')
+	if len(e.Keys) > 0 {
+		for i := range e.Keys {
+			if i > 0 {
+				sb.WriteString(", ")
+			}
+			sb.WriteString(e.Keys[i].PhpString())
+			sb.WriteString(" => ")
+			sb.WriteString(e.Values[i].PhpString())
+		}
+	} else {
+		for i, x := range e.Elems {
+			if i > 0 {
+				sb.WriteString(", ")
+			}
+			sb.WriteString(x.PhpString())
+		}
+	}
+	sb.WriteByte(']')
+	return sb.String()
+}
+
+// ArrayAppendExpr is `[...<inner>, <tail>]`. Lowers Mochi's
+// `append(xs, v)` (functional, non-mutating).
+type ArrayAppendExpr struct {
+	Inner Expr
+	Tail  Expr
+}
+
+func (*ArrayAppendExpr) phpExpr() {}
+
+func (e *ArrayAppendExpr) PhpString() string {
+	return "[..." + e.Inner.PhpString() + ", " + e.Tail.PhpString() + "]"
+}
+
+// IndexExpr is `<recv>[<idx>]`.
+type IndexExpr struct {
+	Receiver Expr
+	Index    Expr
+}
+
+func (*IndexExpr) phpExpr() {}
+
+func (e *IndexExpr) PhpString() string {
+	return e.Receiver.PhpString() + "[" + e.Index.PhpString() + "]"
+}
+
+// ForEachStmt is `foreach (<source> as $<var>) { <body> }`.
+type ForEachStmt struct {
+	Var    string
+	Source Expr
+	Body   []Stmt
+}
+
+func (*ForEachStmt) phpStmt() {}
+
+func (s *ForEachStmt) PhpString(ind int) string {
+	pad := indent(ind)
+	var sb strings.Builder
+	sb.WriteString(pad)
+	sb.WriteString("foreach (")
+	sb.WriteString(s.Source.PhpString())
+	sb.WriteString(" as $")
+	sb.WriteString(s.Var)
+	sb.WriteString(") {\n")
+	for _, st := range s.Body {
+		sb.WriteString(st.PhpString(ind + 1))
+		sb.WriteString("\n")
+	}
+	sb.WriteString(pad)
+	sb.WriteString("}")
+	return sb.String()
+}
+
+// IndexAssignStmt is `$<name>[<key>] = <value>;`. Used for
+// MapPutStmt and (later) list element assignment.
+type IndexAssignStmt struct {
+	Name  string
+	Key   Expr
+	Value Expr
+}
+
+func (*IndexAssignStmt) phpStmt() {}
+
+func (s *IndexAssignStmt) PhpString(ind int) string {
+	return indent(ind) + "$" + s.Name + "[" + s.Key.PhpString() + "] = " + s.Value.PhpString() + ";"
+}
