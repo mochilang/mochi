@@ -43,9 +43,188 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerLenExpr(e)
 	case *aotir.AppendExpr:
 		return l.lowerAppendExpr(e)
+	case *aotir.MapLit:
+		return l.lowerMapLit(e)
+	case *aotir.MapGetExpr:
+		return l.lowerMapGetExpr(e)
+	case *aotir.MapHasExpr:
+		return l.lowerMapHasExpr(e)
+	case *aotir.MapLenExpr:
+		return l.lowerMapLenExpr(e)
+	case *aotir.MapKeysExpr:
+		return l.lowerMapKeysExpr(e)
+	case *aotir.MapValuesExpr:
+		return l.lowerMapValuesExpr(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
+}
+
+// lowerMapLit emits `map[K]V{k0: v0, k1: v1, ...}`.
+func (l *lowerer) lowerMapLit(e *aotir.MapLit) (gotree.Expr, error) {
+	mapType, err := l.lowerMapType(e.KeyType, e.ValueType)
+	if err != nil {
+		return nil, fmt.Errorf("map literal: %w", err)
+	}
+	if len(e.Keys) != len(e.Values) {
+		return nil, fmt.Errorf("map literal: %d keys vs %d values", len(e.Keys), len(e.Values))
+	}
+	elts := make([]gotree.Expr, 0, len(e.Keys))
+	for i := range e.Keys {
+		k, err := l.lowerExpr(e.Keys[i])
+		if err != nil {
+			return nil, fmt.Errorf("map literal key %d: %w", i, err)
+		}
+		v, err := l.lowerExpr(e.Values[i])
+		if err != nil {
+			return nil, fmt.Errorf("map literal value %d: %w", i, err)
+		}
+		elts = append(elts, &gotree.KeyValueExpr{Key: k, Value: v})
+	}
+	return &gotree.CompositeLit{
+		Type: &gotree.RawExpr{Src: mapType},
+		Elts: elts,
+	}, nil
+}
+
+// lowerMapGetExpr emits `m[k]`. Mochi requires the key to be
+// present; the verifier ensures this via prior MapHasExpr guards.
+func (l *lowerer) lowerMapGetExpr(e *aotir.MapGetExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	key, err := l.lowerExpr(e.Key)
+	if err != nil {
+		return nil, err
+	}
+	return &gotree.IndexExpr{X: recv, Index: key}, nil
+}
+
+// lowerMapHasExpr emits a `func() bool { _, ok := m[k]; return ok }()`
+// IIFE so the result composes inside larger expressions.
+func (l *lowerer) lowerMapHasExpr(e *aotir.MapHasExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	key, err := l.lowerExpr(e.Key)
+	if err != nil {
+		return nil, err
+	}
+	return &gotree.CallExpr{
+		Fun: &gotree.FuncLit{
+			Type: &gotree.FuncType{Results: []gotree.Field{{Type: &gotree.Ident{Name: "bool"}}}},
+			Body: &gotree.BlockStmt{List: []gotree.Stmt{
+				&gotree.AssignStmt{
+					Lhs: []gotree.Expr{&gotree.Ident{Name: "_"}, &gotree.Ident{Name: "ok"}},
+					Tok: ":=",
+					Rhs: []gotree.Expr{&gotree.IndexExpr{X: recv, Index: key}},
+				},
+				&gotree.ReturnStmt{Results: []gotree.Expr{&gotree.Ident{Name: "ok"}}},
+			}},
+		},
+	}, nil
+}
+
+// lowerMapLenExpr emits `int64(len(m))`.
+func (l *lowerer) lowerMapLenExpr(e *aotir.MapLenExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	return &gotree.CallExpr{
+		Fun: &gotree.Ident{Name: "int64"},
+		Args: []gotree.Expr{&gotree.CallExpr{
+			Fun:  &gotree.Ident{Name: "len"},
+			Args: []gotree.Expr{recv},
+		}},
+	}, nil
+}
+
+// lowerMapKeysExpr emits `slices.Sorted(maps.Keys(m))`. Mochi's
+// keys()/values() return sorted lists so byte-equal stdout matches
+// the vm; Go 1.23+ gives us slices.Sorted + maps.Keys natively.
+func (l *lowerer) lowerMapKeysExpr(e *aotir.MapKeysExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	l.addImport("maps")
+	l.addImport("slices")
+	return &gotree.CallExpr{
+		Fun: &gotree.SelectorExpr{X: &gotree.Ident{Name: "slices"}, Sel: "Sorted"},
+		Args: []gotree.Expr{&gotree.CallExpr{
+			Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "maps"}, Sel: "Keys"},
+			Args: []gotree.Expr{recv},
+		}},
+	}, nil
+}
+
+// lowerMapValuesExpr emits an IIFE that iterates the key-sorted
+// keys and looks each value up so the output order matches
+// MapKeysExpr.
+func (l *lowerer) lowerMapValuesExpr(e *aotir.MapValuesExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	kt, err := l.lowerType(e.KeyType)
+	if err != nil {
+		return nil, fmt.Errorf("map values key type: %w", err)
+	}
+	vt, err := l.lowerType(e.ValueType)
+	if err != nil {
+		return nil, fmt.Errorf("map values value type: %w", err)
+	}
+	l.addImport("maps")
+	l.addImport("slices")
+	// func() []V { ks := slices.Sorted(maps.Keys(m)); vs := make([]V, len(ks)); for i, k := range ks { vs[i] = m[k] }; return vs }()
+	body := &gotree.BlockStmt{List: []gotree.Stmt{
+		&gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.Ident{Name: "ks"}},
+			Tok: ":=",
+			Rhs: []gotree.Expr{&gotree.CallExpr{
+				Fun: &gotree.SelectorExpr{X: &gotree.Ident{Name: "slices"}, Sel: "Sorted"},
+				Args: []gotree.Expr{&gotree.CallExpr{
+					Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "maps"}, Sel: "Keys"},
+					Args: []gotree.Expr{recv},
+				}},
+			}},
+		},
+		&gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.Ident{Name: "vs"}},
+			Tok: ":=",
+			Rhs: []gotree.Expr{&gotree.CallExpr{
+				Fun: &gotree.Ident{Name: "make"},
+				Args: []gotree.Expr{
+					&gotree.RawExpr{Src: "[]" + vt},
+					&gotree.CallExpr{Fun: &gotree.Ident{Name: "len"}, Args: []gotree.Expr{&gotree.Ident{Name: "ks"}}},
+				},
+			}},
+		},
+		&gotree.RangeStmt{
+			Key:   &gotree.Ident{Name: "i"},
+			Value: &gotree.Ident{Name: "k"},
+			Tok:   ":=",
+			X:     &gotree.Ident{Name: "ks"},
+			Body: &gotree.BlockStmt{List: []gotree.Stmt{
+				&gotree.AssignStmt{
+					Lhs: []gotree.Expr{&gotree.IndexExpr{X: &gotree.Ident{Name: "vs"}, Index: &gotree.Ident{Name: "i"}}},
+					Tok: "=",
+					Rhs: []gotree.Expr{&gotree.IndexExpr{X: recv, Index: &gotree.Ident{Name: "k"}}},
+				},
+			}},
+		},
+		&gotree.ReturnStmt{Results: []gotree.Expr{&gotree.Ident{Name: "vs"}}},
+	}}
+	_ = kt
+	return &gotree.CallExpr{
+		Fun: &gotree.FuncLit{
+			Type: &gotree.FuncType{Results: []gotree.Field{{Type: &gotree.RawExpr{Src: "[]" + vt}}}},
+			Body: body,
+		},
+	}, nil
 }
 
 // lowerListLit emits `[]T{e0, e1, ...}` for a Phase 3.1 list of

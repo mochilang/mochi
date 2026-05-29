@@ -261,7 +261,10 @@ func (f *FuncLit) write(w *Writer) {
 	w.Raw("func")
 	f.Type.write(w)
 	w.Raw(" ")
-	f.Body.writeInline(w)
+	// Expression-position FuncLit must not emit a trailing
+	// newline; the surrounding token (a closing paren, a comma,
+	// or another infix operator) follows immediately.
+	f.Body.writeInlineNoNewline(w)
 }
 
 // TypeAssertExpr is X.(T).

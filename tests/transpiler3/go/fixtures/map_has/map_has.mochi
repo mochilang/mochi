@@ -1,0 +1,4 @@
+let m = {"alpha": 1, "beta": 2}
+print(has(m, "alpha"))
+print(has(m, "gamma"))
+print(has(m, "beta"))
