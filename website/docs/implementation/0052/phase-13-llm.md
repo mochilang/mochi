@@ -13,8 +13,8 @@ description: "MEP-52 Phase 13, Mochi `generate <provider> { ... }` as cassette-r
 | Status         | LANDED (Node + Deno + Bun) |
 | Started        | 2026-05-30 00:55 (GMT+7) |
 | Landed         | 2026-05-30 01:01 (GMT+7) |
-| Tracking issue | (pending) |
-| Tracking PR    | (pending) |
+| Tracking issue | [#22992](https://github.com/mochilang/mochi/issues/22992) |
+| Tracking PR    | [#22995](https://github.com/mochilang/mochi/pull/22995) |
 
 ## Gate
 
