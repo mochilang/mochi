@@ -1,7 +1,14 @@
 // Package errors defines bridge-specific error types for the Mochi↔Kotlin bridge.
 package errors
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
+
+// ErrNoKotlinMetadata is returned when a .class file does not contain a
+// @kotlin.Metadata annotation (i.e. it is a plain Java class file).
+var ErrNoKotlinMetadata = errors.New("no @kotlin.Metadata annotation found in class file")
 
 type ErrUnsupportedMetadataVersion struct {
 	Version [3]int32
