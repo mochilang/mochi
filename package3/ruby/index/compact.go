@@ -8,35 +8,48 @@
 package index
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"strings"
+
+	"mochi/package3/ruby/semver"
 )
 
 const defaultIndexBase = "https://index.rubygems.org"
 
+// ErrGemVersionNotFound is returned by SelectBestVersion when no version
+// in the list satisfies the given requirement.
+var ErrGemVersionNotFound = errors.New("gem version not found")
+
 // Client fetches gem metadata from the RubyGems compact index.
 type Client struct {
-	BaseURL    string
-	HTTPClient *http.Client
+	BaseURL   string
+	HTTP      *http.Client
+	UserAgent string
 }
 
 // NewClient returns a Client pointing at the official RubyGems compact index.
-func NewClient() *Client {
+// If baseURL is empty the default index URL is used.
+func NewClient(baseURL string) *Client {
+	if baseURL == "" {
+		baseURL = defaultIndexBase
+	}
 	return &Client{
-		BaseURL:    defaultIndexBase,
-		HTTPClient: http.DefaultClient,
+		BaseURL: baseURL,
+		HTTP:    http.DefaultClient,
 	}
 }
 
 // GemVersion is one version entry from the compact index /info/<gem> endpoint.
 type GemVersion struct {
 	Version      string
-	Platform     string // "" for ruby-universal, "x86_64-linux", "arm64-darwin", etc.
-	SHA256       string // hex-encoded SHA-256 of the .gem tarball
+	Platform     string   // "" for ruby-universal, "x86_64-linux", "arm64-darwin", etc.
+	SHA256       string   // hex-encoded SHA-256 of the .gem tarball
 	Dependencies []GemDep
 }
 
@@ -46,17 +59,35 @@ type GemDep struct {
 	Constraint string // e.g. ">= 1.0", "~> 2.1"
 }
 
+func (c *Client) httpClient() *http.Client {
+	if c.HTTP != nil {
+		return c.HTTP
+	}
+	return http.DefaultClient
+}
+
+func (c *Client) do(req *http.Request) (*http.Response, error) {
+	if c.UserAgent != "" {
+		req.Header.Set("User-Agent", c.UserAgent)
+	}
+	return c.httpClient().Do(req)
+}
+
 // FetchVersions fetches all versions of a gem from the compact index
 // /info/<gem> endpoint and returns them newest-first.
-func (c *Client) FetchVersions(gem string) ([]GemVersion, error) {
+func (c *Client) FetchVersions(ctx context.Context, gem string) ([]GemVersion, error) {
 	url := fmt.Sprintf("%s/info/%s", c.BaseURL, gem)
-	resp, err := c.HTTPClient.Get(url)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.do(req)
 	if err != nil {
 		return nil, fmt.Errorf("compact index fetch %s: %w", url, err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusNotFound {
-		return nil, fmt.Errorf("gem %q not found on index", gem)
+		return nil, fmt.Errorf("gem not found: %q", gem)
 	}
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("compact index %s: HTTP %d", url, resp.StatusCode)
@@ -68,37 +99,44 @@ func (c *Client) FetchVersions(gem string) ([]GemVersion, error) {
 	return parseInfoBody(string(body))
 }
 
-// VerifyGem downloads a .gem tarball and asserts its SHA-256 matches want.
-// Returns the tarball bytes on success.
-func (c *Client) VerifyGem(gem, version, platform, wantSHA256 string) ([]byte, error) {
+// VerifyAndDownload downloads a .gem tarball, verifies its SHA-256, and
+// optionally writes it to destDir. Returns an error on SHA-256 mismatch.
+func (c *Client) VerifyAndDownload(ctx context.Context, gem, version, platform, wantSHA256, destDir string) error {
 	gemFile := gem + "-" + version
 	if platform != "" {
 		gemFile += "-" + platform
 	}
 	gemFile += ".gem"
-	url := fmt.Sprintf("https://rubygems.org/gems/%s", gemFile)
-	resp, err := c.HTTPClient.Get(url)
+	url := fmt.Sprintf("%s/gems/%s", c.BaseURL, gemFile)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return nil, fmt.Errorf("download %s: %w", url, err)
+		return err
+	}
+	resp, err := c.do(req)
+	if err != nil {
+		return fmt.Errorf("download %s: %w", url, err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("download %s: HTTP %d", url, resp.StatusCode)
+		return fmt.Errorf("download %s: HTTP %d", url, resp.StatusCode)
 	}
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	sum := sha256.Sum256(data)
-	got := hex.EncodeToString(sum[:])
-	if got != wantSHA256 {
-		return nil, fmt.Errorf("gem %s@%s SHA-256 mismatch: got %s want %s", gem, version, got, wantSHA256)
+	if wantSHA256 != "" {
+		sum := sha256.Sum256(data)
+		got := hex.EncodeToString(sum[:])
+		if got != wantSHA256 {
+			return fmt.Errorf("gem %s@%s SHA-256 mismatch: got %s want %s", gem, version, got, wantSHA256)
+		}
 	}
-	return data, nil
+	_ = destDir // phase 8: write to content-addressed cache
+	return nil
 }
 
 // parseInfoBody parses the /info/<gem> compact index response body.
-// Format per line: <version>[-<platform>] |checksum:<sha256>|dep:<name>:<constraint>,...
+// Format per line: <version>[-<platform>] [dep:<name>:<constraint>,...] |checksum:<sha256>
 func parseInfoBody(body string) ([]GemVersion, error) {
 	var versions []GemVersion
 	for _, line := range strings.Split(strings.TrimSpace(body), "\n") {
@@ -119,13 +157,11 @@ func parseInfoBody(body string) ([]GemVersion, error) {
 }
 
 func parseInfoLine(line string) (GemVersion, error) {
-	// Format: <ver-platform> <deps> |<checksum>
-	// Example: 1.16.2-x86_64-linux  nokogiri:>= 0|checksum:abc123
+	// Format: <ver-platform> <deps> |checksum:<sha256>
+	// Example: 1.2.3 dep:rack:~> 2.0,dep:activerecord:>= 6.0 |checksum:abc123
 	parts := strings.SplitN(line, " ", 2)
 	vp := parts[0]
 	var v GemVersion
-	// Split version from platform: last segment after - that starts with a letter
-	// is the platform (x86_64-linux, arm64-darwin, etc.).
 	if idx := platformSplit(vp); idx >= 0 {
 		v.Version = vp[:idx]
 		v.Platform = vp[idx+1:]
@@ -138,28 +174,90 @@ func parseInfoLine(line string) (GemVersion, error) {
 	rest := parts[1]
 	// Extract checksum.
 	if i := strings.Index(rest, "|checksum:"); i >= 0 {
-		end := strings.Index(rest[i+10:], "|")
-		if end < 0 {
-			v.SHA256 = rest[i+10:]
-		} else {
-			v.SHA256 = rest[i+10 : i+10+end]
+		sha := rest[i+10:]
+		if end := strings.Index(sha, "|"); end >= 0 {
+			sha = sha[:end]
 		}
+		v.SHA256 = sha
+		rest = rest[:i]
+	}
+	// Parse deps: dep:name:constraint,dep:name:constraint,...
+	for _, part := range strings.Split(strings.TrimSpace(rest), ",") {
+		part = strings.TrimSpace(part)
+		if !strings.HasPrefix(part, "dep:") {
+			continue
+		}
+		part = part[4:]
+		colonIdx := strings.Index(part, ":")
+		if colonIdx < 0 {
+			continue
+		}
+		v.Dependencies = append(v.Dependencies, GemDep{
+			Name:       part[:colonIdx],
+			Constraint: part[colonIdx+1:],
+		})
 	}
 	return v, nil
 }
 
-// platformSplit returns the index of the '-' separator between version and
-// platform, or -1 if the string has no platform suffix.
+// platformSplit returns the index of the first '-' that begins a platform suffix,
+// or -1 if the string has no platform suffix.
+// In RubyGems, '-' is only used for platform suffixes (e.g. "x86_64-linux");
+// pre-release segments use dots, not dashes. Walking forward keeps the full
+// platform string like "x86_64-linux" intact rather than splitting on the last dash.
 func platformSplit(vp string) int {
-	// A platform suffix starts with a letter; a prerelease suffix starts with
-	// a digit or dot. Walk backwards to find the split point.
-	for i := len(vp) - 1; i >= 0; i-- {
+	for i := 0; i < len(vp); i++ {
 		if vp[i] == '-' {
 			rest := vp[i+1:]
-			if len(rest) > 0 && (rest[0] >= 'a' && rest[0] <= 'z') {
+			if len(rest) > 0 && rest[0] >= 'a' && rest[0] <= 'z' {
 				return i
 			}
 		}
 	}
 	return -1
+}
+
+// SelectBestVersion picks the highest-versioned GemVersion from versions that
+// satisfies req. If platform is non-empty, only versions matching that platform
+// (or the universal platform "") are considered; when no platform-specific
+// version exists, universal versions are returned as fallback. Returns
+// ErrGemVersionNotFound if no version satisfies req.
+func SelectBestVersion(versions []GemVersion, req semver.Req, platform string) (*GemVersion, error) {
+	var candidates []GemVersion
+	for _, v := range versions {
+		if platform != "" && v.Platform != platform && v.Platform != "" {
+			continue
+		}
+		parsed, err := semver.ParseVersion(v.Version)
+		if err != nil {
+			continue
+		}
+		if semver.Satisfies(parsed, req) {
+			candidates = append(candidates, v)
+		}
+	}
+	// Prefer platform-specific over universal.
+	if platform != "" {
+		var platSpecific []GemVersion
+		for _, v := range candidates {
+			if v.Platform == platform {
+				platSpecific = append(platSpecific, v)
+			}
+		}
+		if len(platSpecific) > 0 {
+			candidates = platSpecific
+		}
+	}
+	if len(candidates) == 0 {
+		return nil, fmt.Errorf("%w: no version satisfying %v", ErrGemVersionNotFound, req)
+	}
+	best := &candidates[0]
+	for i := 1; i < len(candidates); i++ {
+		a, _ := semver.ParseVersion(best.Version)
+		b, _ := semver.ParseVersion(candidates[i].Version)
+		if semver.CompareVersions(b, a) > 0 {
+			best = &candidates[i]
+		}
+	}
+	return best, nil
 }

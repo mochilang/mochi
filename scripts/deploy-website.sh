@@ -28,11 +28,20 @@ git clone --depth=1 "$REPO_URL" "$TMPDIR_WORK/docs"
 echo "==> Syncing website/ content..."
 rsync -a --delete \
   --exclude='.git' \
+  --exclude='.DS_Store' \
   --exclude='node_modules' \
   --exclude='.docusaurus' \
   --exclude='build' \
+  --exclude='LICENSE' \
+  --exclude='README.md' \
   "$WEBSITE_SRC/" \
   "$TMPDIR_WORK/docs/"
+
+echo "==> Syncing releases/ content..."
+rsync -a --delete \
+  --exclude='.git' \
+  "$MOCHI_ROOT/releases/" \
+  "$TMPDIR_WORK/docs/releases/"
 
 cd "$TMPDIR_WORK/docs"
 git config user.name "mochi-bot"
