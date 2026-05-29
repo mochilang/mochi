@@ -276,6 +276,13 @@ func (l *lowerer) lowerBlock(b *aotir.Block) ([]rtree.Stmt, error) {
 			i++
 			continue
 		}
+		// RawCStmt is the C-specific setup for a DatalogQueryExpr.
+		// The Rust path evaluates Datalog at compile time and emits
+		// a static Vec<String>, so the setup is dropped.
+		if _, ok := s.(*aotir.RawCStmt); ok {
+			i++
+			continue
+		}
 		// Peep: `let mut X` followed by `MatchStmt{ResultVar: X}` collapses
 		// to `let mut X = match ... { ... };` which is idiomatic Rust.
 		if ls, ok := s.(*aotir.LetStmt); ok && ls.Init == nil && i+1 < len(b.Statements) {
@@ -783,6 +790,8 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 		// this is identity; .to_string() preserves an owned String
 		// (cloning if needed).
 		return &rtree.MethodCall{Receiver: op, Method: "to_string"}, nil
+	case *aotir.DatalogQueryExpr:
+		return lowerDatalogQueryExpr(n), nil
 	case *aotir.MapLit:
 		return l.lowerMapLit(n)
 	case *aotir.MapGetExpr:
@@ -1310,6 +1319,218 @@ func rustReturnTypeFromFunction(fn *aotir.Function) string {
 		fn.ReturnMapElemKeyType, fn.ReturnMapElemValueType,
 		fn.ReturnKeyType, fn.ReturnValueType, fn.ReturnListValueElemType,
 		fn.ReturnFunSig)
+}
+
+// lowerDatalogQueryExpr runs a compile-time semi-naive bottom-up Datalog
+// evaluator over e.Prog and emits a Rust vec! literal of String values.
+// The result is a flat list (free-variable values from each matching
+// tuple concatenated), matching the C / BEAM backends.
+func lowerDatalogQueryExpr(e *aotir.DatalogQueryExpr) rtree.Expr {
+	if e.Prog == nil {
+		return &rtree.RawExpr{Code: "Vec::<String>::new()"}
+	}
+	results := datalogEval(e)
+	if len(results) == 0 {
+		return &rtree.RawExpr{Code: "Vec::<String>::new()"}
+	}
+	args := make([]rtree.Expr, len(results))
+	for i, s := range results {
+		args[i] = &rtree.MethodCall{
+			Receiver: &rtree.StringLit{Value: s},
+			Method:   "to_string",
+		}
+	}
+	return &rtree.MacroVecLit{Elems: args}
+}
+
+// datalogEval performs semi-naive bottom-up evaluation of e.Prog and
+// returns the flat list of free-variable values from matching tuples.
+func datalogEval(e *aotir.DatalogQueryExpr) []string {
+	state := map[string][][]string{}
+	for _, f := range e.Prog.Facts {
+		args := make([]string, len(f.Args))
+		copy(args, f.Args)
+		state[f.Name] = append(state[f.Name], args)
+	}
+	for {
+		changed := false
+		for _, rule := range e.Prog.Rules {
+			newTuples := datalogDeriveRule(rule, state)
+			for _, t := range newTuples {
+				if !datalogTupleInRelation(state[rule.HeadName], t) {
+					state[rule.HeadName] = append(state[rule.HeadName], t)
+					changed = true
+				}
+			}
+		}
+		if !changed {
+			break
+		}
+	}
+	rel := state[e.QueryName]
+	var out []string
+	for _, tuple := range rel {
+		if len(tuple) != len(e.QueryArgs) {
+			continue
+		}
+		match := true
+		for i, qa := range e.QueryArgs {
+			if qa != "" {
+				expected := qa
+				if len(expected) >= 2 && expected[0] == '"' && expected[len(expected)-1] == '"' {
+					expected = expected[1 : len(expected)-1]
+				}
+				if tuple[i] != expected {
+					match = false
+					break
+				}
+			}
+		}
+		if match {
+			for i, qa := range e.QueryArgs {
+				if qa == "" {
+					out = append(out, tuple[i])
+				}
+			}
+		}
+	}
+	return out
+}
+
+func datalogDeriveRule(rule aotir.DatalogRule, state map[string][][]string) [][]string {
+	results := []map[string]string{{}}
+	for _, lit := range rule.Body {
+		if lit.IsNeq {
+			var next []map[string]string
+			for _, env := range results {
+				a, aok := env[lit.NeqA]
+				b, bok := env[lit.NeqB]
+				if !aok || !bok || a != b {
+					next = append(next, env)
+				}
+			}
+			results = next
+			continue
+		}
+		if lit.IsNot {
+			var next []map[string]string
+			for _, env := range results {
+				matched := false
+				for _, t := range state[lit.Name] {
+					if len(t) != len(lit.Args) {
+						continue
+					}
+					ok := true
+					for i, arg := range lit.Args {
+						val := datalogResolveArg(arg, env)
+						if val != t[i] {
+							ok = false
+							break
+						}
+					}
+					if ok {
+						matched = true
+						break
+					}
+				}
+				if !matched {
+					next = append(next, env)
+				}
+			}
+			results = next
+			continue
+		}
+		var next []map[string]string
+		for _, env := range results {
+			for _, t := range state[lit.Name] {
+				if len(t) != len(lit.Args) {
+					continue
+				}
+				newEnv := datalogCopyEnv(env)
+				ok := true
+				for i, arg := range lit.Args {
+					if datalogIsVariable(arg) {
+						if existing, bound := newEnv[arg]; bound {
+							if existing != t[i] {
+								ok = false
+								break
+							}
+						} else {
+							newEnv[arg] = t[i]
+						}
+					} else {
+						expected := datalogUnquote(arg)
+						if t[i] != expected {
+							ok = false
+							break
+						}
+					}
+				}
+				if ok {
+					next = append(next, newEnv)
+				}
+			}
+		}
+		results = next
+	}
+	var out [][]string
+	for _, env := range results {
+		head := make([]string, len(rule.HeadArgs))
+		for i, ha := range rule.HeadArgs {
+			if datalogIsVariable(ha) {
+				head[i] = env[ha]
+			} else {
+				head[i] = datalogUnquote(ha)
+			}
+		}
+		out = append(out, head)
+	}
+	return out
+}
+
+func datalogTupleInRelation(rel [][]string, t []string) bool {
+	for _, r := range rel {
+		if len(r) != len(t) {
+			continue
+		}
+		eq := true
+		for i := range r {
+			if r[i] != t[i] {
+				eq = false
+				break
+			}
+		}
+		if eq {
+			return true
+		}
+	}
+	return false
+}
+
+func datalogResolveArg(arg string, env map[string]string) string {
+	if datalogIsVariable(arg) {
+		return env[arg]
+	}
+	return datalogUnquote(arg)
+}
+
+func datalogIsVariable(s string) bool {
+	return len(s) > 0 && s[0] != '"'
+}
+
+func datalogUnquote(s string) string {
+	if len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"' {
+		return s[1 : len(s)-1]
+	}
+	return s
+}
+
+func datalogCopyEnv(env map[string]string) map[string]string {
+	out := make(map[string]string, len(env))
+	for k, v := range env {
+		out[k] = v
+	}
+	return out
 }
 
 // lowerListSortAscExpr emits a Rust block expression that clones the
