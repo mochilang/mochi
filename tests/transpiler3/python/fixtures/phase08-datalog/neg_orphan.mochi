@@ -1,0 +1,16 @@
+// Stratified negation: childless(X) if person(X) but not has_child(X).
+// Stratum 0: has_child derived from parent facts.
+// Stratum 1: childless uses not has_child (requires stratum 0 complete).
+fact person("alice")
+fact person("bob")
+fact person("carol")
+fact parent("alice", "dave")
+fact parent("bob", "eve")
+
+rule has_child(X) :- parent(X, Y)
+rule childless(X) :- person(X), not has_child(X)
+
+let results = query childless(_)
+for r in results {
+    print(r)
+}

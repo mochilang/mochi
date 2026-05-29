@@ -1,0 +1,7 @@
+let ch: chan<float> = make_chan(2)
+send(ch, 1.5)
+send(ch, 2.25)
+let a = recv(ch)
+let b = recv(ch)
+print(a)
+print(b)

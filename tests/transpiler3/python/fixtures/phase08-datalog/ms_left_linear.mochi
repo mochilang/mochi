@@ -1,0 +1,9 @@
+fact step("x", "y")
+fact step("y", "z")
+fact step("z", "w")
+rule fwd(X, Y) :- step(X, Y)
+rule fwd(X, Y) :- step(X, Z), fwd(Z, Y)
+let xs = query fwd("x", Y)
+for x in xs {
+    print(x)
+}

@@ -1,0 +1,9 @@
+let words = ["apple", "banana", "apple", "cherry", "banana", "apple"]
+var seen: set<string> = set{words[0]}
+for w in words {
+  seen = add(seen, w)
+}
+print(len(seen))
+for w in seen {
+  print(w)
+}

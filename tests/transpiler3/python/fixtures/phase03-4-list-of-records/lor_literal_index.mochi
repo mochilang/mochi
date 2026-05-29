@@ -1,0 +1,10 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let ps = [Pt { x: 1, y: 2 }, Pt { x: 3, y: 4 }, Pt { x: 5, y: 6 }]
+print(ps[0].x)
+print(ps[0].y)
+print(ps[1].x)
+print(ps[2].y)

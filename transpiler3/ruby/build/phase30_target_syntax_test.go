@@ -97,7 +97,7 @@ for nm in names {
 				t.Fatalf("write src: %v", err)
 			}
 			out := t.TempDir()
-			d := &Driver{CacheDir: t.TempDir()}
+			d := &Driver{}
 			if err := d.Build(srcPath, out, tc2.target); err != nil {
 				t.Fatalf("Build %s: %v", tc2.name, err)
 			}
@@ -122,7 +122,7 @@ for nm in names {
 			t.Fatalf("write src: %v", err)
 		}
 		out := t.TempDir()
-		d := &Driver{CacheDir: t.TempDir()}
+		d := &Driver{}
 		if err := d.Build(srcPath, out, TargetIRubyKernel); err != nil {
 			t.Fatalf("Build IRubyKernel: %v", err)
 		}
@@ -159,7 +159,7 @@ puts 'ok'
 			t.Fatalf("write src: %v", err)
 		}
 		out := t.TempDir()
-		d := &Driver{CacheDir: t.TempDir()}
+		d := &Driver{}
 		if err := d.Build(srcPath, out, TargetRubyGem); err != nil {
 			t.Fatalf("Build gem: %v", err)
 		}

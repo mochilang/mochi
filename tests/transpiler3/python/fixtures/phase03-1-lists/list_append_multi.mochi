@@ -1,0 +1,8 @@
+var xs = [1]
+xs = append(xs, 2)
+xs = append(xs, 3)
+xs = append(xs, 4)
+print(len(xs))
+for x in xs {
+  print(x)
+}

@@ -150,7 +150,7 @@ func (d *Driver) Build(src, out string, target Target) error {
 	moduleName := lower.ModuleName(src)
 	pkgName := d.packageName(src)
 
-	pyMod, err := lower.Lower(prog)
+	pyMod, err := lower.Lower(prog, moduleName)
 	if err != nil {
 		return fmt.Errorf("python build: python lower: %w", err)
 	}
@@ -174,20 +174,74 @@ func (d *Driver) Build(src, out string, target Target) error {
 		return err
 	}
 
-	if target != TargetPythonSource {
-		return fmt.Errorf("python build: target %d not supported until later phase", target)
-	}
-
-	if err := copyTree(out, workDir); err != nil {
-		return err
-	}
-	if !d.NoCache {
-		cacheEntry := filepath.Join(d.effectiveCacheDir(), cacheKey)
-		if err := os.MkdirAll(filepath.Dir(cacheEntry), 0o755); err == nil {
-			_ = copyTree(cacheEntry, workDir)
+	// Phase 12.0: when the program declares `extern python fun` entries,
+	// copy the sidecar `<moduleName>_externs.py` from next to the .mochi
+	// source into `src/<pkgName>_externs.py` so the generated module's
+	// `from <pkgName>_externs import ...` resolves. Missing-sidecar is a
+	// build error: the FFI surface is opt-in and an undeclared sidecar
+	// is the user's mistake to fix.
+	if len(prog.PythonFuncs) > 0 {
+		sidecar := filepath.Join(filepath.Dir(src), moduleName+"_externs.py")
+		if _, err := os.Stat(sidecar); err != nil {
+			return fmt.Errorf("python build: extern python fun declared but sidecar %s not found: %w", sidecar, err)
+		}
+		dst := filepath.Join(workDir, "src", pkgName+"_externs.py")
+		if err := copyFile(dst, sidecar); err != nil {
+			return fmt.Errorf("python build: copy externs sidecar: %w", err)
 		}
 	}
-	return nil
+
+	switch target {
+	case TargetPythonSource:
+		if err := copyTree(out, workDir); err != nil {
+			return err
+		}
+		if !d.NoCache {
+			cacheEntry := filepath.Join(d.effectiveCacheDir(), cacheKey)
+			if err := os.MkdirAll(filepath.Dir(cacheEntry), 0o755); err == nil {
+				_ = copyTree(cacheEntry, workDir)
+			}
+		}
+		return nil
+	case TargetPythonWheel:
+		// Phase 15.0: wheel build via stdlib zip; no external build
+		// backend required at test or ship time. The runtime support
+		// package ships bundled inside the wheel.
+		rt, err := runtimeDir()
+		if err != nil {
+			return err
+		}
+		if _, err := buildWheel(out, workDir, rt, pkgName); err != nil {
+			return err
+		}
+		return nil
+	case TargetPythonSdist:
+		// Phase 15.0: sdist via stdlib tar.gz. Bundles the same
+		// source tree the wheel ships, plus pyproject.toml.
+		rt, err := runtimeDir()
+		if err != nil {
+			return err
+		}
+		if _, err := buildSdist(out, workDir, rt, pkgName); err != nil {
+			return err
+		}
+		return nil
+	case TargetPythonIpykernel:
+		// Phase 17.0: kernelspec dir + self-contained source tree.
+		// The user installs via
+		// `jupyter kernelspec install --user <out>/kernels/mochi-<pkg>`
+		// after `pip install -e <out>` (or the wheel from Phase 15).
+		rt, err := runtimeDir()
+		if err != nil {
+			return err
+		}
+		if _, err := buildIpykernel(out, workDir, rt, pkgName); err != nil {
+			return err
+		}
+		return nil
+	default:
+		return fmt.Errorf("python build: target %d not supported until later phase", target)
+	}
 }
 
 func (d *Driver) packageName(src string) string {
@@ -218,7 +272,7 @@ func (d *Driver) cacheKey(srcBytes []byte) string {
 	if d.tc != nil {
 		fmt.Fprintf(h, "%d.%d.%d", d.tc.Major, d.tc.Minor, d.tc.Patch)
 	}
-	h.Write([]byte("mep51-phase01"))
+	h.Write([]byte("mep51-phase17"))
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
 

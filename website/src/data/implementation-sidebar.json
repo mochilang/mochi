@@ -207,6 +207,31 @@
       "implementation/0053/phase-18-embedded"
     ]
   },
+  "implementation/0054/index",
+  {
+    "label": "MEP-54 phases",
+    "items": [
+      "implementation/0054/phase-00-skeleton",
+      "implementation/0054/phase-01-hello",
+      "implementation/0054/phase-02-scalars",
+      "implementation/0054/phase-03-collections",
+      "implementation/0054/phase-04-records",
+      "implementation/0054/phase-05-sums",
+      "implementation/0054/phase-06-closures",
+      "implementation/0054/phase-07-query",
+      "implementation/0054/phase-08-datalog",
+      "implementation/0054/phase-09-agents",
+      "implementation/0054/phase-10-streams",
+      "implementation/0054/phase-11-async",
+      "implementation/0054/phase-12-ffi",
+      "implementation/0054/phase-13-llm",
+      "implementation/0054/phase-14-fetch",
+      "implementation/0054/phase-15-publish",
+      "implementation/0054/phase-16-repro",
+      "implementation/0054/phase-17-cross",
+      "implementation/0054/phase-18-wasm"
+    ]
+  },
   "implementation/0055/index",
   "implementation/0056/index",
   {
@@ -245,7 +270,8 @@
       "implementation/0056/phase-28-audit",
       "implementation/0056/phase-29-runtime-matrix",
       "implementation/0056/phase-30-runtime-gem-tests",
-      "implementation/0056/phase-31-audit-6"
+      "implementation/0056/phase-31-audit-6",
+      "implementation/0056/phase-32-audit-7"
     ]
   },
   "implementation/0057/index",
@@ -274,5 +300,13 @@
       "implementation/0057/phase-18-offline",
       "implementation/0057/phase-19-cache-perf"
     ]
-  }
+  },
+  "implementation/0073/index",
+  {
+    "label": "MEP-73 phases",
+    "items": [
+      "implementation/0073/phase-00-skeleton"
+    ]
+  },
+  "implementation/0074/index"
 ]

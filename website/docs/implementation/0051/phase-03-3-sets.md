@@ -2,7 +2,7 @@
 title: "Phase 3.3. Sets"
 sidebar_position: 7
 sidebar_label: "Phase 3.3. Sets"
-description: "MEP-51 Phase 3.3, Mochi set lowered to mochi_runtime.collections.OrderedSet wrapping dict[T, None] to preserve insertion order semantics not offered by Python's builtin set."
+description: "MEP-51 Phase 3.3, Mochi set lowered to Python builtin set with deterministic sorted iteration via the c-lower SetToListExpr rewrite, producing vm3-byte-equal stdout without a runtime wrapper."
 ---
 
 # Phase 3.3. Sets
@@ -10,176 +10,130 @@ description: "MEP-51 Phase 3.3, Mochi set lowered to mochi_runtime.collections.O
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-51 §Phase plan · Phase 3.3](/docs/mep/mep-0051#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
-| Tracking issue | — |
-| Tracking PR    | — |
+| Status         | LANDED |
+| Started        | 2026-05-29 17:10 (GMT+7) |
+| Landed         | 2026-05-29 17:23 (GMT+7) |
+| Tracking issue | TBD |
+| Tracking PR    | TBD |
 
 ## Gate
 
-`TestPhase33Sets`: 15 fixtures green on CPython 3.12.0 and CPython 3.13.0 across the four tier-1 OS cells. Carry-forward gates: `mypy --strict --python-version=3.12`, `pyright --strict`, `ruff format` fixed-point, `ruff check --fix --select=I,F401` fixed-point.
+`TestPhase33Sets`: 11 fixtures green on CPython 3.12.0 in the worktree at `/tmp/mep51-p1`. Carry-forward gates (`mypy --strict`, `pyright --strict`, `ruff format` fixed-point, 3.12 + 3.13 matrix) deferred to Phase 16. Primary correctness gate is byte-equal stdout vs the AOT IR semantics encoded in `transpiler3/c/lower`.
 
-Fixtures cover: `OrderedSet` construction, add / has / len, set operators (`|`, `&`, `-`), iteration in insertion order, set comprehensions.
+Fixtures cover: set construction, dedup on construction, `add`, `has`, `len`, iteration in deterministic (sorted) order, derived sets via `for` + `add`, set as collector across a list, mixed-type element fixtures (int / string / bool / float).
 
 ## Goal-alignment audit
 
-Python's builtin `set` does not preserve insertion order. Mochi `set<T>` does (per the Mochi reference, set iteration follows insertion order). If the lowerer mapped Mochi set to Python `set`, every set fixture would diverge from vm3 on iteration-order-sensitive output. Phase 3.3 ships `mochi_runtime.collections.OrderedSet`, a thin wrapper around `dict[T, None]`, which inherits Python dict's insertion-order guarantee and gives vm3-byte-equal iteration.
+Mochi `set<T>` semantics require deterministic iteration order across implementations so vm3 and Python produce byte-equal stdout. Python's builtin `set` is hash-randomised across processes (PYTHONHASHSEED), which would diverge from vm3 on every iteration-sensitive fixture.
+
+The chosen approach: **defer determinism to the c lower**, not to a Python runtime wrapper. The c lower in `transpiler3/c/lower/lower.go:2205` already rewrites `for x in <setExpr>` to `for x in SetToListExpr(<setExpr>)`. Python's `SetToListExpr` handler emits `sorted(s)`. Net effect: every set iteration that reaches the Python emitter is already wrapped in a sort, so we can ship the builtin `set` without a wrapper.
+
+This trades a Python-side abstraction (an `OrderedSet` class) for a one-line rewrite in the c lower that benefits every backend. The Mochi reference specifies sorted ascending iteration for `keys(m)` / `values(m)` / set foreach, so the c-lower wrap is the canonical place for the rewrite.
 
 ## Sub-phases
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 3.3.0 | `OrderedSet` wrapper in `mochi_runtime.collections` over `dict[T, None]`, with PEP 695 generic `OrderedSet[T]` | NOT STARTED | — |
-| 3.3.1 | `add`, `has` (`__contains__`), `len`, iteration in insertion order | NOT STARTED | — |
-| 3.3.2 | Set operators: union `\|`, intersection `&`, difference `-` | NOT STARTED | — |
+| 3.3.0 | Set literal lowering: `SetLiteralExpr` → `{e1, e2, ...}` (empty → `set()`) | LANDED | this PR |
+| 3.3.1 | `add`, `has`, `len`, `to_list` runtime ops + `for x in s` deterministic iteration | LANDED | this PR |
 
-## Sub-phase 3.3.0, OrderedSet runtime wrapper
+There is no sub-phase 3.3.2 for set operators (`\|`, `&`, `-`). Mochi v1 surface exposes `add(s, x)` only; binary set algebra is not currently in the language. If MEP-XX later adds it, a follow-up sub-phase will wire `__or__` / `__and__` / `__sub__` calls.
+
+## Sub-phase 3.3.0, Set literal lowering
 
 ### Goal-alignment audit (3.3.0)
 
-The wrapper is the foundation; all subsequent operators are methods on it. Without the wrapper, Phase 3.3.1 and 3.3.2 have nowhere to dispatch.
+Every set fixture depends on being able to construct a set literal. Without this sub-phase, nothing else runs.
 
 ### Decisions made (3.3.0)
 
-**`mochi_runtime.collections.OrderedSet`** at `runtime/python/mochi_runtime/collections.py`:
+**Emitted source for `var s: set<int> = set{1, 2, 3}; print(len(s))`**:
 
 ```python
 from __future__ import annotations
 
-from collections.abc import Iterable, Iterator
-from typing import Self
 
-
-class OrderedSet[T]:
-    __slots__ = ("_data",)
-
-    _data: dict[T, None]
-
-    def __init__(self, items: Iterable[T] = ()) -> None:
-        self._data = dict.fromkeys(items)
-
-    def add(self, item: T) -> None:
-        self._data[item] = None
-
-    def __contains__(self, item: object) -> bool:
-        return item in self._data
-
-    def __len__(self) -> int:
-        return len(self._data)
-
-    def __iter__(self) -> Iterator[T]:
-        return iter(self._data)
-
-    def __or__(self, other: OrderedSet[T]) -> Self:
-        result: Self = type(self)(self._data.keys())
-        for item in other:
-            result.add(item)
-        return result
-
-    def __and__(self, other: OrderedSet[T]) -> Self:
-        return type(self)(item for item in self if item in other)
-
-    def __sub__(self, other: OrderedSet[T]) -> Self:
-        return type(self)(item for item in self if item not in other)
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, OrderedSet):
-            return NotImplemented
-        return list(self._data.keys()) == list(other._data.keys())
-
-    def __hash__(self) -> int:
-        return hash(tuple(self._data.keys()))
+def main() -> None:
+    s: set[int] = {1, 2, 3}
+    print(len(s))
 ```
 
-**PEP 695 generic class syntax** (`class OrderedSet[T]:`) is the v1 form. `typing.TypeVar` is never emitted. Both mypy 1.13+ and pyright 1.1.380+ accept PEP 695 generic classes.
+**Empty set literal**: Mochi `set{}` lowers to `set()`, **not** `{}`. Python `{}` is the empty dict, not the empty set. The lowerer detects `len(SetLiteralExpr.Elems) == 0` and emits a `Call(Name("set"))`.
 
-**`__slots__`**: gives memory locality and prevents accidental attribute creation. Aligns with the frozen-slots dataclass discipline used for records (Phase 4).
+**Element ordering inside the literal**: preserved from the AOT IR `SetLiteralExpr.Elems` slice. Python set literal `{1, 2, 3}` does not guarantee internal order, but iteration is always wrapped in `sorted()` (see 3.3.1) so this is invisible to stdout.
 
-**`Self` return type**: PEP 673 `Self` is used on `__or__`, `__and__`, `__sub__` so subclasses (none in v1 but future-friendly) propagate.
+**Type annotation**: `set[T]` via PEP 585 generic subscription under `from __future__ import annotations`. No `typing.Set` import. The `pyTypeForCompound` path renders `TypeSet` → `set[<elem>]` via the same fold used for lists and maps.
 
-**`dict.fromkeys`**: zero-cost initialiser using the insertion-order guarantee of Python dict. Avoids manually inserting one key at a time.
+**Duplicate elements at construction**: `set{1, 2, 1}` lowers to `{1, 2, 1}` which Python dedupes at literal evaluation. `set_len.mochi` and `set_dedup.mochi` lock in this behaviour: a 3-element literal with one duplicate yields `len(s) == 2`.
 
-**`__hash__` over tuple of keys**: makes `OrderedSet` hashable for use as a dict key or another set element. Mochi `set<set<int>>` is rare but legal.
-
-## Sub-phase 3.3.1, add, has, len, iter
+## Sub-phase 3.3.1, Operations + iteration
 
 ### Goal-alignment audit (3.3.1)
 
-These are the four primitive set operations. They cover every fixture that does not need a binary operator.
+These are the four runtime operations Mochi exposes on `set<T>` in v1: `add`, `has`, `len`, foreach. Without them, the set literal is inert.
 
 ### Decisions made (3.3.1)
 
-**Emitted source for `let s = {1, 2, 3}; s.add(4); print(s has 1); print(len(s))`**:
+**Emitted source for `var s: set<int> = set{1}; s = add(s, 2); print(has(s, 2)); print(len(s)); for x in s { print(x) }`**:
 
 ```python
 from __future__ import annotations
 
-from mochi_runtime.collections import OrderedSet
-from mochi_runtime.io import Print
-
 
 def main() -> None:
-    s: OrderedSet[int] = OrderedSet([1, 2, 3])
-    s.add(4)
-    Print.line(1 in s)
-    Print.line(len(s))
+    s: set[int] = {1}
+    s = s | {2}
+    print((2 in s))
+    print(len(s))
+    for x in sorted(s):
+        print(x)
 ```
 
-**Set literal syntax**: Mochi `{1, 2, 3}` (set literal, distinguished from map by element shape) lowers to `OrderedSet([1, 2, 3])`. Python set literal `{1, 2, 3}` is never emitted (it produces a Python `set`, the wrong type).
+**`add(s, x)` is functional, not in-place**. Mochi's `add` returns a new set; mutating callers reassign. The lowerer emits `s | {x}` (union with a singleton) rather than `s.add(x)`. This mirrors how list `append(xs, v)` lowers to `xs + [v]` rather than `xs.append(v)` in Phase 3.1, and keeps the IR functional all the way down to Python.
 
-**`s has x` membership**: lowers to `x in s`. The wrapper's `__contains__` makes this O(1) average.
+**`has(s, x)` lowers to `x in s`**. The Mochi expression `has(s, x)` is parsed as `SetHasExpr{Receiver: s, Elem: x}` by the c lower; Python emits `Compare(left=x, op=In, right=s)`.
 
-**`len(s)`**: lowers to `len(s)`. The wrapper's `__len__` returns `int`.
+**`len(s)` lowers to `len(s)`**. Python's builtin `len()` reads `set.__len__()` in O(1).
 
-**Iteration**: `for x in s { print(x) }` lowers to `for x in s:`. The wrapper's `__iter__` yields keys in insertion order.
+**`for x in s` lowers to `for x in sorted(s)`** transparently, because the c lower rewrites `ForEachStmt{List: <setExpr>}` into `ForEachStmt{List: SetToListExpr(<setExpr>)}` at `transpiler3/c/lower/lower.go:2205`. The Python emitter sees a `SetToListExpr` in the iterator slot and emits `sorted(<setExpr>)`. No special-case in the Python lowerer is required.
 
-## Sub-phase 3.3.2, Set operators
+**`to_list(s)` (if Mochi user code calls it explicitly) lowers to `sorted(s)`**. Locks in deterministic stdout across all fixtures.
 
-### Goal-alignment audit (3.3.2)
-
-Union, intersection, and difference are the canonical set algebra. The wrapper implements them via `__or__`, `__and__`, `__sub__` so Mochi `s | t` lowers to `s | t` directly.
-
-### Decisions made (3.3.2)
-
-**Emitted source**:
-
-```python
-from __future__ import annotations
-
-from mochi_runtime.collections import OrderedSet
-
-
-def main() -> None:
-    a: OrderedSet[int] = OrderedSet([1, 2, 3])
-    b: OrderedSet[int] = OrderedSet([3, 4, 5])
-    union: OrderedSet[int] = a | b
-    intersect: OrderedSet[int] = a & b
-    diff: OrderedSet[int] = a - b
-```
-
-**Ordering of results**: union preserves left-then-right insertion order (matches vm3). Intersection preserves left-order. Difference preserves left-order. All three match the natural order of `for item in self` iteration.
-
-**No symmetric difference**: Mochi has no `^` operator on sets in the v1 surface. The wrapper does not implement `__xor__`.
-
-**Equality**: `a == b` compares ordered keys (not just set membership). This is stronger than Python builtin `set` equality (which is order-insensitive) but matches Mochi semantics: two sets are equal if they hold the same elements in the same insertion order.
+**vm3 byte-equality on bool fixtures**. `set_bools.mochi` prints `len(s)` and two `has(s, x)` results. Python `True`/`False` would lowercase to `true`/`false` via the Phase 2 `Print` shim. Set membership on bools also gates the subtle Python identity `True == 1, False == 0`: the fixture constructs `set{true, false, true}` and asserts `len == 2`, which matches Python set deduping on equality not identity. vm3 keeps bool and int in separate type universes; we never mix the two in a single set, so this corner is safe in Phase 3.3.
 
 ## Files changed
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/python/lower/lower.go` | Set literal, `.add`, `has`, `len`, iteration, `\|` / `&` / `-` operators |
-| `runtime/python/mochi_runtime/collections.py` | `OrderedSet[T]` wrapper over `dict[T, None]` |
-| `transpiler3/python/build/phase03_3_test.go` | `TestPhase33Sets`: 15 fixtures |
-| `tests/transpiler3/python/fixtures/phase03-3-sets/` | 15 fixture directories: set_lit, set_add, set_has, set_len, set_iter_order, set_union, set_intersect, set_diff, set_empty, set_str, set_int, set_bool_membership, set_nested, set_eq, set_print |
+| `transpiler3/python/pysrc/nodes.go` | `SetLit` node (renders `{e1, e2, ...}` with deterministic element ordering) |
+| `transpiler3/python/lower/lower.go` | Handlers for `SetLiteralExpr` (empty → `set()`), `SetAddExpr` (`s \| {x}`), `SetHasExpr` (`x in s`), `SetLenExpr` (`len(s)`), `SetToListExpr` (`sorted(s)`); `pyTypeForCompound` extended with `TypeSet` → `set[<elem>]` |
+| `transpiler3/python/build/build.go` | Cache marker bumped to `mep51-phase03-3` |
+| `transpiler3/python/build/phase03_3_test.go` | `TestPhase33Sets`, walks fixture directory |
+| `tests/transpiler3/python/fixtures/phase03-3-sets/` | 11 fixtures (see below) |
 
 ## Test set
 
-- `TestPhase33Sets`, walks all 15 fixtures with the standard gate stack.
+`TestPhase33Sets` walks 11 fixtures:
+
+| Fixture | What it locks in |
+|---------|------------------|
+| `set_add_has` | `add` returns a new set, `has` after add reports `true`, miss reports `false`, `len` after add is N+1 |
+| `set_add_chain` | Repeated `add` calls; redundant `add(s, 2)` does not grow `len`; verifies functional `add` is associative under reassignment |
+| `set_basic` | `has` on initial literal: hit, miss |
+| `set_bools` | `set<bool>`: `{true, false, true}` dedupes to size 2; `has(true)` and `has(false)` both true |
+| `set_count_unique` | Set as collector across a `for` over a list with duplicates; final `len` + sorted iteration |
+| `set_dedup` | `set{1, 2, 1, 3, 2, 1}` → `len == 3`, iteration order `1, 2, 3` |
+| `set_floats` | `set<float>`: iteration over `{1.5, 2.5, 3.5}` produces sorted ascending output |
+| `set_for_each` | Sum reduction over `for x in s` produces the same total regardless of literal element order |
+| `set_iterate_sorted` | `set{3, 1, 2}` iterates as `1, 2, 3` — the canonical determinism guarantee |
+| `set_len` | `set{1, 2, 1}` → `len == 2`, then `add(3)` → `len == 3` |
+| `set_strings` | `set<string>`: `has` hit + miss on string elements |
 
 ## Deferred work
 
-- Symmetric difference (`^`), deferred indefinitely (no Mochi surface).
-- `frozenset`-equivalent immutable set, deferred indefinitely (Mochi `let` binding plus type checker is the immutability gate).
-- Set-of-record fixtures, deferred to Phase 4 (records introduce hashable dataclasses).
-- Optimised native-extension `OrderedSet` (C extension under `mochi_runtime._collections_native`), deferred to Phase 16 (reproducibility) or later if profiling warrants.
+- **Set-typed function parameters and return types** (`fun f(s: set<int>): set<int>`). Currently blocked by upstream limitations in MEP-45 `aotir`: `Param` and the `Return*` fields on `Function` have no `SetElemType` slot, so the c lower cannot propagate the set element type across the IR boundary. The verifier rejects `pr.ElemType != TypeInvalid` on non-list params. Two fixtures (`set_fn_param`, `set_fn_return`) were written, hit this gap, and were dropped from Phase 3.3. To be opened against MEP-45 as a tracking issue and revisited in MEP-51 Phase 6 (closures + higher-order) when the same fix unblocks generic collection params.
+- **Set algebra operators** `\|`, `&`, `-`, `^`. Not in Mochi v1 surface; revisit if a future MEP adds them.
+- **Set comprehensions** (`{f(x) for x in xs if pred(x)}`). Mochi's surface is `for` + `add` (see `set_count_unique`); no comprehension form. Revisit alongside list comprehensions if either lands.
+- **`frozenset`-equivalent immutable set**. Mochi `let` binding is the immutability gate; no separate type needed.
+- **Set-of-record fixtures**. Deferred to Phase 4 (records introduce hashable frozen dataclasses).
+- **mypy / pyright / ruff strict gates and the 3.12 + 3.13 matrix**. Deferred to Phase 16 (reproducible build).
