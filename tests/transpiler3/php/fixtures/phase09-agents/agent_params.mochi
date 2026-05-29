@@ -1,0 +1,11 @@
+agent Calculator {
+    var result: int = 0
+    intent add(a: int, b: int) { result = a + b }
+    intent mul(a: int, b: int) { result = a * b }
+    intent get(): int { return result }
+}
+let calc = Calculator { result: 0 }
+calc.add(3, 4)
+print(calc.get())
+calc.mul(3, 4)
+print(calc.get())

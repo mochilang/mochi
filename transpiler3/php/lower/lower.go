@@ -79,6 +79,18 @@ func Lower(prog *aotir.Program, _ colour.ColourMap) (*ptree.PhpFile, error) {
 		classDecls = append(classDecls, ds...)
 	}
 
+	// Phase 9: one mutable PHP class per `agent` declaration. Fields
+	// become public typed properties with their declared defaults;
+	// intent bodies become public instance methods that read and
+	// write `$this->FIELD`.
+	for _, ag := range prog.Agents {
+		d, err := l.lowerAgent(ag)
+		if err != nil {
+			return nil, err
+		}
+		classDecls = append(classDecls, d)
+	}
+
 	// Lower non-main user functions in source order so the emitted
 	// file preserves declaration ordering across runs (Phase 16
 	// reproducibility relies on this).
@@ -295,6 +307,24 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]ptree.Stmt, error) {
 		// emits a plain array literal of results, so this hint is a
 		// no-op here.
 		return nil, nil
+	case *aotir.AgentIntentCallStmt:
+		// Phase 9: discard-result intent call:
+		// `c.increment()` becomes `$c->increment();`.
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		args := make([]ptree.Expr, 0, len(v.Args))
+		for _, a := range v.Args {
+			lo, err := l.lowerExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, lo)
+		}
+		return []ptree.Stmt{&ptree.ExprStmt{
+			Expr: &ptree.MethodCallExpr{Receiver: recv, Method: v.IntentName, Args: args},
+		}}, nil
 	case *aotir.MapPutStmt:
 		key, err := l.lowerExpr(v.Key)
 		if err != nil {
@@ -366,6 +396,17 @@ func (l *lowerer) lowerAssignStmt(s *aotir.AssignStmt) ([]ptree.Stmt, error) {
 	v, err := l.lowerExpr(s.Value)
 	if err != nil {
 		return nil, err
+	}
+	// Phase 9: agent intent bodies refer to mutable state through the
+	// C-target sentinel name `__self->FIELD`. Rewrite those writes
+	// onto `$this->FIELD` since PHP intent methods dispatch through a
+	// concrete instance receiver.
+	if field, ok := strings.CutPrefix(s.Name, "__self->"); ok {
+		return []ptree.Stmt{&ptree.PropAssignStmt{
+			Receiver: &ptree.VarExpr{Name: "this"},
+			Field:    field,
+			Value:    v,
+		}}, nil
 	}
 	return []ptree.Stmt{&ptree.AssignStmt{Name: s.Name, Value: v}}, nil
 }
@@ -656,6 +697,42 @@ func variantClassName(union, variant string) string {
 	return union + "_" + variant
 }
 
+// phpReservedClassNames lists the PHP keywords that PHP rejects as
+// class, interface, or trait names. Mochi user types that collide are
+// suffixed with `_` by phpClassName so `agent Switch { ... }` emits
+// `final class Switch_` and `new Switch_(...)`.
+var phpReservedClassNames = map[string]bool{
+	"abstract": true, "and": true, "array": true, "as": true, "break": true,
+	"callable": true, "case": true, "catch": true, "class": true, "clone": true,
+	"const": true, "continue": true, "declare": true, "default": true, "do": true,
+	"echo": true, "else": true, "elseif": true, "empty": true,
+	"enddeclare": true, "endfor": true, "endforeach": true, "endif": true,
+	"endswitch": true, "endwhile": true, "enum": true, "eval": true, "exit": true,
+	"extends": true, "false": true, "final": true, "finally": true, "fn": true,
+	"for": true, "foreach": true, "function": true, "global": true, "goto": true,
+	"if": true, "implements": true, "include": true, "include_once": true,
+	"instanceof": true, "insteadof": true, "interface": true, "isset": true,
+	"list": true, "match": true, "namespace": true, "new": true, "null": true,
+	"or": true, "print": true, "private": true, "protected": true, "public": true,
+	"readonly": true, "require": true, "require_once": true, "return": true,
+	"static": true, "switch": true, "throw": true, "trait": true, "true": true,
+	"try": true, "unset": true, "use": true, "var": true, "while": true,
+	"xor": true, "yield": true,
+	// PHP soft-reserved types: cannot name a class after a built-in type.
+	"int": true, "float": true, "bool": true, "string": true, "void": true,
+	"iterable": true, "object": true, "mixed": true, "never": true, "self": true,
+	"parent": true,
+}
+
+// phpClassName returns the PHP-safe class name for a Mochi user type.
+// Names that collide with a PHP reserved word are suffixed with `_`.
+func phpClassName(name string) string {
+	if phpReservedClassNames[strings.ToLower(name)] {
+		return name + "_"
+	}
+	return name
+}
+
 func (l *lowerer) lowerUnion(u *aotir.UnionDecl) ([]ptree.Decl, error) {
 	out := make([]ptree.Decl, 0, 1+len(u.Variants))
 	out = append(out, &ptree.ClassDecl{
@@ -801,6 +878,55 @@ func (l *lowerer) lowerRecord(r *aotir.RecordDecl) (*ptree.ClassDecl, error) {
 	}, nil
 }
 
+// lowerAgent emits one mutable PHP class per agent declaration. Fields
+// become promoted public constructor parameters; intents become public
+// instance methods. The aotir lowerer rewrites intent-body field
+// references to the sentinel name `__self->FIELD`; lowerExpr/VarRef and
+// lowerAssignStmt translate those into `$this->FIELD`.
+func (l *lowerer) lowerAgent(ag *aotir.AgentDecl) (*ptree.ClassDecl, error) {
+	fields := make([]ptree.ClassField, 0, len(ag.Fields))
+	for _, f := range ag.Fields {
+		typeName, err := phpScalarType(f.Type)
+		if err != nil {
+			return nil, fmt.Errorf("agent %q field %q: %w", ag.Name, f.Name, err)
+		}
+		fields = append(fields, ptree.ClassField{TypeName: typeName, Name: f.Name})
+	}
+	methods := make([]ptree.MethodDecl, 0, len(ag.Intents))
+	for i := range ag.Intents {
+		intent := &ag.Intents[i]
+		params := make([]ptree.FuncParam, 0, len(intent.Params))
+		for _, p := range intent.Params {
+			pt, err := phpScalarType(p.Type)
+			if err != nil {
+				return nil, fmt.Errorf("agent %q intent %q param %q: %w", ag.Name, intent.Name, p.Name, err)
+			}
+			params = append(params, ptree.FuncParam{TypeName: pt, Name: p.Name})
+		}
+		ret, err := phpScalarType(intent.ReturnType)
+		if err != nil {
+			return nil, fmt.Errorf("agent %q intent %q return: %w", ag.Name, intent.Name, err)
+		}
+		body, err := l.lowerBlock(intent.Body)
+		if err != nil {
+			return nil, fmt.Errorf("agent %q intent %q body: %w", ag.Name, intent.Name, err)
+		}
+		methods = append(methods, ptree.MethodDecl{
+			Name:       intent.Name,
+			Params:     params,
+			ReturnType: ret,
+			Body:       body,
+		})
+	}
+	return &ptree.ClassDecl{
+		Name:    phpClassName(ag.Name),
+		Fields:  fields,
+		Methods: methods,
+		Mutable: true,
+		PhpDoc:  []string{"Mochi agent `" + ag.Name + "`. Generated; do not edit by hand."},
+	}, nil
+}
+
 // lowerExpr translates one aotir expression.
 func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 	switch v := e.(type) {
@@ -813,6 +939,15 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 	case *aotir.BoolLit:
 		return &ptree.BoolLit{Value: v.Value}, nil
 	case *aotir.VarRef:
+		// Phase 9: agent intent bodies read mutable state through the
+		// C-target sentinel name `__self->FIELD`. Rewrite into a PHP
+		// `$this->FIELD` property access.
+		if field, ok := strings.CutPrefix(v.Name, "__self->"); ok {
+			return &ptree.PropAccessExpr{
+				Receiver: &ptree.VarExpr{Name: "this"},
+				Field:    field,
+			}, nil
+		}
 		return &ptree.VarExpr{Name: v.Name}, nil
 	case *aotir.UnionVarRef:
 		return &ptree.VarExpr{Name: v.Name}, nil
@@ -1172,6 +1307,36 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 			Callee: &ptree.IdentExpr{Name: "array_slice"},
 			Args:   []ptree.Expr{recv, start, length},
 		}, nil
+	case *aotir.AgentLit:
+		// Phase 9: `Counter { count: 0 }` becomes
+		// `new Counter(count: 0)`. PHP 8.0+ named args let us emit the
+		// fields in declaration order without an extra reorder pass.
+		args := make([]ptree.NamedArg, 0, len(v.Fields))
+		for _, f := range v.Fields {
+			val, err := l.lowerExpr(f.Value)
+			if err != nil {
+				return nil, fmt.Errorf("agent lit %q field %q: %w", v.AgentName, f.Name, err)
+			}
+			args = append(args, ptree.NamedArg{Name: f.Name, Value: val})
+		}
+		return &ptree.NewExpr{Class: phpClassName(v.AgentName), Args: args}, nil
+	case *aotir.AgentIntentCallExpr:
+		// Phase 9: synchronous intent call returning a value:
+		// `c.value()` becomes `$c->value()`. The class method directly
+		// mutates the receiver instance, matching the in-place semantics.
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		args := make([]ptree.Expr, 0, len(v.Args))
+		for _, a := range v.Args {
+			lo, err := l.lowerExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, lo)
+		}
+		return &ptree.MethodCallExpr{Receiver: recv, Method: v.IntentName, Args: args}, nil
 	case *aotir.DatalogQueryExpr:
 		// Phase 8: run the semi-naive bottom-up Datalog evaluator at
 		// compile time (matching the BEAM backend's strategy) and emit

@@ -672,16 +672,36 @@ func (s *IndexAssignStmt) PhpString(ind int) string {
 type ClassField struct {
 	TypeName string
 	Name     string
+	// Default is the optional default-value expression rendered into
+	// the constructor signature (`public int $count = 0`). Used by
+	// agent classes so `let c = Counter { ... }` matches Mochi's
+	// agent-literal semantics with positional defaults.
+	Default Expr
+}
+
+// MethodDecl is one method on a ClassDecl. Used for agent intents
+// (Phase 9): each `intent Name(...) { ... }` becomes one public
+// instance method whose body reads and writes the agent's mutable
+// fields through `$this->FIELD`.
+type MethodDecl struct {
+	Name       string
+	Params     []FuncParam
+	ReturnType string
+	Body       []Stmt
 }
 
 // ClassDecl is a PHP class declaration. By default emits as a
 // `final readonly class Name`. Set Abstract=true for the base of a
 // sealed sum-type hierarchy (omits readonly + final, adds abstract).
-// Set Extends to chain to a parent class.
+// Set Mutable=true for agent classes (omits readonly, fields are
+// publicly assignable, body can carry methods). Set Extends to
+// chain to a parent class.
 type ClassDecl struct {
 	Name     string
 	Fields   []ClassField
+	Methods  []MethodDecl
 	Abstract bool   // emits as `abstract class Name`
+	Mutable  bool   // agent classes: omit readonly so intents can mutate fields
 	Extends  string // optional parent class
 	// PhpDoc is the optional docblock written above the class keyword.
 	PhpDoc []string
@@ -700,9 +720,12 @@ func (d *ClassDecl) PhpString(ind int) string {
 		sb.WriteString(pad + " */\n")
 	}
 	sb.WriteString(pad)
-	if d.Abstract {
+	switch {
+	case d.Abstract:
 		sb.WriteString("abstract class ")
-	} else {
+	case d.Mutable:
+		sb.WriteString("final class ")
+	default:
 		sb.WriteString("final readonly class ")
 	}
 	sb.WriteString(d.Name)
@@ -719,9 +742,38 @@ func (d *ClassDecl) PhpString(ind int) string {
 	} else {
 		sb.WriteString(indent(ind+1) + "public function __construct(\n")
 		for _, f := range d.Fields {
-			sb.WriteString(indent(ind+2) + "public " + f.TypeName + " $" + f.Name + ",\n")
+			sb.WriteString(indent(ind+2) + "public " + f.TypeName + " $" + f.Name)
+			if f.Default != nil {
+				sb.WriteString(" = ")
+				sb.WriteString(f.Default.PhpString())
+			}
+			sb.WriteString(",\n")
 		}
 		sb.WriteString(indent(ind+1) + ") {}\n")
+	}
+	for _, m := range d.Methods {
+		sb.WriteString("\n")
+		sb.WriteString(indent(ind+1) + "public function ")
+		sb.WriteString(m.Name)
+		sb.WriteByte('(')
+		for i, p := range m.Params {
+			if i > 0 {
+				sb.WriteString(", ")
+			}
+			writeParam(&sb, p)
+		}
+		sb.WriteByte(')')
+		if m.ReturnType != "" {
+			sb.WriteString(": ")
+			sb.WriteString(m.ReturnType)
+		}
+		sb.WriteString("\n")
+		sb.WriteString(indent(ind+1) + "{\n")
+		for _, st := range m.Body {
+			sb.WriteString(st.PhpString(ind + 2))
+			sb.WriteString("\n")
+		}
+		sb.WriteString(indent(ind+1) + "}\n")
 	}
 	sb.WriteString(pad + "}")
 	return sb.String()
@@ -862,4 +914,44 @@ func (*PropAccessExpr) phpExpr() {}
 
 func (e *PropAccessExpr) PhpString() string {
 	return e.Receiver.PhpString() + "->" + e.Field
+}
+
+// MethodCallExpr is `<recv>-><method>(<args>)`. Used by Phase 9 to
+// dispatch agent intent calls onto an agent instance.
+type MethodCallExpr struct {
+	Receiver Expr
+	Method   string
+	Args     []Expr
+}
+
+func (*MethodCallExpr) phpExpr() {}
+
+func (e *MethodCallExpr) PhpString() string {
+	var sb strings.Builder
+	sb.WriteString(e.Receiver.PhpString())
+	sb.WriteString("->")
+	sb.WriteString(e.Method)
+	sb.WriteByte('(')
+	for i, a := range e.Args {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(a.PhpString())
+	}
+	sb.WriteByte(')')
+	return sb.String()
+}
+
+// PropAssignStmt is `<recv>-><field> = <value>;`. Used by Phase 9
+// agent intent bodies to mutate `$this->FIELD`.
+type PropAssignStmt struct {
+	Receiver Expr
+	Field    string
+	Value    Expr
+}
+
+func (*PropAssignStmt) phpStmt() {}
+
+func (s *PropAssignStmt) PhpString(ind int) string {
+	return indent(ind) + s.Receiver.PhpString() + "->" + s.Field + " = " + s.Value.PhpString() + ";"
 }
