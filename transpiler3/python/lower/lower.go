@@ -224,6 +224,14 @@ func (l *lowerer) lowerBlock(blk *aotir.Block) ([]pysrc.Stmt, error) {
 			out = append(out, body...)
 			continue
 		}
+		// RawCStmt is the C-backend setup for DatalogQueryExpr (and a few
+		// other backends-specific raw emissions). Python evaluates Datalog
+		// at compile time on the Go side, so the raw C is meaningless here
+		// and is dropped wholesale. The DatalogQueryExpr alongside it lowers
+		// to a static list[str] literal.
+		if _, ok := s.(*aotir.RawCStmt); ok {
+			continue
+		}
 		ps, err := l.lowerStmt(s)
 		if err != nil {
 			return nil, err
@@ -809,9 +817,28 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (pysrc.Expr, error) {
 			return nil, err
 		}
 		return &pysrc.Attribute{Value: recv, Attr: v.FieldName}, nil
+	case *aotir.DatalogQueryExpr:
+		return l.lowerDatalogQueryExpr(v)
 	default:
 		return nil, fmt.Errorf("python/lower: unsupported expression %T", e)
 	}
+}
+
+// lowerDatalogQueryExpr evaluates the Datalog program at compile time
+// (matching the BEAM backend's strategy) and emits the result as a static
+// Python list[str] literal. Mochi Datalog facts/rules cannot be reloaded
+// at runtime so compile-time evaluation is lossless and avoids shipping
+// a runtime evaluator in the wheel.
+func (l *lowerer) lowerDatalogQueryExpr(e *aotir.DatalogQueryExpr) (pysrc.Expr, error) {
+	if e.Prog == nil {
+		return &pysrc.ListLit{}, nil
+	}
+	results := datalogEval(e)
+	items := make([]pysrc.Expr, len(results))
+	for i, s := range results {
+		items[i] = &pysrc.StrLit{Value: s}
+	}
+	return &pysrc.ListLit{Elems: items}, nil
 }
 
 // lowerVariantLit emits `VariantName(field=v, ...)`. For nullary variants
