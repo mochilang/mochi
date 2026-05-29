@@ -242,6 +242,7 @@ const sidebars = {
       ],
     },
     'implementation/0057/index',
+    'implementation/0057/errors',
     {
       label: 'MEP-57 phases',
       type: 'category',

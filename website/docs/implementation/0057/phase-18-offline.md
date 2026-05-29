@@ -26,7 +26,7 @@ Pass criteria:
 2. Network deny. `mochi build --offline` denies every outbound network call at process entry (`net.Dial` returns an immediate error); the test verifies via a `net.Listen` mock that intercepts `Dial`.
 3. Cache hits-only. A missing blob in cache + vendor aborts with `M057_OFFLINE_E001` naming the missing package. No fallback to network.
 4. `--frozen` mode. `mochi build --frozen --offline` rejects any lockfile drift relative to the manifest (would require resolution).
-5. Vendor integrity. The vendor tree's BLAKE3 of each blob matches the lockfile; `mochi pkg vendor verify` re-hashes and reports mismatches with `M057_BLOB_E001`.
+5. Vendor integrity. The vendor tree's BLAKE3 of each blob matches the lockfile; `mochi pkg vendor verify` re-hashes and reports mismatches with `M057_BLOB_E006` (vendor verify hash mismatch; see [error registry](./errors)).
 6. Audit offline. `mochi pkg audit --offline` uses a snapshot of the advisory feed shipped under `vendor/advisories/`; missing snapshot warns but does not fail audit.
 7. Air-gap mode. With env `MOCHI_OFFLINE=hard`, every command behaves as if `--offline` was passed, and `mochi config` refuses to change registry URLs (defense against accidental network in compliance contexts).
 
@@ -274,7 +274,7 @@ Use case: compliance-controlled CI that must demonstrate it cannot exfiltrate.
 | `M057_OFFLINE_E001` | Required package or blob not in vendor/ or cache. |
 | `M057_OFFLINE_E002` | Frozen mode: lockfile / manifest drift. |
 | `M057_OFFLINE_E003` | Hard offline: configuration change refused. |
-| `M057_BLOB_E001` | Vendor verify: hash mismatch (re-used from Phase 9). |
+| `M057_BLOB_E006` | Vendor verify: extracted hash does not match lock. See [error registry](./errors). |
 
 ## Test set
 

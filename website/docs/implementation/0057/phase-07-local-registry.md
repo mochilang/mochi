@@ -249,8 +249,9 @@ Cases:
 - `Versions("@nonexistent/pkg")` returns `M057_PKG_NOT_FOUND`.
 - A JSONL file with a malformed line raises `M057_INDEX_E002` and the error mentions the line number.
 - A file whose JSONL contains an unknown field (forward-compat) is *accepted* with a warning under `Manifest.Warnings`; old clients must not refuse to parse new fields (research note 07 §14, E003 reserved but not used at v1).
-- A `Blob(bad-hex)` returns `M057_BLOB_E001`.
-- A `Blob(notfound)` returns `M057_BLOB_NOT_FOUND`.
+- A `Blob(notfound)` returns `M057_BLOB_E007` (local registry 404). The
+  hash-mismatch case `M057_BLOB_E001` is owned by Phase 9; see the
+  [error registry](./errors).
 
 ## Files changed
 
@@ -267,13 +268,10 @@ Cases:
 
 ## Error code surface
 
-| Code | Trigger |
-|------|---------|
-| `M057_INDEX_E001` | Filesystem error reading index. |
-| `M057_INDEX_E002` | Malformed JSONL line. |
-| `M057_PKG_NOT_FOUND` | Package directory absent. |
-| `M057_BLOB_E001` | Blob hash string malformed or content mismatch. |
-| `M057_BLOB_NOT_FOUND` | Blob file absent. |
+Phase 7 owns `M057_INDEX_E001` (FS read fail) and `M057_BLOB_E007` (local
+registry 404). All other codes referenced here are documented in the
+canonical [error registry](./errors). The previous local `M057_BLOB_E001`
+row was a collision with Phase 9's hash-mismatch code and is removed.
 
 ## Test set
 

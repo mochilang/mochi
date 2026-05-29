@@ -18,7 +18,7 @@ description: "MEP-57 Phase 13 — keyless signing via GitHub Actions / GitLab CI
 
 ## Gate
 
-`TestPhase13Sigstore`: publish round-trip against a sigstore-mock Fulcio + Rekor; bundle verifies; a flipped byte in the artifact fails verification; an unregistered publisher binding fails with `M057_PUB_E006`.
+`TestPhase13Sigstore`: publish round-trip against a sigstore-mock Fulcio + Rekor; bundle verifies; a flipped byte in the artifact fails verification; an unregistered publisher binding fails with `M057_SIG_E006`.
 
 Pass criteria:
 
@@ -26,8 +26,8 @@ Pass criteria:
 2. Fulcio cert. The ephemeral keypair plus the OIDC token round-trips through Fulcio and returns a short-lived (10-minute) X.509 cert binding the public key to the OIDC identity. The cert chain is verified against the Fulcio root.
 3. Rekor inclusion. The signed in-toto Statement is submitted to Rekor; the response includes an inclusion proof against the current SET (Signed Entry Timestamp). The client persists the proof in the bundle.
 4. Bundle round-trip. The Sigstore bundle (Protobuf v0.3, research note 09 §6) is uploaded with the blob; consumer-side verification reads the bundle, verifies cert + signature + Rekor inclusion against pinned roots, and the bundle from disk re-verifies identically.
-5. Tamper detection. A flipped byte anywhere in the tarball causes signature verification to fail with `M057_PUB_E007`.
-6. Wrong-publisher rejection. A bundle whose Fulcio cert binds to `github.com/attacker/strings` for a package whose registered publisher is `github.com/mochilang/strings` is rejected with `M057_PUB_E006`. The registered binding lives in the index entry's `pr.sig` field.
+5. Tamper detection. A flipped byte anywhere in the tarball causes signature verification to fail with `M057_SIG_E004`.
+6. Wrong-publisher rejection. A bundle whose Fulcio cert binds to `github.com/attacker/strings` for a package whose registered publisher is `github.com/mochilang/strings` is rejected with `M057_SIG_E006`. The registered binding lives in the index entry's `pr.sig` field.
 7. Mock infrastructure. The CI test uses `sigstore-mock` Fulcio + Rekor (research note 09 §9); no live calls to Sigstore public infrastructure are required for tests to pass.
 
 ## Goal-alignment audit
@@ -483,9 +483,9 @@ Embedded pinning at build time avoids a TOFU window on first run.
 
 | Code | Trigger |
 |------|---------|
-| `M057_PUB_E006` | OIDC subject does not match any publisher binding. |
-| `M057_PUB_E007` | Sigstore verification failed (cert, sig, or Rekor proof). |
-| `M057_PUB_E009` | OIDC token issuance failed (no provider, network, scope mismatch). |
+| `M057_SIG_E006` | OIDC subject does not match any publisher binding. |
+| `M057_SIG_E004` | Sigstore verification failed (cert, sig, or Rekor proof). |
+| `M057_SIG_E001` | OIDC token issuance failed (no provider, network, scope mismatch). |
 | `M057_TUF_E001` | TUF metadata expired or invalid. |
 | `M057_TUF_E002` | TUF target verification failed. |
 

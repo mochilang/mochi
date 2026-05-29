@@ -388,7 +388,7 @@ Field names map to the abbreviations in Phase 8.3's parser.
 | `M057_PUB_E006` | Registry returned 401: auth failed. |
 | `M057_PUB_E008` | Registry returned unexpected status. |
 
-(`M057_PUB_E007` and `M057_PUB_E009` are reserved for Phase 13: Sigstore verification failure and OIDC token issuance failure respectively.)
+(Phase 13 owns the Sigstore failures under the `M057_SIG_*` namespace; see the [error registry](./errors). Phase 12 no longer pre-reserves rows for them.)
 
 ## Test set
 

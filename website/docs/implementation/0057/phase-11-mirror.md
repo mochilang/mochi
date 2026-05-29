@@ -24,7 +24,7 @@ Pass criteria:
 
 1. Mirror parity. A mirror populated by `mochi pkg mirror sync` from a known upstream root resolves every fixture identically to direct upstream resolution; the produced lockfile is byte-identical.
 2. Tamper resistance. A mirror that returns a tarball whose BLAKE3 does not match the index entry's `b3` raises `M057_BLOB_E001` and the client moves to the next alternate.
-3. Sigstore preservation. A tarball with a hash that matches but whose Sigstore bundle does not verify against the trust root raises `M057_PUB_E007` and is also rejected (proves a mirror cannot substitute a "validly hashed" tarball that lacks signature, once Phase 13 is enabled).
+3. Sigstore preservation. A tarball with a hash that matches but whose Sigstore bundle does not verify against the trust root raises `M057_SIG_E004` and is also rejected (proves a mirror cannot substitute a "validly hashed" tarball that lacks signature, once Phase 13 is enabled).
 4. Failover. With `upstream = "https://index.mochi.dev"` and `[[registry.alternate]] url = "https://mirror.corp/internal"`, a primary 503 routes to the alternate; on alternate 200 the resolution succeeds and the lockfile records the source mirror in `[provenance]`.
 5. Divergence detection. `mochi pkg audit mirror corp` compares a sample of upstream index entries against the mirror and reports any divergence with `M057_INDEX_E006`.
 6. Sync efficiency. A second `mochi pkg mirror sync` against an already-populated dest skips entries whose ETag is unchanged; the test asserts only changed entries trigger blob copies.
@@ -300,13 +300,11 @@ This makes "did this build hit the corporate mirror?" auditable by reading the l
 
 ## Error code surface
 
-| Code | Trigger |
-|------|---------|
-| `M057_INDEX_E006` | Mirror diverged from upstream on the same name+version. |
-| `M057_BLOB_E001` | Mirror returned bytes whose BLAKE3 does not match. |
-| `M057_PUB_E007` | Sigstore verification fails on a mirror-served bundle. |
-| `M057_MIRROR_E001` | All mirrors in the chain unreachable. |
-| `M057_MIRROR_E002` | Sync write failure (disk full, permissions). |
+Phase 11 owns `M057_INDEX_E006` (mirror divergence) and the `M057_MIRROR_*`
+codes listed in the [error registry](./errors). The hash-mismatch case
+(`M057_BLOB_E001`) is sourced from Phase 9; the Sigstore failure
+(`M057_SIG_E004`) is sourced from Phase 13. Phase 11 re-raises with `%w`
+rather than redeclaring.
 
 ## Test set
 

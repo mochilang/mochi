@@ -24,7 +24,7 @@ Pass criteria:
 
 1. Solver parity. Every Phase 5 fixture re-runs under the HTTP backend (against a local `httptest.Server` mirroring the on-disk registry); the resolved tree matches the local-registry baseline byte-for-byte.
 2. Conditional fetch. With a primed ETag cache, the warm fetch returns 304 and the parsed entries match what the cold fetch returned.
-3. Retry semantics. A scripted 503 followed by a 200 succeeds; six consecutive 503s raise `M057_INDEX_E001` with the retry chain in the error message.
+3. Retry semantics. A scripted 503 followed by a 200 succeeds; six consecutive 503s raise `M057_INDEX_E004` with the retry chain in the error message.
 4. Rate limiting. A 429 with `Retry-After: 5` delays the next attempt by at least 5 seconds; without `Retry-After` the exponential schedule kicks in.
 5. HTTP/2 multiplexing. A single resolution issues parallel GETs over one TCP connection; the test verifies via `httptest.Server.TLS.NextProto` selection and request counting.
 6. Failover. With `[[registry.alternate]]` set and the primary unreachable, the secondary is queried after the retry budget.
@@ -244,10 +244,10 @@ Fixture `tests/pkgsystem/sparse-index/resilience/`:
 | Case | Script | Expected client behaviour |
 |------|--------|---------------------------|
 | `503-then-200` | 503, 200 | Succeeds on second attempt |
-| `503-six-times` | 503 x6 | Fails with `M057_INDEX_E001` |
+| `503-six-times` | 503 x6 | Fails with `M057_INDEX_E004` (fetch fail) |
 | `429-retry-after` | 429 with `Retry-After: 1`, 200 | Waits 1s, succeeds |
-| `partial-response` | 200 with truncated body | Fails with `M057_INDEX_E002`, retried |
-| `etag-mismatch` | 200 with stale ETag echo | Fails with `M057_INDEX_E004` if expected ETag was set |
+| `partial-response` | 200 with truncated body | Fails with `M057_INDEX_E002` (parse), retried |
+| `etag-mismatch` | 200 with stale ETag echo | Fails with `M057_INDEX_E007` if expected ETag was set |
 | `flaky-network` | RST connection, then 200 | Retries via `net.Error.Temporary` check |
 
 ## Sub-phase 8.6 — `Retry-After` header
@@ -343,16 +343,11 @@ This prevents the registry from being frozen by every new field requiring a clie
 
 ## Error code surface
 
-| Code | Trigger |
-|------|---------|
-| `M057_INDEX_E001` | Fetch failed after retries. |
-| `M057_INDEX_E002` | Malformed JSONL. |
-| `M057_INDEX_E003` | Forward-compat field unknown (reserved; warning only at v1). |
-| `M057_INDEX_E004` | ETag mismatch on conditional re-fetch. |
-| `M057_INDEX_E005` | Blob hash mismatch (raised in Phase 9). |
-| `M057_INDEX_E006` | Mirror diverged content. |
-| `M057_PKG_NOT_FOUND` | 404 from index. |
-| `M057_PKG_GONE` | 410 from index. |
+Phase 8 owns `M057_INDEX_E002` (sparse JSONL parse), `M057_INDEX_E003`
+(forward-compat warning), `M057_INDEX_E004` (fetch failed after retries),
+`M057_INDEX_E005` (rate-limit not respected), `M057_INDEX_E007` (failover
+exhausted). `M057_INDEX_E006` (mirror divergence) is owned by Phase 11.
+See the canonical [error registry](./errors).
 
 ## Test set
 

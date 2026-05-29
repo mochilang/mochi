@@ -38,7 +38,7 @@ Polyglot fan-out is the *adoption surface*. Without it, Mochi libraries are usel
 
 The "one push, many ecosystems" workflow is the empirical answer to language-lock-in. Library authors today either pick one ecosystem (and lose the others), maintain N parallel codebases, or write thin wrappers in each language (and accept the maintenance burden). Mochi compiles once to each target's idiomatic shape; the fan-out automates the distribution side.
 
-The umbrella structure (sub-phases 14.1 to 14.8 per target) lets each target ship independently. The `mochi pkg publish` command refuses targets that have not yet landed at v1; `--target=python` either works fully or errors with `M057_TARGET_UNSUPPORTED`. There is no "best-effort" partial support.
+The umbrella structure (sub-phases 14.1 to 14.8 per target) lets each target ship independently. The `mochi pkg publish` command refuses targets that have not yet landed at v1; `--target=python` either works fully or errors with `M057_FAN_E002` (see [error registry](./errors)). There is no "best-effort" partial support.
 
 ## Sub-phases
 
@@ -366,13 +366,10 @@ Staging strategy: each driver builds to `~/.cache/mochi/fanout/<target>/<version
 
 ## Error code surface
 
-| Code | Trigger |
-|------|---------|
-| `M057_TARGET_UNSUPPORTED` | Target name not in supported set. |
-| `M057_FANOUT_E001` | Per-target artefact validation failed. |
-| `M057_FANOUT_E002` | Target registry rejected upload. |
-| `M057_FANOUT_E003` | Mapped field invalid in target schema (e.g., name too long for npm). |
-| `M057_FANOUT_E004` | Strict mode aborted; other targets cancelled. |
+Phase 14 owns the `M057_FAN_*` codes listed in the [error registry](./errors).
+`M057_TARGET_UNSUPPORTED` (the old CLI rejection code) is renamed `M057_FAN_E002`
+so it no longer collides with the Phase 5 solver code of the same English name
+(now `M057_SOLVER_E004`).
 
 ## Test set
 
