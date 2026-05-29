@@ -26,8 +26,8 @@ A phase is LANDED only when its gate is green for every target in the runtime ma
 | 8 | Build orchestration (Gemfile injection into MEP-56 emit pipeline + bundle install) | LANDED | 759095db | [phase-08](/docs/implementation/0076/phase-08-build) |
 | 9 | mochi.lock `[[ruby-package]]` integration + --check mode | LANDED | 759095db | [phase-09](/docs/implementation/0076/phase-09-lockfile) |
 | 10 | TargetRubyGem publish metadata + gemspec emit from mochi.toml `[ruby.publish]` | LANDED | 759095db | [phase-10](/docs/implementation/0076/phase-10-gemspec-emit) |
-| 11 | Trusted publishing (rubygems.org OIDC flow, gem push, provenance attestation) | LANDED | pending | [phase-11](/docs/implementation/0076/phase-11-trusted-publish) |
-| 12 | Native C extension gems (pre-built binary gem selection + pure-Ruby fallback map) | LANDED | pending | [phase-12](/docs/implementation/0076/phase-12-native-ext) |
+| 11 | Trusted publishing (rubygems.org OIDC flow, gem push, provenance attestation) | LANDED | 0b1a8e6b | [phase-11](/docs/implementation/0076/phase-11-trusted-publish) |
+| 12 | Native C extension gems (pre-built binary gem selection + pure-Ruby fallback map) | LANDED | 0b1a8e6b | [phase-12](/docs/implementation/0076/phase-12-native-ext) |
 | 13 | Ractor/Fiber async bridge (`[ruby.async]` framework opt-in) | LANDED | 759095db | [phase-13](/docs/implementation/0076/phase-13-ractor-fiber) |
 
 ## Runtime matrix
