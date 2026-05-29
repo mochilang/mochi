@@ -9,8 +9,8 @@ extern crate alloc;
 pub mod io {
     //! Print helpers matching the vm3 print format.
 
-    pub fn print_str(s: &str) {
-        println!("{}", s);
+    pub fn print_str<S: AsRef<str>>(s: S) {
+        println!("{}", s.as_ref());
     }
 
     pub fn print_i64(n: i64) {
@@ -49,8 +49,8 @@ pub mod conv {
         f as i64
     }
 
-    pub fn str_to_int(s: &str) -> i64 {
-        s.parse::<i64>().unwrap_or(0)
+    pub fn str_to_int<S: AsRef<str>>(s: S) -> i64 {
+        s.as_ref().parse::<i64>().unwrap_or(0)
     }
 
     pub fn int_to_str(n: i64) -> String {
@@ -61,15 +61,45 @@ pub mod conv {
 pub mod strings {
     //! UTF-8 scalar string helpers matching Mochi semantics.
 
-    pub fn len(s: &str) -> i64 {
-        s.chars().count() as i64
+    pub fn len<S: AsRef<str>>(s: S) -> i64 {
+        s.as_ref().chars().count() as i64
     }
 
-    pub fn index(s: &str, i: i64) -> String {
-        s.chars().nth(i as usize).map(|c| c.to_string()).unwrap_or_default()
+    pub fn index<S: AsRef<str>>(s: S, i: i64) -> String {
+        s.as_ref().chars().nth(i as usize).map(|c| c.to_string()).unwrap_or_default()
     }
 
-    pub fn contains(s: &str, sub: &str) -> bool {
-        s.contains(sub)
+    pub fn contains<S: AsRef<str>, T: AsRef<str>>(s: S, sub: T) -> bool {
+        s.as_ref().contains(sub.as_ref())
+    }
+
+    pub fn cat<S: AsRef<str>, T: AsRef<str>>(a: S, b: T) -> String {
+        let mut out = String::with_capacity(a.as_ref().len() + b.as_ref().len());
+        out.push_str(a.as_ref());
+        out.push_str(b.as_ref());
+        out
+    }
+
+    pub fn substring<S: AsRef<str>>(s: S, start: i64, end: i64) -> String {
+        let s = s.as_ref();
+        let mut iter = s.chars();
+        let mut out = String::new();
+        let mut i: i64 = 0;
+        while i < end {
+            match iter.next() {
+                Some(c) => {
+                    if i >= start {
+                        out.push(c);
+                    }
+                }
+                None => break,
+            }
+            i += 1;
+        }
+        out
+    }
+
+    pub fn reverse<S: AsRef<str>>(s: S) -> String {
+        s.as_ref().chars().rev().collect()
     }
 }

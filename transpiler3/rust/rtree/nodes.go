@@ -288,6 +288,99 @@ func (r *ReturnStmt) RustString(ind int) string {
 	return fmt.Sprintf("%sreturn %s;", indent(ind), r.Value.RustExpr())
 }
 
+// ---- IfStmt ----
+
+// IfStmt is `if cond { then } [else { else_ }]`.
+type IfStmt struct {
+	Cond Expr
+	Then []Stmt
+	Else []Stmt
+}
+
+func (*IfStmt) rustStmt() {}
+
+func (i *IfStmt) RustString(ind int) string {
+	pad := indent(ind)
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%sif %s {\n", pad, i.Cond.RustExpr())
+	for _, s := range i.Then {
+		sb.WriteString(s.RustString(ind + 1))
+		sb.WriteString("\n")
+	}
+	sb.WriteString(pad + "}")
+	if len(i.Else) > 0 {
+		sb.WriteString(" else {\n")
+		for _, s := range i.Else {
+			sb.WriteString(s.RustString(ind + 1))
+			sb.WriteString("\n")
+		}
+		sb.WriteString(pad + "}")
+	}
+	return sb.String()
+}
+
+// ---- WhileStmt ----
+
+// WhileStmt is `while cond { body }`.
+type WhileStmt struct {
+	Cond Expr
+	Body []Stmt
+}
+
+func (*WhileStmt) rustStmt() {}
+
+func (w *WhileStmt) RustString(ind int) string {
+	pad := indent(ind)
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%swhile %s {\n", pad, w.Cond.RustExpr())
+	for _, s := range w.Body {
+		sb.WriteString(s.RustString(ind + 1))
+		sb.WriteString("\n")
+	}
+	sb.WriteString(pad + "}")
+	return sb.String()
+}
+
+// ---- ForRangeStmt ----
+
+// ForRangeStmt is `for var in start..end { body }`.
+type ForRangeStmt struct {
+	Var   string
+	Start Expr
+	End   Expr
+	Body  []Stmt
+}
+
+func (*ForRangeStmt) rustStmt() {}
+
+func (f *ForRangeStmt) RustString(ind int) string {
+	pad := indent(ind)
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%sfor %s in %s..%s {\n", pad, f.Var, f.Start.RustExpr(), f.End.RustExpr())
+	for _, s := range f.Body {
+		sb.WriteString(s.RustString(ind + 1))
+		sb.WriteString("\n")
+	}
+	sb.WriteString(pad + "}")
+	return sb.String()
+}
+
+// ---- BreakStmt / ContinueStmt ----
+
+// BreakStmt is `break;`.
+type BreakStmt struct{}
+
+func (*BreakStmt) rustStmt() {}
+
+func (*BreakStmt) RustString(ind int) string { return indent(ind) + "break;" }
+
+// ContinueStmt is `continue;`.
+type ContinueStmt struct{}
+
+func (*ContinueStmt) rustStmt() {}
+
+func (*ContinueStmt) RustString(ind int) string { return indent(ind) + "continue;" }
+
 // ---- Expr interface ----
 
 // Expr is a value-producing expression.
