@@ -1,0 +1,12 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let p1 = Pt { x: 1, y: 2 }
+let p2 = Pt { x: 1, y: 3 }
+if p1 == p2 {
+  print(1)
+} else {
+  print(0)
+}

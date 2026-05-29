@@ -1,0 +1,17 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let a = Pt { x: 1, y: 2 }
+let b = Pt { x: 1, y: 2 }
+let c = Pt { x: 1, y: 2 }
+let d = Pt { x: 5, y: 5 }
+if a == b && b == c {
+  print(1)
+}
+if a == b && b == d {
+  print(2)
+} else {
+  print(3)
+}

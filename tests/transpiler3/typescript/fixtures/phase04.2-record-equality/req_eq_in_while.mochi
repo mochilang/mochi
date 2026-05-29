@@ -1,0 +1,17 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let target = Pt { x: 3, y: 3 }
+let ps = [Pt { x: 1, y: 1 }, Pt { x: 2, y: 2 }, Pt { x: 3, y: 3 }, Pt { x: 4, y: 4 }]
+var i = 0
+var found = -1
+while i < 4 {
+  let cur = ps[i]
+  if cur == target {
+    found = i
+  }
+  i = i + 1
+}
+print(found)

@@ -1,0 +1,12 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let a = Pt { x: 3, y: 4 }
+let b = Pt { x: 3, y: 4 }
+let c = Pt { x: 9, y: 9 }
+let eq_ab: bool = a == b
+let eq_ac: bool = a == c
+print(eq_ab)
+print(eq_ac)

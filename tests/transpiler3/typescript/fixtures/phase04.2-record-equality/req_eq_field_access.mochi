@@ -1,0 +1,16 @@
+type Pair {
+  a: int
+  b: int
+}
+type Wrap {
+  inner: int
+  tag: string
+}
+
+let p = Pair { a: 1, b: 2 }
+let q = Pair { a: 1, b: 2 }
+let w1 = Wrap { inner: p.a, tag: "z" }
+let w2 = Wrap { inner: q.a, tag: "z" }
+let w3 = Wrap { inner: q.b, tag: "z" }
+print(w1 == w2)
+print(w1 == w3)

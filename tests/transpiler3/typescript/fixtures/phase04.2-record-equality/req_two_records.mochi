@@ -1,0 +1,15 @@
+type A {
+  v: int
+}
+type B {
+  s: string
+}
+
+let a1 = A { v: 1 }
+let a2 = A { v: 1 }
+let b1 = B { s: "x" }
+let b2 = B { s: "x" }
+let b3 = B { s: "y" }
+print(a1 == a2)
+print(b1 == b2)
+print(b1 == b3)
