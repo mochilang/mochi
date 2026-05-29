@@ -327,6 +327,18 @@ func typeString(t types.Type, selfPkg string, importSet map[string]struct{}) str
 	if t == nil {
 		return ""
 	}
+	// Resolve untyped-basic constants to their default type so the
+	// rendered string matches the closed grammar of typeexpr. For
+	// example, an untyped string constant renders as "string", not
+	// "untyped string".
+	if b, ok := t.(*types.Basic); ok && b.Info()&types.IsUntyped != 0 {
+		t = types.Default(t)
+		if b2, ok2 := t.(*types.Basic); ok2 && b2.Info()&types.IsUntyped != 0 {
+			// types.Default returned an untyped value (e.g. for
+			// untyped nil); strip the "untyped " prefix manually.
+			return strings.TrimPrefix(b2.Name(), "untyped ")
+		}
+	}
 	q := func(p *types.Package) string {
 		if p == nil {
 			return ""

@@ -320,7 +320,8 @@
       "implementation/0074/phase-00-skeleton",
       "implementation/0074/phase-01-module-proxy",
       "implementation/0074/phase-02-sumdb",
-      "implementation/0074/phase-03-gopackages-ingest"
+      "implementation/0074/phase-03-gopackages-ingest",
+      "implementation/0074/phase-04-apisurface"
     ]
   }
 ]
