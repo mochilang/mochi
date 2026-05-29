@@ -78,6 +78,8 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (gotree.Stmt, error) {
 		return l.lowerTryCatchStmt(s)
 	case *aotir.PanicStmt:
 		return l.lowerPanicStmt(s)
+	case *aotir.OMapPutStmt:
+		return l.lowerOMapPutStmt(s)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle stmt %T", s)
 	}
@@ -372,6 +374,9 @@ func (l *lowerer) letTypeText(s *aotir.LetStmt) (string, error) {
 		return l.lowerMapTypeWithList(s.KeyType, s.ValueType, s.ListValueElemType)
 	case aotir.TypeSet:
 		return l.lowerSetType(s.ElemType)
+	case aotir.TypeOMap:
+		l.addHelper("mochiOMap")
+		return l.lowerOMapType(s.KeyType, s.ValueType)
 	case aotir.TypeRecord:
 		if s.RecordName == "" {
 			return "", fmt.Errorf("record let missing RecordName")
@@ -574,6 +579,27 @@ func (l *lowerer) lowerTryCatchStmt(s *aotir.TryCatchStmt) (gotree.Stmt, error) 
 	return &gotree.ExprStmt{X: &gotree.CallExpr{
 		Fun:  &gotree.Ident{Name: "mochiTry"},
 		Args: []gotree.Expr{tryLit, catchLit},
+	}}, nil
+}
+
+// lowerOMapPutStmt emits `mochiOMapSet(m, k, v)`, mutating the receiver
+// in place. The C lowerer rebinds via orddict:store, but Go can mutate
+// the underlying struct through its pointer so a re-assignment is
+// unnecessary.
+func (l *lowerer) lowerOMapPutStmt(s *aotir.OMapPutStmt) (gotree.Stmt, error) {
+	key, err := l.lowerExpr(s.Key)
+	if err != nil {
+		return nil, fmt.Errorf("omap put key: %w", err)
+	}
+	val, err := l.lowerExpr(s.Value)
+	if err != nil {
+		return nil, fmt.Errorf("omap put value: %w", err)
+	}
+	l.addHelper("mochiOMap")
+	l.addHelper("mochiOMapSet")
+	return &gotree.ExprStmt{X: &gotree.CallExpr{
+		Fun:  &gotree.Ident{Name: "mochiOMapSet"},
+		Args: []gotree.Expr{&gotree.Ident{Name: mangleIdent(s.Name)}, key, val},
 	}}, nil
 }
 

@@ -124,6 +124,16 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerLinesExpr(e)
 	case *aotir.LoadCSVExpr:
 		return l.lowerLoadCSVExpr(e)
+	case *aotir.OMapLiteralExpr:
+		return l.lowerOMapLiteralExpr(e)
+	case *aotir.OMapGetExpr:
+		return l.lowerOMapGetExpr(e)
+	case *aotir.OMapSetExpr:
+		return l.lowerOMapSetExpr(e)
+	case *aotir.OMapHasExpr:
+		return l.lowerOMapHasExpr(e)
+	case *aotir.OMapLenExpr:
+		return l.lowerOMapLenExpr(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
@@ -1224,6 +1234,156 @@ func (l *lowerer) lowerLinesExpr(e *aotir.LinesExpr) (gotree.Expr, error) {
 	l.addImport("strings")
 	l.addHelper("mochiLines")
 	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiLines"}, Args: []gotree.Expr{path}}, nil
+}
+
+// lowerOMapLiteralExpr emits an IIFE that allocates a fresh *mochiOMap[K, V]
+// via mochiOMapNew and populates it with sequential mochiOMapSet calls.
+// The IIFE form (instead of a composite literal) preserves insertion order
+// across both first-write and overwrite, and gives the local a stable type
+// so callers can chain the result into a let / param / return without an
+// extra type annotation.
+func (l *lowerer) lowerOMapLiteralExpr(e *aotir.OMapLiteralExpr) (gotree.Expr, error) {
+	if len(e.Keys) != len(e.Values) {
+		return nil, fmt.Errorf("omap literal: %d keys vs %d values", len(e.Keys), len(e.Values))
+	}
+	typeText, err := l.lowerOMapType(e.KeyType, e.ValueType)
+	if err != nil {
+		return nil, fmt.Errorf("omap literal: %w", err)
+	}
+	kt, err := l.lowerType(e.KeyType)
+	if err != nil {
+		return nil, fmt.Errorf("omap literal key: %w", err)
+	}
+	vt, err := l.lowerType(e.ValueType)
+	if err != nil {
+		return nil, fmt.Errorf("omap literal value: %w", err)
+	}
+	l.addHelper("mochiOMap")
+	l.addHelper("mochiOMapNew")
+	l.addHelper("mochiOMapSet")
+	stmts := []gotree.Stmt{
+		&gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.Ident{Name: "o"}},
+			Tok: ":=",
+			Rhs: []gotree.Expr{&gotree.CallExpr{
+				Fun: &gotree.Ident{Name: "mochiOMapNew[" + kt + ", " + vt + "]"},
+			}},
+		},
+	}
+	for i := range e.Keys {
+		k, err := l.lowerExpr(e.Keys[i])
+		if err != nil {
+			return nil, fmt.Errorf("omap literal key %d: %w", i, err)
+		}
+		v, err := l.lowerExpr(e.Values[i])
+		if err != nil {
+			return nil, fmt.Errorf("omap literal value %d: %w", i, err)
+		}
+		stmts = append(stmts, &gotree.ExprStmt{X: &gotree.CallExpr{
+			Fun:  &gotree.Ident{Name: "mochiOMapSet"},
+			Args: []gotree.Expr{&gotree.Ident{Name: "o"}, k, v},
+		}})
+	}
+	stmts = append(stmts, &gotree.ReturnStmt{Results: []gotree.Expr{&gotree.Ident{Name: "o"}}})
+	return &gotree.CallExpr{
+		Fun: &gotree.FuncLit{
+			Type: &gotree.FuncType{Results: []gotree.Field{{Type: &gotree.RawExpr{Src: typeText}}}},
+			Body: &gotree.BlockStmt{List: stmts},
+		},
+	}, nil
+}
+
+// lowerOMapGetExpr emits `mochiOMapGet(recv, key)`.
+func (l *lowerer) lowerOMapGetExpr(e *aotir.OMapGetExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, fmt.Errorf("omap get receiver: %w", err)
+	}
+	key, err := l.lowerExpr(e.Key)
+	if err != nil {
+		return nil, fmt.Errorf("omap get key: %w", err)
+	}
+	l.addHelper("mochiOMap")
+	l.addHelper("mochiOMapGet")
+	return &gotree.CallExpr{
+		Fun:  &gotree.Ident{Name: "mochiOMapGet"},
+		Args: []gotree.Expr{recv, key},
+	}, nil
+}
+
+// lowerOMapSetExpr emits an IIFE that calls mochiOMapSet(recv, k, v) and
+// returns the receiver. Functional set expressions are rare in practice
+// (the C lowerer prefers OMapPutStmt) but the IIFE keeps the expression
+// position viable when the source program uses the value-form.
+func (l *lowerer) lowerOMapSetExpr(e *aotir.OMapSetExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, fmt.Errorf("omap set receiver: %w", err)
+	}
+	key, err := l.lowerExpr(e.Key)
+	if err != nil {
+		return nil, fmt.Errorf("omap set key: %w", err)
+	}
+	val, err := l.lowerExpr(e.Value)
+	if err != nil {
+		return nil, fmt.Errorf("omap set value: %w", err)
+	}
+	typeText, err := l.lowerOMapType(e.KeyType, e.ValueType)
+	if err != nil {
+		return nil, fmt.Errorf("omap set type: %w", err)
+	}
+	l.addHelper("mochiOMap")
+	l.addHelper("mochiOMapSet")
+	body := &gotree.BlockStmt{List: []gotree.Stmt{
+		&gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.Ident{Name: "o"}},
+			Tok: ":=",
+			Rhs: []gotree.Expr{recv},
+		},
+		&gotree.ExprStmt{X: &gotree.CallExpr{
+			Fun:  &gotree.Ident{Name: "mochiOMapSet"},
+			Args: []gotree.Expr{&gotree.Ident{Name: "o"}, key, val},
+		}},
+		&gotree.ReturnStmt{Results: []gotree.Expr{&gotree.Ident{Name: "o"}}},
+	}}
+	return &gotree.CallExpr{
+		Fun: &gotree.FuncLit{
+			Type: &gotree.FuncType{Results: []gotree.Field{{Type: &gotree.RawExpr{Src: typeText}}}},
+			Body: body,
+		},
+	}, nil
+}
+
+// lowerOMapHasExpr emits `mochiOMapHas(recv, key)`.
+func (l *lowerer) lowerOMapHasExpr(e *aotir.OMapHasExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, fmt.Errorf("omap has receiver: %w", err)
+	}
+	key, err := l.lowerExpr(e.Key)
+	if err != nil {
+		return nil, fmt.Errorf("omap has key: %w", err)
+	}
+	l.addHelper("mochiOMap")
+	l.addHelper("mochiOMapHas")
+	return &gotree.CallExpr{
+		Fun:  &gotree.Ident{Name: "mochiOMapHas"},
+		Args: []gotree.Expr{recv, key},
+	}, nil
+}
+
+// lowerOMapLenExpr emits `mochiOMapLen(recv)`.
+func (l *lowerer) lowerOMapLenExpr(e *aotir.OMapLenExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, fmt.Errorf("omap len receiver: %w", err)
+	}
+	l.addHelper("mochiOMap")
+	l.addHelper("mochiOMapLen")
+	return &gotree.CallExpr{
+		Fun:  &gotree.Ident{Name: "mochiOMapLen"},
+		Args: []gotree.Expr{recv},
+	}, nil
 }
 
 // lowerLoadCSVExpr emits mochiLoadCSV(path) which uses encoding/csv to
