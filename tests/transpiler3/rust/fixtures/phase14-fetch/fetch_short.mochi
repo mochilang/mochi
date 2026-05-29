@@ -1,0 +1,2 @@
+fetch "HTTPTEST_URL/short" into body
+print(body)

@@ -1,0 +1,3 @@
+let glue = fun(a: string, b: string): string => a + " " + b
+print(glue("foo", "bar"))
+print(glue("one", "two"))

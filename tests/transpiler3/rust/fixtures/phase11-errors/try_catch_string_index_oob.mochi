@@ -1,0 +1,8 @@
+let xs: list<string> = ["a", "b"]
+try {
+  let v: string = xs[10]
+  print(v)
+} catch e {
+  print("oob")
+  print(e)
+}

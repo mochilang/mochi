@@ -1,0 +1,16 @@
+agent Limit {
+    var v: int = 0
+    var cap: int = 10
+    intent add(n: int) {
+        if (v + n) <= cap {
+            v = v + n
+        }
+    }
+    intent get(): int { return v }
+}
+let l = Limit { v: 0, cap: 10 }
+l.add(3)
+l.add(4)
+l.add(5)
+l.add(1)
+print(l.get())

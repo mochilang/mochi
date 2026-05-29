@@ -1,0 +1,7 @@
+fun add_one(x: int): int { return x + 1 }
+fun double(x: int): int { return x * 2 }
+let f1 = async add_one(10)
+let v1 = await f1
+let f2 = async double(v1)
+let v2 = await f2
+print(v2)

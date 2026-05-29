@@ -1,0 +1,10 @@
+type Bound {
+  limit: int
+}
+
+let b = Bound { limit: 3 }
+var i = 0
+while i < b.limit {
+  print(i)
+  i = i + 1
+}

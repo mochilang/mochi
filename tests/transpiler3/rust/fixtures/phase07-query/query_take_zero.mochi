@@ -1,0 +1,3 @@
+let nums = [10, 20, 30]
+let r = from n in nums take 0 select n
+print(len(r))

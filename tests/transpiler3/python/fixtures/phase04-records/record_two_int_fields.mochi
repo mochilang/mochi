@@ -1,0 +1,8 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let p = Pt { x: 3, y: 5 }
+print(p.x)
+print(p.y)

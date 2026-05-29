@@ -1,0 +1,6 @@
+agent Square {
+    var v: int = 5
+    intent sq(): int { return v * v }
+}
+let s = Square { v: 5 }
+print(s.sq())

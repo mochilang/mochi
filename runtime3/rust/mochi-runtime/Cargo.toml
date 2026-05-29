@@ -1,0 +1,28 @@
+[package]
+name = "mochi-runtime"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Mochi runtime library: io, collections, agents, streams, async."
+
+[features]
+default = ["std"]
+std = []
+alloc = []
+tokio = ["dep:tokio"]
+serde = ["dep:serde"]
+reqwest = ["dep:reqwest"]
+wasm = []
+embedded = []
+llm = ["reqwest", "serde"]
+
+[dependencies]
+tokio = { version = "1.42", features = ["full"], optional = true }
+serde = { version = "1.0", features = ["derive"], optional = true }
+reqwest = { version = "0.12", features = ["rustls-tls", "json"], default-features = false, optional = true }
+
+[lib]
+name = "mochi_runtime"
+path = "src/lib.rs"

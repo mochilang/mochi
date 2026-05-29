@@ -1,0 +1,15 @@
+type Light = Red | Yellow | Green
+
+fun is_warning(l: Light): bool {
+  return match l {
+    Yellow => true
+    _ => false
+  }
+}
+
+let l: Light = Yellow
+if is_warning(l) {
+  print("slow")
+} else {
+  print("ok")
+}

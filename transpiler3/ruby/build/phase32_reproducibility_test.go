@@ -49,6 +49,31 @@ func TestPhase32Reproducibility(t *testing.T) {
 			target: TargetRubyGem,
 			src:    "print(\"hi gem\")\n",
 		},
+		{
+			name:   "hello_bundle",
+			target: TargetRubyBundle,
+			src:    "print(\"hi bundle\")\n",
+		},
+		{
+			name:   "hello_iruby",
+			target: TargetIRubyKernel,
+			src:    "print(\"hi iruby\")\n",
+		},
+		{
+			name:   "hello_tebako",
+			target: TargetTebako,
+			src:    "print(\"hi tebako\")\n",
+		},
+		{
+			name:   "hello_truffle",
+			target: TargetTruffleNative,
+			src:    "print(\"hi truffle\")\n",
+		},
+		{
+			name:   "hello_mruby",
+			target: TargetMRuby,
+			src:    "print(\"hi mruby\")\n",
+		},
 	}
 
 	for _, tc := range cases {
@@ -84,7 +109,7 @@ func TestPhase32Reproducibility(t *testing.T) {
 func snapshotEmittedFiles(t *testing.T, src string, target Target) map[string][]byte {
 	t.Helper()
 	out := t.TempDir()
-	d := &Driver{CacheDir: t.TempDir()}
+	d := &Driver{}
 	if err := d.Build(src, out, target); err != nil {
 		t.Fatalf("Driver.Build: %v", err)
 	}

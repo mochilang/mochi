@@ -1,0 +1,9 @@
+type R { a: int b: int }
+let rec: R = R { a: 12, b: 0 }
+try {
+  let v: int = rec.a / rec.b
+  print(v)
+} catch e {
+  print("rec caught")
+  print(e)
+}

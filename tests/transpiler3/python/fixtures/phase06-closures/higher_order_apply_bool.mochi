@@ -1,0 +1,7 @@
+fun decide(x: bool, f: fun(bool): bool): bool {
+  return f(x)
+}
+
+let invert = fun(b: bool): bool => !b
+print(decide(true, invert))
+print(decide(false, invert))

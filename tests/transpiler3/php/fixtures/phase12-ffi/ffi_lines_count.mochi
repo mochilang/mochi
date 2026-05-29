@@ -1,0 +1,3 @@
+writeFile("/tmp/mochi_swift_lc.txt", "one\ntwo\nthree\nfour\n")
+let xs = lines("/tmp/mochi_swift_lc.txt")
+print(len(xs))

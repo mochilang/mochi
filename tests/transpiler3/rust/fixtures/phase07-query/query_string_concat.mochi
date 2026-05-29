@@ -1,0 +1,5 @@
+let names = ["alice", "bob", "carol"]
+let r = from n in names select "hi " + n
+for x in r {
+  print(x)
+}

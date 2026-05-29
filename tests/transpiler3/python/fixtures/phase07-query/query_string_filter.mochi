@@ -1,0 +1,5 @@
+let words = ["apple", "banana", "cherry", "avocado"]
+let a_words = from w in words where w.contains("a") select w
+for w in a_words {
+  print(w)
+}

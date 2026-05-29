@@ -1,0 +1,12 @@
+agent Holder {
+    var s: string = "init"
+    intent set_s(n: string) { s = n }
+    intent reset() { s = "init" }
+    intent get(): string { return s }
+}
+let h = Holder { s: "init" }
+print(h.get())
+h.set_s("changed")
+print(h.get())
+h.reset()
+print(h.get())

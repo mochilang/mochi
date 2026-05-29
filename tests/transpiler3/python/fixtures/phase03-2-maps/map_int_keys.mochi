@@ -1,0 +1,4 @@
+let m: map<int, string> = {1: "one", 2: "two", 3: "three"}
+print(m[1])
+print(m[3])
+print(len(m))

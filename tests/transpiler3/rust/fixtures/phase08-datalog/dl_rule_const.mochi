@@ -1,0 +1,8 @@
+fact role("alice", "admin")
+fact role("bob", "user")
+fact role("carol", "admin")
+rule is_admin(X) :- role(X, "admin")
+let xs = query is_admin(X)
+for x in xs {
+    print(x)
+}

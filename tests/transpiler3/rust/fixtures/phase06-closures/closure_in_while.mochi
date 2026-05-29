@@ -1,0 +1,6 @@
+let next = fun(x: int): int => x + 3
+var i = 0
+while i < 10 {
+  i = next(i)
+}
+print(i)

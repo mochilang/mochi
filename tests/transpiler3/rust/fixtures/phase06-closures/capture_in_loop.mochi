@@ -1,0 +1,5 @@
+let scale = 5
+let multiply = fun(x: int): int => x * scale
+for i in 1..5 {
+  print(multiply(i))
+}

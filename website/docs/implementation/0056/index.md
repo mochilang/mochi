@@ -49,6 +49,7 @@ A phase is LANDED only when its gate is green on every Ruby runtime listed for i
 | 29 | Runtime matrix CI + dead-code cull (audit-4) | LANDED | e0956a4238 | [phase-29](/docs/implementation/0056/phase-29-runtime-matrix) |
 | 30 | mochi-runtime gem unit tests + gem-build CI (audit-5) | LANDED | c1fe1b55ef | [phase-30](/docs/implementation/0056/phase-30-runtime-gem-tests) |
 | 31 | Reproducibility test + dead path filter cull (audit-6) | LANDED | 13e42c2a33 | [phase-31](/docs/implementation/0056/phase-31-audit-6) |
+| 32 | License + dead-code + repro expansion (audit-7) | LANDED | 0a753708ad | [phase-32](/docs/implementation/0056/phase-32-audit-7) |
 
 ## Runtime matrix
 

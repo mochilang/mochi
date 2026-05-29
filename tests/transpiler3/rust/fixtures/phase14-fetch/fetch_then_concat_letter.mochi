@@ -1,0 +1,3 @@
+fetch "HTTPTEST_URL/hello" into body
+let s = body + "!"
+print(s)

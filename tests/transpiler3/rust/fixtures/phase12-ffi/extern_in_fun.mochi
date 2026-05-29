@@ -1,0 +1,8 @@
+extern fun c_inc(x: int): int
+
+fun apply_twice(n: int): int {
+  return c_inc(c_inc(n))
+}
+
+print(apply_twice(0))
+print(apply_twice(40))

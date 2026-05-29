@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 	"testing"
 )
 
@@ -106,7 +105,7 @@ func runRubyFixture(t *testing.T, tc *Toolchain, runtimeLib, name, src, want str
 		t.Fatalf("write src: %v", err)
 	}
 	outDir := t.TempDir()
-	d := &Driver{CacheDir: t.TempDir()}
+	d := &Driver{}
 	if err := d.Build(srcPath, outDir, TargetRubySource); err != nil {
 		t.Fatalf("Build: %v\nsrc:\n%s", err, src)
 	}
@@ -121,5 +120,4 @@ func runRubyFixture(t *testing.T, tc *Toolchain, runtimeLib, name, src, want str
 		t.Fatalf("%s output mismatch:\ngot:\n%s\nwant:\n%s\nrb source:\n%s",
 			name, got, want, readFile(t, rb))
 	}
-	_ = strings.TrimSpace
 }

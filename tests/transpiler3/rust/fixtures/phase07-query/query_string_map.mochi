@@ -1,0 +1,5 @@
+let words = ["hello", "world", "mochi"]
+let lengths = from w in words select len(w)
+for l in lengths {
+  print(l)
+}

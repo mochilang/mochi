@@ -1,0 +1,6 @@
+let prefix = "v"
+let bonus = 100
+let suffix = "x"
+let report = fun(): string => prefix + " " + suffix
+print(report())
+print(bonus)

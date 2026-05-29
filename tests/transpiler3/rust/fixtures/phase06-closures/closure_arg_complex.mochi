@@ -1,0 +1,4 @@
+let calc = fun(x: int): int => (x + 1) * (x - 1)
+print(calc(5))
+print(calc(10))
+print(calc(0))

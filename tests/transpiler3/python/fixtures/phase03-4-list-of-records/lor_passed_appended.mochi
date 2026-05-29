@@ -1,0 +1,16 @@
+type Pt {
+  x: int
+  y: int
+}
+
+fun extend(ps: list<Pt>, v: int): list<Pt> {
+  return append(ps, Pt { x: v, y: v })
+}
+
+let xs = [Pt { x: 1, y: 1 }]
+let ys = extend(xs, 7)
+let zs = extend(ys, 9)
+print(len(zs))
+print(zs[0].x)
+print(zs[1].x)
+print(zs[2].x)

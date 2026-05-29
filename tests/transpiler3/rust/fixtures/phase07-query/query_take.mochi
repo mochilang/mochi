@@ -1,0 +1,5 @@
+let nums: list<int> = [10, 20, 30, 40, 50]
+let first3 = from n in nums take 3 select n
+for x in first3 {
+    print(x)
+}
