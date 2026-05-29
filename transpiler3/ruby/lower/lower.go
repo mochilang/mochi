@@ -198,6 +198,21 @@ func lowerStmt(s aotir.Stmt) (rtree.Stmt, error) {
 		// emitted by the C lowerer). Ruby evaluates the Datalog program at
 		// compile time via lowerDatalogQueryExpr, so this is dead weight.
 		return nil, nil
+	case *aotir.ChanSendStmt:
+		ch, err := lowerExpr(s.Chan)
+		if err != nil {
+			return nil, err
+		}
+		v, err := lowerExpr(s.Val)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.ExprStmt{X: &rtree.MethodCall{
+			Receiver:  ch,
+			Method:    "push",
+			Args:      []rtree.Expr{v},
+			UseParens: true,
+		}}, nil
 	case *aotir.MapPutStmt:
 		key, err := lowerExpr(s.Key)
 		if err != nil {
@@ -528,6 +543,21 @@ func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 		return &rtree.MethodCall{Receiver: recv, Method: e.FieldName}, nil
 	case *aotir.DatalogQueryExpr:
 		return lowerDatalogQueryExpr(e)
+	case *aotir.ChanMakeExpr:
+		cap, err := lowerExpr(e.Cap)
+		if err != nil {
+			return nil, err
+		}
+		// Thread::SizedQueue blocks push when full, blocks pop when empty,
+		// matching Mochi's blocking channel semantics for the single-thread
+		// fixtures. Multi-producer/multi-consumer uses surface in Phase 10.1.
+		return &rtree.RawExpr{Text: "Thread::SizedQueue.new(" + cap.RubyExprString() + ")"}, nil
+	case *aotir.ChanRecvExpr:
+		ch, err := lowerExpr(e.Chan)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: ch, Method: "pop"}, nil
 	case *aotir.ListSortAscExpr:
 		recv, err := lowerExpr(e.Receiver)
 		if err != nil {
