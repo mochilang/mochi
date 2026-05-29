@@ -15,20 +15,20 @@ A phase is LANDED only when its gate is green for every target in the runtime ma
 
 | Phase | Title | Status | Commit | Tracking page |
 |-------|-------|--------|--------|---------------|
-| 0 | Skeleton: package3/ruby/ layout (rbs/, index/, typemap/, wrapper/, build/, errors/, gemspec/) | NOT STARTED | — | [phase-00](/docs/implementation/0076/phase-00-skeleton) |
-| 1 | RubyGems compact-index client (https://index.rubygems.org/info/\<gem\>, SHA256 + BLAKE3 verify) | NOT STARTED | — | [phase-01](/docs/implementation/0076/phase-01-compact-index) |
-| 2 | RBS bundled-sig ingest (walk sig/\*\*/*.rbs from gem tarball) | NOT STARTED | — | [phase-02](/docs/implementation/0076/phase-02-rbs-ingest) |
-| 3 | gem_rbs_collection fallback ingest (fetch + pin gems.json manifest) | NOT STARTED | — | [phase-03](/docs/implementation/0076/phase-03-gem-rbs-collection) |
-| 4 | YARD doc fallback ingest (yard doc JSON, best-effort type extraction) | NOT STARTED | — | [phase-04](/docs/implementation/0076/phase-04-yard-ingest) |
-| 5 | RBS-to-Mochi type mapping + SkipReport emit | NOT STARTED | — | [phase-05](/docs/implementation/0076/phase-05-type-mapping) |
-| 6 | Ruby shim emit (shim.rb require + method wrappers + shim.mochi extern fn declarations) | NOT STARTED | — | [phase-06](/docs/implementation/0076/phase-06-shim-emit) |
-| 7 | `import ruby "<gem>@<semver>" as <alias>` grammar + parser | NOT STARTED | — | [phase-07](/docs/implementation/0076/phase-07-import-grammar) |
-| 8 | Build orchestration (Gemfile injection into MEP-56 emit pipeline + bundle install) | NOT STARTED | — | [phase-08](/docs/implementation/0076/phase-08-build) |
-| 9 | mochi.lock `[[ruby-package]]` integration + --check mode | NOT STARTED | — | [phase-09](/docs/implementation/0076/phase-09-lockfile) |
-| 10 | TargetRubyGem publish metadata + gemspec emit from mochi.toml `[ruby.publish]` | NOT STARTED | — | [phase-10](/docs/implementation/0076/phase-10-gemspec-emit) |
-| 11 | Trusted publishing (rubygems.org OIDC flow, gem push, provenance attestation) | NOT STARTED | — | [phase-11](/docs/implementation/0076/phase-11-trusted-publish) |
-| 12 | Native C extension gems (pre-built binary gem selection + pure-Ruby fallback map) | NOT STARTED | — | [phase-12](/docs/implementation/0076/phase-12-native-ext) |
-| 13 | Ractor/Fiber async bridge (`[ruby.async]` framework opt-in) | NOT STARTED | — | [phase-13](/docs/implementation/0076/phase-13-ractor-fiber) |
+| 0 | Skeleton: package3/ruby/ layout (rbs/, index/, typemap/, wrapper/, build/, errors/, gemspec/) | LANDED | 759095db | [phase-00](/docs/implementation/0076/phase-00-skeleton) |
+| 1 | RubyGems compact-index client (https://index.rubygems.org/info/\<gem\>, SHA256 + BLAKE3 verify) | LANDED | 759095db | [phase-01](/docs/implementation/0076/phase-01-compact-index) |
+| 2 | RBS bundled-sig ingest (walk sig/\*\*/*.rbs from gem tarball) | LANDED | 759095db | [phase-02](/docs/implementation/0076/phase-02-rbs-ingest) |
+| 3 | gem_rbs_collection fallback ingest (fetch + pin gems.json manifest) | LANDED | 759095db | [phase-03](/docs/implementation/0076/phase-03-gem-rbs-collection) |
+| 4 | YARD doc fallback ingest (yard doc JSON, best-effort type extraction) | LANDED | 759095db | [phase-04](/docs/implementation/0076/phase-04-yard-ingest) |
+| 5 | RBS-to-Mochi type mapping + SkipReport emit | LANDED | 759095db | [phase-05](/docs/implementation/0076/phase-05-type-mapping) |
+| 6 | Ruby shim emit (shim.rb require + method wrappers + shim.mochi extern fn declarations) | LANDED | 759095db | [phase-06](/docs/implementation/0076/phase-06-shim-emit) |
+| 7 | `import ruby "<gem>@<semver>" as <alias>` grammar + parser | LANDED | 759095db | [phase-07](/docs/implementation/0076/phase-07-import-grammar) |
+| 8 | Build orchestration (Gemfile injection into MEP-56 emit pipeline + bundle install) | LANDED | 759095db | [phase-08](/docs/implementation/0076/phase-08-build) |
+| 9 | mochi.lock `[[ruby-package]]` integration + --check mode | LANDED | 759095db | [phase-09](/docs/implementation/0076/phase-09-lockfile) |
+| 10 | TargetRubyGem publish metadata + gemspec emit from mochi.toml `[ruby.publish]` | LANDED | 759095db | [phase-10](/docs/implementation/0076/phase-10-gemspec-emit) |
+| 11 | Trusted publishing (rubygems.org OIDC flow, gem push, provenance attestation) | LANDED | pending | [phase-11](/docs/implementation/0076/phase-11-trusted-publish) |
+| 12 | Native C extension gems (pre-built binary gem selection + pure-Ruby fallback map) | LANDED | pending | [phase-12](/docs/implementation/0076/phase-12-native-ext) |
+| 13 | Ractor/Fiber async bridge (`[ruby.async]` framework opt-in) | LANDED | 759095db | [phase-13](/docs/implementation/0076/phase-13-ractor-fiber) |
 
 ## Runtime matrix
 
