@@ -27,7 +27,7 @@ A phase is LANDED only when its gate is green for every applicable target (consu
 | 9 | Build orchestration: workspace synth + `go build -buildmode=c-archive` + artifact link | LANDED (baseline; 9.1+ deferred) | (pending) | [phase-09](/docs/implementation/0074/phase-09-build) |
 | 10 | mochi.lock `[[go-package]]` integration + `--check` mode | LANDED (schema; 10.1+ CLI deferred) | (pending) | [phase-10](/docs/implementation/0074/phase-10-lockfile) |
 | 11 | `TargetGoLibrary` emit (`go.mod` + exported package + `_cgo_export.h`) | LANDED (baseline; 11.1+ deferred) | (pending) | [phase-11](/docs/implementation/0074/phase-11-library-emit) |
-| 12 | Git-tag publish flow (`mochi pkg publish --to=git-tag`) + canonical-import-path gate | NOT STARTED | — | [phase-12](/docs/implementation/0074/phase-12-git-tag-publish) |
+| 12 | Git-tag publish flow (`mochi pkg publish --to=git-tag`) + canonical-import-path gate | LANDED (baseline; 12.1+ deferred) | (pending) | [phase-12](/docs/implementation/0074/phase-12-git-tag-publish) |
 | 13 | Cosign-on-sibling-tag opt-in (`mochi pkg publish --cosign-sign`) | NOT STARTED | — | [phase-13](/docs/implementation/0074/phase-13-cosign) |
 | 14 | Goroutine bridge (cgo handle pool + channel-as-handle + callback-as-handle) | NOT STARTED | — | [phase-14](/docs/implementation/0074/phase-14-goroutine-bridge) |
 | 15 | Monomorphisation (`[go.monomorphise]` manifest + per-instantiation wrapper) | NOT STARTED | — | [phase-15](/docs/implementation/0074/phase-15-monomorphise) |
@@ -52,7 +52,7 @@ Each phase's LANDED gate must be green for every applicable target. `n/a` cells 
 | 9. build orchestration | LANDED (baseline) | required | required | required (no cgo) | required |
 | 10. mochi.lock integration | LANDED (schema) | required | required | required | required |
 | 11. TargetGoLibrary emit | LANDED (baseline) | required | required | required | required |
-| 12. git-tag publish | NOT STARTED | n/a (publish is host-only) | n/a | n/a | n/a |
+| 12. git-tag publish | LANDED (baseline) | n/a (publish is host-only) | n/a | n/a | n/a |
 | 13. cosign on tag.sig | NOT STARTED | n/a | n/a | n/a | n/a |
 | 14. goroutine bridge | NOT STARTED | required | required | n/a (no goroutines on wasm-js without scheduler shim) | required |
 | 15. monomorphisation | NOT STARTED | required | required | required | required |
@@ -107,7 +107,7 @@ The `package3/go/` location is shared with the broader MEP-57 polyglot package w
 
 ## Status snapshot
 
-As of 2026-05-30: phases 0-11 LANDED on `main` (phases 6 + 7 + 9 + 11 baseline only; phase 10 schema only; sub-phases 6.1+/7.1+/9.1+/10.1+/11.1+ deferred), phases 12-17 NOT STARTED.
+As of 2026-05-30: phases 0-12 LANDED on `main` (phases 6 + 7 + 9 + 11 + 12 baseline only; phase 10 schema only; sub-phases 6.1+/7.1+/9.1+/10.1+/11.1+/12.1+ deferred), phases 13-17 NOT STARTED.
 
 ## Cross-references
 
