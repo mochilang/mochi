@@ -1,0 +1,6 @@
+let inc = fun(x: int): int => x + 1
+var total = 0
+for i in 0..5 {
+  total = inc(total)
+}
+print(total)

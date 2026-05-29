@@ -295,7 +295,7 @@ func (l *lowerer) lowerUnionVarRef(v *aotir.UnionVarRef) (tstree.Expr, error) {
 	if v.Name == "" {
 		return nil, fmt.Errorf("ts lower: union var ref missing Name")
 	}
-	return &tstree.IdentExpr{Name: v.Name}, nil
+	return &tstree.IdentExpr{Name: stripEnvPrefix(v.Name)}, nil
 }
 
 // lowerMatchStmt translates a Mochi `match` to a TS `switch` on the

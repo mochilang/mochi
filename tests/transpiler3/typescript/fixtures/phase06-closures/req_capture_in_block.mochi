@@ -1,0 +1,6 @@
+fun apply3(f: fun(int): int): int {
+  return f(7) + f(8) + f(9)
+}
+let mult = 10
+let scale = fun(x: int): int => x * mult
+print(apply3(scale))

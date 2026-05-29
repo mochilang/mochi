@@ -1,0 +1,7 @@
+let make = fun(y: int): int {
+  let inner = fun(z: int): int => z + 100
+  return inner(5) + y
+}
+print(make(1))
+print(make(2))
+print(make(3))
