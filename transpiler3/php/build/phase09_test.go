@@ -181,6 +181,21 @@ func TestPhase9EmitFragments(t *testing.T) {
 				`$b->dec();`,
 			},
 		},
+		{
+			fixture: "agent_spawn.mochi",
+			wants: []string{
+				// `spawn AgentType()` synthesizes zero-value field
+				// arguments from the AgentDecl; the resulting `new
+				// Counter(count: 0)` is shape-equal to the AgentLit
+				// form. Subsequent intent calls dispatch through the
+				// same instance-method path.
+				`final class Counter`,
+				`public int $count,`,
+				`$c = new Counter(count: 0);`,
+				`$c->increment();`,
+				`$v = $c->value();`,
+			},
+		},
 	}
 
 	for _, c := range cases {
