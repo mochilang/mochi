@@ -480,6 +480,37 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]ptree.Stmt, error) {
 		return []ptree.Stmt{&ptree.BreakStmt{}}, nil
 	case *aotir.ContinueStmt:
 		return []ptree.Stmt{&ptree.ContinueStmt{}}, nil
+	case *aotir.WriteFileStmt:
+		// Phase 12: `writeFile(path, content)` lowers to PHP's built-in
+		// `file_put_contents`; the default flag set truncates the file
+		// and creates it if missing, matching the Mochi spec.
+		path, err := l.lowerExpr(v.Path)
+		if err != nil {
+			return nil, err
+		}
+		content, err := l.lowerExpr(v.Content)
+		if err != nil {
+			return nil, err
+		}
+		return []ptree.Stmt{&ptree.ExprStmt{Expr: &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "file_put_contents"},
+			Args:   []ptree.Expr{path, content},
+		}}}, nil
+	case *aotir.AppendFileStmt:
+		// Phase 12: `appendFile(path, content)` uses the same builtin
+		// with FILE_APPEND so the existing bytes aren't truncated.
+		path, err := l.lowerExpr(v.Path)
+		if err != nil {
+			return nil, err
+		}
+		content, err := l.lowerExpr(v.Content)
+		if err != nil {
+			return nil, err
+		}
+		return []ptree.Stmt{&ptree.ExprStmt{Expr: &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "file_put_contents"},
+			Args:   []ptree.Expr{path, content, &ptree.IdentExpr{Name: "FILE_APPEND"}},
+		}}}, nil
 	case *aotir.ReturnStmt:
 		if v.Value == nil {
 			return []ptree.Stmt{&ptree.ReturnStmt{}}, nil
@@ -1523,6 +1554,32 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (ptree.Expr, error) {
 		return &ptree.CallExpr{
 			Callee: &ptree.IdentExpr{Name: "mochi_sub_recv"},
 			Args:   []ptree.Expr{s},
+		}, nil
+	case *aotir.ReadFileExpr:
+		// Phase 12: `readFile(path)` becomes PHP's
+		// `file_get_contents($path)`. PHP returns the raw bytes which
+		// is what Mochi's string semantics expect (no transcoding).
+		path, err := l.lowerExpr(v.Path)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "file_get_contents"},
+			Args:   []ptree.Expr{path},
+		}, nil
+	case *aotir.LinesExpr:
+		// Phase 12: `lines(path)` becomes
+		// `file($path, FILE_IGNORE_NEW_LINES)`. The flag strips the
+		// trailing newline from each entry; a trailing newline at end
+		// of file is not emitted as an empty entry, matching the C
+		// runtime's mochi_lines semantics.
+		path, err := l.lowerExpr(v.Path)
+		if err != nil {
+			return nil, err
+		}
+		return &ptree.CallExpr{
+			Callee: &ptree.IdentExpr{Name: "file"},
+			Args:   []ptree.Expr{path, &ptree.IdentExpr{Name: "FILE_IGNORE_NEW_LINES"}},
 		}, nil
 	case *aotir.AsyncExpr:
 		// Phase 11: `async { body }` becomes
