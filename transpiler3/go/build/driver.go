@@ -1,10 +1,13 @@
 package build
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"mochi/parser"
 	clower "mochi/transpiler3/c/lower"
@@ -12,6 +15,26 @@ import (
 	glower "mochi/transpiler3/go/lower"
 	"mochi/types"
 )
+
+// goEnvGoRoot returns the GOROOT reported by the configured
+// `go` binary. Empty goBin falls back to resolveGoBin.
+func goEnvGoRoot(goBin string) (string, error) {
+	if goBin == "" {
+		goBin = resolveGoBin()
+	}
+	cmd := exec.Command(goBin, "env", "GOROOT")
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		return "", fmt.Errorf("go env GOROOT: %w\n%s", err, stderr.String())
+	}
+	root := strings.TrimSpace(stdout.String())
+	if root == "" {
+		return "", errors.New("go env GOROOT returned empty")
+	}
+	return root, nil
+}
 
 // Target enumerates the supported MEP-54 build targets.
 // Phase 1 wires only the host go-binary target; the rest are
@@ -128,8 +151,46 @@ func (d *Driver) Build(src, out string, target, profile string) error {
 	if err != nil {
 		return fmt.Errorf("transpiler3/go/build: abs %s: %w", out, err)
 	}
+
+	switch Target(target) {
+	case TargetGoWasiP1:
+		if err := goBuild(d.GoBin, workDir, absOut, []string{"GOOS=wasip1", "GOARCH=wasm"}); err != nil {
+			return err
+		}
+		return nil
+	case TargetGoWasmJS:
+		if err := goBuild(d.GoBin, workDir, absOut, []string{"GOOS=js", "GOARCH=wasm"}); err != nil {
+			return err
+		}
+		if err := copyWasmExec(d.GoBin, filepath.Dir(absOut)); err != nil {
+			return fmt.Errorf("transpiler3/go/build: copy wasm_exec.js: %w", err)
+		}
+		return nil
+	}
+
 	if err := goBuild(d.GoBin, workDir, absOut, nil); err != nil {
 		return err
 	}
 	return nil
+}
+
+// copyWasmExec copies $(go env GOROOT)/lib/wasm/wasm_exec.js
+// into dstDir so a browser host has the standard JS glue
+// alongside the generated .wasm. Go 1.26 ships the file at
+// $GOROOT/lib/wasm/wasm_exec.js; older layouts (misc/wasm)
+// are not supported by this phase.
+func copyWasmExec(goBin, dstDir string) error {
+	root, err := goEnvGoRoot(goBin)
+	if err != nil {
+		return fmt.Errorf("resolve GOROOT: %w", err)
+	}
+	src := filepath.Join(root, "lib", "wasm", "wasm_exec.js")
+	b, err := os.ReadFile(src)
+	if err != nil {
+		return fmt.Errorf("read %s: %w", src, err)
+	}
+	if err := os.MkdirAll(dstDir, 0o755); err != nil {
+		return fmt.Errorf("mkdir %s: %w", dstDir, err)
+	}
+	return os.WriteFile(filepath.Join(dstDir, "wasm_exec.js"), b, 0o644)
 }
