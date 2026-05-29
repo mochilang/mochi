@@ -59,6 +59,20 @@ jobs:
           ruby --version
           echo "MOCHI_RUBY=$(which ruby)" >> "$GITHUB_ENV"
 
+      - name: Run mochi-runtime gem unit tests
+        run: |
+          cd mochi-runtime
+          ruby -Ilib -Itest test/test_version.rb
+          ruby -Ilib -Itest test/test_io.rb
+          ruby -Ilib -Itest test/test_panic.rb
+          ruby -Ilib -Itest test/test_stream.rb
+
+      - name: Validate mochi-runtime.gemspec packs cleanly
+        run: |
+          cd mochi-runtime
+          gem build mochi-runtime.gemspec
+          ls mochi-runtime-*.gem
+
       - name: Run Ruby transpiler tests
         env:
           MOCHI_RUBY: ${{ env.MOCHI_RUBY }}
