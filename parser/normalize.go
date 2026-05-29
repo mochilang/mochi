@@ -25,7 +25,7 @@ var (
 	errUnknownImportLang = diagnostic.Template{
 		Code:    "P064",
 		Message: "unknown import language: %q",
-		Help:    "The supported languages are `go`, `python`, `typescript`, `zig`, `lua`, `clj`, `clojure`, `rust`, and `erlang`. Omit the language to use the Mochi default, or check the spelling.",
+		Help:    "The supported languages are `go`, `python`, `typescript`, `zig`, `lua`, `clj`, `clojure`, `rust`, `erlang`, and `java`. Omit the language to use the Mochi default, or check the spelling.",
 	}
 	errUselessExprStmt = diagnostic.Template{
 		Code:    "P065",
@@ -52,6 +52,16 @@ var (
 		Message: "erlang import path %q is not a valid Hex.pm package name (optionally with `@<semver>` pin)",
 		Help:    "An `import erlang \"...\" as <alias>` statement names a Hex.pm package, eg. `import erlang \"cowboy\" as cowboy` or `import erlang \"cowboy@2.12.0\" as cowboy`. The package name must be lowercase ASCII letters, digits, and underscores, starting with a letter.",
 	}
+	errInvalidJavaImportPath = diagnostic.Template{
+		Code:    "P070",
+		Message: "java import path %q is not in `<groupId>:<artifactId>@<version>` form",
+		Help:    "An `import java \"...\" as <alias>` statement names a Maven Central artifact with a version, eg. `import java \"com.google.guava:guava@33.0.0-jre\" as guava`. The version is required so the JNI wrapper is bound to an exact JAR.",
+	}
+	errJavaImportMissingAlias = diagnostic.Template{
+		Code:    "P071",
+		Message: "java import %q requires `as <alias>`",
+		Help:    "MEP-67 requires an explicit alias so generated JNI shims are namespaced under a single identifier. Add `as <alias>`, eg. `import java \"com.google.guava:guava@33.0.0-jre\" as guava`.",
+	}
 )
 
 // knownImportLangs is the set of host-language identifiers Mochi recognises
@@ -71,6 +81,7 @@ var knownImportLangs = map[string]struct{}{
 	"rust":       {},
 	"kotlin":     {},
 	"erlang":     {},
+	"java":       {},
 }
 
 // normalizeProgram performs the post-parse pass that turns the raw
@@ -202,6 +213,9 @@ func normalizeStatement(s *Statement) error {
 			return err
 		}
 		if err := validateErlangImport(s.Import); err != nil {
+			return err
+		}
+		if err := validateJavaImport(s.Import); err != nil {
 			return err
 		}
 	case s.Expr != nil:
@@ -442,6 +456,22 @@ func validateErlangImport(im *ImportStmt) error {
 	}
 	if _, _, ok := ErlangImportRef(im.Path); !ok {
 		return errInvalidErlangImportPath.New(im.Pos, im.Path)
+	}
+	return nil
+}
+
+// validateJavaImport rejects `import java "..." as <alias>` whose path is not
+// in `<groupId>:<artifactId>@<version>` form, and also rejects imports that
+// lack an `as <alias>` clause. Both constraints are required by MEP-67.
+func validateJavaImport(im *ImportStmt) error {
+	if im == nil || im.Lang == nil || *im.Lang != "java" {
+		return nil
+	}
+	if _, _, _, ok := JavaImportRef(im.Path); !ok {
+		return errInvalidJavaImportPath.New(im.Pos, im.Path)
+	}
+	if im.As == "" {
+		return errJavaImportMissingAlias.New(im.Pos, im.Path)
 	}
 	return nil
 }
