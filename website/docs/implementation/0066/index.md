@@ -15,7 +15,7 @@ A phase is LANDED only when its gate is green for every target in the runtime ma
 
 | Phase | Title | Status | Commit | Tracking page |
 |-------|-------|--------|--------|---------------|
-| 0 | Skeleton: package3/erlang/ layout + rebar3 workspace plumbing | NOT STARTED | — | [phase-00](/docs/implementation/0066/phase-00-skeleton) |
+| 0 | Skeleton: package3/erlang/ layout + rebar3 workspace plumbing | IN PROGRESS | — | [phase-00](/docs/implementation/0066/phase-00-skeleton) |
 | 1 | Hex.pm API v2 client (package fetch + outer/inner tarball + SHA-256/SHA-512 verify) | NOT STARTED | — | [phase-01](/docs/implementation/0066/phase-01-hex-index) |
 | 2 | BEAM abstract code ingest (Dbgi/Abst chunk ETF decoder, -spec/-type walker) | NOT STARTED | — | [phase-02](/docs/implementation/0066/phase-02-beam-ingest) |
 | 3 | EDoc XML fallback ingest (for packages with no -spec directives) | NOT STARTED | — | [phase-03](/docs/implementation/0066/phase-03-edoc-fallback) |
