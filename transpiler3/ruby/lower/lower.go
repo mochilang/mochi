@@ -59,6 +59,13 @@ func Lower(prog *aotir.Program, fileBase, className string) (*rtree.SourceFile, 
 		}
 		progDecls = append(progDecls, &rtree.DataDecl{Name: r.Name, Fields: fields})
 	}
+	for _, a := range prog.Agents {
+		cd, err := lowerAgent(a)
+		if err != nil {
+			return nil, fmt.Errorf("ruby lower: agent %s: %w", a.Name, err)
+		}
+		progDecls = append(progDecls, cd)
+	}
 	for _, u := range prog.Unions {
 		variantDecls := make([]rtree.Decl, len(u.Variants))
 		for i, v := range u.Variants {
@@ -198,6 +205,25 @@ func lowerStmt(s aotir.Stmt) (rtree.Stmt, error) {
 		// emitted by the C lowerer). Ruby evaluates the Datalog program at
 		// compile time via lowerDatalogQueryExpr, so this is dead weight.
 		return nil, nil
+	case *aotir.AgentIntentCallStmt:
+		recv, err := lowerExpr(s.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		args := make([]rtree.Expr, 0, len(s.Args))
+		for _, a := range s.Args {
+			ax, err := lowerExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, ax)
+		}
+		return &rtree.ExprStmt{X: &rtree.MethodCall{
+			Receiver:  recv,
+			Method:    s.IntentName,
+			Args:      args,
+			UseParens: true,
+		}}, nil
 	case *aotir.ChanSendStmt:
 		ch, err := lowerExpr(s.Chan)
 		if err != nil {
@@ -360,7 +386,12 @@ func lowerAssignStmt(a *aotir.AssignStmt) (rtree.Stmt, error) {
 	if err != nil {
 		return nil, fmt.Errorf("assign %s: %w", a.Name, err)
 	}
-	return &rtree.Assign{LHS: rubyIdent(a.Name), RHS: rhs}, nil
+	lhs := rubyIdent(a.Name)
+	// Agent intent bodies write to fields as AssignStmt{Name: "__self->field"}.
+	if rest, ok := strings.CutPrefix(a.Name, "__self->"); ok {
+		lhs = "@" + rest
+	}
+	return &rtree.Assign{LHS: lhs, RHS: rhs}, nil
 }
 
 func lowerCallStmt(c *aotir.CallStmt) (rtree.Stmt, error) {
@@ -435,6 +466,10 @@ func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 		// Rewrite them to __env[:field] for Ruby.
 		if rest, ok := strings.CutPrefix(e.Name, "__e->"); ok {
 			return &rtree.RawExpr{Text: "__env[:" + rest + "]"}, nil
+		}
+		// Agent intent bodies reference fields as VarRef{Name: "__self->field"}.
+		if rest, ok := strings.CutPrefix(e.Name, "__self->"); ok {
+			return &rtree.RawExpr{Text: "@" + rest}, nil
 		}
 		return &rtree.Ident{Name: rubyIdent(e.Name)}, nil
 	case *aotir.BinaryExpr:
@@ -543,6 +578,35 @@ func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 		return &rtree.MethodCall{Receiver: recv, Method: e.FieldName}, nil
 	case *aotir.DatalogQueryExpr:
 		return lowerDatalogQueryExpr(e)
+	case *aotir.AgentLit:
+		args := make([]string, 0, len(e.Fields))
+		for _, f := range e.Fields {
+			fv, err := lowerExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, f.Name+": "+fv.RubyExprString())
+		}
+		return &rtree.RawExpr{Text: e.AgentName + ".new(" + strings.Join(args, ", ") + ")"}, nil
+	case *aotir.AgentIntentCallExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		args := make([]rtree.Expr, 0, len(e.Args))
+		for _, a := range e.Args {
+			ax, err := lowerExpr(a)
+			if err != nil {
+				return nil, err
+			}
+			args = append(args, ax)
+		}
+		return &rtree.MethodCall{
+			Receiver:  recv,
+			Method:    e.IntentName,
+			Args:      args,
+			UseParens: true,
+		}, nil
 	case *aotir.ChanMakeExpr:
 		cap, err := lowerExpr(e.Cap)
 		if err != nil {
@@ -754,6 +818,43 @@ func rubyBinOp(op aotir.BinOp) (string, bool) {
 		return "+", true
 	}
 	return "", false
+}
+
+// lowerAgent lowers an aotir.AgentDecl to a Ruby class. Mutable fields
+// become @ivars (initialised via a keyword-args initialize), and each
+// intent becomes an instance method. Field reads/writes inside intent
+// bodies arrive here as __self->field VarRefs / AssignStmt names; the
+// VarRef/AssignStmt rewrite handles them.
+func lowerAgent(a *aotir.AgentDecl) (*rtree.ClassDecl, error) {
+	cd := &rtree.ClassDecl{Name: a.Name}
+	// initialize: accepts each field as a keyword arg, copies into @ivars.
+	initParams := make([]rtree.MethodParam, len(a.Fields))
+	initBody := make([]rtree.Stmt, len(a.Fields))
+	for i, f := range a.Fields {
+		initParams[i] = rtree.MethodParam{Name: f.Name + ":"}
+		initBody[i] = &rtree.Assign{LHS: "@" + f.Name, RHS: &rtree.Ident{Name: f.Name}}
+	}
+	cd.Decls = append(cd.Decls, &rtree.MethodDecl{
+		Name:   "initialize",
+		Params: initParams,
+		Body:   initBody,
+	})
+	for _, intent := range a.Intents {
+		body, err := lowerBlock(intent.Body)
+		if err != nil {
+			return nil, fmt.Errorf("intent %s: %w", intent.Name, err)
+		}
+		params := make([]rtree.MethodParam, len(intent.Params))
+		for i, p := range intent.Params {
+			params[i] = rtree.MethodParam{Name: rubyIdent(p.Name)}
+		}
+		cd.Decls = append(cd.Decls, &rtree.MethodDecl{
+			Name:   intent.Name,
+			Params: params,
+			Body:   body,
+		})
+	}
+	return cd, nil
 }
 
 // lowerQueryScopeStmt lowers a desugared from/where/select query. In C the

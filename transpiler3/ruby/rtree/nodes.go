@@ -73,6 +73,32 @@ func (m *ModuleDecl) RubyString(ind int) string {
 	return sb.String()
 }
 
+// ---- ClassDecl ----
+
+// ClassDecl is `class Name; ... end`. Used for agent declarations whose
+// mutable state is held in @ivars and whose intents are instance methods.
+type ClassDecl struct {
+	Name  string
+	Decls []Decl
+}
+
+func (*ClassDecl) rubyDecl() {}
+
+func (c *ClassDecl) RubyString(ind int) string {
+	pad := indent(ind)
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "%sclass %s\n", pad, c.Name)
+	for i, d := range c.Decls {
+		if i > 0 {
+			sb.WriteByte('\n')
+		}
+		sb.WriteString(d.RubyString(ind + 1))
+		sb.WriteByte('\n')
+	}
+	fmt.Fprintf(&sb, "%send", pad)
+	return sb.String()
+}
+
 // ---- DataDecl ----
 
 // DataDecl is `Name = Data.define(:f1, :f2, ...)`.
