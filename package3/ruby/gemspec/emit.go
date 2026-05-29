@@ -9,6 +9,7 @@ package gemspec
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -17,9 +18,9 @@ type PublishConfig struct {
 	// From [package]
 	Name        string
 	Version     string
-	Description string // used as both summary (truncated) and description
+	Description string
 	Authors     []string
-	License     string // SPDX expression, e.g. "Apache-2.0"
+	License     string
 	Homepage    string
 
 	// From [ruby.publish]
@@ -69,22 +70,57 @@ func Emit(cfg PublishConfig) string {
 	sb.WriteString("  spec.require_paths = [\"lib\"]\n")
 
 	if len(cfg.Metadata) > 0 {
+		keys := make([]string, 0, len(cfg.Metadata))
+		for k := range cfg.Metadata {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
 		sb.WriteString("\n  spec.metadata = {\n")
-		for k, v := range cfg.Metadata {
-			fmt.Fprintf(&sb, "    %q => %q,\n", k, v)
+		for _, k := range keys {
+			fmt.Fprintf(&sb, "    %q => %q,\n", k, cfg.Metadata[k])
 		}
 		sb.WriteString("  }\n")
 	}
 
 	if len(cfg.RuntimeDeps) > 0 {
+		deps := make([]GemDep, len(cfg.RuntimeDeps))
+		copy(deps, cfg.RuntimeDeps)
+		sort.Slice(deps, func(i, j int) bool { return deps[i].Name < deps[j].Name })
 		sb.WriteByte('\n')
-		for _, dep := range cfg.RuntimeDeps {
+		for _, dep := range deps {
 			fmt.Fprintf(&sb, "  spec.add_runtime_dependency %q, %q\n", dep.Name, dep.Constraint)
 		}
 	}
 
 	sb.WriteString("end\n")
 	return sb.String()
+}
+
+// Validate checks a PublishConfig for required fields and returns a list of
+// error strings. An empty list means the config is valid.
+func Validate(cfg PublishConfig) []string {
+	var errs []string
+	effectiveName := cfg.GemName
+	if effectiveName == "" {
+		effectiveName = cfg.Name
+	}
+	if effectiveName == "" {
+		errs = append(errs, "name is required")
+	}
+	if cfg.Version == "" {
+		errs = append(errs, "version is required")
+	}
+	if len(cfg.Authors) == 0 {
+		errs = append(errs, "authors is required")
+	}
+	effectiveSummary := cfg.Summary
+	if effectiveSummary == "" {
+		effectiveSummary = firstSentence(cfg.Description)
+	}
+	if effectiveSummary == "" {
+		errs = append(errs, "summary is required (set summary or description)")
+	}
+	return errs
 }
 
 func quotedList(ss []string) string {
