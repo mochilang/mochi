@@ -164,6 +164,17 @@ func Lower(prog *aotir.Program, colours colour.ColourMap) (*tstree.SourceFile, e
 		return nil, err
 	}
 	decls := recordClassDecls
+	// Phase 9: agent classes are emitted after record classes (so a
+	// future agent field of record type can name the record class)
+	// and before sum-type aliases (no dependency in the current
+	// corpus, but the order mirrors the data-shape build-up). Each
+	// AgentClassDecl carries its own intent bodies; lowerBlock has
+	// already rewritten `__self->X` to `this.X`.
+	agentClassDecls, err := l.agentDecls()
+	if err != nil {
+		return nil, err
+	}
+	decls = append(decls, agentClassDecls...)
 	// Phase 5: sum-type alias declarations. Emitted after record
 	// classes (so a union variant whose field is a record type can
 	// name that class) and before runtime helpers (so a future
@@ -429,8 +440,10 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]tstree.Stmt, error) {
 		return l.lowerQueryScopeStmt(v)
 	case *aotir.RawCStmt:
 		return l.lowerRawCStmt(v)
+	case *aotir.AgentIntentCallStmt:
+		return l.lowerAgentIntentCallStmt(v)
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 8 surface)", s)
+		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 9 surface)", s)
 	}
 }
 
@@ -480,9 +493,18 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) ([]tstree.Stmt, error) {
 func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) ([]tstree.Stmt, error) {
 	var tn string
 	var err error
-	if s.VarType == aotir.TypeFun {
+	switch {
+	case s.VarType == aotir.TypeFun:
 		tn, err = tsTypeForFunSig(s.FunSig)
-	} else {
+	case s.VarType == aotir.TypeAgent:
+		// Phase 9: agent-typed bindings carry the agent class name
+		// in s.AgentName (not s.RecordName); the TS emit reads
+		// `const c: Counter = Counter.of({...})`.
+		if s.AgentName == "" {
+			return nil, fmt.Errorf("ts lower: let %q: agent-typed binding missing AgentName", s.Name)
+		}
+		tn = s.AgentName
+	default:
 		tn, err = tsTypeForLetSlotV2(s.VarType, s.ElemType, s.KeyType, s.ValueType, s.ListValueElemType, s.RecordName, s.ElemRecordName, s.UnionName)
 	}
 	if err != nil {
@@ -522,6 +544,16 @@ func (l *lowerer) lowerAssignStmt(s *aotir.AssignStmt) ([]tstree.Stmt, error) {
 	val, err := l.lowerExpr(s.Value)
 	if err != nil {
 		return nil, fmt.Errorf("ts lower: assign %q: %w", s.Name, err)
+	}
+	// Phase 9: intent-body assignments target `__self->X`, which
+	// the TS path rewrites to `this.X = ...;` (the dispatching
+	// method has `this` lexically bound to the agent instance).
+	if rest, ok := stripSelfPrefix(s.Name); ok {
+		return []tstree.Stmt{&tstree.MemberAssignStmt{
+			Receiver: &tstree.IdentExpr{Name: "this"},
+			Member:   rest,
+			Value:    val,
+		}}, nil
 	}
 	return []tstree.Stmt{&tstree.AssignStmt{Name: s.Name, Value: val}}, nil
 }
@@ -617,6 +649,17 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (tstree.Expr, error) {
 	case *aotir.BoolLit:
 		return &tstree.BoolLit{Value: v.Value}, nil
 	case *aotir.VarRef:
+		// Phase 9: agent intent bodies see field references as
+		// `__self->X` because the C lowerer routes them through a
+		// pointer parameter. The TS path emits `this.X` instead;
+		// the class method has `this` lexically bound to the
+		// dispatching instance.
+		if rest, ok := stripSelfPrefix(v.Name); ok {
+			return &tstree.MemberAccessExpr{
+				Receiver: &tstree.IdentExpr{Name: "this"},
+				Member:   rest,
+			}, nil
+		}
 		// Phase 6: the C lowerer stamps captured-variable refs
 		// inside a closure body as `__e->X` so its emitter can
 		// route them through the env struct. JS doesn't have an
@@ -741,8 +784,12 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (tstree.Expr, error) {
 		return l.lowerUnionVarRef(v)
 	case *aotir.DatalogQueryExpr:
 		return l.lowerDatalogQueryExpr(v)
+	case *aotir.AgentLit:
+		return l.lowerAgentLit(v)
+	case *aotir.AgentIntentCallExpr:
+		return l.lowerAgentIntentCallExpr(v)
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 8 surface)", e)
+		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 9 surface)", e)
 	}
 }
 

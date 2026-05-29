@@ -1,0 +1,9 @@
+agent Calc {
+    var total: int = 0
+    intent muladd(a: int, b: int) { total = total + (a * b) }
+    intent get(): int { return total }
+}
+let c = Calc { total: 0 }
+c.muladd(3, 4)
+c.muladd(5, 6)
+print(c.get())

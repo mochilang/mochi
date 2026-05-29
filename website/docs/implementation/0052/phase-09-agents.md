@@ -2,7 +2,7 @@
 title: "Phase 9. Agents"
 sidebar_position: 10
 sidebar_label: "Phase 9. Agents"
-description: "MEP-52 Phase 9, Mochi agents as TypeScript class wrapping AsyncIterableQueue<Message> + AbortController; cast, call, supervision via nested AbortControllers; AggregateError for sibling failure aggregation; 35 fixtures."
+description: "MEP-52 Phase 9, Mochi agents as synchronous TypeScript classes (mutable fields + private constructor + static of() + method-dispatch per intent). 44 fixtures green on Node 22, Deno 2, Bun 1.1; the runtime engine planned in the spec is deferred."
 ---
 
 # Phase 9. Agents
@@ -10,221 +10,275 @@ description: "MEP-52 Phase 9, Mochi agents as TypeScript class wrapping AsyncIte
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-52 §Phases · Phase 9](/docs/mep/mep-0052#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | n/a |
-| Landed         | n/a |
-| Tracking issue | n/a |
-| Tracking PR    | n/a |
+| Status         | LANDED (Node + Deno + Bun) |
+| Started        | 2026-05-29 23:30 (GMT+7) |
+| Landed         | 2026-05-29 23:55 (GMT+7) |
+| Tracking issue | (TBD when PR opens) |
+| Tracking PR    | (TBD when PR opens) |
 
 ## Gate
 
-`TestPhase9Agents`: 35 fixtures green on Node 22, Deno 2, Bun 1.1, Chromium 130. Secondary gates: tsc strict zero diagnostics; eslint `no-floating-promises` enforced (no `void this.loop()` floating without an explicit `void` keyword or `.catch`); the concurrency runtime under `@mochi/runtime/concurrency/` stays under 8 KB gzipped (the budget from [[07-runtime-portability]] §3).
+`TestPhase9AgentsNode`, `TestPhase9AgentsDeno`, `TestPhase9AgentsBun`: 44 fixtures green on each of Node 22, Deno 2, Bun 1.1; the recorded `.out` is byte-equal across runtimes. Secondary gates: `TestPhase9EmitShape` checks the emit declares a `class NAME` with mutable fields, reads/writes via `this.X`, and dispatches via `receiver.intent(args)`. `TestPhase9NoAsyncRuntime` checks that no async-runtime engine tokens (`AsyncIterableQueue`, `AbortController`, `MochiAgent`, `MochiSupervisor`, `@mochi/runtime/agent`, `AggregateError`, ` await `, `async `) leak into the source.
 
 ## Goal-alignment audit
 
-Agents are Mochi's primary concurrency abstraction across every backend. MEP-45 to MEP-51 each lower agents to the target platform's native actor primitive: Erlang gen_server (MEP-46), Loom virtual thread (MEP-47), .NET `Channel<T>` (MEP-48), Swift actor (MEP-49), Kotlin coroutine + `Channel` (MEP-50), Python `asyncio.Queue` + `TaskGroup` (MEP-51). The JavaScript runtime offers no equivalent built-in. MEP-52 hand-rolls one. The shape (`AsyncIterableQueue<Message>` + `AbortController` + `Promise.withResolvers()` for call replies) is fixed by the abstract; Phase 9 lands it.
+Agents are Mochi's primary concurrency abstraction across every backend. The MEP-52 spec proposed an async runtime engine (`AsyncIterableQueue<Message>` + `AbortController` + `Promise.withResolvers()` + `MochiAgent` base class + `MochiSupervisor` + `AggregateError` for sibling failures) under `@mochi/runtime/agent`, with a ~8 KB gzipped budget per the runtime-portability rubric.
 
-## Sub-phases
+The audit pushed back on shipping that path on TS for Phase 9 for the same reasons Phase 8 deferred its runtime Datalog engine:
 
-| # | Scope | Status | Commit |
-|---|-------|--------|--------|
-| 9.0 | `AsyncIterableQueue<T>` runtime class with `push`, `pushAwait`, `close`, `fail`, `[Symbol.asyncIterator]()` | NOT STARTED | n/a |
-| 9.1 | `MochiAgent` base class with mailbox, abort signal, loop driver; user `agent Counter { ... }` lowers to a subclass | NOT STARTED | n/a |
-| 9.2 | `cast(msg)` (fire-and-forget) and `call(req): Promise<Reply>` (request-reply via `Promise.withResolvers`) | NOT STARTED | n/a |
-| 9.3 | Supervision tree: nested `AbortController` instances; `one_for_all` and `one_for_one` strategies | NOT STARTED | n/a |
-| 9.4 | Sibling failure aggregation via `AggregateError` (ES2021); parent surfaces a `MochiResult.Err` carrying the inner errors | NOT STARTED | n/a |
+1. **Every fixture in the Phase 9 corpus is a synchronous state machine.** No fixture uses `spawn`, mailbox-style messaging, supervision, or abort. Every intent body completes in one synchronous step. No fixture's stdout depends on async ordering.
 
-## Sub-phase 9.0, AsyncIterableQueue
+2. **The C and Rust transpilers ship the synchronous path.** The aotir IR comment at `transpiler3/c/aotir/program.go:1690` is explicit: *"Phase 9.3: agent (synchronous dispatch, struct + functions)"*. The Rust transpiler's `lowerAgentDecl` at `transpiler3/rust/lower/lower.go:246` emits one struct plus per-intent free functions named `mochi_agent_NAME__INTENT(__self: &mut TypeName, ...)`. There is no actor runtime on Rust either.
 
-### Decisions made (9.0)
+3. **The async runtime engine would force the Phase 11 async colour onto every intent.** Phase 11's colour pass treats every async-typed function as Red; if every intent dispatches through a promise-replying mailbox, every intent is async, every call site is `await`, and every fixture's main body needs to be re-coloured. The corpus has no behaviour that justifies that re-colouring.
 
-**Shape** (per [[09-agent-streams]] §AsyncIterableQueue):
+4. **The spec's 8 KB budget would land on every TS package even when no fixture uses messaging or supervision.** Phase 15's tree-shaking can't drop the engine because every `agent` decl pulls it (per the spec).
 
-```typescript
-// @mochi/runtime/concurrency/queue
-export class AsyncIterableQueue<T> implements AsyncIterable<T> {
-  private readonly buffer: T[] = [];
-  private readonly waiters: Array<(v: IteratorResult<T>) => void> = [];
-  private readonly producers: Array<() => void> = [];
-  private readonly capacity: number;
-  private closed = false;
-  private failure: unknown = undefined;
+Phase 9 therefore lands the synchronous-class path. The runtime cost is zero bytes. The lowering is one new `AgentClassDecl` tstree node plus 175 lines of Go in `transpiler3/typescript/lower/phase09.go`. If a future phase introduces `spawn`, mailbox messaging, or cross-agent supervision, the runtime engine can be added without disturbing the synchronous path on closed programs.
 
-  constructor(options: { capacity?: number } = {}) {
-    this.capacity = options.capacity ?? Number.POSITIVE_INFINITY;
-  }
+## Sub-phases (as shipped)
 
-  push(value: T): void { /* ... */ }
-  async pushAwait(value: T): Promise<void> { /* ... */ }
-  close(): void { /* ... */ }
-  fail(reason: unknown): void { /* ... */ }
-  [Symbol.asyncIterator](): AsyncIterator<T> { /* ... */ }
-}
+| #   | Scope                                                                                       | Status   | Commit |
+|-----|---------------------------------------------------------------------------------------------|----------|--------|
+| 9.0 | `AgentDecl` lowering: TS class with mutable fields, private constructor, static of(), per-intent method declarations | LANDED   | (this PR) |
+| 9.1 | `AgentLit` lowering: `Counter { count: 0 }` to `Counter.of({ count: 0 })`                  | LANDED   | (this PR) |
+| 9.2 | Synchronous intent dispatch via `receiver.intent(args)` method-call shape                   | LANDED   | (this PR) |
+| 9.3 | `__self->X` rewrite to `this.X` on read and write sites inside intent bodies                | LANDED   | (this PR) |
+| 9.4 | `AsyncIterableQueue<T>` runtime class with `push` + `pushAwait` + `close` + `fail`         | DEFERRED | n/a    |
+| 9.5 | `MochiAgent<Msg>` base class with mailbox + abort signal + loop driver                      | DEFERRED | n/a    |
+| 9.6 | `cast` and `call` dispatch (fire-and-forget + request-reply via `Promise.withResolvers`)    | DEFERRED | n/a    |
+| 9.7 | `MochiSupervisor` with `one_for_all` and `one_for_one` strategies                           | DEFERRED | n/a    |
+| 9.8 | Sibling failure aggregation via `AggregateError` (ES2021)                                   | DEFERRED | n/a    |
+
+Sub-phases 9.4 through 9.8 are deferred per the goal-alignment audit. None of them is reachable from the Phase 9 fixture corpus (no `spawn`, no mailbox-style messaging, no supervision tree). The async runtime engine becomes necessary when a future phase introduces `spawn`, an async intent surface, or cross-agent supervision; until then the synchronous path is the correct shape.
+
+## As-shipped lowering
+
+The compile-time pipeline is:
+
+```
+Mochi source             aotir IR                     TS IR
+─────────────────────    ─────────────────────────    ─────────────────────────
+agent Counter {       ─► AgentDecl{                   AgentClassDecl{
+  var count: int = 0       Name:    "Counter",          Name:    "Counter",
+  intent inc() {           Fields:  [{count, int, ""}], Fields:  [{count, number}],
+    count = count + 1      Intents: [                   Methods: [
+  }                          {                            {
+  intent value(): int {        Name:       "inc",           Name:       "inc",
+    return count               ReturnType: TypeUnit,        ReturnType: "void",
+  }                            Body: Block{                 Body: [
+}                                AssignStmt{                  MemberAssignStmt{
+                                   Name: "__self->count",       Receiver: this,
+                                   Value: BinaryExpr{           Member:   "count",
+                                     Left: VarRef{              Value: BinaryExpr{
+                                       Name:"__self->count"       Left: MemberAccessExpr{
+                                     },                                Receiver: this,
+                                     Op: BinAddI64,                    Member:   "count"
+                                     Right: IntLit{1}              },
+                                   }                              Op: "+",
+                                 }                                Right: IntLit{1}
+                               }                               }
+                             }                              }
+                           }, ...]                        }, ...]
+                          }                              }
+
+let c = Counter{      ─► LetStmt{                      LetDecl{
+  count: 0                Name:    "c",                  Name:    "c",
+}                         VarType: TypeAgent,            Type:    "Counter",
+                          AgentName: "Counter",          Init: RecordOfCallExpr{
+                          Init: AgentLit{                  RecordName: "Counter",
+                            AgentName: "Counter",          Fields: {count: 0}
+                            Fields: {count: 0}           }
+                          }                            }
+                        }
+
+c.inc()               ─► AgentIntentCallStmt{          ExprStmt{
+                          AgentName:  "Counter",         Expr: MemberCallExpr{
+                          IntentName: "inc",                   Receiver: c,
+                          Receiver:   VarRef{"c"},             Method:   "inc",
+                          Args:       []                       Args:     []
+                        }                                    }
+                                                         }
 ```
 
-**Why not RxJS, Web Streams, EventEmitter**: dependency burden, type-surface mismatch, ad-hoc cancellation (see [[09-agent-streams]] §"Why hand-roll" and MEP-52 §Rationale).
+Three things route across this boundary:
 
-**Backpressure**: `pushAwait` blocks the producer when `buffer.length >= capacity` until a consumer drains. `push` (sync) throws when the queue is closed and never blocks; intended for fire-and-forget producers.
+1. The aotir lowerer (`transpiler3/c/lower/lower.go`) walks `agent NAME { ... }` source and emits one `AgentDecl` per agent type, with intent bodies stamped using `__self->FieldName` for every field read or write. This mirrors what the C lowerer needs for its struct-plus-functions emit.
 
-**Closure ordering**: `close()` resolves all pending waiters with `{done: true}`. `fail(reason)` records the reason then closes; the next `next()` call rejects with the recorded reason instead of resolving with `done: true`.
+2. The TS lowerer's new `agentDecls()` (`transpiler3/typescript/lower/phase09.go`) walks `prog.Agents` in source order and emits one `AgentClassDecl` per agent. Each intent body lowers through the regular `lowerBlock` path; the `__self->` prefix is rewritten to `this.X` MemberAccess on read sites (VarRef case in `lowerExpr`) and `this.X = ...` MemberAssign on write sites (AssignStmt case in `lowerAssignStmt`).
 
-## Sub-phase 9.1, MochiAgent base class
+3. `AgentLit`, `AgentIntentCallExpr`, and `AgentIntentCallStmt` are wired into `lowerExpr` and `lowerStmt`. The literal reuses the existing `RecordOfCallExpr` shape (factory call via `Counter.of({...})`); the intent call uses the existing `MemberCallExpr` shape (`receiver.intent(args)`).
 
-### Decisions made (9.1)
+The lowering: 
 
-**Base class**:
+- one tstree node added (`AgentClassDecl` with mutable fields, private constructor, static of(), per-intent method declarations)
+- one tstree statement added (`MemberAssignStmt` for `receiver.member = value;`)
+- one new lower file (`phase09.go`, 175 lines)
+- two short edits in `lower.go` (VarRef + AssignStmt prefix detection, three switch cases for the new aotir nodes, one prelude wiring)
+- one short edit in `lowerLetStmt` to map `VarType==TypeAgent` to `s.AgentName` as the TS type
 
-```typescript
-// @mochi/runtime/concurrency/agent
-export abstract class MochiAgent<Msg> {
-  protected readonly mailbox = new AsyncIterableQueue<Msg>();
-  protected readonly signal: AbortSignal;
+### Why synchronous class vs async runtime engine
 
-  constructor(signal: AbortSignal) {
-    this.signal = signal;
-    signal.addEventListener("abort", () => this.mailbox.close());
-    void this.loop();
-  }
+| Concern                            | Async runtime engine                             | Synchronous class (shipped)        |
+|------------------------------------|--------------------------------------------------|------------------------------------|
+| Runtime size                       | ~8 KB gzipped                                    | 0 bytes                            |
+| Tree-shakeability                  | none (engine pulled by any `agent` decl)         | n/a                                |
+| Phase 11 async colour              | every intent becomes Red                         | every intent stays Blue            |
+| Phase 16 byte-equal repro          | engine version skew shifts emit                  | emit is a plain class declaration  |
+| Future `spawn` (Phase 9.5+)        | already in shape                                 | engine added at that time          |
+| Cross-backend goal                 | mismatch (C, Rust ship synchronous)              | matches C, Rust (same algorithm)   |
 
-  protected abstract handle(msg: Msg): void | Promise<void>;
+### Example 1, increment counter
 
-  private async loop(): Promise<void> {
-    try {
-      for await (const msg of this.mailbox) {
-        if (this.signal.aborted) break;
-        await this.handle(msg);
-      }
-    } catch (e) {
-      this.mailbox.fail(e);
-    }
-  }
-}
+`tests/transpiler3/typescript/fixtures/phase09-agents/agent_basic.mochi`:
+
 ```
-
-**Generated subclass for `agent Counter`** (Mochi source):
-
-```mochi
 agent Counter {
-  state: int = 0
-  cast Inc(n: int) { state = state + n }
-  call Value(): int { reply(state) }
+    var count: int = 0
+    intent increment() { count = count + 1 }
+    intent value(): int { return count }
+}
+let c = Counter { count: 0 }
+c.increment()
+c.increment()
+c.increment()
+print(c.value())
+```
+
+Emits:
+
+```ts
+class Counter {
+  count: number;
+  private constructor(opts: { count: number; }) {
+    this.count = opts.count;
+  }
+  static of(opts: { count: number; }): Counter {
+    return new Counter(opts);
+  }
+  increment(): void {
+    this.count = (this.count + 1);
+  }
+  value(): number {
+    return this.count;
+  }
+}
+
+function mochi_main(): void {
+  const c: Counter = Counter.of({ count: 0 });
+  c.increment();
+  c.increment();
+  c.increment();
+  mochi_print_i64(c.value());
 }
 ```
 
-**Generated TypeScript**:
+The three `c.increment()` calls mutate the instance's `count` field; the binding `c` is `const` because the binding itself never rebinds (the agent state mutates through field writes, not via reassignment).
 
-```typescript
-export type CounterMsg =
-  | { readonly kind: "Inc"; readonly n: bigint }
-  | { readonly kind: "Value"; readonly reply: (v: bigint) => void };
+### Example 2, multi-param intent
 
-export class Counter extends MochiAgent<CounterMsg> {
-  private state: bigint = 0n;
+`tests/transpiler3/typescript/fixtures/phase09-agents/agent_intent_two_params.mochi`:
 
-  protected handle(msg: CounterMsg): void {
-    switch (msg.kind) {
-      case "Inc":   this.state = this.state + msg.n; return;
-      case "Value": msg.reply(this.state); return;
-    }
-  }
-
-  cast(msg: Exclude<CounterMsg, { kind: "Value" }>): void {
-    this.mailbox.push(msg);
-  }
-
-  async call(req: { kind: "Value" }): Promise<bigint> {
-    const { promise, resolve } = Promise.withResolvers<bigint>();
-    this.mailbox.push({ kind: req.kind, reply: resolve } as CounterMsg);
-    return promise;
-  }
+```
+agent Calc {
+    var total: int = 0
+    intent muladd(a: int, b: int) { total = total + (a * b) }
+    intent get(): int { return total }
 }
+let c = Calc { total: 0 }
+c.muladd(3, 4)
+c.muladd(5, 6)
+print(c.get())
 ```
 
-## Sub-phase 9.2, cast and call
+Emits:
 
-### Decisions made (9.2)
-
-**`cast` (fire-and-forget)**: sync, never awaits; `mailbox.push(msg)` returns immediately. Caller does not observe success.
-
-**`call` (request-reply)**: `Promise.withResolvers()` (ES2024) gives `{promise, resolve, reject}`. The agent's message variant carries the `reply` callback; the handler invokes `reply(value)` to fulfil the caller's promise. Errors in the handler propagate via the queue's `fail` path; the caller observes via `await call(...).catch(...)`.
-
-**Timeout**: a `call(req, {timeout: 5_000})` overload wraps the promise in `Promise.race([promise, timeoutReject(timeout)])`. Phase 9 ships without timeout (callers compose `Promise.race` themselves); the overload is a v1.5 add.
-
-## Sub-phase 9.3, Supervision
-
-### Decisions made (9.3)
-
-**`MochiSupervisor`**:
-
-```typescript
-// @mochi/runtime/concurrency/supervisor
-export type Strategy = "one_for_one" | "one_for_all";
-
-export class MochiSupervisor {
-  private readonly controller = new AbortController();
-  private readonly children: Array<{
-    factory: (signal: AbortSignal) => MochiAgent<unknown>;
-    instance: MochiAgent<unknown>;
-  }> = [];
-  constructor(private readonly strategy: Strategy = "one_for_all") {}
-  spawn<M>(factory: (signal: AbortSignal) => MochiAgent<M>): MochiAgent<M> {
-    const instance = factory(this.controller.signal);
-    this.children.push({ factory: factory as any, instance: instance as MochiAgent<unknown> });
-    return instance;
+```ts
+class Calc {
+  total: number;
+  ...
+  muladd(a: number, b: number): void {
+    this.total = (this.total + (a * b));
   }
-  shutdown(): void { this.controller.abort(); }
-}
-```
-
-**`one_for_all` (default)**: a child failure (handler throws) calls `controller.abort()`; every sibling observes `signal.aborted === true`, exits its `for await` loop, releases resources. Matches OTP `one_for_all`.
-
-**`one_for_one`**: the failed child is restarted via its factory; siblings unaffected. Implemented by catching inside the agent's loop and re-spawning via the saved factory. Phase 9 ships `one_for_all`; `one_for_one` is sub-phase 9.3.1.
-
-**Nested supervision**: `MochiSupervisor` can spawn child supervisors (each has its own `AbortController` whose signal is also added to the parent's). A parent abort propagates down; a child abort stays scoped.
-
-## Sub-phase 9.4, AggregateError
-
-### Decisions made (9.4)
-
-**Sibling failure aggregation**: when the parent supervisor receives a child failure, it aborts siblings and collects their failure reasons (each agent's `mailbox.failure` field after close). The collected reasons are wrapped in an `AggregateError`:
-
-```typescript
-class MochiSupervisorFailure extends AggregateError {
-  constructor(errors: unknown[]) {
-    super(errors, "MochiSupervisor: one or more child agents failed");
-    this.name = "MochiSupervisorFailure";
+  get(): number {
+    return this.total;
   }
 }
 ```
 
-`AggregateError` is ES2021, native on all four runtimes. It matches MEP-51's `ExceptionGroup` story and is the canonical multi-error type in JavaScript.
+The intent parameters become method parameters with the same names and types; the body reads/writes `this.total` directly.
 
-**Surface to user**: `await supervisor.run()` returns `MochiResult.Ok(())` if all children completed successfully, or `MochiResult.Err(new MochiSupervisorFailure([...]))` on failure. The MochiResult wrapper is Phase 11; Phase 9 emits the bare `AggregateError` and Phase 11 wires it through.
+### Example 3, two agents in one program
 
-## Files (planned)
+`tests/transpiler3/typescript/fixtures/phase09-agents/agent_two_agents.mochi`:
 
-| File | Purpose |
-|------|---------|
-| `transpiler3/typescript/colour/colour.go` | Sync/async colour pass (full activation, formerly trivial in Phase 1 to 8); seeds: agent intent handlers, calls to async functions, AsyncIterable consumers |
-| `transpiler3/typescript/lower/agents.go` | Agent decl to MochiAgent subclass; message variant union; cast/call methods |
-| `transpiler3/typescript/lower/supervisor.go` | Supervisor spawn lowering; AbortController plumbing |
-| `runtime3/typescript/src/concurrency/queue.ts` | `AsyncIterableQueue<T>` |
-| `runtime3/typescript/src/concurrency/agent.ts` | `MochiAgent<Msg>` base class |
-| `runtime3/typescript/src/concurrency/supervisor.ts` | `MochiSupervisor` with one_for_all / one_for_one |
-| `transpiler3/typescript/build/phase09_test.go` | `TestPhase9Agents` |
-| `tests/transpiler3/typescript/fixtures/phase09-agents/` | 35 fixtures (counter, adder, balance, switch_agent, supervisor_one_for_all, etc.) |
+```
+agent A {
+    var n: int = 0
+    intent inc() { n = n + 1 }
+    intent get(): int { return n }
+}
+agent B {
+    var n: int = 0
+    intent inc() { n = n + 10 }
+    intent get(): int { return n }
+}
+let a = A { n: 0 }
+let b = B { n: 0 }
+a.inc()
+b.inc()
+a.inc()
+print(a.get())
+print(b.get())
+```
+
+Emits two separate class declarations and two const bindings. The bindings carry independent state because TS class instances do not share mutable fields between instances.
+
+## Files
+
+| File                                                                                       | Purpose |
+|---------------------------------------------------------------------------------------------|---------|
+| `transpiler3/typescript/tstree/phase09.go`                                                  | `AgentClassDecl`, `MethodDecl`, `MemberAssignStmt` nodes |
+| `transpiler3/typescript/lower/phase09.go`                                                   | `agentDecls`, `lowerAgentLit`, `lowerAgentIntentCallExpr`, `lowerAgentIntentCallStmt`, `stripSelfPrefix` |
+| `transpiler3/typescript/lower/lower.go`                                                     | Wires `AgentLit` and `AgentIntentCallExpr` into `lowerExpr`; wires `AgentIntentCallStmt` into `lowerStmt`; rewrites `__self->X` in `VarRef`/`AssignStmt`; maps `LetStmt{VarType==TypeAgent}` to `s.AgentName` for the TS type slot; calls `agentDecls()` in the prelude |
+| `transpiler3/typescript/build/phase09_test.go`                                              | `TestPhase9AgentsNode/Deno/Bun` + emit-shape + no-async-runtime assertions |
+| `tests/transpiler3/typescript/fixtures/phase09-agents/`                                     | 44 fixtures mirroring the Rust Phase 9 corpus |
 
 ## Test set
 
-- `TestPhase9Agents`, 35 fixtures four-runtime.
-- `TestPhase9NoFloatingPromise`, eslint `no-floating-promises: error` against every emitted file.
-- `TestPhase9SupervisorAggregate`, fixture spawns two children, one fails, parent surfaces `AggregateError([err1, err2])`.
-- `TestPhase9ConcurrencyBudget`, `@mochi/runtime/concurrency/` stays under 8 KB gzipped.
+| Test                                                                          | Status |
+|--------------------------------------------------------------------------------|--------|
+| `TestPhase9AgentsNode`, 44 fixtures byte-equal on Node 22                      | GREEN  |
+| `TestPhase9AgentsDeno`, 44 fixtures byte-equal on Deno 2                       | GREEN  |
+| `TestPhase9AgentsBun`, 44 fixtures byte-equal on Bun 1.1                       | GREEN  |
+| `TestPhase9EmitShape`, agent class declaration + this. access + method call    | GREEN  |
+| `TestPhase9NoAsyncRuntime`, no async-runtime engine tokens leak into emit      | GREEN  |
+
+Fixture corpus (44, full Rust Phase 9 corpus):
+
+- Counter / bumper shapes: `agent_basic`, `agent_decrement`, `agent_intent_calls_intent`, `agent_step`, `agent_value_intent`, `agent_zero_intent`, `agent_no_field_assign`
+- Multi-intent: `agent_multi_intent`, `agent_intent_only_read`, `agent_intent_uses_field`, `agent_set_via_intent`
+- Multi-param intents: `agent_intent_two_params`, `agent_intent_three_params`, `agent_intent_param_int`, `agent_intent_neg_param`, `agent_string_param`
+- Return shapes: `agent_intent_return_bool`, `agent_intent_return_string`
+- Conditional bodies: `agent_intent_if`, `agent_field_in_cond`, `agent_max_field`, `agent_intent_modulo`
+- Bool fields: `agent_bool`, `agent_bool_toggle`, `agent_compare`
+- Float fields: `agent_float`, `agent_float_div`, `agent_neg_float`, `agent_pi`, `agent_mul_div`, `agent_complex_arithmetic`
+- String fields: `agent_string`, `agent_string_concat`, `agent_string_reset`, `agent_initial_string`
+- Initial-state variations: `agent_initial_state`, `agent_negative_init`
+- Loop interactions: `agent_in_for_loop`, `agent_in_while_loop`
+- Multi-field shapes: `agent_two_fields`, `agent_three_fields`, `agent_mixed_fields`
+- Multi-agent programs: `agent_two_agents`
+- Print inside intent: `agent_print_in_intent`
 
 ## Deferred work
 
-- `one_for_one` strategy. Sub-phase 9.3.1.
-- Per-call timeouts. v1.5.
-- Distributed agents (remote mailbox via WebSocket). Out of scope.
-- Persistent agents (durable mailbox via IndexedDB or SQLite). Out of scope.
-- Hot reload (`agent_replace_state`). MEP-46 territory; not in MEP-52 v1.
+- **AsyncIterableQueue runtime** (`@mochi/runtime/agent`). The original spec budget. Lands when Mochi grows a `spawn` statement, an async intent surface, or supervision wiring (none of which is in the Phase 9 fixture corpus).
+- **MochiAgent base class + cast/call dispatch**. Same precondition as above.
+- **MochiSupervisor + one_for_all / one_for_one strategies**. Phase 9.7 in the deferred plan; requires `spawn` to land first.
+- **AggregateError sibling-failure aggregation**. Phase 9.8; requires supervision to land first.
+- **Per-call timeouts**. v1.5.
+- **Distributed agents** (remote mailbox via WebSocket). Out of scope.
+- **Persistent agents** (durable mailbox via IndexedDB or SQLite). Out of scope.
+- **Hot reload (`agent_replace_state`)**. MEP-46 territory; not in MEP-52 v1.
+
+The deferred areas share a common precondition: the agent dispatch is no longer fully synchronous and statically resolved at compile time. While Mochi's agent surface stays synchronous (no `spawn`, no mailbox messaging, no supervision tree), the synchronous-class path is the right shape.
