@@ -40,14 +40,20 @@ jobs:
           path: docs-repo
           fetch-depth: 1
 
-      - name: Sync website/ content
+      - name: Sync website/ and releases/ content
         run: |
           rsync -a --delete \
             --exclude='.git' \
+            --exclude='.DS_Store' \
             --exclude='node_modules' \
             --exclude='.docusaurus' \
             --exclude='build' \
+            --exclude='LICENSE' \
+            --exclude='README.md' \
             website/ docs-repo/
+          rsync -a --delete \
+            --exclude='.git' \
+            releases/ docs-repo/releases/
 
       - name: Commit and push
         run: |
