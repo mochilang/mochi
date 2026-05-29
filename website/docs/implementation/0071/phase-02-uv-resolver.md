@@ -15,7 +15,7 @@ description: "MEP-71 Phase 2 lands the uv subprocess wrapper, a minimal TOML rea
 | Landed         | 2026-05-29 23:09 (GMT+7) |
 | Tracking issue | (filled by automation) |
 | Tracking PR    | (filled by automation) |
-| Commit         | (filled by automation) |
+| Commit         | `a38cb023` |
 
 ## Gate
 
