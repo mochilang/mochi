@@ -12,8 +12,8 @@ import (
 // PHP is not installed; CI uses shivammathur/setup-php@v2 to drive the
 // end-to-end gate.
 //
-// list_filter is intentionally omitted: it relies on inline function
-// literals (closures) that arrive in Phase 6.
+// list_filter rejoined the set in Phase 6 (closures landed via PR
+// #22503's successor); the runner now exercises it end-to-end.
 func TestPhase3Collections(t *testing.T) {
 	fixtureDir := filepath.Join(repoRoot(t), "tests", "transpiler3", "php", "fixtures", "phase03-collections")
 	entries, err := os.ReadDir(fixtureDir)

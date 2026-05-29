@@ -819,6 +819,39 @@ func (e *NewExpr) PhpString() string {
 	return sb.String()
 }
 
+// ClosureExpr is a PHP arrow function: `fn(<params>): <ret> => <body>`.
+// Arrow functions auto-capture variables from the enclosing scope by
+// value, which matches Mochi's by-value capture semantics. The body
+// is a single expression because Phase 6's FunLit always lowers to
+// a single call into the lifted function (which carries the real
+// closure body).
+type ClosureExpr struct {
+	Params     []FuncParam
+	ReturnType string
+	Body       Expr
+}
+
+func (*ClosureExpr) phpExpr() {}
+
+func (e *ClosureExpr) PhpString() string {
+	var sb strings.Builder
+	sb.WriteString("fn(")
+	for i, p := range e.Params {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		writeParam(&sb, p)
+	}
+	sb.WriteByte(')')
+	if e.ReturnType != "" {
+		sb.WriteString(": ")
+		sb.WriteString(e.ReturnType)
+	}
+	sb.WriteString(" => ")
+	sb.WriteString(e.Body.PhpString())
+	return sb.String()
+}
+
 // PropAccessExpr is `<recv>-><field>`. Used to read record fields.
 type PropAccessExpr struct {
 	Receiver Expr
