@@ -1,0 +1,5 @@
+let xs = ["alpha", "beta", "gamma"]
+print(xs[0])
+print(xs[1])
+print(xs[2])
+print(len(xs))

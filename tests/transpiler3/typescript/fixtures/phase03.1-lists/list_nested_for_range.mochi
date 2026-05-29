@@ -1,0 +1,6 @@
+let xs = [1, 2, 3]
+for x in xs {
+  for i in 0..x {
+    print(i)
+  }
+}

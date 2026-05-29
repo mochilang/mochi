@@ -1,0 +1,7 @@
+fun pair(a: int, b: int): list<int> {
+  return [a, b]
+}
+let ys = pair(7, 11)
+print(ys[0])
+print(ys[1])
+print(len(ys))

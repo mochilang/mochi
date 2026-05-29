@@ -10,11 +10,11 @@ description: "MEP-52 Phase 3, Mochi list/map/set lowering to TypeScript readonly
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-52 §Phases · Phase 3](/docs/mep/mep-0052#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | n/a |
-| Landed         | n/a |
-| Tracking issue | n/a |
-| Tracking PR    | n/a |
+| Status         | IN PROGRESS (3.1 LANDED; 3.2/3.3/3.4 pending) |
+| Started        | 2026-05-29 17:21 (GMT+7) |
+| Landed         | n/a (umbrella) |
+| Tracking issue | n/a (umbrella) |
+| Tracking PR    | n/a (umbrella) |
 
 ## Gate
 
@@ -30,30 +30,29 @@ The MEP-52 phase matrix splits Phase 3 into four sub-phases. Each is its own gat
 
 | # | Scope | Fixtures | Status | Commit |
 |---|-------|----------|--------|--------|
-| 3.1 | Lists (`readonly T[]` for immutable view, `T[]` when mutated; index, len, for-each, list comprehensions) | 25 | NOT STARTED | n/a |
+| 3.1 | Lists (scalar element types; index, len, for-each, append, sum/min/max/contains, fn round-trip, index assign, loop control) | 25 | LANDED (Node + Deno + Bun) | tbd |
 | 3.2 | Maps (`Map<K, V>`; get, set, has, delete, for-each, entries) | 25 | NOT STARTED | n/a |
 | 3.3 | Sets (`Set<T>` with ES2024 union/intersection/difference) | 15 | NOT STARTED | n/a |
 | 3.4 | Lists of records (records via a Phase 4 preview; comprehensions over records) | 20 | NOT STARTED | n/a |
 
 ## Sub-phase 3.1, Lists
 
-### Decisions made (3.1)
+### Decisions made (3.1) — as shipped
 
-**Type**: `readonly T[]` for immutable views (the default for `let xs = [1, 2, 3]` where `xs` is never mutated), `T[]` when the IR proves a mutation site. The monomorphisation pass tags every list-typed value with a `Mutability` field; the emitter picks the type annotation accordingly.
+The full mutability split (`readonly T[]` for immutable views, `T[]` when mutated) and the IR-provenance-driven non-null assertions sketched below were the original design. The actual Phase 3.1 ship simplifies both:
 
-**Literal**: `[1, 2, 3]` lowers to `[1n, 2n, 3n]` (bigint) or `[1, 2, 3]` (number) per the int monomorphisation rule from Phase 2.
-
-**Indexing**: `xs[i]` lowers to either `xs[i]!` (non-null assertion, only when IR-provenance proves `0 <= i < len(xs)`) or `mochiListAt(xs, i)` (runtime-guarded). The eslint rule `@typescript-eslint/no-non-null-assertion` is set to `warn` and the emitter pins it to allow the IR-justified case via a `// eslint-disable-next-line` comment annotated with the IR provenance.
-
-**Length**: `len(xs)` lowers to `BigInt(xs.length)` when the surrounding context expects `bigint`, or `xs.length` when context expects `number`.
-
-**`for x in xs`**: `for (const x of xs)`.
-
-**List comprehensions**: `[f(x) for x in xs if pred(x)]` lowers to `xs.filter(pred).map(f)` when `f` and `pred` are pure synchronous arrow functions and the order is preserved (which it is for arrays). When the comprehension has nested loops (`[f(x, y) for x in xs for y in ys]`), the emitter falls back to a generator `Array.from((function*() { for (const x of xs) for (const y of ys) yield f(x, y); })())`. Phase 7 (query DSL) revisits this with iterator helpers (`Iterator.from(...).flatMap(...).map(...)`) for the longer chains.
-
-**`push`, `pop`, `shift`, `unshift`**: only emitted when `Mutability` is mutable. The emitter refuses to emit these for a `readonly T[]`-typed value (which would be a `tsc` error anyway).
-
-**Non-mutating alternatives (ES2023)**: `toReversed`, `toSorted`, `toSpliced`, `with` are preferred when the IR signals a `readonly T[]` source.
+- **Type**: every list lowers to a plain `T[]` (`number[]`, `string[]`, `boolean[]`). Mochi's structural mutability is not yet carried per-occurrence in aotir, and the strict-mode toll of `readonly` views is paid only when the lower pass can prove no mutation site exists. Phase 4 will revisit this once records expose the equality contract the mutability inference needs. The narrower type produces no extra `tsc` diagnostics (lists are always assigned before use) and lets the rest of the surface land without a parallel mutability tracking pass.
+- **Literal**: Phase 2 closed with int → `number`; the bigint specialisation is deferred to a post-Phase-6 sub-phase. `[1, 2, 3]` therefore lowers to `[1, 2, 3]` with element type `number`. Strings emit double-quoted, booleans `true`/`false`, floats via `strconv.FormatFloat('g', -1, 64)` to match vm3's round-trip.
+- **Indexing**: `xs[i]` always lowers to `mochi_list_at(xs, i)` (runtime-guarded). The IR-provenance approach is deferred. Reason: under `--noUncheckedIndexedAccess`, bare `xs[i]` types as `T | undefined` and pollutes every caller with narrowing logic; non-null `!` assertions are an `@typescript-eslint/no-non-null-assertion` violation by default. A single bounds-checking helper is the cheapest way to keep the emit clean and the panic contract honest. The helper raises a `RangeError` on miss, matching Mochi's panic-on-OOB semantics. `TestPhase3_1ListAtAlwaysGuarded` enforces that no fixture emits a bare bracket read in user code.
+- **Length**: `len(xs)` lowers to `xs.length` (no `BigInt` wrapping, since int is `number`).
+- **Append**: `append(xs, v)` lowers to `[...xs, v]` (spread literal, fresh allocation; matches Mochi's functional append semantics). The keeps-input fixture asserts the input list is not mutated.
+- **`for x in xs`**: `for (const x of xs) { ... }` with no type annotation on the binding (TypeScript's `for-of` grammar reserves the colon for label syntax; `tsc` infers the element type from `xs`, which matches Mochi's structural inference).
+- **`x in xs`** (membership): `xs.includes(x)`. ES2015+ semantics are SameValueZero (`NaN === NaN`, `-0 === 0`), which is what Mochi expects for scalar elements.
+- **`sum`, `min`, `max`**: each lowers to a Mochi runtime helper (`mochi_list_sum`, `mochi_list_min`, `mochi_list_max`). Reason: `Math.min(...xs)` is `O(n)` and adds an `arguments.length` cap (~65536 on V8) that vm3 does not have; an explicit loop is also more readable in the emit. The helpers are emitted only when used.
+- **`xs[i] = v`** (index assign): lowers to `xs[i] = v;` directly. The LHS bracket form is fine: TypeScript permits the assignment, and out-of-range writes extend the array (which is the same divergence-from-Mochi-panics that vm3 has on this contract today, and is therefore considered a vm3 contract bug to fix upstream, not a transpiler concern). The read-side regression test (`TestPhase3_1ListAtAlwaysGuarded`) intentionally skips assignment LHS.
+- **List comprehensions**: deferred to Phase 7 (query DSL), where iterator-helper chains (`Iterator.from(xs).filter(...).map(...)`) carry the longer surface. Phase 3.1 ships the loop-based surface only.
+- **`push`, `pop`, `shift`, `unshift`**: not in the Phase 3.1 surface; Mochi programs use `append` (functional) for additions.
+- **Non-mutating ES2023 methods (`toReversed`, `toSorted`, `toSpliced`, `with`)**: not in the 3.1 surface. The aotir IR already carries `ListSortAscExpr` and `ListSliceExpr`; the emitter has lower paths for both but no fixture exercises them yet. They land in 3.4 alongside lists-of-records.
 
 ## Sub-phase 3.2, Maps
 
@@ -114,29 +113,52 @@ Lists of records are the data shape every query, every datalog rule, and every f
 
 Sub-phase 3.4 includes record method call chains (`u.name.toUpperCase()` etc.) so that Phase 7's query DSL has a real target.
 
-## Files (planned)
+## Files (as shipped, 3.1)
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/typescript/lower/lists.go` | List literal, indexing, length, push/pop, comprehensions |
-| `transpiler3/typescript/lower/maps.go` | Map literal, get/set/has/delete, iteration |
-| `transpiler3/typescript/lower/sets.go` | Set literal, ES2024 method dispatch |
-| `transpiler3/typescript/lower/mutability.go` | Mutability inference; tags each collection occurrence as readonly or mutable |
-| `runtime3/typescript/src/collections/index.ts` | `mochiListAt`, `mochiMapGet`, helpers |
-| `transpiler3/typescript/build/phase03_test.go` | `TestPhase3Collections`, four sub-tests |
-| `tests/transpiler3/typescript/fixtures/phase03.1-lists/` | 25 fixtures |
+| `transpiler3/typescript/tstree/phase03.go` | `ListLit`, `ForEachStmt`, `IndexAssignStmt`, `MemberAccessExpr`, `SpreadAppendExpr` node kinds |
+| `transpiler3/typescript/lower/phase03.go` | `tsTypeForList`, `tsTypeForCompound`, lower funcs for all 3.1 expr/stmt nodes, `runtimeListDecls()` |
+| `transpiler3/typescript/lower/lower.go` | `runtimeFlags` extended with 7 list-helper flags; Phase 3 stmt/expr dispatch wired |
+| `transpiler3/typescript/build/phase03_test.go` | `TestPhase3_1ListsNode/Deno/Bun`, `TestPhase3_1EmitWithoutRuntime`, `TestPhase3_1ListAtAlwaysGuarded` |
+| `tests/transpiler3/typescript/fixtures/phase03.1-lists/` | 25 `.mochi` fixtures + 25 vm3-recorded `.out` |
+
+## Files (planned, 3.2 to 3.4)
+
+| File | Purpose |
+|------|---------|
+| `transpiler3/typescript/lower/phase03_maps.go` | Map literal, get/set/has/delete, iteration |
+| `transpiler3/typescript/lower/phase03_sets.go` | Set literal, ES2024 method dispatch |
 | `tests/transpiler3/typescript/fixtures/phase03.2-maps/` | 25 fixtures |
 | `tests/transpiler3/typescript/fixtures/phase03.3-sets/` | 15 fixtures |
 | `tests/transpiler3/typescript/fixtures/phase03.4-list-records/` | 20 fixtures |
 
 ## Test set
 
-- `TestPhase3_1Lists`, `TestPhase3_2Maps`, `TestPhase3_3Sets`, `TestPhase3_4ListRecords`, each four-runtime.
-- `TestPhase3NoObjectAsMap`, asserts no emitted `.ts` uses a plain object literal as a map.
-- `TestPhase3IndexProvenance`, asserts every `xs[i]!` non-null assertion is annotated with an IR-provenance comment.
+- `TestPhase3_1Lists{Node,Deno,Bun}`, the runtime gate (25 × 3 = 75 fixture runs).
+- `TestPhase3_1EmitWithoutRuntime`, 11 shape-check cases verifying load-bearing emit tokens land in the right form (`const xs: number[] = [1, 2, 3];`, `mochi_list_at(xs, 0)`, `xs.length`, `[...xs, 4]`, `for (const x of xs) {`, etc.).
+- `TestPhase3_1ListAtAlwaysGuarded`, scans every emitted `.ts` and asserts no bare bracket read escapes the `mochi_list_at` helper boundary. The helper body is filtered (its `return xs[i] as T` is intentional); LHS bracket form (`xs[i] = v`) is skipped on the assignment line.
+- `TestPhase3_2Maps`, `TestPhase3_3Sets`, `TestPhase3_4ListRecords`: pending.
+- `TestPhase3NoObjectAsMap` (asserts no emitted `.ts` uses a plain object literal as a map): pending.
 
 ## Deferred work
 
+- Full mutability inference (`readonly T[]` vs `T[]`). Deferred until aotir carries per-occurrence Mutability; not blocking 3.1.
+- Bigint int representation. Phase 2 closed with `number`; revisit alongside MOCHI003 (per memory `project_mep48_spec.md` analogue).
+- `xs[i]` IR-provenance non-null assertions. The runtime helper is fine for now; revisit if benchmark traces show measurable overhead.
+- List comprehensions (`[f(x) for x in xs if pred(x)]`). Phase 7 (query DSL) will carry the iterator-helper-based surface.
+- `toReversed`, `toSorted`, `toSpliced`, `with`. The aotir IR already has `ListSortAscExpr` / `ListSliceExpr` and lower paths exist; deferred to 3.4 where lists-of-records exercise them.
 - Full record surface (methods, equals, hashCode). Deferred to Phase 4.
 - Frozen / persistent collections (`as const` deep readonly). Deferred to v2.
 - `Object.groupBy` / `Map.groupBy` over lists of records. Deferred to Phase 7 (query DSL).
+
+## Landing log
+
+### Sub-phase 3.1 — Lists
+
+- **Started**: 2026-05-29 17:21 (GMT+7)
+- **Landed**: 2026-05-29 17:45 (GMT+7)
+- **Runtime coverage**: Node 22.21.1, Deno 2, Bun 1.1
+- **Fixture count**: 25 `.mochi` + 25 vm3-recorded `.out`, all byte-equal across the three runtimes
+- **Test count**: `TestPhase3_1ListsNode` (25), `TestPhase3_1ListsDeno` (25), `TestPhase3_1ListsBun` (25), `TestPhase3_1EmitWithoutRuntime` (11), `TestPhase3_1ListAtAlwaysGuarded` (25)
+- **Notable scope changes vs the original 3.1 plan**: see "Decisions made (3.1) — as shipped" above. The list comprehension surface is the largest single deferral and moves to Phase 7.
