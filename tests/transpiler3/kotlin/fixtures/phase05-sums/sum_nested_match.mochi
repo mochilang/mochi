@@ -1,0 +1,9 @@
+type Value = Int(n: int) | Str(s: string)
+fun show(v: Value): string {
+  return match v {
+    Int(n) => str(n)
+    Str(s) => s
+  }
+}
+print(show(Int(42)))
+print(show(Str("hello")))

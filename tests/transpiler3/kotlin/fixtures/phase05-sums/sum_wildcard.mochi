@@ -1,0 +1,11 @@
+type Num = Zero | Pos(n: int) | Neg(n: int)
+fun classify(x: Num): string {
+  return match x {
+    Zero => "zero"
+    Pos(n) => "pos"
+    _ => "neg"
+  }
+}
+print(classify(Zero))
+print(classify(Pos(5)))
+print(classify(Neg(3)))

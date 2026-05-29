@@ -1,0 +1,5 @@
+let m = {"a": 10, "b": 20}
+let vs = values(m)
+for v in vs {
+    print(v)
+}

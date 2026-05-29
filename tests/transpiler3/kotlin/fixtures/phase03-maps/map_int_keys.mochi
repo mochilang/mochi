@@ -1,0 +1,3 @@
+let m = {1: "one", 2: "two"}
+print(m[1])
+print(m[2])

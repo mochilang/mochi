@@ -1,0 +1,4 @@
+let xs = [1, 2, 3]
+print(xs[0])
+print(xs[1])
+print(xs[2])
