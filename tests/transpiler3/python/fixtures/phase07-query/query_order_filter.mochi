@@ -1,0 +1,5 @@
+let nums: list<int> = [7, 2, 9, 1, 5, 3, 8, 4, 6]
+let evens_sorted = from n in nums where n % 2 == 0 order by n select n
+for x in evens_sorted {
+    print(x)
+}

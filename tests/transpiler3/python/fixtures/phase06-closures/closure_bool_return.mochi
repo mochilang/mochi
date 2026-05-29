@@ -1,0 +1,3 @@
+let is_positive = fun(x: int): bool => x > 0
+print(is_positive(5))
+print(is_positive(-3))

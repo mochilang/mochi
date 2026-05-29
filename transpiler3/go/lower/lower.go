@@ -59,6 +59,14 @@ func (l *lowerer) lowerProgram() (*gotree.File, error) {
 		f.Decls = append(f.Decls, decls...)
 	}
 
+	for _, ad := range l.prog.Agents {
+		decls, err := l.lowerAgentDecl(ad)
+		if err != nil {
+			return nil, fmt.Errorf("agent %s: %w", ad.Name, err)
+		}
+		f.Decls = append(f.Decls, decls...)
+	}
+
 	mainFn, err := l.findMain()
 	if err != nil {
 		return nil, err
@@ -396,6 +404,100 @@ func (l *lowerer) lowerVariantCtor(ud *aotir.UnionDecl, v aotir.VariantDecl) (go
 // variantCtorName is the public name of the variant constructor.
 func variantCtorName(union, variant string) string {
 	return exportIdent(union) + "_" + exportIdent(variant)
+}
+
+// lowerAgentDecl emits `type AgentName struct { Field T; ... }` plus
+// one pointer-receiver method per intent. Phase 9.3 keeps agent fields
+// scalar-only (matching the shared aotir verifier's restriction) so
+// the field-type renderer reuses lowerType directly.
+//
+// Field access inside intent bodies appears in the IR as VarRefs whose
+// Name has been prefixed with "__self->" by the shared C lowerer's
+// emitName encoding. varRefExpr rewrites that to `self.Field` so the
+// pointer receiver mutates state in place. AssignStmt LHS values with
+// the same prefix flow through the matching rewrite in lowerAssignStmt.
+//
+// OnClose is ignored in Phase 9.3 for the Go backend: synchronous
+// dispatch has no implicit teardown step, and the C lowerer's verifier
+// already enforces termination ordering at compile time.
+func (l *lowerer) lowerAgentDecl(ad *aotir.AgentDecl) ([]gotree.Decl, error) {
+	fields := make([]gotree.Field, 0, len(ad.Fields))
+	for _, f := range ad.Fields {
+		ft, err := l.lowerType(f.Type)
+		if err != nil {
+			return nil, fmt.Errorf("field %s: %w", f.Name, err)
+		}
+		if ft == "" {
+			return nil, fmt.Errorf("field %s: unit type not allowed", f.Name)
+		}
+		fields = append(fields, gotree.Field{
+			Names: []string{exportIdent(f.Name)},
+			Type:  &gotree.Ident{Name: ft},
+		})
+	}
+	out := []gotree.Decl{&gotree.GenDecl{
+		Tok: "type",
+		Specs: []gotree.Spec{&gotree.TypeSpec{
+			Name: ad.Name,
+			Type: &gotree.StructType{Fields: fields},
+		}},
+	}}
+	for _, intent := range ad.Intents {
+		fn, err := l.lowerAgentIntentDecl(ad, intent)
+		if err != nil {
+			return nil, fmt.Errorf("intent %s: %w", intent.Name, err)
+		}
+		out = append(out, fn)
+	}
+	return out, nil
+}
+
+// lowerAgentIntentDecl emits one pointer-receiver method:
+//
+//	func (self *AgentName) IntentName(p1 T1, ...) R { body }
+//
+// The receiver name `self` matches agentSelfName, the prefix that
+// varRefExpr strips when translating `__self->field` references.
+func (l *lowerer) lowerAgentIntentDecl(ad *aotir.AgentDecl, intent aotir.AgentIntentDecl) (gotree.Decl, error) {
+	params := make([]gotree.Field, 0, len(intent.Params))
+	for _, p := range intent.Params {
+		pt, err := l.lowerType(p.Type)
+		if err != nil {
+			return nil, fmt.Errorf("param %s: %w", p.Name, err)
+		}
+		if pt == "" {
+			return nil, fmt.Errorf("param %s: unit not allowed", p.Name)
+		}
+		params = append(params, gotree.Field{
+			Names: []string{mangleIdent(p.Name)},
+			Type:  &gotree.Ident{Name: pt},
+		})
+	}
+	ft := &gotree.FuncType{Params: params}
+	if intent.ReturnType != aotir.TypeUnit {
+		rt, err := l.lowerType(intent.ReturnType)
+		if err != nil {
+			return nil, fmt.Errorf("return type: %w", err)
+		}
+		if rt == "" {
+			return nil, fmt.Errorf("return type cannot be unit")
+		}
+		ft.Results = []gotree.Field{{Type: &gotree.Ident{Name: rt}}}
+	}
+	body, err := l.lowerBlock(intent.Body)
+	if err != nil {
+		return nil, fmt.Errorf("body: %w", err)
+	}
+	recv := &gotree.Field{
+		Names: []string{agentSelfName},
+		Type:  &gotree.Ident{Name: "*" + ad.Name},
+	}
+	return &gotree.FuncDecl{
+		Recv: recv,
+		Name: exportIdent(intent.Name),
+		Type: ft,
+		Body: body,
+	}, nil
 }
 
 func (l *lowerer) findMain() (*aotir.Function, error) {
@@ -766,6 +868,57 @@ func helperDecl(name string) gotree.Decl {
 		}
 	}()
 	try()
+}`}
+	case "mochiSub":
+		return &gotree.RawDecl{Code: `type mochiSub[T any] struct {
+	ch    chan T
+	drops bool
+}`}
+	case "mochiStream":
+		return &gotree.RawDecl{Code: `type mochiStream[T any] struct {
+	mu   sync.Mutex
+	cap  int
+	subs []*mochiSub[T]
+}`}
+	case "mochiStreamMake":
+		return &gotree.RawDecl{Code: `func mochiStreamMake[T any](cap int) *mochiStream[T] {
+	return &mochiStream[T]{cap: cap}
+}`}
+	case "mochiStreamSubscribe":
+		return &gotree.RawDecl{Code: `func mochiStreamSubscribe[T any](s *mochiStream[T]) *mochiSub[T] {
+	sub := &mochiSub[T]{ch: make(chan T, s.cap)}
+	s.mu.Lock()
+	s.subs = append(s.subs, sub)
+	s.mu.Unlock()
+	return sub
+}`}
+	case "mochiStreamSubscribeLimit":
+		return &gotree.RawDecl{Code: `func mochiStreamSubscribeLimit[T any](s *mochiStream[T], n int) *mochiSub[T] {
+	sub := &mochiSub[T]{ch: make(chan T, n), drops: true}
+	s.mu.Lock()
+	s.subs = append(s.subs, sub)
+	s.mu.Unlock()
+	return sub
+}`}
+	case "mochiStreamEmit":
+		return &gotree.RawDecl{Code: `func mochiStreamEmit[T any](s *mochiStream[T], v T) {
+	s.mu.Lock()
+	subs := append([]*mochiSub[T](nil), s.subs...)
+	s.mu.Unlock()
+	for _, sub := range subs {
+		if sub.drops {
+			select {
+			case sub.ch <- v:
+			default:
+			}
+		} else {
+			sub.ch <- v
+		}
+	}
+}`}
+	case "mochiSubRecv":
+		return &gotree.RawDecl{Code: `func mochiSubRecv[T any](sub *mochiSub[T]) T {
+	return <-sub.ch
 }`}
 	}
 	return nil

@@ -1,0 +1,8 @@
+let s: string = "hi"
+try {
+  let c: string = s[10]
+  print(c)
+} catch e {
+  print("caught")
+  print(e)
+}

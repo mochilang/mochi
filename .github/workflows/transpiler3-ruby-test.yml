@@ -66,11 +66,14 @@ jobs:
           ruby -Ilib -Itest test/test_panic.rb
           ruby -Ilib -Itest test/test_stream.rb
 
-      - name: Validate mochi-runtime.gemspec packs cleanly
+      - name: Validate mochi-runtime.gemspec packs and installs cleanly
         run: |
           cd mochi-runtime
           gem build mochi-runtime.gemspec
           ls mochi-runtime-*.gem
+          gem install --no-document mochi-runtime-*.gem
+          cd /
+          ruby -e 'require "mochi/runtime"; require "mochi/runtime/io"; require "mochi/runtime/panic"; require "mochi/runtime/stream"; raise "VERSION missing" unless defined?(Mochi::Runtime::VERSION); puts "installed gem loads ok: #{Mochi::Runtime::VERSION}"'
 
       - name: Run Ruby transpiler tests
         env:

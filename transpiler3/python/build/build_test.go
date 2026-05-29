@@ -60,10 +60,20 @@ func runPythonFixture(t *testing.T, mochiPath, wantFile string) {
 	}
 
 	cmd := exec.Command(tc.Python, "-m", pkgName)
-	cmd.Env = append(os.Environ(),
+	env := append(os.Environ(),
 		"PYTHONPATH="+filepath.Join(outDir, "src")+string(os.PathListSeparator)+rtDir,
 		"PYTHONDONTWRITEBYTECODE=1",
 	)
+	// Phase 13.0: cassette-mode LLM playback. When a `cassette/`
+	// directory sits next to the .mochi fixture, point the runtime at
+	// it via MOCHI_LLM_CASSETTE_DIR so mochi_llm_generate resolves the
+	// hashed filename. Fixtures with no cassette dir get nothing set,
+	// which surfaces the Phase 13.0 stderr diagnostic on live attempts.
+	cassette := filepath.Join(filepath.Dir(mochiPath), "cassette")
+	if fi, err := os.Stat(cassette); err == nil && fi.IsDir() {
+		env = append(env, "MOCHI_LLM_CASSETTE_DIR="+cassette)
+	}
+	cmd.Env = env
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 	cmd.Stdout = &stdout
