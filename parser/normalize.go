@@ -64,6 +64,7 @@ var knownImportLangs = map[string]struct{}{
 	"clj":        {},
 	"clojure":    {},
 	"rust":       {},
+	"kotlin":     {},
 }
 
 // normalizeProgram performs the post-parse pass that turns the raw
