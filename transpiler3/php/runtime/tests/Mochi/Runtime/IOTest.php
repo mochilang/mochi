@@ -8,64 +8,64 @@ use Mochi\Runtime\IO;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Phase 0 smoke tests for the IO print family. The lowerer routes every
+ * Phase 0/1 smoke tests for the IO print family. The lowerer routes every
  * print call through one of these helpers, so this test fails fast when
- * a future change accidentally swallows the value or adds an unexpected
+ * a future change accidentally swallows the value or drops the trailing
  * newline.
  */
 final class IOTest extends TestCase
 {
-    public function testPrintStringWritesValue(): void
+    public function testPrintStringWritesValueWithNewline(): void
     {
-        $this->expectOutputString('hello');
+        $this->expectOutputString("hello\n");
         IO::printString('hello');
     }
 
-    public function testPrintIntWritesValue(): void
+    public function testPrintIntWritesValueWithNewline(): void
     {
-        $this->expectOutputString('42');
+        $this->expectOutputString("42\n");
         IO::printInt(42);
     }
 
-    public function testPrintBoolWritesTrueOrFalse(): void
+    public function testPrintBoolTrueWritesTrueWithNewline(): void
     {
-        $this->expectOutputString('true');
+        $this->expectOutputString("true\n");
         IO::printBool(true);
     }
 
-    public function testPrintBoolFalseWritesFalse(): void
+    public function testPrintBoolFalseWritesFalseWithNewline(): void
     {
-        $this->expectOutputString('false');
+        $this->expectOutputString("false\n");
         IO::printBool(false);
     }
 
-    public function testPrintFloatFormatsAsG(): void
+    public function testPrintFloatNonIntegerKeepsDecimal(): void
     {
-        $this->expectOutputString('3.14');
+        $this->expectOutputString("3.14\n");
         IO::printFloat(3.14);
+    }
+
+    public function testPrintFloatWholeNumberDropsDecimal(): void
+    {
+        $this->expectOutputString("4\n");
+        IO::printFloat(4.0);
     }
 
     public function testPrintFloatNaN(): void
     {
-        $this->expectOutputString('NaN');
+        $this->expectOutputString("NaN\n");
         IO::printFloat(NAN);
     }
 
     public function testPrintFloatPositiveInfinity(): void
     {
-        $this->expectOutputString('+Inf');
+        $this->expectOutputString("+Inf\n");
         IO::printFloat(INF);
     }
 
     public function testPrintFloatNegativeInfinity(): void
     {
-        $this->expectOutputString('-Inf');
+        $this->expectOutputString("-Inf\n");
         IO::printFloat(-INF);
-    }
-
-    public function testNewlineEmitsSingleLineFeed(): void
-    {
-        $this->expectOutputString("\n");
-        IO::newline();
     }
 }
