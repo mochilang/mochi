@@ -13,8 +13,8 @@ description: "MEP-52 Phase 15, `mochi build --target=npm-package` emits a comple
 | Status         | LANDED (npm pack + Bun install gate; 15.1 to 15.5 deferred) |
 | Started        | 2026-05-30 01:20 (GMT+7) |
 | Landed         | 2026-05-30 01:32 (GMT+7) |
-| Tracking issue | (pending) |
-| Tracking PR    | (pending) |
+| Tracking issue | [#23019](https://github.com/mochilang/mochi/issues/23019) |
+| Tracking PR    | [#23021](https://github.com/mochilang/mochi/pull/23021) |
 
 ## Gate
 
