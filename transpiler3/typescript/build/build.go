@@ -58,6 +58,17 @@ const (
 
 	// TargetBunRun executes the emitted source under Bun 1.1+.
 	TargetBunRun
+
+	// TargetNpmPackage emits a complete npm package skeleton at
+	// outDir (package.json + src/index.ts + dist/{node,deno,bun,
+	// browser}/index.ts + dist/index.d.ts), then invokes `npm
+	// pack` against that directory. The returned path is the
+	// absolute path to the generated <pkg>-<ver>.tgz tarball.
+	//
+	// Phase 15.0 ships native-.ts entry files in dist/; the
+	// canonical `tsc --build` -> real .js + .d.ts pipeline lands
+	// in sub-phase 15.1.
+	TargetNpmPackage
 )
 
 // Driver is the TypeScript transpiler pipeline entry point.
@@ -132,6 +143,23 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		return "", err
 	}
+
+	// Phase 15: TargetNpmPackage diverts emit through the npm
+	// package skeleton renderer + `npm pack`. The returned path is
+	// the .tgz tarball on disk, not a .ts source file.
+	if target == TargetNpmPackage {
+		pkgName := npmPackageNameFromSrc(src)
+		if _, err := emit.EmitPackage(file, outDir, emit.PackageInfo{Name: pkgName, Version: "0.0.0"}); err != nil {
+			return "", fmt.Errorf("ts build: emit pkg: %w", err)
+		}
+		tarball, err := runNpmPack(outDir)
+		if err != nil {
+			return "", fmt.Errorf("ts build: npm pack: %w", err)
+		}
+		_ = srcBytes
+		return tarball, nil
+	}
+
 	emittedPath, err := emit.Emit(file, outDir, "main")
 	if err != nil {
 		return "", fmt.Errorf("ts build: emit: %w", err)

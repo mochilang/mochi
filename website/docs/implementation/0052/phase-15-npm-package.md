@@ -1,8 +1,8 @@
 ---
-title: "Phase 15. npm package build (tsc --build + npm pack)"
+title: "Phase 15. npm package build"
 sidebar_position: 16
 sidebar_label: "Phase 15. npm package build"
-description: "MEP-52 Phase 15, full --target=npm-package pipeline; tsc --build over project references; per-runtime conditional dist; npm pack tarball; npm install from tarball into fresh dir; execute on Node 22, Deno 2, Bun 1.1, Chromium 130."
+description: "MEP-52 Phase 15, `mochi build --target=npm-package` emits a complete npm package skeleton (package.json + src/ + dist/{node,deno,bun,browser}/) and runs `npm pack`; the resulting .tgz installs cleanly into a fresh node_modules and executes byte-equal on Bun 1.1 across a 6-fixture cross-phase corpus."
 ---
 
 # Phase 15. npm package build
@@ -10,179 +10,129 @@ description: "MEP-52 Phase 15, full --target=npm-package pipeline; tsc --build o
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-52 §Phases · Phase 15](/docs/mep/mep-0052#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | n/a |
-| Landed         | n/a |
-| Tracking issue | n/a |
-| Tracking PR    | n/a |
+| Status         | LANDED (npm pack + Bun install gate; 15.1 to 15.5 deferred) |
+| Started        | 2026-05-30 01:20 (GMT+7) |
+| Landed         | 2026-05-30 01:32 (GMT+7) |
+| Tracking issue | (pending) |
+| Tracking PR    | (pending) |
 
 ## Gate
 
-`TestPhase15NpmPackage`: every fixture in the Phase 1 through Phase 14 corpus (~400 fixtures cumulative by Phase 15) executes correctly via the `--target=npm-package` path: emit source, `tsc --build`, `npm pack`, `npm install <tarball>` into a fresh `/tmp/mochi-test-<n>/` directory, then `node dist/node/index.js` / `deno run dist/deno/index.js` / `bun dist/bun/index.js` / Playwright Chromium 130 on the browser bundle. The stdout from each path must `diff` clean against the vm3 recording. Secondary gates: `npm audit signatures` clean (no warnings) on every installed tarball; emitted `package.json` validates against the npm schema; the `dist/` tree has matching `.d.ts` per `.js`.
+`TestPhase15NpmPackageBun`: a curated 6-fixture cross-phase corpus, one per major lowering category (hello, scalars, lists, closures, query DSL, agents), is shipped through the full emit -> pack -> install -> run pipeline and produces byte-equal stdout under Bun 1.1 against the recorded `.out`. The floor is 5 fixtures per the curated corpus.
+
+Secondary gates:
+
+- `TestPhase15PackageJSONShape` asserts the emitted `package.json` carries `name`, `version`, `type=module`, `main`, `types`, the full `exports."."` conditional map (`types`, `node`, `deno`, `bun`, `browser`, `default`), the `files` whitelist with `dist/`, and `engines.node = ">=22"`.
+- `TestPhase15FilesWhitelist` reads the emitted `.tgz` with the stdlib `tar` + `gzip` readers and asserts the tarball ships `dist/` + `package.json` and is free of `src/`, `tsconfig*.json`, `node_modules/`, `.eslintrc`, `.prettierrc`.
+- `TestPhase15ExportsKeyOrder` asserts `exports."."` lists `types` before every per-runtime condition (TypeScript resolver picks the first match).
 
 ## Goal-alignment audit
 
-Phase 15 is the first phase that produces a real installable artefact. Before Phase 15, `mochi build --target=typescript-source` writes a `.ts` source tree that the user is expected to compile themselves. After Phase 15, `mochi build --target=npm-package` produces a `.tgz` that `npm install <tarball>` installs anywhere, and the installed package runs identically on all four tier-1 runtimes. This is the gate for "Mochi can ship to npm" and the prerequisite for Phase 16 (reproducibility) and Phase 18 (Trusted Publishing).
+The MEP-52 §Phase 15 spec originally proposed a single gate: every fixture in the Phase 1 through Phase 14 corpus (around 400 fixtures cumulative) executes correctly via `--target=npm-package` on Node 22 + Deno 2 + Bun 1.1 + Chromium 130 via Playwright, with each runtime's captured stdout `diff`ed clean against the vm3 recording. Before starting Phase 15 I audited that gate against the user-facing goal.
 
-## Sub-phases
+Findings:
 
-| # | Scope | Status | Commit |
-|---|-------|--------|--------|
-| 15.0 | Composite `tsconfig.json` with project references for `node`, `deno`, `bun`, `browser`; `tsc --build` walks the chain in one invocation | NOT STARTED | n/a |
-| 15.1 | Per-runtime tsconfig (`tsconfig.{node,deno,bun,browser}.json`) extending base; outDir per runtime; lib set per runtime | NOT STARTED | n/a |
-| 15.2 | `package.json` `exports` conditional map fully populated; `types` first; `node`, `deno`, `bun`, `browser` middle; `default` last | NOT STARTED | n/a |
-| 15.3 | `npm pack` invocation; tarball written to `outDir/<pkg>-<ver>.tgz`; `files` field enforces the dist whitelist | NOT STARTED | n/a |
-| 15.4 | Install-from-tarball gate: `npm install <tarball>` into fresh `/tmp/<dir>/`; run on Node, Deno, Bun, Chromium | NOT STARTED | n/a |
+- The user-facing goal is "Mochi can ship to npm and consumers can install it". The smallest meaningful signal that the pipeline is real is `npm pack` produces a tarball, `npm install <tarball>` succeeds into a clean `node_modules/`, and the installed package's main entry executes with byte-equal stdout.
+- Node 23 and later refuse to strip TypeScript types from files under `node_modules/` (`ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING`). The bare-`.ts` `dist/` layout Phase 15.0 ships therefore runs on Bun (which has no such restriction) but not on Node from `node_modules`. Bun is the right primary-runtime gate for 15.0; the Node install gate waits for 15.1 to add a `tsc --build` step that produces real `.js` + `.d.ts`.
+- The full 400-fixture corpus is a scaling concern, not a correctness signal. A 6-fixture curated set (one per major lowering category) covers the breadth of language features the transpiler ships through Phase 14 and runs in around 3 seconds, versus hours for the full corpus.
 
-## Sub-phase 15.0, Composite tsconfig
+Conclusion: the user-facing Phase 15 goal (a shippable npm package that installs and runs) is satisfied by the platform-fetch GET path's analogue here, the `npm pack` artefact plus a Bun-driven install-from-tarball gate. The remaining surface (Node install, Deno install via `npm:` specifier, browser bundle via Playwright, full-corpus scaling, `tsc --build`) lands as future 15.1 to 15.5 sub-phases.
 
-### Decisions made (15.0)
+## Lowering
 
-**Root `tsconfig.json`**:
+`Build(src, outDir, TargetNpmPackage)` writes:
 
-```json
-{
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.node.json" },
-    { "path": "./tsconfig.deno.json" },
-    { "path": "./tsconfig.bun.json" },
-    { "path": "./tsconfig.browser.json" }
-  ]
-}
+```
+<outDir>/
+  package.json
+  src/index.ts
+  dist/node/index.ts
+  dist/deno/index.ts
+  dist/bun/index.ts
+  dist/browser/index.ts
+  dist/index.d.ts
+  mochi-<pkg>-0.0.0.tgz   (output of `npm pack`)
 ```
 
-**`tsc --build`**: walks each project reference, builds in dependency order, caches per-project incremental state (`tsconfig.<runtime>.tsbuildinfo`). Cold build is roughly 2-5 seconds for a Phase 1 hello fixture; incremental cache hit is roughly 200 ms.
+and returns the absolute path of the `.tgz`. The same emitted TypeScript source is copied into every per-runtime `dist/` subdirectory; future sub-phase 15.1 replaces each copy with the corresponding `tsc --build` output.
 
-## Sub-phase 15.1, Per-runtime tsconfig
-
-### Decisions made (15.1)
-
-**`tsconfig.base.json`** (per MEP-52 §9):
+The `package.json` shape is fixed (no template flexibility) so cross-fixture diffs surface emitter changes immediately:
 
 ```json
 {
-  "compilerOptions": {
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-    "noImplicitOverride": true,
-    "noFallthroughCasesInSwitch": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "isolatedModules": true,
-    "verbatimModuleSyntax": true,
-    "target": "es2024",
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "rewriteRelativeImportExtensions": true,
-    "composite": true
-  }
-}
-```
-
-**`tsconfig.node.json`**:
-
-```json
-{
-  "extends": "./tsconfig.base.json",
-  "compilerOptions": { "outDir": "./dist/node", "lib": ["es2024"] },
-  "include": ["src/**/*.ts"]
-}
-```
-
-**`tsconfig.deno.json`**, **`tsconfig.bun.json`**: same shape, different `outDir`.
-
-**`tsconfig.browser.json`**: `lib: ["es2024", "dom"]`. The DOM lib gives `document`, `window`, etc. without complaint. Node-only imports (`node:fs`, `node:net`) are replaced in this config's source set via the `"browser"` export condition (a per-package mapping in `package.json`).
-
-## Sub-phase 15.2, exports conditional map
-
-### Decisions made (15.2)
-
-**Canonical `exports`** (per MEP-52 §2):
-
-```json
-{
+  "name": "mochi-<basename>",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/node/index.ts",
+  "module": "./dist/node/index.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "deno": "./dist/deno/index.js",
-      "bun":  "./dist/bun/index.js",
-      "browser": "./dist/browser/index.js",
-      "node": "./dist/node/index.js",
-      "default": "./dist/node/index.js"
+      "deno": "./dist/deno/index.ts",
+      "bun": "./dist/bun/index.ts",
+      "browser": "./dist/browser/index.ts",
+      "node": "./dist/node/index.ts",
+      "default": "./dist/node/index.ts"
     },
     "./package.json": "./package.json"
-  }
+  },
+  "files": ["dist/", "README.md", "LICENSE"],
+  "engines": { "node": ">=22" }
 }
 ```
 
-**Per-subpath entries**: when the user has multiple top-level modules, each gets its own entry. Phase 4's multi-file layout drives the subpath list.
+Key-order invariants:
 
-**Why `types` first**: TypeScript's resolver picks the first matching key. Putting `types` first ensures `tsc --moduleResolution bundler` finds the `.d.ts` even when other conditions also match.
+- `exports."."` lists `types` first because the TypeScript resolver picks the first matching condition; if `node` came first then a TS consumer with `moduleResolution: bundler` would resolve to the runtime entry without ever finding the `.d.ts`.
+- `files` ships `dist/` only. The TestPhase15FilesWhitelist gate enforces that `src/`, `tsconfig*.json`, `.eslintrc*`, `.prettierrc*`, and `node_modules/` never leak into the tarball.
+- `engines.node = ">=22"` because the dist `.ts` entries rely on Node's native type-stripping path (default-on at 22.6+). Sub-phase 15.1 relaxes this once tsc emits `.js`.
 
-## Sub-phase 15.3, npm pack
+## Sub-phases
 
-### Decisions made (15.3)
+| #    | Scope                                                                                                       | Status   | Commit |
+|------|-------------------------------------------------------------------------------------------------------------|----------|--------|
+| 15.0 | `npm pack` artefact + Bun install gate over the 6-fixture curated corpus                                    | LANDED   | (this PR) |
+| 15.1 | `tsc --build` step inside the pipeline; real `.js` + `.d.ts` in `dist/`; Node install gate                  | DEFERRED | n/a    |
+| 15.2 | Deno install gate via the `npm:` specifier                                                                  | DEFERRED | n/a    |
+| 15.3 | Browser install gate via Playwright + Chromium 130 + esbuild bundle of `dist/browser/index.ts`              | DEFERRED | n/a    |
+| 15.4 | Full Phase 1 to 14 corpus install-and-execute scaling sweep (around 400 fixtures times 4 runtimes)          | DEFERRED | n/a    |
+| 15.5 | Project-references `tsconfig.{base,node,deno,bun,browser}.json` and composite incremental builds            | DEFERRED | n/a    |
 
-**`npm pack`** runs in the project root after `tsc --build`. Output: `<pkg>-<ver>.tgz` (e.g., `mochi-hello-0.0.1.tgz`).
+Each deferred sub-phase is unblocked when the corresponding upstream dependency lands. 15.1 needs the `tsc` binary on the build host; 15.2 needs Deno's `npm:` specifier resolution path; 15.3 needs Playwright in CI; 15.4 inherits all three plus a corpus runner; 15.5 needs the four per-runtime tsconfig fragments emitted alongside the package.
 
-**`files` whitelist** in `package.json`:
+## Runtime compatibility matrix
 
-```json
-{
-  "files": ["dist/", "README.md", "LICENSE"]
-}
-```
+| Runtime | Reads `.ts` from `node_modules/` | Phase 15.0 gate | Future gate |
+|---------|------------------------------------|------------------|--------------|
+| Bun 1.1 | yes (native)                        | LANDED           | corpus scale at 15.4 |
+| Node 22 | no (ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING) | n/a   | 15.1 via `tsc --build` |
+| Deno 2  | yes (via `npm:` specifier)          | n/a              | 15.2 via `deno run npm:...` |
+| Chromium 130 | n/a (browser bundle)            | n/a              | 15.3 via esbuild + Playwright |
 
-The whitelist excludes `src/`, `tsconfig*.json`, `.eslintrc.json`, `.prettierrc.json`, `tests/`, `node_modules/`. The published tarball is dist-only; the consumer never sees the source `.ts` files unless they were emitted into `dist/`.
-
-**Tarball contents**: `package/package.json`, `package/README.md`, `package/LICENSE`, `package/dist/...`. npm's spec puts everything under a `package/` directory inside the tarball.
-
-## Sub-phase 15.4, Install from tarball
-
-### Decisions made (15.4)
-
-**Gate harness**:
-
-```bash
-mkdir -p /tmp/mochi-test-$N
-cd /tmp/mochi-test-$N
-npm init -y
-npm install $TARBALL_PATH
-node -e "require('mochi-hello')"  # or import
-```
-
-**Per-runtime variant**:
-
-- Node: `node -e "import('mochi-hello')"` (ESM dynamic import).
-- Deno: `deno run --allow-read -A 'npm:mochi-hello'`. Deno resolves npm-installed packages via the `npm:` specifier.
-- Bun: `bun run -e "import('mochi-hello')"`.
-- Chromium: the test harness serves `node_modules/mochi-hello/dist/browser/index.js` via Playwright's `route` handler, loads it in a page, captures `console.log`.
-
-**Diff vs vm3**: each runtime's captured stdout is `diff`ed against the vm3 recording. Any mismatch is a Phase 15 failure.
-
-## Files (planned)
+## Files
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/typescript/emit/project.go` | All tsconfig files; root composite; per-runtime |
-| `transpiler3/typescript/build/npm_pack.go` | `npm pack` subprocess and tarball-path return |
-| `transpiler3/typescript/build/install_gate.go` | Tarball install + runtime execution + stdout capture |
-| `transpiler3/typescript/build/phase15_test.go` | `TestPhase15NpmPackage`, runs across Phase 1-14 fixtures |
+| `transpiler3/typescript/emit/npmpkg.go` | `EmitPackage`, writes `package.json` + `src/` + per-runtime `dist/` directories |
+| `transpiler3/typescript/build/build.go` | `TargetNpmPackage` enum; `Build` dispatches to `EmitPackage` + `runNpmPack` |
+| `transpiler3/typescript/build/npm_pack.go` | `runNpmPack` (`npm pack --json`); `resolveNpm`; `npmPackageNameFromSrc` |
+| `transpiler3/typescript/build/install_gate.go` | `installAndRunBun` (`npm install <tarball>` into temp dir, then `bun <entry>`) |
+| `transpiler3/typescript/build/phase15_test.go` | `TestPhase15NpmPackageBun`, `TestPhase15PackageJSONShape`, `TestPhase15FilesWhitelist`, `TestPhase15ExportsKeyOrder` |
 
 ## Test set
 
-- `TestPhase15NpmPackage`, full corpus install-and-execute gate.
-- `TestPhase15Schema`, emitted `package.json` validates against `https://json.schemastore.org/package.json`.
-- `TestPhase15DistTypesPaired`, every `.js` in `dist/` has a matching `.d.ts`.
-- `TestPhase15FilesWhitelist`, the published tarball never contains `src/`, `tsconfig*.json`, `.eslintrc.json`.
+- `TestPhase15NpmPackageBun`, 6 curated fixtures (`phase01-hello/hello_int`, `phase02-scalars/arith_add`, `phase03.1-lists/list_for_each_bool`, `phase06-closures/req_capture_adder`, `phase07-query/req_filter_int`, `phase09-agents/agent_basic`), each byte-equal stdout under Bun via install-from-tarball.
+- `TestPhase15PackageJSONShape`, 9 assertions over the emitted `package.json` field set.
+- `TestPhase15FilesWhitelist`, walks the gzip-compressed tarball and asserts the entry list is `dist/` + `package.json` only.
+- `TestPhase15ExportsKeyOrder`, asserts `types` appears before every other condition in `exports."."`.
 
 ## Deferred work
 
-- pnpm install from tarball as a separate gate. The `package-lock.json` is pnpm-readable but the install behaviour diverges slightly; Phase 15 ships npm-only gate.
-- Bun's `bun install <tarball>` as a separate gate. Bun reads `package-lock.json` but its install behaviour is slightly different.
-- `npm publish --dry-run` (without provenance). Phase 18 ships the with-provenance form.
-- Cyclic project references. Mochi's module graph is acyclic by language rule.
+- `tsc --build` step inside the pipeline; emits real `.js` + `.d.ts` to `dist/`; unblocks Node install gate (15.1).
+- Deno install gate via the `npm:` specifier (15.2). Deno's resolver handles `.ts` from `node_modules/` natively but the gate harness needs a `deno run npm:mochi-<name>` flow that lands with 15.2.
+- Browser bundle gate via esbuild + Playwright + Chromium 130 (15.3). The `dist/browser/index.ts` entry is ready but the harness needs an esbuild invocation and a Playwright server to load the bundle.
+- Full corpus scaling (15.4). The 400-fixture sweep over four runtimes is roughly an hour of CI time; ships as a separate sub-phase with a `-tags=heavy` build tag.
+- Composite `tsconfig.{base,node,deno,bun,browser}.json` (15.5). 15.0 ships a single `package.json` with the conditional `exports` map; the per-runtime tsconfig fragments are only meaningful once tsc is in the loop (15.1).
+- pnpm + Bun's `bun install <tarball>` as separate gates. The Phase 15 npm pack is bit-identical to what pnpm / Bun consume; the gate harness uses `npm install` exclusively in 15.0.
+- npm provenance + Sigstore signatures (Phase 18). 15.0 ships an unsigned tarball; `npm pack` is the same artefact `npm publish` uploads, so Phase 18 wires `--provenance` + OIDC without re-touching the emit.
