@@ -306,8 +306,15 @@
     "label": "MEP-73 phases",
     "items": [
       "implementation/0073/phase-00-skeleton",
-      "implementation/0073/phase-01-sparse-index"
+      "implementation/0073/phase-01-sparse-index",
+      "implementation/0073/phase-02-rustdoc-ingest"
     ]
   },
-  "implementation/0074/index"
+  "implementation/0074/index",
+  {
+    "label": "MEP-74 phases",
+    "items": [
+      "implementation/0074/phase-00-skeleton"
+    ]
+  }
 ]
