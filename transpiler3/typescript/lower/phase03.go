@@ -91,15 +91,30 @@ func tsTypeForMapSlot(key aotir.Type, value aotir.Type) (string, error) {
 	return "Map<" + ks + ", " + vs + ">", nil
 }
 
+// tsTypeForSetSlot returns the TS type for a set slot (`Set<T>`).
+// Phase 3.3 only handles scalar element types (int / float / bool /
+// string), matching the aotir verifier's restriction in
+// verifySetLiteralExpr; record-element sets land with sub-phase 3.4.
+func tsTypeForSetSlot(elem aotir.Type) (string, error) {
+	es, err := tsTypeForList(elem)
+	if err != nil {
+		return "", fmt.Errorf("ts lower: set elem: %w", err)
+	}
+	return "Set<" + es + ">", nil
+}
+
 // tsTypeForLetSlot picks the right type renderer for a LetStmt's
 // declared shape. Lists use ElemType; maps use KeyType + ValueType;
-// every other VarType falls through to tsTypeFor.
+// sets use ElemType (sharing the slot with lists); every other
+// VarType falls through to tsTypeFor.
 func tsTypeForLetSlot(t, elem, key, value aotir.Type) (string, error) {
 	switch t {
 	case aotir.TypeList:
 		return tsTypeForCompound(t, elem)
 	case aotir.TypeMap:
 		return tsTypeForMapSlot(key, value)
+	case aotir.TypeSet:
+		return tsTypeForSetSlot(elem)
 	default:
 		return tsTypeFor(t)
 	}
@@ -437,6 +452,128 @@ func (l *lowerer) lowerMapPutStmt(s *aotir.MapPutStmt) ([]tstree.Stmt, error) {
 			Args:     []tstree.Expr{key, val},
 		},
 	}}, nil
+}
+
+// ---- Phase 3.3 sets ----
+
+// lowerSetLiteralExpr translates `set{e1, e2, ...}` to
+// `new Set<T>([e1, e2, ...])`. The element type is rendered
+// explicitly so an empty literal still types under `--strict`
+// without inference and the printed form stays uniform.
+func (l *lowerer) lowerSetLiteralExpr(e *aotir.SetLiteralExpr) (tstree.Expr, error) {
+	elemTy, err := tsTypeForList(e.ElemType)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: set literal elem type: %w", err)
+	}
+	elems := make([]tstree.Expr, 0, len(e.Elems))
+	for i, el := range e.Elems {
+		le, err := l.lowerExpr(el)
+		if err != nil {
+			return nil, fmt.Errorf("ts lower: set literal elem %d: %w", i, err)
+		}
+		elems = append(elems, le)
+	}
+	return &tstree.NewSetExpr{ElemType: elemTy, Elems: elems}, nil
+}
+
+// lowerSetAddExpr translates `add(s, x)` to `new Set<T>([...s, x])`.
+// Mochi's `add` is functional (`Type() returns TypeSet` and the
+// aotir verifier enforces no mutation of the receiver), so the TS
+// emit constructs a fresh set rather than calling `s.add(x)` which
+// would mutate. Using the constructor over a spread reads cleanly
+// inside re-assignments (`s = add(s, x)`) and function arguments.
+func (l *lowerer) lowerSetAddExpr(e *aotir.SetAddExpr) (tstree.Expr, error) {
+	elemTy, err := tsTypeForList(e.ElemType)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: set-add elem type: %w", err)
+	}
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: set-add receiver: %w", err)
+	}
+	val, err := l.lowerExpr(e.Elem)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: set-add elem: %w", err)
+	}
+	return &tstree.SetAddNewExpr{ElemType: elemTy, Receiver: recv, Elem: val}, nil
+}
+
+// lowerSetHasExpr translates `has(s, x)` (and `x in s`) to
+// `s.has(x)`. `Set.prototype.has` uses SameValueZero, which matches
+// Mochi's scalar equality contract (NaN -> NaN, +0 -> -0).
+func (l *lowerer) lowerSetHasExpr(e *aotir.SetHasExpr) (tstree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: set-has receiver: %w", err)
+	}
+	val, err := l.lowerExpr(e.Elem)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: set-has elem: %w", err)
+	}
+	return &tstree.MemberCallExpr{
+		Receiver: recv,
+		Method:   "has",
+		Args:     []tstree.Expr{val},
+	}, nil
+}
+
+// lowerSetLenExpr translates `len(s)` to `s.size`. JS Set's size
+// is a getter property (not a method), so the emit is a
+// MemberAccessExpr matching the Map.size lowering.
+func (l *lowerer) lowerSetLenExpr(e *aotir.SetLenExpr) (tstree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: set-len receiver: %w", err)
+	}
+	return &tstree.MemberAccessExpr{Receiver: recv, Member: "size"}, nil
+}
+
+// lowerSetToListExpr translates `for x in s` (which the C aotir
+// lowerer synthesises as SetToListExpr) into a sorted-by-String
+// list. JS Sets preserve insertion order, but vm3's set support is
+// broken; defining a deterministic iter order on the TS side keeps
+// the byte-equal gate stable across Node, Deno, and Bun. The order
+// matches mochi_map_keys_sorted for the same reason (parallel
+// iteration produces matching shapes).
+func (l *lowerer) lowerSetToListExpr(e *aotir.SetToListExpr) (tstree.Expr, error) {
+	l.runtime.setToListSorted = true
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: set-to-list receiver: %w", err)
+	}
+	return &tstree.CallExpr{
+		Callee: &tstree.IdentExpr{Name: "mochi_set_to_list_sorted"},
+		Args:   []tstree.Expr{recv},
+	}, nil
+}
+
+// runtimeSetDecls emits the Phase 3.3 set runtime helpers in flag-
+// declaration order so two builds of the same program produce a
+// byte-stable file (Phase 16 reproducibility gate).
+func (l *lowerer) runtimeSetDecls() []tstree.Decl {
+	var out []tstree.Decl
+	if l.runtime.setToListSorted {
+		out = append(out, &tstree.FuncDecl{
+			Doc: []string{
+				"Return the set's elements sorted ascending by String(x).",
+				"JS Set iteration preserves insertion order; Mochi's set",
+				"iteration order is unspecified, so the runtime sorts to",
+				"keep the printed shape byte-stable across Node, Deno, Bun.",
+			},
+			Name:     "mochi_set_to_list_sorted",
+			Generics: []string{"T"},
+			Params: []tstree.FuncParam{
+				{Name: "s", Type: "ReadonlySet<T>"},
+			},
+			ReturnType: "T[]",
+			Body: []tstree.Stmt{
+				&tstree.RawStmt{Text: "const xs = [...s];"},
+				&tstree.RawStmt{Text: "xs.sort((a, b) => { const sa = String(a); const sb = String(b); return sa < sb ? -1 : sa > sb ? 1 : 0; });"},
+				&tstree.RawStmt{Text: "return xs;"},
+			},
+		})
+	}
+	return out
 }
 
 // runtimeListDecls returns the Phase 3 list runtime helper decls

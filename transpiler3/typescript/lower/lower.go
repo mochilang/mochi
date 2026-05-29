@@ -62,6 +62,13 @@ type runtimeFlags struct {
 	mapGet          bool
 	mapKeysSorted   bool
 	mapValuesSorted bool
+	// Phase 3.3 set helpers. `mochi_set_to_list_sorted` is the
+	// only runtime-side helper; SetHas / SetLen / SetAdd lower
+	// inline (`.has(x)`, `.size`, `new Set([...s, x])`). The
+	// helper sorts by `String(x)` so byte-equal stdout holds
+	// across Node, Deno, and Bun even though JS Set iteration
+	// preserves insertion order.
+	setToListSorted bool
 }
 
 type lowerer struct {
@@ -120,6 +127,7 @@ func Lower(prog *aotir.Program, colours colour.ColourMap) (*tstree.SourceFile, e
 	decls := l.runtimeDecls()
 	decls = append(decls, l.runtimeListDecls()...)
 	decls = append(decls, l.runtimeMapDecls()...)
+	decls = append(decls, l.runtimeSetDecls()...)
 	decls = append(decls, userDecls...)
 
 	mainDecl := &tstree.FuncDecl{
@@ -608,6 +616,16 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (tstree.Expr, error) {
 		return l.lowerMapKeysExpr(v)
 	case *aotir.MapValuesExpr:
 		return l.lowerMapValuesExpr(v)
+	case *aotir.SetLiteralExpr:
+		return l.lowerSetLiteralExpr(v)
+	case *aotir.SetAddExpr:
+		return l.lowerSetAddExpr(v)
+	case *aotir.SetHasExpr:
+		return l.lowerSetHasExpr(v)
+	case *aotir.SetLenExpr:
+		return l.lowerSetLenExpr(v)
+	case *aotir.SetToListExpr:
+		return l.lowerSetToListExpr(v)
 	default:
 		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 3 surface)", e)
 	}

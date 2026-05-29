@@ -1,0 +1,5 @@
+let s: set<string> = set{"hello", "world", "mochi"}
+print(has(s, "hello"))
+print(has(s, "world"))
+print(has(s, "mochi"))
+print(has(s, "missing"))

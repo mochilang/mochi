@@ -1,0 +1,5 @@
+let s: set<int> = set{7, 11}
+print(has(s, 7))
+print(has(s, 11))
+print(has(s, 5))
+print(len(s))

@@ -1,0 +1,10 @@
+let a: set<int> = set{1, 2, 3}
+let b: set<int> = set{3, 4, 5}
+var u: set<int> = a
+for x in b {
+  u = add(u, x)
+}
+print(len(u))
+print(has(u, 1))
+print(has(u, 5))
+print(has(u, 6))

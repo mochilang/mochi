@@ -1,0 +1,9 @@
+let a: set<int> = set{1, 2}
+let b: set<int> = set{2, 3}
+var common: int = 0
+for x in a {
+  if has(b, x) {
+    common = common + 1
+  }
+}
+print(common)

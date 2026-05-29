@@ -1,0 +1,2 @@
+let s: set<string> = set{"a", "b", "c", "d"}
+print(len(s))
