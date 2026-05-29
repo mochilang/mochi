@@ -78,6 +78,8 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (gotree.Stmt, error) {
 		return l.lowerTryCatchStmt(s)
 	case *aotir.PanicStmt:
 		return l.lowerPanicStmt(s)
+	case *aotir.ChanSendStmt:
+		return l.lowerChanSendStmt(s)
 	case *aotir.OMapPutStmt:
 		return l.lowerOMapPutStmt(s)
 	default:
@@ -180,6 +182,11 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) (gotree.Stmt, error) {
 	default:
 		// User-defined function call as a statement. Func is the
 		// already-mangled mochi__<source> name; args lower as usual.
+		// Phase 10.2: Go FFI calls arrive with a `mochi_go_` prefix
+		// from the shared aotir lowerer (used by the C target for
+		// its subprocess-RPC trampoline). The Go target calls the
+		// user-supplied Go function directly, so the prefix is
+		// stripped here.
 		args := make([]gotree.Expr, 0, len(s.Args))
 		for i, a := range s.Args {
 			v, err := l.lowerExpr(a)
@@ -189,10 +196,23 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) (gotree.Stmt, error) {
 			args = append(args, v)
 		}
 		return &gotree.ExprStmt{X: &gotree.CallExpr{
-			Fun:  &gotree.Ident{Name: s.Func},
+			Fun:  &gotree.Ident{Name: stripFFIPrefix(s.Func)},
 			Args: args,
 		}}, nil
 	}
+}
+
+// stripFFIPrefix removes the C-target-specific FFI mangling
+// (mochi_go_, mochi_py_, mochi_js_) from a function name so
+// the Go target calls the user's Go function directly. User
+// Mochi functions carry a `mochi__` prefix; that one stays.
+func stripFFIPrefix(name string) string {
+	for _, p := range []string{"mochi_go_", "mochi_py_", "mochi_js_"} {
+		if len(name) > len(p) && name[:len(p)] == p {
+			return name[len(p):]
+		}
+	}
+	return name
 }
 
 func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (gotree.Stmt, error) {
@@ -377,6 +397,8 @@ func (l *lowerer) letTypeText(s *aotir.LetStmt) (string, error) {
 	case aotir.TypeOMap:
 		l.addHelper("mochiOMap")
 		return l.lowerOMapType(s.KeyType, s.ValueType)
+	case aotir.TypeChan:
+		return l.lowerChanType(s.ChanElemType)
 	case aotir.TypeRecord:
 		if s.RecordName == "" {
 			return "", fmt.Errorf("record let missing RecordName")
@@ -601,6 +623,21 @@ func (l *lowerer) lowerOMapPutStmt(s *aotir.OMapPutStmt) (gotree.Stmt, error) {
 		Fun:  &gotree.Ident{Name: "mochiOMapSet"},
 		Args: []gotree.Expr{&gotree.Ident{Name: mangleIdent(s.Name)}, key, val},
 	}}, nil
+}
+
+// lowerChanSendStmt lowers `send(c, v)` (Phase 9.1) to Go's `c <- v`.
+// Like ChanMake / ChanRecv the mapping is direct because Mochi's send
+// semantics (block on full, no error) match Go's native channel send.
+func (l *lowerer) lowerChanSendStmt(s *aotir.ChanSendStmt) (gotree.Stmt, error) {
+	ch, err := l.lowerExpr(s.Chan)
+	if err != nil {
+		return nil, fmt.Errorf("chan send chan: %w", err)
+	}
+	val, err := l.lowerExpr(s.Val)
+	if err != nil {
+		return nil, fmt.Errorf("chan send value: %w", err)
+	}
+	return &gotree.SendStmt{Chan: ch, Value: val}, nil
 }
 
 // lowerPanicStmt emits `mochiPanic(code, msg)` so the value propagates as

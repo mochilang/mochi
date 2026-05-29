@@ -1,0 +1,13 @@
+type Mode = On | Off
+
+let m: Mode = On
+let flag: bool = true
+if flag {
+  let label = match m {
+    On => "active"
+    Off => "idle"
+  }
+  print(label)
+} else {
+  print("disabled")
+}

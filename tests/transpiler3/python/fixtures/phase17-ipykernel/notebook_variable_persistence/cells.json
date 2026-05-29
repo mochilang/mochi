@@ -1,0 +1,10 @@
+{
+  "cells": [
+    "let greeting = \"hi\"\nprint(greeting)\n",
+    "let extra = \" there\"\nprint(greeting + extra)\n"
+  ],
+  "expect_outputs": [
+    "hi\n",
+    "hi there\n"
+  ]
+}

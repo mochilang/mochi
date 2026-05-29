@@ -118,6 +118,21 @@ func (l *lowerer) lowerOMapType(key, value aotir.Type) (string, error) {
 	return "*mochiOMap[" + kt + ", " + vt + "]", nil
 }
 
+// lowerChanType produces the Go type expression `chan T` for a
+// chan<T> value. Phase 9.1 maps Mochi's bounded ring channel onto
+// Go's native channel; the runtime cap argument is passed at make
+// time, not embedded in the type itself.
+func (l *lowerer) lowerChanType(elem aotir.Type) (string, error) {
+	et, err := l.lowerType(elem)
+	if err != nil {
+		return "", fmt.Errorf("chan element: %w", err)
+	}
+	if et == "" {
+		return "", fmt.Errorf("transpiler3/go/lower: chan element type cannot be unit")
+	}
+	return "chan " + et, nil
+}
+
 // lowerFunType produces `func(T1, T2, ...) R` for a fun-typed value.
 // Phase 6.1 restricts the parameter and return types to scalar primitives
 // and unit (matching the aotir FunSig restriction).

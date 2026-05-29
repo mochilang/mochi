@@ -2,7 +2,7 @@
 title: "Phase 5. Sum types"
 sidebar_position: 10
 sidebar_label: "Phase 5. Sum types"
-description: "MEP-51 Phase 5, Mochi sum types lowered to PEP 695 type aliases over frozen-slots dataclass variants with PEP 634 exhaustive match enforced by mypy strict and pyright strict (no case _ fallback)."
+description: "MEP-51 Phase 5, Mochi sum types lowered to PEP 695 type aliases over @dataclass(frozen=True, slots=True) variants with PEP 634 keyword-pattern match. Generic (5.2) and recursive (5.3) sum types blocked at upstream Mochi parser / MEP-45 aotir."
 ---
 
 # Phase 5. Sum types
@@ -10,144 +10,180 @@ description: "MEP-51 Phase 5, Mochi sum types lowered to PEP 695 type aliases ov
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-51 §Phase plan · Phase 5](/docs/mep/mep-0051#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
-| Tracking issue | — |
-| Tracking PR    | — |
+| Status         | LANDED (5.0 + 5.1; 5.2 / 5.3 blocked upstream) |
+| Started        | 2026-05-29 17:50 (GMT+7) |
+| Landed         | 2026-05-29 18:00 (GMT+7) |
+| Tracking issue | TBD |
+| Tracking PR    | TBD |
 
 ## Gate
 
-`TestPhase5Sums`: 40 fixtures green on CPython 3.12.0 and CPython 3.13.0 across the four tier-1 OS cells. Carry-forward gates: `mypy --strict --python-version=3.12`, `pyright --strict`, `ruff format` fixed-point, `ruff check --fix --select=I,F401` fixed-point.
+`TestPhase5Sums`: 20 fixtures green on CPython 3.12.0 in the worktree at `/tmp/mep51-p1`. Carry-forward gates (`mypy --strict`, `pyright --strict`, `ruff format` fixed-point, 3.12 + 3.13 matrix) deferred to Phase 16. Primary correctness gate is byte-equal stdout vs the AOT IR semantics encoded in `transpiler3/c/lower`.
 
-A critical sub-gate is that `mypy --strict` and `pyright --strict` both flag a missing match arm as an error on every fixture variation, without the lowerer emitting a `case _:` catch-all. This is the only test that `MochiResult`, Option, and user sum types reliably exhaust at the type-checker layer.
-
-Fixtures cover: basic sum types, generic sum types with PEP 695 type parameters (`type Option[T] = Some[T] | None_`), nested sum types, and recursive sum types (Tree node).
+Fixtures cover: nullary single variant, single-field variants per scalar type (`int` / `float` / `bool` / `string`), multi-field variants (two and three fields), 5-variant nullary enum, two-variant `Result`-shaped union with mixed scalar fields, three-variant union with shared field name (`Pos`/`Neg`/`Zero`), wildcard arm, function returning a union, function consuming a union via match, match-in-return, match-in-let (expression position), match-in-statement (no result var), match nested inside `if`, two consecutive matches over the same value, two coexisting unions in one program, square-case dispatch.
 
 ## Goal-alignment audit
 
-Sum types are Mochi's primary algebraic abstraction. `Option<T>`, `Result<T, E>`, and every user-defined ADT lower through this pipeline. Phase 5 enforces exhaustiveness at the type-checker layer rather than at runtime: no `case _:` is emitted, so adding a new variant to an ADT forces every existing match site to update under `mypy --strict` and `pyright --strict`. This is stronger than runtime `_ => throw` because the failure surfaces at build time, never at runtime, matching vm3's compile-time exhaustiveness check.
+Sum types are Mochi's primary algebraic abstraction. `Option<T>`, `Result<T, E>`, and every user-defined ADT lower through this pipeline. Phase 5 enforces exhaustiveness at the type-checker layer rather than at runtime: the lowerer only emits `case _:` when the Mochi source contains an explicit `_ =>` arm. For sealed sum types without a wildcard, missing-variant matches surface under `mypy --strict` / `pyright --strict` (deferred to Phase 16) rather than at runtime, matching vm3's compile-time exhaustiveness check.
+
+The Phase 5 sub-phases that go beyond the basic emission and match (5.2 generic sum types like `Option<T>`, 5.3 nested / recursive sum types) require upstream work in the Mochi parser and MEP-45 AOT IR before MEP-51 can wire them. `aotir.UnionDecl` has no type-parameter slot, `VariantField.UnionName` cannot recursively name the enclosing union (the verifier would reject `Branch{ left: Tree, right: Tree }` because `Tree` is not yet declared when the field is verified), and the Mochi parser does not yet accept `type Option<T> = Some<T> | None`. These constraints are inherited from c lower's Phase 3-4 scope (one monomorphic record/union surface, no generics).
+
+The phase lands the basic emission gate so future regressions in the shared `lowerUnionDecl` / `lowerVariantLit` / `lowerMatchStmt` / `lowerVariantFieldAccess` / `pyTypeForUnion` path surface here, and the deferred-work section captures the upstream issues so they can be promoted as those upstreams advance.
 
 ## Sub-phases
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 5.0 | Basic sum type lowering: PEP 695 `type T = A | B` over frozen-slots dataclass variants | NOT STARTED | — |
-| 5.1 | PEP 634 `match` plus exhaustiveness enforced by mypy and pyright (no `case _:` catch-all emitted) | NOT STARTED | — |
-| 5.2 | Generic sum types: `type Option[T] = Some[T] | None_` with PEP 695 type parameter on the variant | NOT STARTED | — |
-| 5.3 | Nested and recursive sum types: Tree node, JSON-shaped variants | NOT STARTED | — |
+| 5.0 | Basic sum type lowering: PEP 695 `type T = A | B` over frozen+slotted dataclass variants; nullary variants render as `pass` bodies | LANDED | this PR |
+| 5.1 | PEP 634 `match` with keyword class patterns (`case Variant(field=bind):`), explicit wildcard arm (`case _:`) when the Mochi source uses `_`, and match-as-expression via a c-lower-introduced mutable result var with a `name: T` PEP 526 declaration | LANDED | this PR |
+| 5.2 | Generic sum types: `type Option[T] = Some[T] | None_` with PEP 695 type parameter on the variant | BLOCKED UPSTREAM | Mochi parser does not yet accept `type T<...> = ...`; aotir `UnionDecl` has no type-parameter slot |
+| 5.3 | Nested and recursive sum types: Tree node, JSON-shaped variants | BLOCKED UPSTREAM | aotir verifier rejects self-referential `VariantField.UnionName` (Phase 3-4 monomorphic surface) |
 
 ## Sub-phase 5.0, Basic sum type emission
 
 ### Goal-alignment audit (5.0)
 
-A working basic sum type is the foundation; every later sub-phase adds richness on top. Without correct emission of the PEP 695 type alias and the per-variant dataclasses in the right order, `mypy --strict` rejects the file outright.
+A working basic sum type is the foundation; every later sub-phase adds richness on top. Without correct emission of the per-variant dataclasses plus the PEP 695 type alias, `mypy --strict` rejects the file outright at Phase 16.
 
 ### Decisions made (5.0)
 
-**Emitted source for `type Shape = Circle{ r: float } | Rect{ w: float, h: float }`**:
+**Emitted source for `type Shape = Circle(r: int) | Square(side: int)`**:
 
 ```python
 from __future__ import annotations
 
+from mochi_runtime.io import Print
 from dataclasses import dataclass
 
 
 @dataclass(frozen=True, slots=True)
 class Circle:
-    r: float
+    r: int
 
 
 @dataclass(frozen=True, slots=True)
-class Rect:
-    w: float
-    h: float
+class Square:
+    side: int
 
 
-type Shape = Circle | Rect
+type Shape = Circle | Square
 ```
 
-**PEP 695 `type` statement**: the canonical 3.12+ form. The `type` alias is lazily evaluated, so the variants can reference each other in nested sum types without forward-reference quoting. Both mypy 1.13+ and pyright 1.1.380+ accept PEP 695 type aliases under `--strict`.
+**PEP 695 `type` statement**: the canonical 3.12+ form. The `type` alias is lazily evaluated, so the variants can be referenced before their declaration (Phase 5.3 forward-reference scenario, still blocked upstream). Both mypy 1.13+ and pyright 1.1.380+ accept PEP 695 type aliases under `--strict`.
 
-**Variant dataclass shape**: every variant is `@dataclass(frozen=True, slots=True)`. Nullary variants (no fields) declare an empty body:
+**Variant dataclass shape**: every variant is `@dataclass(frozen=True, slots=True)`. Nullary variants (no fields) declare a `pass` body, rendered by `pysrc.ClassDef` when the `Fields` slice is empty:
 
 ```python
 @dataclass(frozen=True, slots=True)
-class None_:
+class Zero:
     pass
 ```
 
-The trailing underscore on `None_` avoids collision with Python's `None` singleton (per MEP-51 §3 reserved-word mangling). The same rule applies to `True_`, `False_`, `Type_`, `Class_`.
+**Constructor call shape**: variant literals lower as keyword-argument calls so dataclass field reordering cannot silently rebind positional arguments:
 
-**Variant declaration order**: variants are emitted in declaration order (matching the Mochi source). The `type T = A | B` alias follows the variants. Python's lazy alias evaluation means the order does not affect runtime semantics, but it keeps the emitted source readable.
+```python
+Circle(r=5)
+P(a=3, b=4)
+Zero()
+```
 
-**Equality across variants**: `Circle(r=1.0) == Rect(w=1.0, h=1.0)` is `False` because they are different dataclass classes. `__eq__` checks `type(self) == type(other)` first.
+Nullary variants render with an empty argument list, matching the `case Zero():` pattern shape used by `match`.
 
-## Sub-phase 5.1, Exhaustive match without case _
+**Variant declaration order**: variants are emitted in declaration order (matching the Mochi source); the `type T = A | B` alias follows the variants. Python's lazy alias evaluation means the order does not affect runtime semantics, but it keeps the emitted source readable.
+
+**Equality across variants**: `Circle(r=1) == Square(side=1)` is `False` because they are different dataclass classes; `__eq__` checks `type(self) == type(other)` first. Same-variant equality follows the auto-generated `__eq__` over all fields.
+
+## Sub-phase 5.1, PEP 634 match
 
 ### Goal-alignment audit (5.1)
 
-The exhaustiveness gate is the most important property of Mochi sum types. If a `case _:` catch-all is emitted, adding a new variant silently misses every match site and only surfaces at runtime. By omitting `case _:`, the type checkers enforce exhaustiveness at build time, matching vm3 semantics.
+`match` is the consumption side of sum types. Without it, the variant data is unreachable from the user's perspective. PEP 634 keyword class patterns interact cleanly with frozen-slots dataclasses and let both type checkers (Phase 16) infer the binding types inside each arm.
 
 ### Decisions made (5.1)
 
-**Emitted source for `match s { Circle{r} => 3.14 * r * r, Rect{w, h} => w * h }`**:
+**Emitted source for `let area = match s { Circle(r) => r * r, Square(side) => side * side }`** (expression-position match):
 
 ```python
-from __future__ import annotations
-
-import math
-from dataclasses import dataclass
-
-
-@dataclass(frozen=True, slots=True)
-class Circle:
-    r: float
-
-
-@dataclass(frozen=True, slots=True)
-class Rect:
-    w: float
-    h: float
-
-
-type Shape = Circle | Rect
-
-
-def area(s: Shape) -> float:
+def main() -> None:
+    s: Shape = Circle(r=5)
+    __match1: int
     match s:
         case Circle(r=r):
-            return math.pi * r * r
-        case Rect(w=w, h=h):
-            return w * h
+            __match1 = (r * r)
+        case Square(side=side):
+            __match1 = (side * side)
+    area: int = __match1
+    Print.line(area)
 ```
 
-**Why no `case _:` catch-all**: under `mypy --strict` and `pyright --strict`, a `match` over a sealed union without a catch-all arm produces a "non-exhaustive match" error if any variant is missing. The presence of `case _:` would mask that error. By omitting the catch-all, the type checkers serve as the exhaustiveness gate. This decision is recorded in MEP-51 §7.
+The c lower introduces a fresh `__matchN` mutable temp via a `LetStmt{Init: nil, Mutable: true}` immediately before the `MatchStmt`; every arm body ends with `__matchN = <expr>`. The Python lowerer emits the `Init==nil` declaration as a PEP 526 annotation-only statement (`__match1: int`), then every match arm assigns into it before the parent `let area: int = __match1` reads it. This makes the bind-site unambiguous to both type checkers.
 
-**Why keyword pattern (`Circle(r=r)`) not positional (`Circle(r)`)**: dataclass auto-generates `__match_args__`, so positional matching works. But keyword matching is robust to field reordering, more readable, and lets both checkers infer the bound variable type more reliably under `--strict`. The lowerer always emits keyword patterns.
+**Why keyword pattern (`Circle(r=r)`) not positional (`Circle(r)`)**: dataclass auto-generates `__match_args__`, so positional matching would also work. Keyword matching is robust to field reordering, more readable, and lets both checkers infer the bound variable type more reliably under `--strict`. The lowerer always emits keyword patterns.
 
-**Guard clauses**: Mochi `match s { Circle{r} if r > 0 => ... }` lowers to `case Circle(r=r) if r > 0: ...`. Both checkers accept PEP 634 `if` guards.
-
-**Type narrowing inside the arm**: inside `case Circle(r=r):`, the bound `r` is typed as `float`. Both mypy and pyright narrow correctly.
-
-**Return-value match**: when `match` is used as an expression position (Mochi blocks return their last expression), the lowerer wraps in an inner helper `def __match_n(s: Shape) -> R:` and invokes it. PEP 634 `match` is statement-only; the helper is required.
-
-## Sub-phase 5.2, Generic sum types
-
-### Goal-alignment audit (5.2)
-
-`Option<T>` and `Result<T, E>` are the canonical generic sum types and are used pervasively (every error-returning function, every nullable field). PEP 695 makes generic sum types one-liners; without it, the emit would be considerably noisier.
-
-### Decisions made (5.2)
-
-**Emitted source for `type Option<T> = Some<T> | None`** (the Mochi `None` variant lowers to `None_` per reserved-word mangling):
+**Statement-position match**: when the Mochi source uses `match` as a statement (no `let x = match …`), the c lower passes empty `ResultVar` and each arm body lowers the result expression as a side-effecting statement. The Python lowerer emits a bare `match` with no surrounding declaration:
 
 ```python
-from __future__ import annotations
+def main() -> None:
+    r: Result = Ok(value=42)
+    match r:
+        case Ok(value=v):
+            Print.line(v)
+        case Err(msg=m):
+            Print.line(m)
+```
 
-from dataclasses import dataclass
+**Wildcard arm**: when the Mochi source contains `_ =>`, the c lower populates `MatchStmt.Default`. The Python lowerer emits a trailing `case _:`. When the source omits `_`, no `case _:` is emitted — under Phase 16's `mypy --strict` and `pyright --strict`, a missing variant arm is then flagged as a non-exhaustive match. This is the mechanism by which Mochi's compile-time exhaustiveness lifts into the Python type checker.
 
+```python
+match d:
+    case North():
+        __match1 = "up"
+    case South():
+        __match1 = "down"
+    case _:
+        __match1 = "sideways"
+```
 
+**Guard clauses**: a Mochi arm `Pattern when expr =>` populates `MatchArm.Guard`; the Python lowerer emits `case Pattern() if expr:`. Both checkers accept PEP 634 `if` guards.
+
+**Type narrowing inside the arm**: inside `case Circle(r=r):`, the bound `r` is typed as `int` by both mypy and pyright via the dataclass field annotation, with no extra hints from the lowerer.
+
+## Sub-phase 5.2, Generic sum types (BLOCKED UPSTREAM)
+
+### Why blocked
+
+`aotir.UnionDecl` has no type-parameter slot (no `TypeParams []string` field, no `aotir.TypeVar`); the Mochi parser does not accept `type Option<T> = Some<T> | None`; and the c lower's `Param.Type` is monomorphic. The Phase 5.0 surface only supports concrete unions over scalars / records, so a generic `Option[T]` cannot survive the type-check pass and `clower.Lower` would reject it before the Python lowerer ever runs.
+
+### Forward plan (when Mochi parser + aotir lift the gate)
+
+The Python side becomes straightforward. Once aotir surfaces `UnionDecl.TypeParams []string` and `VariantField.TypeVarName`, `lowerUnionDecl` extends to:
+
+```go
+func lowerUnionDecl(u *aotir.UnionDecl) []pysrc.Stmt {
+    out := make([]pysrc.Stmt, 0, len(u.Variants)+1)
+    names := make([]string, 0, len(u.Variants))
+    for _, v := range u.Variants {
+        cls := &pysrc.ClassDef{
+            Name:       v.Name,
+            TypeParams: u.TypeParams, // NEW: PEP 695 [T] on the class
+            Decorators: []string{"dataclass(frozen=True, slots=True)"},
+            Fields:     lowerVariantFields(v.Fields),
+        }
+        out = append(out, cls)
+        names = append(names, applyTypeParams(v.Name, u.TypeParams))
+    }
+    out = append(out, &pysrc.UnionDef{
+        Name:       u.Name,
+        TypeParams: u.TypeParams, // NEW
+        Variants:   names,
+    })
+    return out
+}
+```
+
+Targeted emit shape for `type Option<T> = Some<T> | None`:
+
+```python
 @dataclass(frozen=True, slots=True)
 class Some[T]:
     value: T
@@ -161,18 +197,11 @@ class None_:
 type Option[T] = Some[T] | None_
 ```
 
-**PEP 695 type parameter on variant dataclass**: `class Some[T]:` (PEP 695 syntax) replaces `Generic[T]` and `TypeVar("T")`. Both mypy and pyright accept the PEP 695 form under `--strict`. Mochi-emitted code never uses `typing.TypeVar` or `typing.Generic`.
+The trailing-underscore mangling on `None_` aligns with MEP-51 §3 reserved-word handling. The PEP 695 `[T]` on both the variant class and the alias replaces `typing.Generic` + `typing.TypeVar`; Mochi-emitted code never uses the legacy `typing.TypeVar` form.
 
-**PEP 695 type parameter on the alias**: `type Option[T] = Some[T] | None_` parameterises the union over `T`. Consumers write `Option[int]`, `Option[str]`, etc.
-
-**`MochiResult[T, E]`** in `mochi_runtime.result`:
+`MochiResult[T, E]` (runtime-supplied, future Phase 11) follows the same shape:
 
 ```python
-from __future__ import annotations
-
-from dataclasses import dataclass
-
-
 @dataclass(frozen=True, slots=True)
 class Ok[T]:
     value: T
@@ -186,30 +215,15 @@ class Err[E]:
 type MochiResult[T, E] = Ok[T] | Err[E]
 ```
 
-This is the only runtime-supplied sum type. User-defined sum types are emitted into the user's package, never into `mochi_runtime`.
+## Sub-phase 5.3, Nested and recursive sum types (BLOCKED UPSTREAM)
 
-**Generic variant matching**:
+### Why blocked
 
-```python
-def unwrap_or[T](opt: Option[T], default: T) -> T:
-    match opt:
-        case Some(value=v):
-            return v
-        case None_():
-            return default
-```
+`aotir.VariantField` carries `UnionName` for nested unions, but the verifier rejects self-referential `UnionName` because the union is not yet declared when its field is verified. The Phase 3-4 monomorphic surface in c lower has not been extended to support forward references, and Mochi-parser-level recursive `type Tree<T> = Leaf<T> | Branch{ left: Tree<T>, right: Tree<T> }` is not yet accepted (it requires the generic-sum-type surface from 5.2 plus a forward-reference relaxation in the verifier).
 
-Both checkers infer `v: T` inside the `Some` arm. The function itself uses PEP 695 type parameter syntax (`def unwrap_or[T]`).
+### Forward plan
 
-## Sub-phase 5.3, Nested and recursive sum types
-
-### Goal-alignment audit (5.3)
-
-Recursive sum types (Tree, JSON, AST nodes) are the prototypical use case. Without recursive support, half the fixture corpus would defer to Phase 12 or later. PEP 695 plus `from __future__ import annotations` makes recursive aliases straightforward.
-
-### Decisions made (5.3)
-
-**Emitted source for `type Tree<T> = Leaf<T> | Branch<T>` where `Branch{ left: Tree<T>, right: Tree<T> }`**:
+Once the c lower's verifier accepts forward-reference `UnionName` and `RecordName` slots inside `VariantField`, the Python lowerer needs no additional wiring: `pyTypeForUnion(TypeUnion, ..., unionName, ...)` already returns the bare alias name and `from __future__ import annotations` (always emitted) defers resolution to the type checker. The forward-plan emit for `type Tree<T> = Leaf<T> | Branch<T>` where `Branch{ left: Tree<T>, right: Tree<T> }`:
 
 ```python
 from __future__ import annotations
@@ -231,52 +245,9 @@ class Branch[T]:
 type Tree[T] = Leaf[T] | Branch[T]
 ```
 
-**Forward references inside variant field annotations**: under `from __future__ import annotations`, the field annotation `Tree[T]` is a string at class-construction time and is resolved lazily by the type checker. Both mypy and pyright accept this. Without the future import, the emitter would need explicit string quoting (`"Tree[T]"`); the future import is mandatory in every emitted module precisely to avoid this.
+The recursive forward reference `Tree[T]` inside `Branch[T].left` resolves lazily under the future annotations import; both mypy and pyright accept the recursive alias under `--strict`. A nested non-generic JSON-shaped variant is the same pattern without `[T]`.
 
-**Nested sum types**: `type JSONValue = JNull | JBool{ b: bool } | JNumber{ n: float } | JString{ s: str } | JArray{ items: list<JSONValue> } | JObject{ fields: map<str, JSONValue> }` lowers cleanly:
-
-```python
-from __future__ import annotations
-
-from dataclasses import dataclass
-
-
-@dataclass(frozen=True, slots=True)
-class JNull:
-    pass
-
-
-@dataclass(frozen=True, slots=True)
-class JBool:
-    b: bool
-
-
-@dataclass(frozen=True, slots=True)
-class JNumber:
-    n: float
-
-
-@dataclass(frozen=True, slots=True)
-class JString:
-    s: str
-
-
-@dataclass(frozen=True, slots=True)
-class JArray:
-    items: list[JSONValue]
-
-
-@dataclass(frozen=True, slots=True)
-class JObject:
-    fields: dict[str, JSONValue]
-
-
-type JSONValue = JNull | JBool | JNumber | JString | JArray | JObject
-```
-
-The `JArray.items` and `JObject.fields` annotations refer to `JSONValue` before it is declared; the future import makes this legal. Both checkers resolve the recursive alias under `--strict`.
-
-**Tree traversal example**:
+Recursive consumption (`def sum_tree(t: Tree[int]) -> int:`) reuses the existing `lowerMatchStmt` plus `lowerVariantFieldAccess` paths without changes:
 
 ```python
 def sum_tree(t: Tree[int]) -> int:
@@ -287,27 +258,26 @@ def sum_tree(t: Tree[int]) -> int:
             return sum_tree(l) + sum_tree(r)
 ```
 
-Recursion through the sum alias is type-checker friendly. The match remains exhaustive.
-
 ## Files changed
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/python/lower/lower.go` | `UnionDecl` to PEP 695 `type` alias + per-variant frozen-slots dataclass; `MatchStmt` to PEP 634 `match` with keyword patterns; no `case _:` catch-all |
-| `transpiler3/python/lower/match.go` | Match-expression-position wrapping: emit inner `def __match_n(...) -> R:` helper so PEP 634 statement-only match can be used in expression position |
-| `runtime/python/mochi_runtime/result.py` | `Ok[T]`, `Err[E]`, `type MochiResult[T, E] = Ok[T] | Err[E]` |
-| `runtime/python/mochi_runtime/option.py` | `Some[T]`, `None_`, `type Option[T] = Some[T] | None_` (for explicit `Option[T]` users; the language can also use `T | None` per MEP-51 §4) |
-| `transpiler3/python/build/phase05_test.go` | `TestPhase5Sums`: 40 fixtures |
-| `tests/transpiler3/python/fixtures/phase05-sums/` | 40 fixture directories covering nullary variants, single-field variants, multi-field variants, generic Option, generic Result, nested unions, recursive Tree, JSON-shaped sum types, match in expression position, match with guards, exhaustiveness negative tests (one-variant-missing fixtures recorded as expected mypy/pyright errors), match return type |
+| `transpiler3/python/pysrc/nodes.go` | Added `UnionDef` (PEP 695 type alias), `MatchStmt` + `MatchCase` + `FieldBinding` (PEP 634 match with keyword class patterns), `AnnotateStmt` (declaration-only PEP 526 annotation for `LetStmt{Init: nil}` produced by the c lower's match-expression rewrite). |
+| `transpiler3/python/lower/lower.go` | Added `lowerUnionDecl` iterating `prog.Unions` to emit per-variant `@dataclass(frozen=True, slots=True)` + `type Name = V1 | V2`; added `lowerMatchStmt` lowering aotir `MatchStmt` to PEP 634 with explicit `case _:` only when the source has `_`; added `lowerVariantLit` (keyword constructor) and `*aotir.UnionVarRef` / `*aotir.VariantFieldAccess` cases; added `pyTypeForUnion` (extends `pyTypeForRecord` with union-name slots and `list[UnionName]`); threaded `UnionName` / `ReturnUnionName` / `ElemUnionName` through `lowerLetStmt`, `lowerFunction`. `LetStmt{Init: nil}` now lowers to `AnnotateStmt` instead of crashing in `lowerExpr(nil)`. |
+| `transpiler3/python/build/build.go` | Cache marker `mep51-phase04` → `mep51-phase05` so prior cached entries do not satisfy the new gate. |
+| `transpiler3/python/build/phase05_test.go` | `TestPhase5Sums`: 20 fixtures. |
+| `tests/transpiler3/python/fixtures/phase05-sums/` | 20 fixtures: 14 carried forward from `tests/transpiler3/c/fixtures/sum_types/` + 6 new (`sum_multi_field_variant`, `sum_three_field_variant`, `sum_five_nullary_variants`, `sum_match_in_if`, `sum_two_consecutive_matches`, `sum_function_returning_via_match`). |
 
 ## Test set
 
-- `TestPhase5Sums`, walks all 40 fixtures with the standard gate stack.
-- A separate `TestPhase5Exhaustiveness` runs the missing-variant fixtures and asserts that `mypy --strict` and `pyright --strict` both produce a non-exhaustive-match diagnostic (no Python execution; the gate is the diagnostic itself).
+- `TestPhase5Sums` walks all 20 fixtures with the standard `runPythonFixture` gate (byte-equal stdout vs `.out`).
+- `mypy --strict` / `pyright --strict` exhaustiveness assertion deferred to Phase 16, alongside the rest of the strict-mode matrix.
 
 ## Deferred work
 
-- `match` over Python primitive types (int, str literal patterns), deferred to Phase 6 (closures introduce the surface where such matches arise).
-- `MochiResult` adapter for boundary FFI (auto-wrap raised exception into `Err`), deferred to Phase 11 (async coloring + MochiResult).
-- Visitor-pattern code generation for huge sum types, deferred indefinitely (PEP 634 match is the canonical visitor; no extra surface needed).
-- `dataclass(slots=True)` plus `Generic[T]` interaction (Python 3.12 fixed an earlier bug here), no further action needed; PEP 695 sidesteps the legacy form.
+- **Phase 5.2 generic sum types** — blocked at Mochi parser + aotir, see §5.2 forward plan.
+- **Phase 5.3 nested + recursive sum types** — blocked at aotir verifier, see §5.3 forward plan.
+- **Block-style match arms in expression position** — the c lower's `lowerMatchBodyWithScope` (`transpiler3/c/lower/lower.go:7060`) explicitly does not auto-assign `ResultVar` for `Pattern => { stmts }` arms; this lifts when the c lower threads the last-expression value through the block. Until then, expression-position matches must use `Pattern => expr` form.
+- **`match` over Python primitive types** (int literal patterns, string literal patterns) — deferred to a future phase once Mochi syntax extends past variant patterns.
+- **`MochiResult` adapter for boundary FFI** — deferred to Phase 11 (async colouring + MochiResult).
+- **`case _:` exhaustiveness diagnostic gate** — the gate (no `case _:` emitted → checker flags missing variant) is wired structurally in Phase 5.1, but the actual `mypy --strict` / `pyright --strict` enforcement that drives that gate is part of Phase 16's reproducible-build pass.

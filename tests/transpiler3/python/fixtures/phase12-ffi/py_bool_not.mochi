@@ -1,0 +1,6 @@
+extern python fun py_negate(b: bool): bool
+
+let yes: bool = py_negate(false)
+let no: bool = py_negate(true)
+print(yes)
+print(no)

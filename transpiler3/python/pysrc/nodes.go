@@ -138,6 +138,194 @@ func (f *FunctionDef) PyString(indent int) string {
 	return sb.String()
 }
 
+// ClassDef is a `class Name:` declaration with optional decorators and
+// PEP 526 annotated attributes. Phase 3.4 uses this for record types
+// emitted as `@dataclasses.dataclass(frozen=True, slots=True)`.
+type ClassDef struct {
+	Name       string
+	Decorators []string
+	Fields     []ClassField
+	// Init is an optional explicit __init__ body. When non-empty the
+	// emitter renders `def __init__(self, ...):` after the field
+	// annotations. Used by Phase 9 agents whose mutable state cannot live
+	// in a frozen dataclass.
+	Init *FunctionDef
+	// Methods are instance methods rendered after the field block (and
+	// after Init when present). Used by Phase 9 agent intent methods.
+	Methods []*FunctionDef
+}
+
+// ClassField is `name: Type` inside a class body.
+type ClassField struct {
+	Name string
+	Type TypeRef
+}
+
+func (*ClassDef) isStmt() {}
+
+// PyString renders the class declaration.
+func (c *ClassDef) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	var sb strings.Builder
+	for _, dec := range c.Decorators {
+		sb.WriteString(pad)
+		sb.WriteByte('@')
+		sb.WriteString(dec)
+		sb.WriteByte('\n')
+	}
+	sb.WriteString(pad)
+	sb.WriteString("class ")
+	sb.WriteString(c.Name)
+	sb.WriteString(":\n")
+	if len(c.Fields) == 0 && c.Init == nil && len(c.Methods) == 0 {
+		sb.WriteString(pad)
+		sb.WriteString("    pass")
+		return sb.String()
+	}
+	wrote := false
+	for i, f := range c.Fields {
+		if i > 0 {
+			sb.WriteByte('\n')
+		}
+		sb.WriteString(pad)
+		sb.WriteString("    ")
+		sb.WriteString(f.Name)
+		sb.WriteString(": ")
+		sb.WriteString(f.Type.PyString())
+		wrote = true
+	}
+	if c.Init != nil {
+		if wrote {
+			sb.WriteString("\n\n")
+		}
+		sb.WriteString(c.Init.PyString(indent + 1))
+		wrote = true
+	}
+	for _, m := range c.Methods {
+		if wrote {
+			sb.WriteString("\n\n")
+		}
+		sb.WriteString(m.PyString(indent + 1))
+		wrote = true
+	}
+	return sb.String()
+}
+
+// KeywordArg is `name=value` inside a Call.
+type KeywordArg struct {
+	Name  string
+	Value Expr
+}
+
+// UnionDef is a PEP 695 type alias declaration: `type Name = V1 | V2`.
+// Phase 5 uses this for Mochi sum types, after the per-variant
+// `@dataclass(frozen=True, slots=True)` classes are emitted.
+type UnionDef struct {
+	Name     string
+	Variants []string
+}
+
+func (*UnionDef) isStmt() {}
+
+// PyString renders the PEP 695 type alias on a single line.
+func (u *UnionDef) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	return pad + "type " + u.Name + " = " + strings.Join(u.Variants, " | ")
+}
+
+// MatchStmt is a PEP 634 structural pattern match.
+type MatchStmt struct {
+	Target Expr
+	Cases  []MatchCase
+}
+
+// MatchCase is one `case Pattern:` arm. Wildcard arms set Wildcard=true;
+// otherwise Variant is the class name. Bindings render as keyword
+// patterns `Variant(field=bind)`. An empty Bindings slice on a non-
+// wildcard arm renders as `Variant()`, matching PEP 634 for nullary
+// dataclass variants.
+type MatchCase struct {
+	Wildcard bool
+	Variant  string
+	Bindings []FieldBinding
+	Guard    Expr
+	Body     []Stmt
+}
+
+// FieldBinding is one keyword pattern field=binding inside a class pattern.
+type FieldBinding struct {
+	FieldName string
+	BindName  string
+}
+
+func (*MatchStmt) isStmt() {}
+
+// PyString renders the match statement.
+func (m *MatchStmt) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	var sb strings.Builder
+	sb.WriteString(pad)
+	sb.WriteString("match ")
+	sb.WriteString(m.Target.PyString())
+	sb.WriteString(":\n")
+	for i, c := range m.Cases {
+		if i > 0 {
+			sb.WriteByte('\n')
+		}
+		sb.WriteString(pad)
+		sb.WriteString("    case ")
+		if c.Wildcard {
+			sb.WriteByte('_')
+		} else {
+			sb.WriteString(c.Variant)
+			sb.WriteByte('(')
+			for j, b := range c.Bindings {
+				if j > 0 {
+					sb.WriteString(", ")
+				}
+				sb.WriteString(b.FieldName)
+				sb.WriteByte('=')
+				sb.WriteString(b.BindName)
+			}
+			sb.WriteByte(')')
+		}
+		if c.Guard != nil {
+			sb.WriteString(" if ")
+			sb.WriteString(c.Guard.PyString())
+		}
+		sb.WriteString(":\n")
+		if len(c.Body) == 0 {
+			sb.WriteString(pad)
+			sb.WriteString("        pass")
+			continue
+		}
+		for j, s := range c.Body {
+			if j > 0 {
+				sb.WriteByte('\n')
+			}
+			sb.WriteString(s.PyString(indent + 2))
+		}
+	}
+	return sb.String()
+}
+
+// AnnotateStmt is a PEP 526 declaration-only annotation `name: Type`
+// with no value. Used when a mutable binding is introduced before any
+// assignment (Phase 5 match-expression lowering: the result var is
+// declared, then every match arm assigns to it).
+type AnnotateStmt struct {
+	Target string
+	Type   TypeRef
+}
+
+func (*AnnotateStmt) isStmt() {}
+
+// PyString renders the annotation-only declaration.
+func (s *AnnotateStmt) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	return pad + s.Target + ": " + s.Type.PyString()
+}
+
 // IfStmt is `if cond:` and optional `else:` block.
 type IfStmt struct {
 	Cond Expr
@@ -205,6 +393,22 @@ func (s *AssignStmt) PyString(indent int) string {
 	return fmt.Sprintf("%s%s = %s", pad, s.Target, s.Value.PyString())
 }
 
+// AttrAssignStmt is `obj.attr = value`. Used by Phase 9 to mutate agent
+// state inside intent methods (`self.count = self.count + 1`).
+type AttrAssignStmt struct {
+	Target Expr
+	Attr   string
+	Value  Expr
+}
+
+func (*AttrAssignStmt) isStmt() {}
+
+// PyString renders the attribute assignment.
+func (s *AttrAssignStmt) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	return fmt.Sprintf("%s%s.%s = %s", pad, s.Target.PyString(), s.Attr, s.Value.PyString())
+}
+
 // ReturnStmt is `return value` or bare `return`.
 type ReturnStmt struct {
 	Value Expr
@@ -219,6 +423,89 @@ func (s *ReturnStmt) PyString(indent int) string {
 		return pad + "return"
 	}
 	return pad + "return " + s.Value.PyString()
+}
+
+// RaiseStmt is `raise Exc(args, kw=v)`. Phase 11.0 uses this to lower
+// Mochi `panic(code, msg)` to `raise MochiPanic(code, msg)`.
+type RaiseStmt struct {
+	Exc Expr
+}
+
+func (*RaiseStmt) isStmt() {}
+
+// PyString renders the raise statement.
+func (s *RaiseStmt) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	if s.Exc == nil {
+		return pad + "raise"
+	}
+	return pad + "raise " + s.Exc.PyString()
+}
+
+// TryExceptStmt is `try: ... except (E1, E2) as Bind: <prologue> ...`.
+// Phase 11.0 lowers Mochi try/catch to a single except arm matching the
+// MochiPanic family. CatchVar is the user-visible Mochi catch binding
+// (an int code). The lowerer prepends a `CatchVar = _panic_code(__mp)`
+// statement to the catch body so the rest of the body sees the canonical
+// integer surface.
+type TryExceptStmt struct {
+	Body     []Stmt
+	ExcTypes []string // identifiers for the except clause tuple, e.g. ["MochiPanic", "ZeroDivisionError", "IndexError"]
+	BindName string   // `as <name>` binding (internal scratch, e.g. "__mp")
+	Handler  []Stmt
+}
+
+func (*TryExceptStmt) isStmt() {}
+
+// PyString renders the try/except statement.
+func (s *TryExceptStmt) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	var sb strings.Builder
+	sb.WriteString(pad)
+	sb.WriteString("try:\n")
+	if len(s.Body) == 0 {
+		sb.WriteString(pad)
+		sb.WriteString("    pass")
+	} else {
+		for i, st := range s.Body {
+			if i > 0 {
+				sb.WriteByte('\n')
+			}
+			sb.WriteString(st.PyString(indent + 1))
+		}
+	}
+	sb.WriteByte('\n')
+	sb.WriteString(pad)
+	sb.WriteString("except ")
+	if len(s.ExcTypes) == 1 {
+		sb.WriteString(s.ExcTypes[0])
+	} else {
+		sb.WriteByte('(')
+		for i, t := range s.ExcTypes {
+			if i > 0 {
+				sb.WriteString(", ")
+			}
+			sb.WriteString(t)
+		}
+		sb.WriteByte(')')
+	}
+	if s.BindName != "" {
+		sb.WriteString(" as ")
+		sb.WriteString(s.BindName)
+	}
+	sb.WriteString(":\n")
+	if len(s.Handler) == 0 {
+		sb.WriteString(pad)
+		sb.WriteString("    pass")
+	} else {
+		for i, st := range s.Handler {
+			if i > 0 {
+				sb.WriteByte('\n')
+			}
+			sb.WriteString(st.PyString(indent + 1))
+		}
+	}
+	return sb.String()
 }
 
 // PassStmt is the no-op `pass`.
@@ -239,8 +526,9 @@ type Expr interface {
 
 // Call is `f(args, kw=v)`.
 type Call struct {
-	Func Expr
-	Args []Expr
+	Func   Expr
+	Args   []Expr
+	Kwargs []KeywordArg
 }
 
 func (*Call) isExpr() {}
@@ -250,11 +538,22 @@ func (c *Call) PyString() string {
 	var sb strings.Builder
 	sb.WriteString(c.Func.PyString())
 	sb.WriteByte('(')
-	for i, a := range c.Args {
-		if i > 0 {
+	first := true
+	for _, a := range c.Args {
+		if !first {
 			sb.WriteString(", ")
 		}
+		first = false
 		sb.WriteString(a.PyString())
+	}
+	for _, kw := range c.Kwargs {
+		if !first {
+			sb.WriteString(", ")
+		}
+		first = false
+		sb.WriteString(kw.Name)
+		sb.WriteByte('=')
+		sb.WriteString(kw.Value.PyString())
 	}
 	sb.WriteByte(')')
 	return sb.String()
@@ -314,6 +613,117 @@ func (u *UnaryExpr) PyString() string {
 	return "(" + u.Op + u.Operand.PyString() + ")"
 }
 
+// ListLit is `[e1, e2, ...]`. The element type is implicit in the
+// surrounding annotation (PEP 526 form `xs: list[int] = [...]`).
+type ListLit struct {
+	Elems []Expr
+}
+
+func (*ListLit) isExpr() {}
+
+// PyString renders the list literal.
+func (l *ListLit) PyString() string {
+	var sb strings.Builder
+	sb.WriteByte('[')
+	for i, e := range l.Elems {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(e.PyString())
+	}
+	sb.WriteByte(']')
+	return sb.String()
+}
+
+// SetLit is `{e1, e2, ...}` (Python set display). Empty sets cannot
+// use `{}` (that is a dict literal); the lowerer emits `set()` via
+// a `Call(Name "set", nil)` instead, so SetLit is only used with at
+// least one element.
+type SetLit struct {
+	Elems []Expr
+}
+
+func (*SetLit) isExpr() {}
+
+// PyString renders the set literal.
+func (s *SetLit) PyString() string {
+	var sb strings.Builder
+	sb.WriteByte('{')
+	for i, e := range s.Elems {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(e.PyString())
+	}
+	sb.WriteByte('}')
+	return sb.String()
+}
+
+// DictLit is `{k1: v1, k2: v2, ...}` (PEP 448 dict display).
+type DictLit struct {
+	Keys   []Expr
+	Values []Expr
+}
+
+func (*DictLit) isExpr() {}
+
+// PyString renders the dict literal.
+func (d *DictLit) PyString() string {
+	var sb strings.Builder
+	sb.WriteByte('{')
+	for i := range d.Keys {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(d.Keys[i].PyString())
+		sb.WriteString(": ")
+		sb.WriteString(d.Values[i].PyString())
+	}
+	sb.WriteByte('}')
+	return sb.String()
+}
+
+// IndexAssignStmt is `target[key] = value` (Python subscript assignment).
+type IndexAssignStmt struct {
+	Target Expr
+	Key    Expr
+	Value  Expr
+}
+
+func (*IndexAssignStmt) isStmt() {}
+
+// PyString renders the index-assign statement.
+func (s *IndexAssignStmt) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	return pad + s.Target.PyString() + "[" + s.Key.PyString() + "] = " + s.Value.PyString()
+}
+
+// SliceExpr is `receiver[start:end]`. Either bound may be nil for
+// open-ended slices (Python `xs[:n]` / `xs[n:]`).
+type SliceExpr struct {
+	Receiver Expr
+	Start    Expr
+	End      Expr
+}
+
+func (*SliceExpr) isExpr() {}
+
+// PyString renders the slice expression.
+func (s *SliceExpr) PyString() string {
+	var sb strings.Builder
+	sb.WriteString(s.Receiver.PyString())
+	sb.WriteByte('[')
+	if s.Start != nil {
+		sb.WriteString(s.Start.PyString())
+	}
+	sb.WriteByte(':')
+	if s.End != nil {
+		sb.WriteString(s.End.PyString())
+	}
+	sb.WriteByte(']')
+	return sb.String()
+}
+
 // IndexExpr is `receiver[index]`.
 type IndexExpr struct {
 	Receiver Expr
@@ -342,6 +752,39 @@ func (s *WhileStmt) PyString(indent int) string {
 	sb.WriteString(pad)
 	sb.WriteString("while ")
 	sb.WriteString(s.Cond.PyString())
+	sb.WriteString(":\n")
+	for i, st := range s.Body {
+		if i > 0 {
+			sb.WriteByte('\n')
+		}
+		sb.WriteString(st.PyString(indent + 1))
+	}
+	if len(s.Body) == 0 {
+		sb.WriteString(pad)
+		sb.WriteString("    pass")
+	}
+	return sb.String()
+}
+
+// ForEachStmt is `for var in iter:` over an arbitrary iterable expression
+// (list, string, range, etc.). Phase 3.1 uses this for `for x in xs`.
+type ForEachStmt struct {
+	Var  string
+	Iter Expr
+	Body []Stmt
+}
+
+func (*ForEachStmt) isStmt() {}
+
+// PyString renders the for-each statement.
+func (s *ForEachStmt) PyString(indent int) string {
+	pad := strings.Repeat("    ", indent)
+	var sb strings.Builder
+	sb.WriteString(pad)
+	sb.WriteString("for ")
+	sb.WriteString(s.Var)
+	sb.WriteString(" in ")
+	sb.WriteString(s.Iter.PyString())
 	sb.WriteString(":\n")
 	for i, st := range s.Body {
 		if i > 0 {

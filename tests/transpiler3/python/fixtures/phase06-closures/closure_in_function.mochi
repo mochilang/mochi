@@ -1,0 +1,6 @@
+fun compute(base: int): int {
+  let triple = fun(x: int): int => x * 3
+  return triple(base)
+}
+print(compute(5))
+print(compute(10))

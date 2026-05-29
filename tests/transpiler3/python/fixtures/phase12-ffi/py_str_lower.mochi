@@ -1,0 +1,4 @@
+extern python fun py_lower(s: string): string
+
+let result: string = py_lower("HELLO")
+print(result)

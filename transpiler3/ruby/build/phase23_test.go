@@ -23,7 +23,7 @@ func TestPhase23TargetRubyBundle(t *testing.T) {
 	}
 
 	out := t.TempDir()
-	d := &Driver{CacheDir: t.TempDir()}
+	d := &Driver{}
 	if err := d.Build(src, out, TargetRubyBundle); err != nil {
 		t.Fatalf("Build TargetRubyBundle: %v", err)
 	}

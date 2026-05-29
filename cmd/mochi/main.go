@@ -37,6 +37,7 @@ import (
 	gobuild "mochi/compiler3/build/go"
 	aotcbuild "mochi/transpiler3/c/build"
 	beambuild "mochi/transpiler3/beam/build"
+	pybuild "mochi/transpiler3/python/build"
 	"mochi/mcp"
 	"mochi/parser"
 	"mochi/repl"
@@ -75,7 +76,7 @@ type CLI struct {
 // --out, shells to the system cc, and writes a native executable.
 type BuildCmd struct {
 	File           string `arg:"positional,required" help:"Path to .mochi source file"`
-	Target         string `arg:"--target" default:"go" help:"Target language (go|c|c-aot|beam-escript)"`
+	Target         string `arg:"--target" default:"go" help:"Target language (go|c|c-aot|beam-escript|python-source|python-wheel|python-sdist|python-ipykernel|python-publish)"`
 	Emit           string `arg:"--emit" default:"executable" help:"Emit shape (executable|go-library|c). --target=c-aot accepts executable|c."`
 	Out            string `arg:"--out" help:"Output path. --target=go|c: output directory; --target=c-aot: binary path; --target=beam-escript: escript output path"`
 	KeepEmit       bool   `arg:"--keep-emit" help:"Retain the emitted source file(s) after build"`
@@ -211,9 +212,46 @@ func runBuild(cmd *BuildCmd) error {
 		return runBuildCAOT(cmd)
 	case "beam-escript":
 		return runBuildBeamEscript(cmd)
+	case "python-source":
+		return runBuildPython(cmd, pybuild.TargetPythonSource)
+	case "python-wheel":
+		return runBuildPython(cmd, pybuild.TargetPythonWheel)
+	case "python-sdist":
+		return runBuildPython(cmd, pybuild.TargetPythonSdist)
+	case "python-ipykernel":
+		return runBuildPython(cmd, pybuild.TargetPythonIpykernel)
+	case "python-publish":
+		return runBuildPython(cmd, pybuild.TargetPythonPublish)
 	default:
-		return fmt.Errorf("build: unsupported --target=%q (expected go|c|c-aot|beam-escript)", cmd.Target)
+		return fmt.Errorf("build: unsupported --target=%q (expected go|c|c-aot|beam-escript|python-source|python-wheel|python-sdist|python-ipykernel|python-publish)", cmd.Target)
 	}
+}
+
+// runBuildPython dispatches MEP-51 Phase 1 / 15 / 17 builds via the
+// transpiler3/python Driver. `--out PATH` is the destination
+// directory; the driver writes the canonical `src/<pkg>/` tree for
+// python-source, `<pkg>-<version>-py3-none-any.whl` for
+// python-wheel, `<pkg>-<version>.tar.gz` for python-sdist, and a
+// self-contained `kernels/mochi-<pkg>/` + source tree for
+// python-ipykernel.
+func runBuildPython(cmd *BuildCmd, target pybuild.Target) error {
+	if cmd.File == "" {
+		return fmt.Errorf("build: --target=%s requires a source file argument", cmd.Target)
+	}
+	outDir := cmd.Out
+	if outDir == "" {
+		tmp, err := os.MkdirTemp("", "mochi-build-python-")
+		if err != nil {
+			return fmt.Errorf("build: temp dir: %w", err)
+		}
+		outDir = tmp
+	}
+	d := &pybuild.Driver{}
+	if err := d.Build(cmd.File, outDir, target); err != nil {
+		return err
+	}
+	fmt.Printf("emitted %s\n", outDir)
+	return nil
 }
 
 func runBuildGo(cmd *BuildCmd) error {

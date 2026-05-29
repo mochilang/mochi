@@ -1,0 +1,5 @@
+let xs = ["alpha", "be", "gamma", "de"]
+let longs = filter(xs, fun(s: string): bool => len(s) > 2)
+for s in longs {
+  print(s)
+}
