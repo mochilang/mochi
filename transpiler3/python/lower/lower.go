@@ -33,6 +33,7 @@ type lowerer struct {
 	needsFmt        bool // true once print(float) emitted; pulls in mochi_runtime.fmt
 	needsMapping    bool // true once a sorted map keys/values call is emitted
 	needsDataclass  bool // true once any record class is emitted (Phase 3.4)
+	needsCallable   bool // true once any Callable[...] annotation is emitted (Phase 6.0)
 }
 
 // Lower translates an aotir.Program into a pysrc.Module covering the
@@ -61,6 +62,16 @@ func Lower(prog *aotir.Program) (*pysrc.Module, error) {
 	for i, fn := range prog.Functions {
 		if i == prog.Main {
 			continue
+		}
+		// Capturing lifted closures reference their environment via
+		// C-specific emit names baked into VarRef.Name (e.g. `__e->factor`);
+		// the aotir IR layer leaks that into the lifted function body. The
+		// Python lowerer cannot rewrite these without an upstream pass that
+		// surfaces captures structurally (e.g. a `CaptureRef` node). Until
+		// the c lower stops baking C-specific emit names into VarRef.Name,
+		// any capturing closure is unrepresentable in Python.
+		if len(fn.Captures) > 0 {
+			return nil, fmt.Errorf("python/lower: capturing closure %q not supported until upstream surfaces captures as a structural IR node (currently baked as C-specific `__e->X` in VarRef.Name)", fn.Name)
 		}
 		def, err := l.lowerFunction(fn)
 		if err != nil {
@@ -95,6 +106,9 @@ func Lower(prog *aotir.Program) (*pysrc.Module, error) {
 	}
 	if l.needsDataclass {
 		mod.Imports = append(mod.Imports, pysrc.ImportStmt{From: "dataclasses", Names: []string{"dataclass"}})
+	}
+	if l.needsCallable {
+		mod.Imports = append(mod.Imports, pysrc.ImportStmt{From: "collections.abc", Names: []string{"Callable"}})
 	}
 	return mod, nil
 }
@@ -150,16 +164,20 @@ func lowerRecordDecl(rec *aotir.RecordDecl) pysrc.Stmt {
 func (l *lowerer) lowerFunction(fn *aotir.Function) (pysrc.Stmt, error) {
 	params := make([]pysrc.Param, 0, len(fn.Params))
 	for _, p := range fn.Params {
-		params = append(params, pysrc.Param{
-			Name: p.Name,
-			Type: pyTypeForUnion(p.Type, p.ElemType, p.RecordName, p.ElemRecordName, p.UnionName, "", p.KeyType, p.ValueType),
-		})
+		annot := pyTypeForUnion(p.Type, p.ElemType, p.RecordName, p.ElemRecordName, p.UnionName, "", p.KeyType, p.ValueType)
+		if p.Type == aotir.TypeFun {
+			annot = l.pyTypeForFun(p.FunSig)
+		}
+		params = append(params, pysrc.Param{Name: p.Name, Type: annot})
 	}
 	body, err := l.lowerBlock(fn.Body)
 	if err != nil {
 		return nil, fmt.Errorf("function %s: %w", fn.Name, err)
 	}
 	ret := pyTypeForUnion(fn.ReturnType, fn.ReturnElemType, fn.ReturnRecordName, fn.ReturnElemRecordName, fn.ReturnUnionName, "", fn.ReturnKeyType, fn.ReturnValueType)
+	if fn.ReturnType == aotir.TypeFun {
+		ret = l.pyTypeForFun(fn.ReturnFunSig)
+	}
 	if fn.ReturnType == aotir.TypeUnit {
 		ret = pysrc.TypeNone
 	}
@@ -448,6 +466,16 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (pysrc.Expr, error) {
 			return nil, err
 		}
 		return &pysrc.Call{Func: &pysrc.Name{Id: v.Func}, Args: args}, nil
+	case *aotir.FunCallExpr:
+		callee, err := l.lowerExpr(v.Callee)
+		if err != nil {
+			return nil, err
+		}
+		args, err := l.lowerExprs(v.Args)
+		if err != nil {
+			return nil, err
+		}
+		return &pysrc.Call{Func: callee, Args: args}, nil
 	case *aotir.StrLenExpr:
 		recv, err := l.lowerExpr(v.Receiver)
 		if err != nil {
@@ -848,6 +876,39 @@ func pyTypeForCompound(t, elem, k, v aotir.Type) pysrc.TypeRef {
 // annotations that do not need union threading. Delegates to pyTypeForUnion.
 func pyTypeForRecord(t, elem aotir.Type, recordName, elemRecordName string, k, v aotir.Type) pysrc.TypeRef {
 	return pyTypeForUnion(t, elem, recordName, elemRecordName, "", "", k, v)
+}
+
+// pyTypeForFun maps an aotir.FunSig to `Callable[[P1, P2, ...], R]` from
+// collections.abc (Phase 6.3). Empty param list becomes `Callable[[], R]`;
+// a TypeUnit return becomes `Callable[[...], None]`. Sets needsCallable so
+// the module emits the right import. Phase 6 limits FunSig to the scalar
+// primitives that aotir enforces upstream, so any non-scalar slot is a
+// verifier bug and surfaces as an empty TypeRef (no annotation), which lets
+// the emitter still produce valid Python.
+func (l *lowerer) pyTypeForFun(sig *aotir.FunSig) pysrc.TypeRef {
+	if sig == nil {
+		return pysrc.TypeRef{}
+	}
+	l.needsCallable = true
+	params := make([]string, 0, len(sig.ParamTypes))
+	for _, pt := range sig.ParamTypes {
+		pr := pyTypeFor(pt)
+		if pr.Name == "" {
+			return pysrc.TypeRef{}
+		}
+		params = append(params, pr.Name)
+	}
+	var retName string
+	if sig.ReturnType == aotir.TypeUnit {
+		retName = "None"
+	} else {
+		rr := pyTypeFor(sig.ReturnType)
+		if rr.Name == "" {
+			return pysrc.TypeRef{}
+		}
+		retName = rr.Name
+	}
+	return pysrc.TypeRef{Name: "Callable[[" + strings.Join(params, ", ") + "], " + retName + "]"}
 }
 
 // pyTypeForUnion adds union-name slots so the lowerer can emit a bare
