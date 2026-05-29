@@ -15,8 +15,8 @@ A phase is LANDED only when its gate is green for every applicable target (consu
 
 | Phase | Title | Status | Commit | Tracking page |
 |-------|-------|--------|--------|---------------|
-| 0 | Skeleton: package3/go/ layout + helper-binary plumbing | NOT STARTED | — | [phase-00](/docs/implementation/0074/phase-00-skeleton) |
-| 1 | Module-proxy client (`proxy.golang.org` info/mod/zip reader, h1:-hash verify) | NOT STARTED | — | [phase-01](/docs/implementation/0074/phase-01-module-proxy) |
+| 0 | Skeleton: package3/go/ layout + helper-binary plumbing | LANDED | (pending) | [phase-00](/docs/implementation/0074/phase-00-skeleton) |
+| 1 | Module-proxy client (`proxy.golang.org` info/mod/zip reader, h1:-hash verify) | LANDED | (pending) | [phase-01](/docs/implementation/0074/phase-01-module-proxy) |
 | 2 | sum.golang.org transparency-log client (signed-tree-head + tile fetch + inclusion proof) | NOT STARTED | — | [phase-02](/docs/implementation/0074/phase-02-sumdb) |
 | 3 | go/packages ingest helper (`package3/go/cmd/go-ingest`) | NOT STARTED | — | [phase-03](/docs/implementation/0074/phase-03-gopackages-ingest) |
 | 4 | ApiSurface JSON schema + bridge-side parser | NOT STARTED | — | [phase-04](/docs/implementation/0074/phase-04-apisurface) |
@@ -40,8 +40,8 @@ Each phase's LANDED gate must be green for every applicable target. `n/a` cells 
 
 | Phase | host stable go 1.23 (darwin-arm64) | linux-amd64 / linux-arm64 | windows-amd64 | wasm-wasip1 / wasm-js | tinygo embedded |
 |-------|--------|--------|--------|--------|--------|
-| 0. skeleton | NOT STARTED | n/a | n/a | n/a | n/a |
-| 1. module-proxy client | NOT STARTED | n/a | n/a | n/a | n/a |
+| 0. skeleton | LANDED | n/a | n/a | n/a | n/a |
+| 1. module-proxy client | LANDED | n/a | n/a | n/a | n/a |
 | 2. sum.golang.org client | NOT STARTED | n/a | n/a | n/a | n/a |
 | 3. go/packages ingest | NOT STARTED | n/a | n/a | n/a | n/a |
 | 4. ApiSurface JSON | NOT STARTED | n/a | n/a | n/a | n/a |
