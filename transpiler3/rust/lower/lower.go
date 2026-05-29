@@ -1287,6 +1287,15 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 			return nil, fmt.Errorf("sub recv receiver: %w", err)
 		}
 		return &rtree.MethodCallExpr{Receiver: recv, Method: "recv"}, nil
+	case *aotir.LLMGenerateExpr:
+		prompt, err := l.lowerExpr(n.Prompt)
+		if err != nil {
+			return nil, fmt.Errorf("llm prompt: %w", err)
+		}
+		return &rtree.CallExpr{
+			Func: "mochi_runtime::llm::call",
+			Args: []rtree.Expr{&rtree.StringLit{Value: n.Provider}, prompt},
+		}, nil
 	}
 	return nil, fmt.Errorf("rust lower: unsupported expr %T", e)
 }
