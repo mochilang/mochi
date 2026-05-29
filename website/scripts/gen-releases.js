@@ -13,7 +13,10 @@ const path = require('path');
 
 const root = path.resolve(__dirname, '..');
 const repoRoot = path.resolve(root, '..');
-const sourceDir = path.join(repoRoot, 'releases');
+// Support both mochi monorepo layout (../../releases) and standalone docs repo (./releases).
+const sourceDir = fs.existsSync(path.join(repoRoot, 'releases'))
+  ? path.join(repoRoot, 'releases')
+  : path.join(root, 'releases');
 const docsOutDir = path.join(root, 'docs', 'releases');
 const dataOut = path.join(root, 'src', 'data', 'releases.json');
 const sidebarOut = path.join(root, 'src', 'data', 'release-sidebar.json');
