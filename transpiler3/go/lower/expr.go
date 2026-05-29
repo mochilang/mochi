@@ -140,8 +140,18 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerListFilterExpr(e)
 	case *aotir.ListFoldlExpr:
 		return l.lowerListFoldlExpr(e)
-	case *aotir.DatalogQueryExpr:
-		return l.lowerDatalogQueryExpr(e)
+	case *aotir.ChanMakeExpr:
+		return l.lowerChanMakeExpr(e)
+	case *aotir.ChanRecvExpr:
+		return l.lowerChanRecvExpr(e)
+	case *aotir.StreamMakeExpr:
+		return l.lowerStreamMakeExpr(e)
+	case *aotir.SubMakeExpr:
+		return l.lowerSubMakeExpr(e)
+	case *aotir.SubMakeLimitExpr:
+		return l.lowerSubMakeLimitExpr(e)
+	case *aotir.SubRecvExpr:
+		return l.lowerSubRecvExpr(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
@@ -1616,4 +1626,114 @@ func (l *lowerer) lowerChanRecvExpr(e *aotir.ChanRecvExpr) (gotree.Expr, error) 
 		return nil, fmt.Errorf("chan recv: %w", err)
 	}
 	return &gotree.UnaryExpr{Op: "<-", X: ch}, nil
+}
+
+// lowerStreamMakeExpr lowers `make_stream(cap)` (Phase 9.2) to
+// `mochiStreamMake[T](int(cap))`. The helper allocates an empty
+// MPMC broadcast stream; per-subscriber channels are created in
+// subscribe / subscribe_limit.
+func (l *lowerer) lowerStreamMakeExpr(e *aotir.StreamMakeExpr) (gotree.Expr, error) {
+	capExpr, err := l.lowerExpr(e.Cap)
+	if err != nil {
+		return nil, fmt.Errorf("stream cap: %w", err)
+	}
+	elem, err := l.lowerType(e.ElemType)
+	if err != nil {
+		return nil, fmt.Errorf("stream elem type: %w", err)
+	}
+	if elem == "" {
+		return nil, fmt.Errorf("transpiler3/go/lower: stream element type cannot be unit")
+	}
+	l.addHelper("mochiStream")
+	l.addHelper("mochiSub")
+	l.addHelper("mochiStreamMake")
+	l.addImport("sync")
+	return &gotree.CallExpr{
+		Fun: &gotree.RawExpr{Src: "mochiStreamMake[" + elem + "]"},
+		Args: []gotree.Expr{
+			&gotree.CallExpr{
+				Fun:  &gotree.Ident{Name: "int"},
+				Args: []gotree.Expr{capExpr},
+			},
+		},
+	}, nil
+}
+
+// lowerSubMakeExpr lowers `subscribe(stream)` to
+// `mochiStreamSubscribe[T](stream)`. The new subscriber's buffer
+// uses the stream's own capacity and the call is fully synchronous
+// in line with Mochi's "join the broadcast list" semantics.
+func (l *lowerer) lowerSubMakeExpr(e *aotir.SubMakeExpr) (gotree.Expr, error) {
+	stream, err := l.lowerExpr(e.Stream)
+	if err != nil {
+		return nil, fmt.Errorf("subscribe stream: %w", err)
+	}
+	elem, err := l.lowerType(e.ElemType)
+	if err != nil {
+		return nil, fmt.Errorf("subscribe elem type: %w", err)
+	}
+	if elem == "" {
+		return nil, fmt.Errorf("transpiler3/go/lower: subscriber element type cannot be unit")
+	}
+	l.addHelper("mochiStream")
+	l.addHelper("mochiSub")
+	l.addHelper("mochiStreamSubscribe")
+	l.addImport("sync")
+	return &gotree.CallExpr{
+		Fun:  &gotree.RawExpr{Src: "mochiStreamSubscribe[" + elem + "]"},
+		Args: []gotree.Expr{stream},
+	}, nil
+}
+
+// lowerSubMakeLimitExpr lowers `subscribe_limit(stream, n)` to
+// `mochiStreamSubscribeLimit[T](stream, int(n))`. The subscriber
+// drops incoming values when its buffer holds n items, matching
+// Mochi's drop-on-full backpressure (Phase 10.2 spec).
+func (l *lowerer) lowerSubMakeLimitExpr(e *aotir.SubMakeLimitExpr) (gotree.Expr, error) {
+	stream, err := l.lowerExpr(e.Stream)
+	if err != nil {
+		return nil, fmt.Errorf("subscribe_limit stream: %w", err)
+	}
+	limit, err := l.lowerExpr(e.Limit)
+	if err != nil {
+		return nil, fmt.Errorf("subscribe_limit limit: %w", err)
+	}
+	elem, err := l.lowerType(e.ElemType)
+	if err != nil {
+		return nil, fmt.Errorf("subscribe_limit elem type: %w", err)
+	}
+	if elem == "" {
+		return nil, fmt.Errorf("transpiler3/go/lower: subscriber element type cannot be unit")
+	}
+	l.addHelper("mochiStream")
+	l.addHelper("mochiSub")
+	l.addHelper("mochiStreamSubscribeLimit")
+	l.addImport("sync")
+	return &gotree.CallExpr{
+		Fun: &gotree.RawExpr{Src: "mochiStreamSubscribeLimit[" + elem + "]"},
+		Args: []gotree.Expr{
+			stream,
+			&gotree.CallExpr{
+				Fun:  &gotree.Ident{Name: "int"},
+				Args: []gotree.Expr{limit},
+			},
+		},
+	}, nil
+}
+
+// lowerSubRecvExpr lowers `recv_sub(sub)` (Phase 9.2) to
+// `mochiSubRecv(sub)`. The helper reads the next buffered value
+// from the subscriber's channel, blocking when the channel is
+// empty (mirroring Mochi's `recv_sub` semantics).
+func (l *lowerer) lowerSubRecvExpr(e *aotir.SubRecvExpr) (gotree.Expr, error) {
+	sub, err := l.lowerExpr(e.Sub)
+	if err != nil {
+		return nil, fmt.Errorf("recv_sub sub: %w", err)
+	}
+	l.addHelper("mochiSub")
+	l.addHelper("mochiSubRecv")
+	return &gotree.CallExpr{
+		Fun:  &gotree.Ident{Name: "mochiSubRecv"},
+		Args: []gotree.Expr{sub},
+	}, nil
 }
