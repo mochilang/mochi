@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -15,44 +16,24 @@ import (
 	"mochi/types"
 )
 
-// copySiblingGoFiles copies every *.go file in the source's
-// parent directory into workDir, skipping _test.go and any file
-// whose package declaration is not `package main`. Phase 10.2
-// uses this to materialize Go FFI companion sources alongside
-// the emitted main.go.
-func copySiblingGoFiles(src, workDir string) error {
-	srcDir := filepath.Dir(src)
-	entries, err := os.ReadDir(srcDir)
-	if err != nil {
-		return fmt.Errorf("read source dir %s: %w", srcDir, err)
+// goEnvGoRoot returns the GOROOT reported by the configured
+// `go` binary. Empty goBin falls back to resolveGoBin.
+func goEnvGoRoot(goBin string) (string, error) {
+	if goBin == "" {
+		goBin = resolveGoBin()
 	}
-	for _, e := range entries {
-		if e.IsDir() {
-			continue
-		}
-		name := e.Name()
-		if !strings.HasSuffix(name, ".go") {
-			continue
-		}
-		if strings.HasSuffix(name, "_test.go") {
-			continue
-		}
-		full := filepath.Join(srcDir, name)
-		b, err := os.ReadFile(full)
-		if err != nil {
-			return fmt.Errorf("read %s: %w", full, err)
-		}
-		// Skip files that don't declare `package main` so foreign
-		// .go files don't accidentally break the build.
-		if !bytes.Contains(b, []byte("package main")) {
-			continue
-		}
-		dst := filepath.Join(workDir, name)
-		if err := os.WriteFile(dst, b, 0o644); err != nil {
-			return fmt.Errorf("write %s: %w", dst, err)
-		}
+	cmd := exec.Command(goBin, "env", "GOROOT")
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		return "", fmt.Errorf("go env GOROOT: %w\n%s", err, stderr.String())
 	}
-	return nil
+	root := strings.TrimSpace(stdout.String())
+	if root == "" {
+		return "", errors.New("go env GOROOT returned empty")
+	}
+	return root, nil
 }
 
 // Target enumerates the supported MEP-54 build targets.
@@ -179,9 +160,18 @@ func (d *Driver) Build(src, out string, target, profile string) error {
 		return fmt.Errorf("transpiler3/go/build: abs %s: %w", out, err)
 	}
 
-	if Target(target) == TargetGoModule {
-		if err := copyModule(workDir, absOut); err != nil {
-			return fmt.Errorf("transpiler3/go/build: copy module: %w", err)
+	switch Target(target) {
+	case TargetGoWasiP1:
+		if err := goBuild(d.GoBin, workDir, absOut, []string{"GOOS=wasip1", "GOARCH=wasm"}); err != nil {
+			return err
+		}
+		return nil
+	case TargetGoWasmJS:
+		if err := goBuild(d.GoBin, workDir, absOut, []string{"GOOS=js", "GOARCH=wasm"}); err != nil {
+			return err
+		}
+		if err := copyWasmExec(d.GoBin, filepath.Dir(absOut)); err != nil {
+			return fmt.Errorf("transpiler3/go/build: copy wasm_exec.js: %w", err)
 		}
 		return nil
 	}
@@ -192,34 +182,23 @@ func (d *Driver) Build(src, out string, target, profile string) error {
 	return nil
 }
 
-// copyModule copies the work directory's go.mod + *.go files
-// into outDir as a publish-ready Go module. No `go build` is
-// invoked; the caller can `cd outDir && go build .` themselves.
-//
-// The destination is created if missing. Existing files with
-// the same name are overwritten so re-runs are idempotent.
-func copyModule(workDir, outDir string) error {
-	if err := os.MkdirAll(outDir, 0o755); err != nil {
-		return fmt.Errorf("mkdir out: %w", err)
-	}
-	entries, err := os.ReadDir(workDir)
+// copyWasmExec copies $(go env GOROOT)/lib/wasm/wasm_exec.js
+// into dstDir so a browser host has the standard JS glue
+// alongside the generated .wasm. Go 1.26 ships the file at
+// $GOROOT/lib/wasm/wasm_exec.js; older layouts (misc/wasm)
+// are not supported by this phase.
+func copyWasmExec(goBin, dstDir string) error {
+	root, err := goEnvGoRoot(goBin)
 	if err != nil {
-		return fmt.Errorf("read work dir: %w", err)
+		return fmt.Errorf("resolve GOROOT: %w", err)
 	}
-	for _, e := range entries {
-		if e.IsDir() {
-			continue
-		}
-		name := e.Name()
-		src := filepath.Join(workDir, name)
-		dst := filepath.Join(outDir, name)
-		b, err := os.ReadFile(src)
-		if err != nil {
-			return fmt.Errorf("read %s: %w", src, err)
-		}
-		if err := os.WriteFile(dst, b, 0o644); err != nil {
-			return fmt.Errorf("write %s: %w", dst, err)
-		}
+	src := filepath.Join(root, "lib", "wasm", "wasm_exec.js")
+	b, err := os.ReadFile(src)
+	if err != nil {
+		return fmt.Errorf("read %s: %w", src, err)
 	}
-	return nil
+	if err := os.MkdirAll(dstDir, 0o755); err != nil {
+		return fmt.Errorf("mkdir %s: %w", dstDir, err)
+	}
+	return os.WriteFile(filepath.Join(dstDir, "wasm_exec.js"), b, 0o644)
 }
