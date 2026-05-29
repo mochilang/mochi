@@ -1,11 +1,16 @@
 //! Mochi Rust runtime: print, scalar conversion, and (in later phases)
 //! collections, agents, streams, async, FFI, fetch, and LLM.
+//!
+//! Phase 18 (`embedded` feature, `no_std` + `alloc`): only the modules
+//! `conv` and `strings` are exported. The remaining modules require
+//! `std` and are gated behind `cfg(feature = "std")`.
 
 #![cfg_attr(feature = "embedded", no_std)]
 
 #[cfg(feature = "embedded")]
 extern crate alloc;
 
+#[cfg(feature = "std")]
 pub mod io {
     //! Print helpers matching the vm3 print format.
 
@@ -39,7 +44,10 @@ pub mod io {
 }
 
 pub mod conv {
-    //! Scalar conversions (Phase 2 onward).
+    //! Scalar conversions (Phase 2 onward). no_std-compatible (needs alloc).
+
+    #[cfg(feature = "embedded")]
+    use alloc::string::{String, ToString};
 
     pub fn int_to_float(n: i64) -> f64 {
         n as f64
@@ -59,7 +67,10 @@ pub mod conv {
 }
 
 pub mod strings {
-    //! UTF-8 scalar string helpers matching Mochi semantics.
+    //! UTF-8 scalar string helpers matching Mochi semantics. no_std-compatible (needs alloc).
+
+    #[cfg(feature = "embedded")]
+    use alloc::string::{String, ToString};
 
     pub fn len<S: AsRef<str>>(s: S) -> i64 {
         s.as_ref().chars().count() as i64
@@ -104,6 +115,7 @@ pub mod strings {
     }
 }
 
+#[cfg(feature = "std")]
 pub mod chan {
     use std::cell::RefCell;
     use std::collections::VecDeque;
@@ -140,6 +152,7 @@ pub mod chan {
     }
 }
 
+#[cfg(feature = "std")]
 pub mod stream {
     use std::cell::RefCell;
     use std::collections::VecDeque;
@@ -206,6 +219,7 @@ pub mod stream {
     }
 }
 
+#[cfg(feature = "std")]
 pub mod panic {
     use std::panic;
     use std::sync::Once;
@@ -254,6 +268,7 @@ pub mod panic {
     }
 }
 
+#[cfg(feature = "std")]
 pub mod fetch {
     //! Minimal HTTP/1.1 GET client using std::net::TcpStream. Phase 14.
     //!
@@ -385,6 +400,7 @@ pub mod fetch {
     }
 }
 
+#[cfg(feature = "std")]
 pub mod json {
     //! Minimal JSON object decoder. Returns HashMap<String, String> matching
     //! the Mochi `json_decode` contract: top-level object with non-string
@@ -508,6 +524,7 @@ pub mod json {
     }
 }
 
+#[cfg(feature = "std")]
 pub mod llm {
     use std::env;
     use std::fs;
@@ -631,6 +648,7 @@ pub mod llm {
     }
 }
 
+#[cfg(feature = "std")]
 pub mod check {
     use super::panic::raise;
 
