@@ -773,6 +773,27 @@ func helperDecl(name string) gotree.Decl {
 	_ = w.WriteAll(data)
 	w.Flush()
 }`}
+	case "mochiHttpGet":
+		return &gotree.RawDecl{Code: `func mochiHttpGet(urlStr string) string {
+	if strings.HasPrefix(urlStr, "file://") {
+		path := strings.TrimPrefix(urlStr, "file://")
+		b, err := os.ReadFile(path)
+		if err != nil {
+			return ""
+		}
+		return strings.TrimRight(string(b), "\n")
+	}
+	resp, err := http.Get(urlStr)
+	if err != nil {
+		return ""
+	}
+	defer resp.Body.Close()
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return ""
+	}
+	return strings.TrimRight(string(b), "\n")
+}`}
 	case "mochiPanicValue":
 		return &gotree.RawDecl{Code: `type mochiPanicValue struct {
 	code int64

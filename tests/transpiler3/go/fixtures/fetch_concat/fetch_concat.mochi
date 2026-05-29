@@ -1,0 +1,3 @@
+writeFile("/tmp/mochi_go_fc.txt", "world")
+let r = fetch("file:///tmp/mochi_go_fc.txt")
+print("hello " + r)
