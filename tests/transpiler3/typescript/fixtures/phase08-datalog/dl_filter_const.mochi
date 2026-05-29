@@ -1,0 +1,7 @@
+fact like("alice", "cats")
+fact like("bob", "dogs")
+fact like("alice", "birds")
+let xs = query like("alice", Y)
+for x in xs {
+    print(x)
+}

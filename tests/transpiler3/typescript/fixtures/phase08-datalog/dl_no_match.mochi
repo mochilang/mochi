@@ -1,0 +1,3 @@
+fact person("alice")
+let xs = query person("bob")
+print(len(xs))
