@@ -1,0 +1,10 @@
+agent Balance {
+    var amount: float = 0.0
+    intent deposit(v: float) { amount = amount + v }
+    intent withdraw(v: float) { amount = amount - v }
+    intent get(): float { return amount }
+}
+let b = Balance { amount: 0.0 }
+b.deposit(100.5)
+b.withdraw(30.25)
+print(b.get())
