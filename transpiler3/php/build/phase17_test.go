@@ -112,8 +112,13 @@ func TestPhase17FrankenPHPBundle(t *testing.T) {
 	}
 	for _, want := range []string{
 		"frankenphp {",
-		"worker /app/main.php",
+		// Pin the worker count suffix ("4") on the worker line; the
+		// spec calls out a 4-process default for the throughput tier,
+		// and the bare `worker /app/main.php` form would still match
+		// a regression that dropped the count.
+		"worker /app/main.php 4",
 		"php_server",
+		"root * /app",
 		":8080",
 		"pkg_hello",
 	} {
@@ -161,7 +166,15 @@ func TestPhase17RoadRunnerBundle(t *testing.T) {
 		`version: "3"`,
 		`command: "php worker.php"`,
 		"http:",
+		// The spec calls out 4 workers + 64 max-jobs as the defaults;
+		// the timeouts come from the same template block and would
+		// silently disappear without a gate. Pin all four so a
+		// regression that dropped any one fails the test.
+		`address: ":8080"`,
 		"num_workers: 4",
+		"max_jobs: 64",
+		"allocate_timeout: 60s",
+		"destroy_timeout: 60s",
 		"pkg_hello",
 	} {
 		if !strings.Contains(string(rrYaml), want) {
