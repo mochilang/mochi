@@ -1,0 +1,17 @@
+var codes: list<int> = []
+let denoms: list<int> = [1, 0, 0, 2, 0]
+var i: int = 0
+while i < 5 {
+  try {
+    let r: int = 100 / denoms[i]
+    print(r)
+  } catch e {
+    codes = append(codes, e)
+  }
+  i = i + 1
+}
+var j: int = 0
+while j < len(codes) {
+  print(codes[j])
+  j = j + 1
+}

@@ -238,11 +238,33 @@ func TestPhase3_4RecordClassShape(t *testing.T) {
 			src := readTrim(t, p)
 			// Count class declarations (a class decl starts a line and
 			// reads `class <Name> {`); we ignore the word "class" when
-			// it appears inside a comment or string literal.
+			// it appears inside a comment or string literal. Runtime
+			// helper classes (MochiPanic, MochiChan, MochiStream,
+			// MochiSub) are excluded from the count, only the
+			// private-ctor + static-of factory invariant applies to
+			// user record classes.
+			runtimeClasses := map[string]bool{
+				"MochiPanic": true, "MochiChan": true,
+				"MochiStream": true, "MochiSub": true,
+			}
 			classes := 0
 			for _, line := range strings.Split(src, "\n") {
 				trimmed := strings.TrimSpace(line)
-				if strings.HasPrefix(trimmed, "class ") && strings.HasSuffix(trimmed, " {") {
+				if !strings.HasPrefix(trimmed, "class ") {
+					continue
+				}
+				rest := strings.TrimPrefix(trimmed, "class ")
+				name := rest
+				for i, r := range rest {
+					if r == ' ' || r == '<' || r == '{' {
+						name = rest[:i]
+						break
+					}
+				}
+				if runtimeClasses[name] {
+					continue
+				}
+				if strings.HasSuffix(trimmed, " {") {
 					classes++
 				}
 			}
@@ -275,7 +297,7 @@ func TestPhase3_4RecordClassShape(t *testing.T) {
 			// error types thrown by runtime helpers (RangeError, TypeError,
 			// etc.). Anything else means user code is constructing a record
 			// directly, bypassing the factory.
-			allowed := []string{"new Set<", "new Map<", "new RangeError(", "new TypeError(", "new Error("}
+			allowed := []string{"new Set<", "new Map<", "new RangeError(", "new TypeError(", "new Error(", "new MochiPanic("}
 			lines := strings.Split(src, "\n")
 			for i, line := range lines {
 				trimmed := strings.TrimSpace(line)

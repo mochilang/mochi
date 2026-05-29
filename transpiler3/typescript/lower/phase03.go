@@ -173,6 +173,9 @@ func (l *lowerer) lowerListLit(e *aotir.ListLit) (tstree.Expr, error) {
 // non-null assertions.
 func (l *lowerer) lowerIndexExpr(e *aotir.IndexExpr) (tstree.Expr, error) {
 	l.runtime.listAt = true
+	// Phase 11: mochi_list_at throws MochiPanic(4) on OOB, so opt
+	// the class in alongside the helper.
+	l.runtime.panicClass = true
 	recv, err := l.lowerExpr(e.Receiver)
 	if err != nil {
 		return nil, fmt.Errorf("ts lower: index receiver: %w", err)
@@ -631,6 +634,8 @@ func (l *lowerer) runtimeListDecls() []tstree.Decl {
 				"Return xs[i], panicking on out-of-range index.",
 				"`Array.prototype.at(i)` returns undefined on miss;",
 				"this helper raises to match Mochi's panic contract.",
+				"Phase 11: out-of-range raises MochiPanic(4) so user",
+				"`try / catch e` sees the index error code (4).",
 			},
 			Name:     "mochi_list_at",
 			Generics: []string{"T"},
@@ -640,7 +645,7 @@ func (l *lowerer) runtimeListDecls() []tstree.Decl {
 			},
 			ReturnType: "T",
 			Body: []tstree.Stmt{
-				&tstree.RawStmt{Text: "if (i < 0 || i >= xs.length) { throw new RangeError(\"mochi_list_at: index \" + i + \" out of range for list of length \" + xs.length); }"},
+				&tstree.RawStmt{Text: "if (i < 0 || i >= xs.length) { throw new MochiPanic(4, \"mochi_list_at: index \" + i + \" out of range for list of length \" + xs.length); }"},
 				&tstree.RawStmt{Text: "return xs[i] as T;"},
 			},
 		})

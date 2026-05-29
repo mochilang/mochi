@@ -1,0 +1,12 @@
+let xs: list<int> = [10, 20, 30]
+var i: int = 0
+while i < 5 {
+  try {
+    let v: int = xs[i]
+    print(v)
+  } catch e {
+    print("bad")
+    print(e)
+  }
+  i = i + 1
+}

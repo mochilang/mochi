@@ -1,0 +1,18 @@
+fun level3(): int {
+  panic(33, "deep")
+  return 0
+}
+
+fun level2(): int {
+  return level3() + 1
+}
+
+fun level1(): int {
+  return level2() + 10
+}
+
+try {
+  print(level1())
+} catch e {
+  print(e)
+}

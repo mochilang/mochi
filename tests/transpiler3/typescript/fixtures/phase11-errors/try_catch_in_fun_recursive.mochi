@@ -1,0 +1,13 @@
+fun divsafe(a: int, b: int): int {
+  var r: int = 0
+  try {
+    r = a / b
+  } catch e {
+    r = 0
+  }
+  return r
+}
+
+print(divsafe(20, 4))
+print(divsafe(20, 0))
+print(divsafe(divsafe(100, 0), 1))

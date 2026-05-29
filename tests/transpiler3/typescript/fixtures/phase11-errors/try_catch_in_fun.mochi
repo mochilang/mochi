@@ -1,0 +1,12 @@
+fun safe_div(a: int, b: int): int {
+  var result: int = 0
+  try {
+    result = a / b
+  } catch e {
+    result = -1
+  }
+  return result
+}
+
+print(safe_div(10, 2))
+print(safe_div(10, 0))

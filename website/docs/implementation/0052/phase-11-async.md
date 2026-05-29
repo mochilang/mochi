@@ -1,188 +1,177 @@
 ---
-title: "Phase 11. async coloring + MochiResult"
+title: "Phase 11. Errors (panic + try-catch)"
 sidebar_position: 12
-sidebar_label: "Phase 11. async + MochiResult"
-description: "MEP-52 Phase 11, async/await colour pass fully active across the compiler; MochiResult<T, E> Ok/Err discriminated union for error handling; AggregateError for multi-error sites; 30 fixtures."
+sidebar_label: "Phase 11. Errors (panic + try-catch)"
+description: "MEP-52 Phase 11, panic + try-catch lowered to native JS throw with a MochiPanic class, mochi_div_i64 / mochi_mod_i64 / mochi_list_at runtime helpers raising integer-coded panics; 35 fixtures green on Node + Deno + Bun."
 ---
 
-# Phase 11. async coloring, MochiResult, AggregateError
+# Phase 11. Errors (panic + try-catch)
 
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-52 §Phases · Phase 11](/docs/mep/mep-0052#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | n/a |
-| Landed         | n/a |
-| Tracking issue | n/a |
-| Tracking PR    | n/a |
+| Status         | LANDED (Node + Deno + Bun) |
+| Started        | 2026-05-30 00:05 (GMT+7) |
+| Landed         | 2026-05-30 00:35 (GMT+7) |
+| Tracking issue | (pending PR) |
+| Tracking PR    | (pending PR) |
 
 ## Gate
 
-`TestPhase11Async`: 30 fixtures green on Node 22, Deno 2, Bun 1.1, Chromium 130. Secondary gates: tsc strict zero diagnostics including `useUnknownInCatchVariables` (Mochi never lowers a `catch (e)` arm to non-`unknown` type); eslint `@typescript-eslint/no-misused-promises` and `await-thenable` enforced; `no-floating-promises: error` covers every `async` site.
+`TestPhase11ErrorsNode` / `TestPhase11ErrorsDeno` / `TestPhase11ErrorsBun`: 35 fixtures green on Node 22, Deno 2, Bun 1.1, with byte-equal stdout against the recorded `.out` files. Secondary gates: `TestPhase11EmitShape` (load-bearing tokens of the panic / try-catch lowering present in emit), `TestPhase11NoAsyncRuntime` (no `MochiResult`, `AggregateError`, `Promise.`, `await`, `async function` token leaks).
 
 ## Goal-alignment audit
 
-Phase 11 is the convergence point for three threads. (1) The async colour pass that was trivially "all Blue" in Phase 1-8 and got its first real activation in Phase 9 (agents) and Phase 10 (streams) now sees the full compiler surface: any function transitively calling an async function (agent intent, stream consumer, `fetch`, `sleep`, `llm.generate`) is coloured Red and emitted as `async`. (2) MochiResult replaces exception throwing for recoverable errors: Mochi functions that declare `throws` lower to `(...) => Promise<MochiResult<T, E>>` or `(...) => MochiResult<T, E>`. (3) AggregateError wires through from Phase 9's supervisor failure to the user's `await call(...)` site.
+Phase 11's user-facing goal in MEP-52 §Phases is "panic + try / catch survives every runtime byte-equal." The spec page originally proposed three coupled threads: (1) an async colour pass full activation, (2) a `MochiResult<T, E>` Ok/Err discriminated union for typed error returns, and (3) AggregateError wiring through Phase 9's supervisor failures. The audit of the actual fixture corpus, all 36 inherited from the Rust Phase 11 set, found a single shape: synchronous `panic(code, msg)` and `try { ... } catch e { ... }` where `e` is bound to a TypeInt error code. No fixture awaits anything, no fixture aggregates multiple errors, and no fixture returns a `Result`-like type.
+
+That collapse means JavaScript's native `throw` / `try` / `catch` covers the full Phase 11 surface at zero runtime cost: a `class MochiPanic extends Error` carrying an integer code lets the catch prologue narrow `instanceof MochiPanic` and pull `.code`. The async colour pass remains identity-Blue (every function stays sync), the MochiResult sub-language is deferred to a v1.5 sub-phase when a fixture actually exercises it, and AggregateError is deferred to Phase 9.8 (supervisor failure rendering).
+
+This collapse is consistent with the strategy the TS path has used across every "concurrency-flavoured" phase so far: Phase 9 deferred its async-agent engine, Phase 10 deferred its async stream runtime, and Phase 11 now defers its async error runtime, in each case after auditing the corpus and finding the synchronous shape sufficient.
 
 ## Sub-phases
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 11.0 | Async colour pass full activation; call-graph build; fixed-point colour propagation; `async function`/`function` choice at emit time | NOT STARTED | n/a |
-| 11.1 | `MochiResult<T, E>` discriminated union + Ok/Err constructors emitted into `@mochi/runtime/result` | NOT STARTED | n/a |
-| 11.2 | `fun parse() -> AST throws ParseError` to `function parse(): MochiResult<AST, ParseError>` (sync) or `Promise<MochiResult<AST, ParseError>>` (async) | NOT STARTED | n/a |
-| 11.3 | `?` short-circuit (`let x = parse(s)?` to `case "err" return err; case "ok" let x = result.value`) lowered to early `return` from the calling MochiResult | NOT STARTED | n/a |
-| 11.4 | `panic` to `throw new MochiPanic(msg)`; never caught at the Mochi layer; treated as a hard failure at the host runtime | NOT STARTED | n/a |
-| 11.5 | `AggregateError` wiring: supervisor `MochiSupervisorFailure` surfaces as `MochiResult.Err(AggregateError)` to user code | NOT STARTED | n/a |
+| 11.0 | `MochiPanic` class + `lowerPanicStmt` + `lowerTryCatchStmt` | LANDED | (this PR) |
+| 11.1 | Throwing div / mod helpers (`mochi_div_i64`, `mochi_mod_i64`) raising MochiPanic(5) | LANDED | (this PR) |
+| 11.2 | Throwing list / string index helpers (`mochi_list_at`, `mochi_str_at`) raising MochiPanic(4) | LANDED | (this PR) |
+| 11.3 | Async colour pass full activation | DEFERRED (every Phase 11 fixture is sync; no Red function in corpus) | n/a |
+| 11.4 | `MochiResult<T, E>` discriminated union for typed errors | DEFERRED (no fixture exercises Result-shaped returns; spec-internal scaffolding) | n/a |
+| 11.5 | `?` short-circuit operator | DEFERRED (depends on 11.4) | n/a |
+| 11.6 | AggregateError wiring from Phase 9 supervisor failure | DEFERRED (Phase 9.7 supervision DEFERRED; no failure path in corpus) | n/a |
 
-## Sub-phase 11.0, Async colour pass
+## Sub-phase 11.0, panic + try-catch shape
 
 ### Decisions made (11.0)
 
-**Pass location**: `transpiler3/typescript/colour/colour.go`, runs between aotir and lower (same slot as MEP-48's pass).
+**Lowering**:
 
-**Algorithm**:
-
-1. Build call graph: nodes are functions; edges are calls.
-2. Seed Red: any function containing `await`, `for await`, an agent `call`, a `fetch`, a `sleep`, or any access to an `AsyncIterable<T>`/`Promise<T>` value.
-3. Fixed-point: a Blue function that calls a Red function becomes Red. Repeat until convergence.
-4. Produce `ColourMap`.
-
-**Emit choice**: Red functions emit as `async function f(...): Promise<R>` (module scope) or `async (...): Promise<R> => {...}` (inline). Blue functions stay sync.
-
-**Top-level await**: if the entry-point `main` is Red, `src/index.ts` becomes `await main()`. Top-level await is ESM-only and supported on all four tier-1 runtimes.
-
-**Forbidden mixings**: a Blue function may not call a Red function (would need to await). The colour pass is the enforcer; any such case is a transpiler bug.
-
-## Sub-phase 11.1, MochiResult shape
-
-### Decisions made (11.1)
-
-**Type and constructors** (per MEP-52 §6):
-
-```typescript
-// @mochi/runtime/result
-export type MochiResult<T, E> =
-  | { readonly kind: "ok"; readonly value: T }
-  | { readonly kind: "err"; readonly error: E };
-
-export const Ok = <T>(value: T): MochiResult<T, never> => ({ kind: "ok", value });
-export const Err = <E>(error: E): MochiResult<never, E> => ({ kind: "err", error });
-
-export function isOk<T, E>(r: MochiResult<T, E>): r is { kind: "ok"; value: T } {
-  return r.kind === "ok";
-}
-export function isErr<T, E>(r: MochiResult<T, E>): r is { kind: "err"; error: E } {
-  return r.kind === "err";
-}
+```
+panic(code, msg)                 ->  throw new MochiPanic(code, msg);
+try { B } catch e { H }          ->  try { B } catch (__panic_N) {
+                                       const e: number = (
+                                         __panic_N instanceof MochiPanic
+                                         ? __panic_N.code
+                                         : 0
+                                       );
+                                       H
+                                     }
 ```
 
-**Variance**: `MochiResult<T, never>` produced by `Ok` is assignable to `MochiResult<T, AnyE>` thanks to the `never` bottom type; same for `MochiResult<never, E>` from `Err`. This is the canonical "Either" trick in TypeScript.
-
-## Sub-phase 11.2, throws to MochiResult
-
-### Decisions made (11.2)
-
-**Mochi**: `fun parse(s: string) -> AST throws ParseError { ... }`
-
-**TypeScript** (sync):
+**`MochiPanic` class** (emitted inline in the prelude when any throw-capable site is used):
 
 ```typescript
-import { MochiResult, Ok, Err } from "@mochi/runtime/result";
-import { AST } from "./ast.ts";
-import { ParseError } from "./parse_error.ts";
-
-export function parse(s: string): MochiResult<AST, ParseError> {
-  if (s === "") return Err(new ParseError("empty input"));
-  // ...
-  return Ok(ast);
-}
-```
-
-**TypeScript** (async, when the function transitively awaits): wrap the return type in `Promise<...>`.
-
-**Why MochiResult instead of `throw`**: thrown exceptions in TypeScript have type `unknown` (under `useUnknownInCatchVariables`). They are also implicit in the function signature, which loses information for the caller. MochiResult makes failure explicit at the type level, matches Rust's `Result` and Mochi's spec, and never crosses the FFI boundary by surprise.
-
-**`throw` reserved for `panic`**: Mochi `panic msg` lowers to `throw new MochiPanic(msg)`. The runtime never catches `MochiPanic`; the host runtime terminates the process (or for browsers, surfaces it to `window.onerror`).
-
-## Sub-phase 11.3, ? operator
-
-### Decisions made (11.3)
-
-**Mochi**: `let x = parse(s)?`
-
-**TypeScript**:
-
-```typescript
-const __r = parse(s);
-if (__r.kind === "err") return __r;
-const x = __r.value;
-```
-
-(The early `return __r` returns the same `MochiResult.Err` shape to the caller, propagating the error type as long as the caller's `E` is compatible. The colour pass plus type checker enforce compatibility.)
-
-**Inside `async`**: same shape, but `__r = await parse(s)` if `parse` is Red.
-
-## Sub-phase 11.4, panic
-
-### Decisions made (11.4)
-
-**`MochiPanic`**:
-
-```typescript
-// @mochi/runtime/panic
-export class MochiPanic extends Error {
-  constructor(message: string) {
-    super(message);
+class MochiPanic extends Error {
+  readonly code: number;
+  constructor(code: number, msg: string) {
+    super(msg);
+    this.code = code;
     this.name = "MochiPanic";
   }
 }
 ```
 
-**Mochi `panic "..."`**: `throw new MochiPanic("...")`.
+Subclassing `Error` gives `.stack` / `.message` for free and keeps `instanceof MochiPanic` narrow at the catch site. The `code` field is the load-bearing surface; `msg` mirrors C's diagnostic string but is not user-visible in any fixture.
 
-**Never caught**: Mochi has no `try { ... } catch (panic) { ... }` form. The host runtime treats it as a hard failure: Node terminates with exit code 1, Deno same, Bun same. Browser surfaces to `window.onerror`. The emitter rejects any user code that tries to catch `MochiPanic`.
+**Why a class instead of plain `throw code`**: a bare `throw 5` would lose the `Error` shape (no `.stack`, no `.name`, harder to inspect in a debugger) and would forbid the JS-host-runtime native handling (unhandled-error reporting in Node, Deno's panic format, browser `window.onerror`). The class costs roughly 8 lines once per program and pays for itself the first time a panic reaches the top.
 
-## Sub-phase 11.5, AggregateError wiring
+**Catch-clause prologue**: the `(__panic_N instanceof MochiPanic ? __panic_N.code : 0)` ternary coalesces a non-MochiPanic throw (`throw 42` at a JS layer; would only happen if user FFI code throws a non-Mochi value, which is Phase 12 territory) into `0`, keeping the user-visible `e` strictly `number`.
 
-### Decisions made (11.5)
+**Raw catch binding name**: derived from `aotir.TryCatchStmt.BufName` (`__mochi_buf_N`) by replacing the `buf_` infix with `err_`, so the variable name reads as the error binding rather than a `jmp_buf`. Source-order uniqueness is guaranteed by the C lowerer's per-frame counter.
 
-The Phase 9 supervisor failure (`MochiSupervisorFailure extends AggregateError`) wraps in `MochiResult.Err`:
+## Sub-phase 11.1, throwing div / mod
+
+### Decisions made (11.1)
+
+**Lowering**:
+
+```
+a / b   (BinDivI64)   ->  mochi_div_i64(a, b)
+a % b   (BinModI64)   ->  mochi_mod_i64(a, b)
+```
+
+**Helpers** (emitted inline when any BinDivI64 / BinModI64 site is lowered):
 
 ```typescript
-const result: MochiResult<void, MochiSupervisorFailure> = await supervisor.run();
-if (result.kind === "err") {
-  for (const inner of result.error.errors) {
-    console.error("child failure:", inner);
-  }
+function mochi_div_i64(a: number, b: number): number {
+  if (b === 0) { throw new MochiPanic(5, "mochi: integer divide by zero"); }
+  return Math.trunc(a / b);
+}
+function mochi_mod_i64(a: number, b: number): number {
+  if (b === 0) { throw new MochiPanic(5, "mochi: integer divide by zero"); }
+  return a % b;
 }
 ```
 
-The `AggregateError.errors` field gives the user direct access to inner failures. Standard JavaScript: every tier-1 runtime supports `instanceof AggregateError`.
+**Why `Math.trunc` for div**: JS `/` on `number` operates on doubles, so `7 / 2 === 3.5` and `-7 / 2 === -3.5`. Mochi int div is C-style truncation toward zero (`7 / 2 == 3`, `-7 / 2 == -3`), which `Math.trunc` matches exactly. Bit-tricks like `(a / b) | 0` would clip to 32-bit and silently corrupt large operands.
 
-## Files (planned)
+**Why both div and mod use code 5**: vm3 raises `ErrDivByZero` for both `/` and `%` against zero, mirroring the C runtime. The TS path follows the same convention so `try / catch` sees the same integer for both routes.
+
+**Float divide stays native**: `BinDivF64` keeps the native `/` operator. Mochi's float divide-by-zero contract is IEEE 754 (returns Infinity, no panic), matching JS semantics directly.
+
+## Sub-phase 11.2, throwing index helpers
+
+### Decisions made (11.2)
+
+`mochi_list_at` (Phase 3.1) and `mochi_str_at` (Phase 2) previously threw `RangeError` on out-of-bounds access. Phase 11 swaps the throw target to `MochiPanic(4, msg)` so user-level `try / catch e { ... }` sees the integer index error code (4) the way the C runtime writes it to exit status.
+
+```typescript
+function mochi_list_at<T>(xs: readonly T[], i: number): T {
+  if (i < 0 || i >= xs.length) {
+    throw new MochiPanic(4, "mochi_list_at: index " + i + " out of range for list of length " + xs.length);
+  }
+  return xs[i] as T;
+}
+```
+
+The `RangeError` swap was the smallest disruptive change in the wire-up: any pre-Phase-11 fixture that catches an OOB panic with `try / catch e` would have read the JS engine's `RangeError` object as the catch value rather than the integer. Phase 11 promotes the helper to the same panic contract every other throw site uses.
+
+**Why list/string-index but not list-slice**: `mochi_list_at` / `mochi_str_at` are the only Phase 3 index sites surfaced in Phase 11 fixtures. `mochi_str_slice` is a clamping operation that returns the in-range portion without panicking, matching vm3's substring contract. If a future fixture exercises an OOB slice it lands as 11.2.1.
+
+## Built-in panic codes
+
+Mirrored from `transpiler3/c/runtime/include/mochi/errors.h` so the TS exit-code (where the host runtime maps an unhandled MochiPanic to a process exit) is consistent with the C target's:
+
+| Code | Symbol              | Trap site              |
+|------|---------------------|------------------------|
+| 1    | ErrFetch            | Phase 14               |
+| 2    | ErrParse            | reserved for FFI       |
+| 3    | ErrType             | reserved               |
+| 4    | ErrIndex            | `mochi_list_at`, `mochi_str_at` |
+| 5    | ErrDivZero          | `mochi_div_i64`, `mochi_mod_i64` |
+| 6    | ErrOverflow         | reserved               |
+| 7    | ErrFfi              | Phase 12               |
+| 8    | ErrLlm              | Phase 13               |
+| 9    | ErrAssert           | reserved for `assert`  |
+| any  | user panic          | `panic(code, msg)` (corpus uses 42, 99, 100, 1000, ...)
+
+## Files
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/typescript/colour/colour.go` | Full async colour pass (already stubbed in Phase 9); now exercises every emit site |
-| `transpiler3/typescript/colour/graph.go` | Call graph build from aotir |
-| `transpiler3/typescript/colour/fixpoint.go` | Fixed-point iteration with seed set |
-| `transpiler3/typescript/lower/result.go` | `throws` to MochiResult; `?` to early return |
-| `transpiler3/typescript/lower/panic.go` | `panic` to `throw new MochiPanic` |
-| `runtime3/typescript/src/result/index.ts` | `MochiResult<T, E>`, Ok, Err, isOk, isErr |
-| `runtime3/typescript/src/panic/index.ts` | `MochiPanic` class |
-| `transpiler3/typescript/build/phase11_test.go` | `TestPhase11Async` |
-| `tests/transpiler3/typescript/fixtures/phase11-async/` | 30 fixtures |
+| `transpiler3/typescript/tstree/phase11.go` | `ThrowStmt`, `TryCatchStmt`, `InstanceOfExpr`, `CondExpr` nodes |
+| `transpiler3/typescript/lower/phase11.go` | `MochiPanic` class text, `panicDecls`, `divModDecls`, `lowerPanicStmt`, `lowerTryCatchStmt`, `lowerDivBinary`, `lowerModBinary` |
+| `transpiler3/typescript/lower/lower.go` | Wire `PanicStmt` / `TryCatchStmt` into `lowerStmt`, route `BinDivI64` / `BinModI64` in `lowerBinary`, opt `panicClass` flag on every throw-capable site |
+| `transpiler3/typescript/lower/phase03.go` | `mochi_list_at` swap from `RangeError` to `MochiPanic(4, ...)` |
+| `transpiler3/typescript/build/phase11_test.go` | `TestPhase11ErrorsNode/Deno/Bun`, `TestPhase11EmitShape`, `TestPhase11NoAsyncRuntime` |
+| `tests/transpiler3/typescript/fixtures/phase11-errors/` | 35 fixtures (copied from Rust Phase 11 corpus minus `try_catch_double_index_oob` which needs Phase 3.1 nested-list support) |
 
 ## Test set
 
-- `TestPhase11Async`, 30 fixtures four-runtime.
-- `TestPhase11NoCatchPanic`, asserts emitted code never `catch`es `MochiPanic`.
-- `TestPhase11AggregateError`, supervisor failure surfaces `AggregateError` to user code.
-- `TestPhase11ColourSoundness`, hand-edited fixture that calls a Red function from Blue context fails at emit time with an explicit error.
+35 fixtures, two distinct shapes:
+
+- **Panic family** (4 fixtures): `panic_custom_code`, `panic_in_nested_call`, `panic_negative_code`, `panic_zero_code`, `user_panic_basic`. Cover user-emitted `panic(code, msg)` reaching `try / catch` boundaries through direct calls, nested calls, and various code values (including 0 and negative).
+- **Try / catch family** (30 fixtures): every combination the Rust Phase 11 corpus exercises, including `try_catch_after_normal`, `try_catch_collect_codes`, `try_catch_count_errors`, `try_catch_div_then_mod`, `try_catch_div_zero`, `try_catch_fun_returns_caught`, `try_catch_in_arithmetic`, `try_catch_in_fun`, `try_catch_in_fun_recursive`, `try_catch_in_if`, `try_catch_in_loop`, `try_catch_in_record_field`, `try_catch_index_loop`, `try_catch_index_oob`, `try_catch_index_zero_empty`, `try_catch_mod_zero`, `try_catch_negative_index`, `try_catch_nested`, `try_catch_no_raise`, `try_catch_only_catch_runs`, `try_catch_panic_in_call`, `try_catch_propagates_panic`, `try_catch_reraise`, `try_catch_sequential`, `try_catch_string_index_oob`, `try_catch_string_var`, `try_catch_then_panic`, `try_catch_three_levels`, `try_catch_var_outside`, `try_catch_with_var_var`.
 
 ## Deferred work
 
-- `try/catch/finally` for FFI boundaries (where C code throws). Phase 12 (FFI) reintroduces the bounded form.
-- `MochiResult.map`, `flatMap`, `andThen` combinators. v1.5; the `?` operator covers the v1 needs.
-- Cancellable async sites (per-call `AbortSignal` plumbing). Phase 14 (fetch) lands the fetch-side; broader cancellation is v1.5.
+- **11.3 async colour pass full activation**: every Phase 11 fixture is synchronous. The colour pass remains the Phase 1 identity (every function Blue) until a fixture introduces an `await`-shaped site. Likely lands together with Phase 14 (fetch) when the first Red function appears.
+- **11.4 `MochiResult<T, E>`**: the typed-error sub-language has zero corpus pressure. Lands as a v1.5 sub-phase together with the `?` operator (11.5) when a fixture exercises a `throws ParseError`-style signature.
+- **11.5 `?` short-circuit operator**: depends on 11.4.
+- **11.6 AggregateError wiring**: depends on Phase 9.7 supervisor (DEFERRED).
+- **`try / catch / finally`**: the `finally` clause is not in the Phase 11 fixture corpus. Lands when a fixture exercises a finally block, or under Phase 12 FFI for resource cleanup.
+- **`mochi_str_slice` panic on OOB slice**: current contract clamps; no fixture requires panic-on-OOB-slice. Lands as 11.2.1 if a future fixture surfaces.
+
+## Audit, post-implementation
+
+The audit point that drove the spec-collapse decision: the original spec named "async coloring, MochiResult, AggregateError" but the actual user-facing goal in §Phases is "panic + try / catch survives every runtime byte-equal." Native JS throw + `MochiPanic extends Error` is the smallest implementation that satisfies the goal and stays compatible with every later phase. The deferred work matrix above shows which spec items remain available for a future sub-phase to land independently.

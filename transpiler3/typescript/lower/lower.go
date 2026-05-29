@@ -83,6 +83,17 @@ type runtimeFlags struct {
 	// carry the stream bytes (Phase 15 package budget).
 	chanClass   bool
 	streamClass bool
+	// Phase 11 panic / try-catch. `panicClass` opts in the
+	// `MochiPanic extends Error` class. `divI64` / `modI64` opt in
+	// the throwing-div / throwing-mod helpers (`mochi_div_i64`,
+	// `mochi_mod_i64`) that raise MochiPanic(5) on a zero divisor.
+	// Setting any throw-capable flag (panicClass, divI64, modI64,
+	// or listAt/strAt/strSlice via their helpers) implies
+	// panicClass = true so the catch site has the class to narrow
+	// against.
+	panicClass bool
+	divI64     bool
+	modI64     bool
 }
 
 type lowerer struct {
@@ -204,6 +215,14 @@ func Lower(prog *aotir.Program, colours colour.ColourMap) (*tstree.SourceFile, e
 	// gated on its own runtime flag so a chan-only program does not
 	// carry the stream/sub bytes.
 	decls = append(decls, l.chanStreamDecls()...)
+	// Phase 11: panic class + throwing-div / throwing-mod helpers.
+	// The class is gated on `panicClass`, which is auto-set by every
+	// throw-capable site (PanicStmt, TryCatchStmt, div/mod helpers,
+	// list/string-at/slice helpers); the div/mod helpers are gated
+	// on their own flags so a pure try/catch program doesn't pay
+	// for them.
+	decls = append(decls, l.panicDecls()...)
+	decls = append(decls, l.divModDecls()...)
 	// Phase 4.2: per-record equality helpers. Emitted after the
 	// record ClassDecls (so the `R` type is in scope) and after
 	// the runtime helpers (so the prelude reads top-to-bottom as
@@ -345,6 +364,8 @@ func (l *lowerer) runtimeDecls() []tstree.Decl {
 				"as a length-1-or-2 string. Surrogate pairs (U+10000+)",
 				"occupy two UTF-16 units but one code point; iterating",
 				"with for...of yields them as one step.",
+				"Phase 11: out-of-range raises MochiPanic(4) so user",
+				"`try / catch e` sees the index error code (4).",
 			},
 			Name: "mochi_str_at",
 			Params: []tstree.FuncParam{
@@ -358,7 +379,7 @@ func (l *lowerer) runtimeDecls() []tstree.Decl {
 				&tstree.RawStmt{Text: "  if (i === index) { return ch; }"},
 				&tstree.RawStmt{Text: "  i++;"},
 				&tstree.RawStmt{Text: "}"},
-				&tstree.RawStmt{Text: "throw new RangeError(\"mochi_str_at: index out of range\");"},
+				&tstree.RawStmt{Text: "throw new MochiPanic(4, \"mochi_str_at: index out of range\");"},
 			},
 		})
 	}
@@ -462,8 +483,12 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]tstree.Stmt, error) {
 		return l.lowerChanSendStmt(v)
 	case *aotir.StreamEmitStmt:
 		return l.lowerStreamEmitStmt(v)
+	case *aotir.PanicStmt:
+		return l.lowerPanicStmt(v)
+	case *aotir.TryCatchStmt:
+		return l.lowerTryCatchStmt(v)
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 10 surface)", s)
+		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 11 surface)", s)
 	}
 }
 
@@ -718,6 +743,8 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (tstree.Expr, error) {
 		}, nil
 	case *aotir.StrIndexExpr:
 		l.runtime.strAt = true
+		// Phase 11: mochi_str_at throws MochiPanic(4) on OOB.
+		l.runtime.panicClass = true
 		recv, err := l.lowerExpr(v.Receiver)
 		if err != nil {
 			return nil, err
@@ -831,7 +858,7 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (tstree.Expr, error) {
 	case *aotir.SubRecvExpr:
 		return l.lowerSubRecvExpr(v)
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 10 surface)", e)
+		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 11 surface)", e)
 	}
 }
 
@@ -842,6 +869,35 @@ func (l *lowerer) lowerBinary(e *aotir.BinaryExpr) (tstree.Expr, error) {
 	// the structural equality Mochi `==` contracts).
 	if e.Op == aotir.BinEqRec || e.Op == aotir.BinNeRec {
 		return l.lowerRecordEq(e)
+	}
+	// Phase 11 divide-by-zero trap: BinDivI64 / BinModI64 lower to
+	// `mochi_div_i64(a, b)` / `mochi_mod_i64(a, b)`, which raise
+	// MochiPanic(5) on a zero divisor. JS `/` on `number` would
+	// silently return Infinity / NaN; the helper restores Mochi's
+	// panic contract. Float div (BinDivF64) keeps the native `/`
+	// operator because Mochi's float divide-by-zero contract is
+	// IEEE 754 (returns Infinity, no panic).
+	if e.Op == aotir.BinDivI64 {
+		lhs, err := l.lowerExpr(e.Left)
+		if err != nil {
+			return nil, err
+		}
+		rhs, err := l.lowerExpr(e.Right)
+		if err != nil {
+			return nil, err
+		}
+		return l.lowerDivBinary(lhs, rhs), nil
+	}
+	if e.Op == aotir.BinModI64 {
+		lhs, err := l.lowerExpr(e.Left)
+		if err != nil {
+			return nil, err
+		}
+		rhs, err := l.lowerExpr(e.Right)
+		if err != nil {
+			return nil, err
+		}
+		return l.lowerModBinary(lhs, rhs), nil
 	}
 	op, err := tsBinOp(e.Op)
 	if err != nil {
