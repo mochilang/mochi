@@ -1,0 +1,5 @@
+writeFile("/tmp/mochi3_go_lines_notrail.txt", "a\nb\nc")
+let xs = lines("/tmp/mochi3_go_lines_notrail.txt")
+for line in xs {
+    print(line)
+}
