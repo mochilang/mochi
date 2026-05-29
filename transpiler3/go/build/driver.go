@@ -1,10 +1,12 @@
 package build
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"mochi/parser"
 	clower "mochi/transpiler3/c/lower"
@@ -12,6 +14,46 @@ import (
 	glower "mochi/transpiler3/go/lower"
 	"mochi/types"
 )
+
+// copySiblingGoFiles copies every *.go file in the source's
+// parent directory into workDir, skipping _test.go and any file
+// whose package declaration is not `package main`. Phase 10.2
+// uses this to materialize Go FFI companion sources alongside
+// the emitted main.go.
+func copySiblingGoFiles(src, workDir string) error {
+	srcDir := filepath.Dir(src)
+	entries, err := os.ReadDir(srcDir)
+	if err != nil {
+		return fmt.Errorf("read source dir %s: %w", srcDir, err)
+	}
+	for _, e := range entries {
+		if e.IsDir() {
+			continue
+		}
+		name := e.Name()
+		if !strings.HasSuffix(name, ".go") {
+			continue
+		}
+		if strings.HasSuffix(name, "_test.go") {
+			continue
+		}
+		full := filepath.Join(srcDir, name)
+		b, err := os.ReadFile(full)
+		if err != nil {
+			return fmt.Errorf("read %s: %w", full, err)
+		}
+		// Skip files that don't declare `package main` so foreign
+		// .go files don't accidentally break the build.
+		if !bytes.Contains(b, []byte("package main")) {
+			continue
+		}
+		dst := filepath.Join(workDir, name)
+		if err := os.WriteFile(dst, b, 0o644); err != nil {
+			return fmt.Errorf("write %s: %w", dst, err)
+		}
+	}
+	return nil
+}
 
 // Target enumerates the supported MEP-54 build targets.
 // Phase 1 wires only the host go-binary target; the rest are
@@ -123,6 +165,13 @@ func (d *Driver) Build(src, out string, target, profile string) error {
 	}
 	if err := gemit.Emit(file, workDir, "main.go"); err != nil {
 		return fmt.Errorf("transpiler3/go/build: emit main.go: %w", err)
+	}
+	// Phase 10.2 Go FFI: copy any sibling *.go files next to the
+	// .mochi source into the work dir as `package main` companions.
+	// `extern go fun NAME(...)` declarations in the .mochi resolve
+	// against these copied files at link time.
+	if err := copySiblingGoFiles(src, workDir); err != nil {
+		return fmt.Errorf("transpiler3/go/build: copy sibling go files: %w", err)
 	}
 
 	absOut, err := filepath.Abs(out)

@@ -1,0 +1,5 @@
+// Phase 10.2: Go FFI native call with string args.
+extern go fun go_toupper(s: string): string
+
+let result = go_toupper("hello, mochi")
+print(result)
