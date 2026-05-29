@@ -41,6 +41,7 @@ type lowerer struct {
 	needsDeque      bool // true once a chan<T> lowers to collections.deque (Phase 9.0)
 	needsStream     bool // true once a stream<T> / sub<T> needs the mochi_runtime.stream surface (Phase 10.0)
 	needsExcept     bool // true once a panic/try-catch needs the mochi_runtime.except_ surface (Phase 11.0)
+	needsLLM        bool // true once a `generate <provider> {...}` lowers to mochi_runtime.llm (Phase 13.0)
 	moduleName      string          // Mochi module name (drives the externs module import in Phase 12.0)
 	pythonExterns   map[string]bool // Phase 12.0: registered `extern python fun` names
 }
@@ -165,6 +166,12 @@ func Lower(prog *aotir.Program, moduleName string) (*pysrc.Module, error) {
 		mod.Imports = append(mod.Imports, pysrc.ImportStmt{
 			From:  "mochi_runtime.except_",
 			Names: []string{"MochiPanic", "_panic_code"},
+		})
+	}
+	if l.needsLLM {
+		mod.Imports = append(mod.Imports, pysrc.ImportStmt{
+			From:  "mochi_runtime.llm",
+			Names: []string{"mochi_llm_generate"},
 		})
 	}
 	if names := l.pythonExternNames(); len(names) > 0 {
@@ -940,6 +947,8 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (pysrc.Expr, error) {
 		return l.lowerSubMakeExpr(v)
 	case *aotir.SubRecvExpr:
 		return l.lowerSubRecvExpr(v)
+	case *aotir.LLMGenerateExpr:
+		return l.lowerLLMGenerateExpr(v)
 	default:
 		return nil, fmt.Errorf("python/lower: unsupported expression %T", e)
 	}
