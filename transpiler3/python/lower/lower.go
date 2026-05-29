@@ -42,6 +42,7 @@ type lowerer struct {
 	needsStream     bool // true once a stream<T> / sub<T> needs the mochi_runtime.stream surface (Phase 10.0)
 	needsExcept     bool // true once a panic/try-catch needs the mochi_runtime.except_ surface (Phase 11.0)
 	needsLLM        bool // true once a `generate <provider> {...}` lowers to mochi_runtime.llm (Phase 13.0)
+	needsFetch      bool // true once `fetch(url)` or `writeFile(...)` lowers to mochi_runtime.fetch (Phase 14.0)
 	moduleName      string          // Mochi module name (drives the externs module import in Phase 12.0)
 	pythonExterns   map[string]bool // Phase 12.0: registered `extern python fun` names
 }
@@ -172,6 +173,12 @@ func Lower(prog *aotir.Program, moduleName string) (*pysrc.Module, error) {
 		mod.Imports = append(mod.Imports, pysrc.ImportStmt{
 			From:  "mochi_runtime.llm",
 			Names: []string{"mochi_llm_generate"},
+		})
+	}
+	if l.needsFetch {
+		mod.Imports = append(mod.Imports, pysrc.ImportStmt{
+			From:  "mochi_runtime.fetch",
+			Names: []string{"mochi_fetch", "mochi_write_file"},
 		})
 	}
 	if names := l.pythonExternNames(); len(names) > 0 {
@@ -362,6 +369,8 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (pysrc.Stmt, error) {
 		return l.lowerPanicStmt(v)
 	case *aotir.TryCatchStmt:
 		return l.lowerTryCatchStmt(v)
+	case *aotir.WriteFileStmt:
+		return l.lowerWriteFileStmt(v)
 	default:
 		return nil, fmt.Errorf("python/lower: unsupported statement %T", s)
 	}
@@ -949,6 +958,8 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (pysrc.Expr, error) {
 		return l.lowerSubRecvExpr(v)
 	case *aotir.LLMGenerateExpr:
 		return l.lowerLLMGenerateExpr(v)
+	case *aotir.HttpGetExpr:
+		return l.lowerHttpGetExpr(v)
 	default:
 		return nil, fmt.Errorf("python/lower: unsupported expression %T", e)
 	}

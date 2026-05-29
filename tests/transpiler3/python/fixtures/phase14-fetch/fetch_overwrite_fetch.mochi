@@ -1,0 +1,6 @@
+writeFile("/tmp/mochi_swift_fof.txt", "first")
+let r1 = fetch("file:///tmp/mochi_swift_fof.txt")
+writeFile("/tmp/mochi_swift_fof.txt", "second")
+let r2 = fetch("file:///tmp/mochi_swift_fof.txt")
+print(r1)
+print(r2)
