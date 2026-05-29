@@ -1,0 +1,5 @@
+let words = ["hello", "world", "foo", "bar"]
+let result = from w in words select w
+for w in result {
+  print(w)
+}

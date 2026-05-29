@@ -1,0 +1,7 @@
+type Person {
+  name: string
+  age: int
+}
+let alice = Person { name: "Alice", age: 30 }
+print(alice.name)
+print(alice.age)

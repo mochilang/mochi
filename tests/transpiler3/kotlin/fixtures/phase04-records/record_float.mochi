@@ -1,0 +1,5 @@
+type Circle {
+  radius: float
+}
+let c = Circle { radius: 2.5 }
+print(c.radius)

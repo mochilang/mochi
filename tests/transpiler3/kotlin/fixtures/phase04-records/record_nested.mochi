@@ -1,0 +1,6 @@
+type Pair {
+  first: int
+  second: int
+}
+let p = Pair { first: 10, second: 20 }
+print(p.first + p.second)

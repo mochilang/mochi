@@ -1,0 +1,14 @@
+type Tag = A(n: int) | B(n: int)
+
+fun process(t: Tag): int {
+  let result = match t {
+    A(n) => n
+    B(n) => n + 10
+  }
+  return result
+}
+
+let a = A(1)
+let b = B(2)
+print(process(a))
+print(process(b))

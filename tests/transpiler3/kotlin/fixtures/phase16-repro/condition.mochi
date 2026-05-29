@@ -1,0 +1,6 @@
+fun max_val(a: int, b: int): int {
+  if a > b { return a }
+  return b
+}
+print(max_val(3, 7))
+print(max_val(9, 2))

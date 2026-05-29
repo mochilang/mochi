@@ -1,0 +1,7 @@
+type Expr = Num(value: int) | Neg(value: int)
+let e: Expr = Num(42)
+let result = match e {
+  Num(value) => value
+  Neg(value) => -value
+}
+print(result)
