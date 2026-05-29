@@ -13,8 +13,8 @@ description: "MEP-52 Phase 14, Mochi `fetch URL into body` and `json_decode(body
 | Status         | LANDED (Node + Deno + Bun) |
 | Started        | 2026-05-30 01:05 (GMT+7) |
 | Landed         | 2026-05-30 01:17 (GMT+7) |
-| Tracking issue | (pending) |
-| Tracking PR    | (pending) |
+| Tracking issue | [#23013](https://github.com/mochilang/mochi/issues/23013) |
+| Tracking PR    | [#23014](https://github.com/mochilang/mochi/pull/23014) |
 
 ## Gate
 
