@@ -359,7 +359,8 @@
       "implementation/0074/phase-03-gopackages-ingest",
       "implementation/0074/phase-04-apisurface",
       "implementation/0074/phase-05-typemap",
-      "implementation/0074/phase-06-wrapper"
+      "implementation/0074/phase-06-wrapper",
+      "implementation/0074/phase-07-extern-emit"
     ]
   },
   "implementation/0075/index",
