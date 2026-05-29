@@ -15,7 +15,7 @@ A phase is LANDED only when its gate is green on every target listed for it in M
 
 | Phase | Title                                                                   | Tracking page                                                                | Status      | Commit |
 |-------|-------------------------------------------------------------------------|------------------------------------------------------------------------------|-------------|--------|
-| 1     | Hello world                                                             | [phase-01-hello](/docs/implementation/0052/phase-01-hello)                   | NOT STARTED | n/a    |
+| 1     | Hello world                                                             | [phase-01-hello](/docs/implementation/0052/phase-01-hello)                   | LANDED (Node + Deno + Bun) | (this PR) |
 | 2     | Scalars (int via bigint/number, float, bool, string)                    | [phase-02-scalars](/docs/implementation/0052/phase-02-scalars)               | NOT STARTED | n/a    |
 | 3.1   | Lists (readonly T[] / T[])                                              | [phase-03-collections](/docs/implementation/0052/phase-03-collections)       | NOT STARTED | n/a    |
 | 3.2   | Maps (Map\<K, V\>)                                                      | [phase-03-collections](/docs/implementation/0052/phase-03-collections)       | NOT STARTED | n/a    |
