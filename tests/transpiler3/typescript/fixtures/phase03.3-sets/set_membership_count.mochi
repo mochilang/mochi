@@ -1,0 +1,9 @@
+let allowed: set<string> = set{"red", "green", "blue"}
+let probes: list<string> = ["red", "yellow", "blue", "blue", "green", "orange"]
+var hits: int = 0
+for p in probes {
+  if has(allowed, p) {
+    hits = hits + 1
+  }
+}
+print(hits)

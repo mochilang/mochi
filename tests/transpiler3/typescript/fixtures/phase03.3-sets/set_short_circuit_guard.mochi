@@ -1,0 +1,9 @@
+let s: set<int> = set{1, 3, 5, 7}
+let probes: list<int> = [1, 2, 3, 4, 5]
+for k in probes {
+  if k in s {
+    print(k)
+  } else {
+    print(-1)
+  }
+}

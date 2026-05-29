@@ -1,0 +1,8 @@
+var s: set<string> = set{"a"}
+s = add(s, "b")
+s = add(s, "c")
+print(len(s))
+print(has(s, "a"))
+print(has(s, "b"))
+print(has(s, "c"))
+print(has(s, "d"))

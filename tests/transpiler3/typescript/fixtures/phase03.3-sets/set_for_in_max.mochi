@@ -1,0 +1,8 @@
+let s: set<int> = set{7, 3, 9, 1, 5}
+var m: int = 0
+for x in s {
+  if x > m {
+    m = x
+  }
+}
+print(m)

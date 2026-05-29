@@ -1,0 +1,5 @@
+let s: set<int> = set{10, 20, 30}
+print(has(s, 10))
+print(has(s, 20))
+print(has(s, 30))
+print(has(s, 0))

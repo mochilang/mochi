@@ -1,0 +1,3 @@
+let s: set<bool> = set{true, false}
+print(has(s, true))
+print(has(s, false))

@@ -1,0 +1,5 @@
+let s: set<int> = set{2, 4, 6, 8}
+print(2 in s)
+print(3 in s)
+print(8 in s)
+print(0 in s)
