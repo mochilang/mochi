@@ -69,6 +69,7 @@ var knownImportLangs = map[string]struct{}{
 	"clj":        {},
 	"clojure":    {},
 	"rust":       {},
+	"kotlin":     {},
 	"erlang":     {},
 }
 
