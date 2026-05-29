@@ -124,6 +124,8 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerLinesExpr(e)
 	case *aotir.LoadCSVExpr:
 		return l.lowerLoadCSVExpr(e)
+	case *aotir.JsonDecodeExpr:
+		return l.lowerJsonDecodeExpr(e)
 	case *aotir.OMapLiteralExpr:
 		return l.lowerOMapLiteralExpr(e)
 	case *aotir.OMapGetExpr:
@@ -1573,4 +1575,22 @@ func (l *lowerer) lowerLoadCSVExpr(e *aotir.LoadCSVExpr) (gotree.Expr, error) {
 	l.addImport("encoding/csv")
 	l.addHelper("mochiLoadCSV")
 	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiLoadCSV"}, Args: []gotree.Expr{path}}, nil
+}
+
+// lowerJsonDecodeExpr emits mochiJsonDecode(s) which uses encoding/json
+// to parse a JSON object literal into map[string]string. All scalar
+// values are coerced to their string representation so the call site
+// can use the result as a `map<string, string>` (matching the C
+// runtime's mochi_json_decode and BEAM's mochi_json:decode/1).
+// Returns an empty map on parse error so the program can inspect len(m)
+// rather than handling a panic. Phase 14.2.
+func (l *lowerer) lowerJsonDecodeExpr(e *aotir.JsonDecodeExpr) (gotree.Expr, error) {
+	input, err := l.lowerExpr(e.Input)
+	if err != nil {
+		return nil, fmt.Errorf("json_decode input: %w", err)
+	}
+	l.addImport("encoding/json")
+	l.addImport("fmt")
+	l.addHelper("mochiJsonDecode")
+	return &gotree.CallExpr{Fun: &gotree.Ident{Name: "mochiJsonDecode"}, Args: []gotree.Expr{input}}, nil
 }

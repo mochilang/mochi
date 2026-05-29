@@ -1,0 +1,4 @@
+let body = readFile("/tmp/mochi_go_jsondec_two.json")
+let m = json_decode(body)
+print(m["a"])
+print(m["b"])
