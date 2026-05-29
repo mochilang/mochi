@@ -1,0 +1,12 @@
+type Outcome = Pass(score: int) | Fail(msg: string)
+
+fun is_pass(o: Outcome): bool {
+  return match o {
+    Pass(s) => true
+    Fail(m) => false
+  }
+}
+
+print(is_pass(Pass(90)))
+print(is_pass(Fail("late")))
+print(is_pass(Pass(72)))

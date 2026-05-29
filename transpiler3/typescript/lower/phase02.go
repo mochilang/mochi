@@ -124,7 +124,7 @@ func tsUnOp(op aotir.UnOp) (string, error) {
 // and ElemRecordName side-channels for record params and
 // list-of-record params.
 func paramType(p aotir.Param) (string, error) {
-	return tsTypeForLetSlot(p.Type, p.ElemType, p.KeyType, p.ValueType, p.RecordName, p.ElemRecordName)
+	return tsTypeForLetSlot(p.Type, p.ElemType, p.KeyType, p.ValueType, p.RecordName, p.ElemRecordName, p.UnionName)
 }
 
 // lowerFunction emits one user-defined function. Mochi `fun add(a:
@@ -144,7 +144,7 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*tstree.FuncDecl, error) {
 		}
 		params = append(params, tstree.FuncParam{Name: p.Name, Type: tn})
 	}
-	ret, err := tsTypeForLetSlot(fn.ReturnType, fn.ReturnElemType, fn.ReturnKeyType, fn.ReturnValueType, fn.ReturnRecordName, fn.ReturnElemRecordName)
+	ret, err := tsTypeForLetSlot(fn.ReturnType, fn.ReturnElemType, fn.ReturnKeyType, fn.ReturnValueType, fn.ReturnRecordName, fn.ReturnElemRecordName, fn.ReturnUnionName)
 	if err != nil {
 		return nil, fmt.Errorf("ts lower: return type of %q: %w", fn.Name, err)
 	}

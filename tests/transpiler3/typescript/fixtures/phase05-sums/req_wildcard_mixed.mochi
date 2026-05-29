@@ -1,0 +1,9 @@
+type Event = Click(x: int) | KeyPress(c: string) | Resize | Close
+
+let e: Event = KeyPress("a")
+let label = match e {
+  Click(x) => "click"
+  KeyPress(c) => c
+  _ => "other"
+}
+print(label)

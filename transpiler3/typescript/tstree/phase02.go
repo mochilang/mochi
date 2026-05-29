@@ -14,14 +14,19 @@ import (
 // renders the explicit type annotation so `tsc --strict` never has
 // to infer through a runtime-helper boundary.
 //
-// LetDecl is a statement (appears inside function bodies), not a
-// top-level declaration: there is no Mochi surface for module-scope
-// bindings under MEP-52. Top-level Mochi statements live inside
-// mochi_main, which means every let / var is a function-scope local.
+// When Init is nil, the LetDecl renders as
+// `let NAME!: TYPE;` (definite assignment assertion). Phase 5 uses
+// this form for the match-as-expression result temp: the C lowerer
+// pre-emits a mutable LetStmt with nil Init, and the match arms each
+// assign to it. The `!` tells tsc the binding is provably assigned
+// before use, which the exhaustiveness trap (mochiUnreachable in
+// the default arm) makes true at the type level. A nil-Init LetDecl
+// with Mutable=false is a build error — there is no syntax for
+// `const NAME!: TYPE;` (const requires an initialiser).
 type LetDecl struct {
 	Name    string
 	Type    string
-	Init    Expr
+	Init    Expr // nil means "definite-assignment assertion" form
 	Mutable bool
 }
 
@@ -31,6 +36,9 @@ func (s *LetDecl) TsString(indent int) string {
 	keyword := "const"
 	if s.Mutable {
 		keyword = "let"
+	}
+	if s.Init == nil {
+		return pad + keyword + " " + s.Name + "!: " + s.Type + ";"
 	}
 	return pad + keyword + " " + s.Name + ": " + s.Type + " = " + s.Init.TsString(0) + ";"
 }

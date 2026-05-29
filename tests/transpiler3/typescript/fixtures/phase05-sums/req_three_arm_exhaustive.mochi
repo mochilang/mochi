@@ -1,0 +1,13 @@
+type Triple = One(n: int) | Two(n: int) | Three(n: int)
+
+fun bump(t: Triple): int {
+  return match t {
+    One(n) => 100 + n
+    Two(n) => 200 + n
+    Three(n) => 300 + n
+  }
+}
+
+print(bump(One(1)))
+print(bump(Two(2)))
+print(bump(Three(3)))
