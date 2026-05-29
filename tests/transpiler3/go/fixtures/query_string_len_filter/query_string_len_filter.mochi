@@ -1,0 +1,5 @@
+let words = ["a", "bb", "ccc", "dddd"]
+let short = from w in words where len(w) <= 2 select w
+for w in short {
+  print(w)
+}

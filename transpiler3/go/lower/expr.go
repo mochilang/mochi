@@ -86,6 +86,10 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerFunLit(e)
 	case *aotir.FunCallExpr:
 		return l.lowerFunCallExpr(e)
+	case *aotir.StrLenExpr:
+		return l.lowerStrLenExpr(e)
+	case *aotir.StrContainsExpr:
+		return l.lowerStrContainsExpr(e)
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
@@ -853,4 +857,45 @@ func (l *lowerer) lowerUnary(u *aotir.UnaryExpr) (gotree.Expr, error) {
 		return &gotree.UnaryExpr{Op: "!", X: operand}, nil
 	}
 	return nil, fmt.Errorf("transpiler3/go/lower: Phase 2 does not handle UnOp %v", u.Op)
+}
+
+// lowerStrLenExpr emits `int64(len([]rune(s)))` so the length follows
+// the Mochi semantics of counting Unicode codepoints rather than UTF-8
+// bytes. A pure-ASCII input still gets the right answer; multibyte
+// runes count as one each. The int64 wrapper keeps the Mochi int pin.
+func (l *lowerer) lowerStrLenExpr(e *aotir.StrLenExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	runes := &gotree.CallExpr{
+		Fun:  &gotree.Ident{Name: "[]rune"},
+		Args: []gotree.Expr{recv},
+	}
+	return &gotree.CallExpr{
+		Fun: &gotree.Ident{Name: "int64"},
+		Args: []gotree.Expr{&gotree.CallExpr{
+			Fun:  &gotree.Ident{Name: "len"},
+			Args: []gotree.Expr{runes},
+		}},
+	}, nil
+}
+
+// lowerStrContainsExpr emits `strings.Contains(s, sub)`, matching the
+// C runtime's mochi_str_contains semantics (substring search returns
+// true for empty sub).
+func (l *lowerer) lowerStrContainsExpr(e *aotir.StrContainsExpr) (gotree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, err
+	}
+	sub, err := l.lowerExpr(e.Sub)
+	if err != nil {
+		return nil, err
+	}
+	l.addImport("strings")
+	return &gotree.CallExpr{
+		Fun:  &gotree.SelectorExpr{X: &gotree.Ident{Name: "strings"}, Sel: "Contains"},
+		Args: []gotree.Expr{recv, sub},
+	}, nil
 }
