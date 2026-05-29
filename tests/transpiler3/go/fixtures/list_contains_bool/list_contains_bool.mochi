@@ -1,0 +1,3 @@
+let xs: list<bool> = [true, false]
+print(true in xs)
+print(false in xs)
