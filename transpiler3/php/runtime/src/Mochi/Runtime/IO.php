@@ -10,6 +10,11 @@ namespace Mochi\Runtime;
  * \\println behaviour. The lowerer routes calls through these helpers
  * so the runtime owns formatting (e.g. \\NaN / \\+Inf / \\-Inf and the
  * Go-style \\strconv.FormatFloat 'g' -1 64 round-trip).
+ *
+ * @api  Public runtime entry point. Lowered Mochi programs live
+ *       outside `src/`, so Psalm's UnusedClass check would otherwise
+ *       flag this. The @api tag tells Psalm this is intentionally an
+ *       externally-consumed surface.
  */
 final class IO
 {
