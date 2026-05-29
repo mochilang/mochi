@@ -28,7 +28,7 @@ A phase is LANDED only when its gate is green for every target in the runtime ma
 | 10 | Hex.pm trusted publishing (OIDC flow + rebar3 hex publish) | LANDED | a66f1db | [phase-10](/docs/implementation/0066/phase-10-trusted-publish) |
 | 11 | OTP behavior bindings (gen_server call/cast, supervisor, application) | LANDED | 42e7b50 | [phase-11](/docs/implementation/0066/phase-11-otp-behaviors) |
 | 12 | Async process bridge (OTP process spawn/receive/send/monitor via Mochi async) | LANDED | a2f8956 | [phase-12](/docs/implementation/0066/phase-12-async-bridge) |
-| 13 | Distributed Erlang node bridge (C-node via erl_interface + `dist` capability) | IN PROGRESS | — | [phase-13](/docs/implementation/0066/phase-13-dist-bridge) |
+| 13 | Distributed Erlang node bridge (C-node via erl_interface + `dist` capability) | LANDED | cf49246 | [phase-13](/docs/implementation/0066/phase-13-dist-bridge) |
 
 ## Per-phase fields
 
@@ -79,12 +79,15 @@ package3/erlang/
   cnode/                  # C-node via erl_interface (phase 13)
   publish/                # Hex.pm OIDC publish + rebar3 hex publish (phase 10)
   target/                 # TargetErlangPort rebar3 app skeleton emitter (phase 9)
+  otp/                    # OTP behavior bindings: GenServer, Supervisor, Application (phase 11)
+  async/                  # Async process bridge: Spawn, Send, Monitor, Mailbox (phase 12)
+  cnode/                  # C-node: EPMD client + dist handshake + REG_SEND (phase 13)
   testutil/               # mock-hex harness + BEAM test fixtures (all phases)
 ```
 
 ## Status snapshot
 
-As of 2026-05-29 22:46 (GMT+7): phases 0-13 NOT STARTED. The MEP spec and research bundle are written; implementation begins with phase 0 (skeleton).
+As of 2026-05-30 01:22 (GMT+7): phases 0-13 ALL LANDED. Full bidirectional Erlang/OTP bridge implemented and merged to main.
 
 ## Cross-references
 
