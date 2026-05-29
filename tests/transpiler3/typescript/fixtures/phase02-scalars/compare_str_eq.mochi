@@ -1,0 +1,6 @@
+let s = "hello"
+let t = "hello"
+let u = "world"
+print(s == t)
+print(s == u)
+print(s != u)

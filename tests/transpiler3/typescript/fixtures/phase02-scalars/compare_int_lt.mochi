@@ -1,0 +1,7 @@
+let a = 3
+let b = 5
+print(a < b)
+print(b < a)
+print(a <= a)
+print(b > a)
+print(a >= a)

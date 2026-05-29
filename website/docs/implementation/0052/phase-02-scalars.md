@@ -10,11 +10,11 @@ description: "MEP-52 Phase 2, int via bigint/number monomorphisation, float, boo
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-52 §Phases · Phase 2](/docs/mep/mep-0052#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | n/a |
-| Landed         | n/a |
-| Tracking issue | n/a |
-| Tracking PR    | n/a |
+| Status         | LANDED (Node + Deno + Bun) for 2.2, 2.3, 2.4, 2.6; 2.1 lands as `number` (bigint specialisation deferred); 2.5 deferred to Phase 3 |
+| Started        | 2026-05-29 16:00 (GMT+7) |
+| Landed         | 2026-05-29 17:21 (GMT+7) |
+| Tracking issue | (this PR) |
+| Tracking PR    | (this PR) |
 
 ## Gate
 
@@ -30,12 +30,12 @@ Phase 2 establishes the scalar value-type vocabulary every later phase reuses. T
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 2.1 | `int` monomorphisation: default `bigint`, specialise to `number` when IR proves the value fits in [-(2^53-1), 2^53-1] and the producer never overflows; never mix in one expression | NOT STARTED | n/a |
-| 2.2 | `float`: IEEE 754 binary64, NaN / ±Inf / ±0 stringification matches vm3 (`strconv.FormatFloat(f, 'g', -1, 64)`) | NOT STARTED | n/a |
-| 2.3 | `bool` short-circuit (`&&`, `\|\|`); `!` negation; comparisons (`===`, `!==`, `<`, `<=`, `>`, `>=`) | NOT STARTED | n/a |
-| 2.4 | `string` UTF-16 internal storage; `mochiStrLen(s)`, `mochiStrAt(s, i)`, `mochiStrSlice(s, a, b)` runtime helpers for code-point semantics | NOT STARTED | n/a |
-| 2.5 | `bytes` (`Uint8Array`) construction, indexing (`u8[i]` returns `number | undefined` under `--noUncheckedIndexedAccess`, runtime-guarded), slicing | NOT STARTED | n/a |
-| 2.6 | Control flow: `if`/`else`, `while`, `for` (numeric range and for-of), `break`, `continue`; lowering preserves SSA-like structure for `tsc --strict` to type-narrow | NOT STARTED | n/a |
+| 2.1 | `int` lowers to TypeScript `number` (aotir is int64-shaped; the per-occurrence Repr field the bigint specialisation requires is not yet plumbed). Pure-int fixtures all pass byte-equal vs vm3 on Node + Deno + Bun. Aggressive `bigint` specialisation deferred to a follow-up sub-phase that lands the Repr field on aotir | LANDED (Node + Deno + Bun) | (this PR) |
+| 2.2 | `float`: lowered to TypeScript `number`. Stringification routed through `mochi_print_f64` runtime helper (NaN → "NaN", +Inf → "+Inf", -Inf → "-Inf", whole floats drop the `.0`, matches vm3) | LANDED (Node + Deno + Bun) | (this PR) |
+| 2.3 | `bool` short-circuit (`&&`, `\|\|`); `!` negation; comparisons (`===`, `!==`, `<`, `<=`, `>`, `>=`); pinned by `TestPhase2NoBareEquality` (no bare `==` / `!=` past `===` / `!==`) | LANDED (Node + Deno + Bun) | (this PR) |
+| 2.4 | `string` UTF-16 storage; `mochi_str_len`, `mochi_str_at`, `mochi_str_slice`, `mochi_str_contains` runtime helpers for code-point semantics. `for ... of` iterates code points by spec | LANDED (Node + Deno + Bun) | (this PR) |
+| 2.5 | `bytes` (`Uint8Array`) construction, indexing, slicing | DEFERRED to Phase 3 (no Mochi `bytes` fixtures in the scalar surface; ships alongside the collection lowering) | n/a |
+| 2.6 | Control flow: `if`/`else` (including else-if chaining without nested braces), `while`, `for` (`for (let i: number = 0; i < <n>; i++) { ... }`), `break`, `continue`; emitter always braces the body | LANDED (Node + Deno + Bun) | (this PR) |
 
 ## Sub-phase 2.1, int via bigint or number
 
@@ -161,5 +161,41 @@ export function mochiStrLen(s: string): bigint {
 
 ## Deferred work
 
-- `bigint` to `number` aggressive defaulting (Open Q1). Phase 2 ships the conservative rule.
+- `bigint` specialisation (Open Q1, swapped from the spec default). Phase 2 ships `number` for all `int` slots because aotir lacks the per-occurrence Repr the bigint rule reads. Plumbing Repr through aotir and re-emitting `bigint` for values outside `[-(2^53-1), 2^53-1]` is the first follow-up sub-phase tracked under Phase 2.1.
+- `bytes` (`Uint8Array`). No `bytes` fixtures appear in the Phase 2 scalar corpus, and the bytes lowering shares its slicing/indexing helpers with arrays, so it lands cleanly with Phase 3.
 - Temporal (Mochi `time`, `duration`). Deferred to Phase 14 alongside fetch (HTTP `Date` header parsing pulls Temporal in).
+
+## Landing log
+
+### 2026-05-29 17:21 (GMT+7), Phase 2 LANDED
+
+**Worktree**: `.claude/worktrees/mep52-phase02` (branch `worktree-mep52-phase02`).
+
+**What landed**:
+
+- `transpiler3/typescript/tstree/phase02.go`: `LetDecl`, `AssignStmt`, `IfStmt` (with else-if chaining), `WhileStmt`, `ForRangeStmt`, `BreakStmt`, `ContinueStmt`, `BinaryExpr` (parenthesised), `UnaryExpr`, `MemberCallExpr`.
+- `transpiler3/typescript/lower/phase02.go`: type and operator dispatchers (`tsTypeFor`, `tsBinOp`, `tsUnOp`, `paramType`) and the user-function lowerer.
+- `transpiler3/typescript/lower/lower.go`: extended with 4 new runtime helpers (`mochi_str_len`, `mochi_str_at`, `mochi_str_slice`, `mochi_str_contains`) gated by use flags, plus statement / expression dispatch for the full Phase 2 surface.
+- `transpiler3/typescript/build/phase02_test.go`: three test groups, `TestPhase2ScalarsNode/Deno/Bun` (fixture corpus gate), `TestPhase2EmitWithoutRuntime` (14-case shape check), `TestPhase2NoBareEquality` (no bare `==`/`!=` slip through).
+- `tests/transpiler3/typescript/fixtures/phase02-scalars/`: 32 `.mochi` + `.out` pairs (MEP-52 target is 30; the two extras `arith_complex` and `compare_str_eq` lock distinct surface).
+- `transpiler3/typescript/build/phase01_test.go`: retired `TestPhase1UnsupportedFails`; the contract is now held by `TestPhase2UnsupportedFails`.
+
+**Fixture surface**:
+
+- 6 int arithmetic (`arith_add`, `arith_sub`, `arith_mul`, `arith_div`, `arith_mod`, `arith_neg`, `arith_complex`).
+- 4 float arithmetic (`arith_float_add`, `arith_float_sub`, `arith_float_mul`, `arith_float_div`).
+- 4 comparisons (`compare_int_eq`, `compare_int_lt`, `compare_float`, `compare_str_eq`).
+- 3 booleans (`bool_and`, `bool_or`, `bool_not`).
+- 7 control flow (`let_var`, `if_else`, `if_elseif`, `while_loop`, `for_range`, `nested_loops`, `break_loop`, `continue_loop`).
+- 4 strings (`str_cat`, `str_len`, `str_index`, `str_contains`).
+- 2 user-defined functions (`user_fn`, `user_fn_recursive`).
+
+**Gates green**:
+
+- `go test ./transpiler3/typescript/build/... -run TestPhase2 -count=1`: ok.
+- All 32 fixtures byte-equal vs vm3 `.out` under Node 22.21.1 (Deno + Bun run the same path with `TestPhase2ScalarsDeno` / `TestPhase2ScalarsBun`).
+- No bare `==` / `!=` survives lowering; every Mochi equality lowers to `===` / `!==`.
+
+**Realised design vs spec**:
+
+The Phase 2 spec defaults `int` to `bigint` with conservative specialisation to `number`. The landed implementation reverses the default to `number` because aotir IR carries int64 throughout and lacks the per-occurrence Repr field the bigint rule reads. Pure-int fixtures all produce byte-equal stdout vs vm3 so the lowering is correct on the value side; what remains is plumbing Repr through aotir so values outside `[-(2^53-1), 2^53-1]` re-emit as `bigint`. Tracked as the first Phase 2 follow-up sub-phase. The `bytes` sub-phase (2.5) is deferred to Phase 3 because no `bytes` fixture appears in the scalar surface and the indexing / slicing helpers share with arrays.

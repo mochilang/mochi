@@ -1,0 +1,5 @@
+let x = 10
+var y = 0
+y = x + 5
+y = y * 2
+print(y)
