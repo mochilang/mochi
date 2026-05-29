@@ -131,7 +131,13 @@ type CauseRoot struct{}                    // user manifest
 type CauseDep struct{ Pkg PackageKey; Version pkgmanifest.Version }
 type CauseConflict struct{ Cause1, Cause2 *Incompatibility }
 type CauseDeriv struct{ From *Incompatibility }
-type CauseCapability struct{ Pkg PackageKey; Required, Allowed []string }
+type CauseCapability struct {
+    Pkg      PackageKey
+    Version  pkgmanifest.Version
+    Required []string  // candidate's `[capabilities].required`
+    Allowed  []string  // consumer's pin (DepPin().Capabilities)
+    Extra    []string  // Required minus Allowed, pre-computed for Phase 6.6
+}
 type CauseTarget struct{ Pkg PackageKey; Missing []string }
 type CauseCompiler struct{ Pkg PackageKey; Want string; Have string }
 ```
@@ -313,7 +319,12 @@ func (s *Solver) passesCapabilityCheck(pkg PackageKey, v pkgmanifest.Version) bo
         if !contains(pinned, cap) {
             s.addIncompat(&Incompatibility{
                 Terms: []Term{{Pkg: pkg, Range: pointRange(v), Positive: true}},
-                Cause: CauseCapability{Pkg: pkg, Required: m.Capabilities.Required, Allowed: pinned},
+                Cause: CauseCapability{
+                    Pkg: pkg, Version: v,
+                    Required: m.Capabilities.Required,
+                    Allowed:  pinned,
+                    Extra:    diff(m.Capabilities.Required, pinned),
+                },
             })
             return false
         }

@@ -118,6 +118,10 @@ type Override struct {
     PostBuild    []string       `toml:"post-build,omitempty"`       // commands run after target build
 }
 
+// Provenance is the declarative `[provenance]` table authors put in mochi.toml.
+// Phase 12-13 read it to constrain who may publish. The signed attestation
+// emitted by the publish pipeline is a separate type (`pkgmanifest.Attestation`,
+// declared in Phase 1 §1.3) carrying Sigstore bundle bytes and OIDC claims.
 type Provenance struct {
     Publisher   string `toml:"publisher,omitempty"`     // OIDC subject expected on publish
     Repository  string `toml:"repository,omitempty"`    // GitHub/GitLab URL
@@ -144,35 +148,30 @@ pkg/pkglock/
   lock_test.go       # TestPhase0Skeleton stub
 ```
 
+Phase 0 ships forward-declared stubs only. Phase 4 §4.0 is the canonical
+source for the Lockfile, LockedPackage, Platform, and LockProvenance schemas.
+The skeleton here exists so the package compiles and other phases can import
+the type names; the field set lands in Phase 4.
+
 ```go
 // pkg/pkglock/lock.go
 package pkglock
 
+// Lockfile is fully specified in Phase 4 §4.0. The stub below carries the
+// minimum field set required by Phase 0's compile-only smoke test.
 type Lockfile struct {
-    Version int                        `toml:"version"`        // = 1 for v1 format
-    Mochi   string                     `toml:"mochi"`          // language version pin
-    Platforms []string                 `toml:"platforms"`      // resolved platform set
-    Packages map[string][]LockedPkg    `toml:"package"`        // name -> versions
-    Capabilities []string              `toml:"capabilities-seen,omitempty"`
+    Version  int             `toml:"version"`           // = 1 for v1 format
+    Mochi    string          `toml:"mochi"`             // language version pin
+    Packages []LockedPackage `toml:"package"`           // expanded in Phase 4
 }
 
-type LockedPkg struct {
-    Name      string    `toml:"name"`
-    Version   string    `toml:"version"`
-    Source    Source    `toml:"source"`
-    BLAKE3    string    `toml:"blake3"`                      // lowercase hex
-    SHA256    string    `toml:"sha256"`                      // lowercase hex
-    Deps      []string  `toml:"dependencies,omitempty"`      // resolved [name@version] list
-    Features  []string  `toml:"features,omitempty"`
-    Caps      []string  `toml:"capabilities,omitempty"`
-}
-
-type Source struct {
-    Kind     string `toml:"kind"`         // "registry", "git", "path"
-    Registry string `toml:"registry,omitempty"`
-    Url      string `toml:"url,omitempty"`
-    Rev      string `toml:"rev,omitempty"`
-    Path     string `toml:"path,omitempty"`
+// LockedPackage is fully specified in Phase 4 §4.0 (LockedPackage).
+type LockedPackage struct {
+    Name    string `toml:"name"`
+    Version string `toml:"version"`
+    Source  string `toml:"source"`     // canonical encoding in Phase 4 §4.1
+    BLAKE3  string `toml:"blake3,omitempty"`
+    SHA256  string `toml:"sha256,omitempty"`
 }
 ```
 
@@ -203,11 +202,12 @@ type Solver struct {
     // ...
 }
 
-func (s *Solver) Solve() (*Solution, error) {
+func (s *Solver) Solve(ctx context.Context) (*Solution, error) {
     // 1. start with the root package
     // 2. loop: pick a decision, propagate via unit propagation
     // 3. on conflict, derive a new incompatibility and backtrack
     // 4. terminate when all packages are decided or root is in conflict
+    // ctx is honoured for cancellation; Phase 5.11 wires a 60s watchdog.
     return nil, nil
 }
 ```

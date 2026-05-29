@@ -228,21 +228,24 @@ The hash is computed over the *canonical* manifest bytes (re-emit through the Ph
 `mochi pkg lock --check` flow (research note 06 §8):
 
 ```go
-func CheckLock(manifestPath, lockPath string) error {
-    manifestHash, _ := ManifestHash(manifestPath)
-    lock, err := ParseFile(lockPath)
+func CheckLock(m *pkgmanifest.Manifest, lock *Lockfile) error {
+    manifestHash, err := ManifestHashStruct(m)
     if err != nil { return err }
     if lock.ManifestHash != manifestHash {
         return fmt.Errorf("%w: manifest changed since lock", ErrLockE001)
     }
     // Re-resolve and compare; difference is M057_LOCK_E002.
-    fresh, err := ResolveFresh(manifestPath)
+    fresh, err := ResolveFresh(m)
     if err != nil { return err }
     if !equalLockfiles(lock, fresh) {
         return fmt.Errorf("%w: resolution drifted", ErrLockE002)
     }
     return nil
 }
+
+// CLI wrappers in `cmd/mochi/lock.go` accept paths and parse first; the core
+// signature takes parsed values so Phase 18 §18.5 (frozen vendor) can reuse it
+// against an already-loaded manifest/lock pair without re-reading from disk.
 ```
 
 Stale (E001) is "manifest changed without re-locking". Drift (E002) is "manifest unchanged but the resolution would produce a different lockfile" (usually a mirror has yanked a version or a registry rolled forward).

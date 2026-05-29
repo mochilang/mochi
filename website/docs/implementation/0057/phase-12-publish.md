@@ -343,7 +343,7 @@ func BuildIndexEntry(m *Manifest, art *Artefact) IndexEntry {
         R:  time.Now().UTC().Truncate(time.Second),
         B3: art.BLAKE3,
         S2: art.SHA256,
-        C:  m.Capabilities.Requires.Sorted(),
+        C:  m.Capabilities.Required.Sorted(),
         D:  shortenDeps(m.Dependencies),
         T:  sortedTargetNames(m.Targets),
         MP: compactRange(m.Package.MochiRange),

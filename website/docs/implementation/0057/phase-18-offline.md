@@ -65,7 +65,7 @@ func Vendor(lock *Lockfile, dest string, opts Options) error {
 }
 
 func vendorOne(p LockedPackage, dest string) error {
-    pkgDir := filepath.Join(dest, "packages", p.Bucket, p.Scope, p.Name, p.Version)
+    pkgDir := filepath.Join(dest, "packages", vendorPath(p.Name), p.Version)
     if exists(pkgDir) { return nil }                 // already vendored
     src, err := store.OpenExtracted(p.BLAKE3)
     if err != nil { return err }
@@ -73,6 +73,10 @@ func vendorOne(p LockedPackage, dest string) error {
     /* also copy index entry, sigstore bundle, .caps.json */
     return nil
 }
+
+// vendorPath splits "@scope/name" or bare "name" into the on-disk layout
+// (see Phase 7 §7.1 bucket scheme). Defined in pkg/pkgvendor/layout.go.
+func vendorPath(name string) string { /* "@a/b" -> "@a/b" with bucket prefix */ }
 
 func writeManifest(dest string, lock *Lockfile) error {
     // vendor/index.json: maps PackageKey -> path under vendor/
@@ -207,7 +211,7 @@ Walks `vendor/` and re-hashes every package; reports mismatches:
 func VendorVerify(dest string, lock *Lockfile) error {
     var problems []string
     for _, p := range lock.Packages {
-        actual, err := hashVendorTree(filepath.Join(dest, "packages", p.Bucket, p.Scope, p.Name, p.Version))
+        actual, err := hashVendorTree(filepath.Join(dest, "packages", vendorPath(p.Name), p.Version))
         if err != nil { problems = append(problems, fmt.Sprintf("%s: %v", p.Name, err)); continue }
         if actual != p.BLAKE3 {
             problems = append(problems, fmt.Sprintf("%s: vendor hash %s != lock %s", p.Name, actual, p.BLAKE3))

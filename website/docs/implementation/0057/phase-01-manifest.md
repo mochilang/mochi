@@ -274,13 +274,17 @@ FFI semantics by target (from research note 11):
 
 ### `[provenance]`
 
-Phase 1 only parses; the publish pipeline (Phase 12-13) writes it. Fields:
+Phase 1 only parses; the publish pipeline (Phase 12-13) writes it. The
+declarative `[provenance]` table from `mochi.toml` is the `Provenance` type
+declared in Phase 0 §0.0 (Publisher, Repository, Workflow, SourceDate). The
+signed attestation produced by publish lives in a sibling type so the two
+cannot be confused at compile time:
 
 ```go
-type Provenance struct {
+type Attestation struct {
     SigstoreBundle string `toml:"sigstore_bundle,omitempty"`
     OIDCIssuer     string `toml:"oidc_issuer,omitempty"`
-    OIDCSubject   string `toml:"oidc_subject,omitempty"`
+    OIDCSubject    string `toml:"oidc_subject,omitempty"`
     BuildTimestamp string `toml:"build_timestamp,omitempty"`
     SourceCommit   string `toml:"source_commit,omitempty"`
     BuildTool      string `toml:"build_tool,omitempty"`

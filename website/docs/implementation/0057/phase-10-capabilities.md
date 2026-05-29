@@ -113,12 +113,14 @@ optional_features = { spawn-shell = ["proc.spawn"] }
 
 Parser:
 
+Phase 0 §0.0 declared `Capabilities` with `Required []string` and `Optional []string`. Phase 10 narrows the field type to `pkgcap.Set` (with `.Subset()`, `.Difference()`, `.Sorted()` methods) and adds `OptionalFeatures`. The TOML tags and field names are unchanged so lockfiles written under Phase 0 continue to parse.
+
 ```go
 // pkg/pkgmanifest/capabilities.go
 type Capabilities struct {
-    Required         pkgcap.Set
-    Optional         pkgcap.Set
-    OptionalFeatures map[string]pkgcap.Set    // feature-name -> caps it unlocks
+    Required         pkgcap.Set                `toml:"required,omitempty"`
+    Optional         pkgcap.Set                `toml:"optional,omitempty"`
+    OptionalFeatures map[string]pkgcap.Set     `toml:"optional_features,omitempty"`
 }
 
 func parseCapabilities(t *toml.Tree) (*Capabilities, error) {
