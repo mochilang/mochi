@@ -312,7 +312,7 @@ mochi-runtime = { path = %q }
 opt-level = 3
 lto = "thin"
 codegen-units = 1
-panic = "abort"
+panic = "unwind"
 strip = "symbols"
 `, crateName, crateName, runtimePath)
 }

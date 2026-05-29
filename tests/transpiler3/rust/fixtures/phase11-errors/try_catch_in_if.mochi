@@ -1,0 +1,13 @@
+let denom: int = 0
+if denom == 0 {
+  try {
+    let v: int = 10 / denom
+    print(v)
+  } catch e {
+    print("zero branch")
+    print(e)
+  }
+} else {
+  print("nonzero")
+}
+print("after")

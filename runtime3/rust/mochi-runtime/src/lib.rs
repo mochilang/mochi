@@ -205,3 +205,76 @@ pub mod stream {
         subscribe(s)
     }
 }
+
+pub mod panic {
+    use std::panic;
+    use std::sync::Once;
+
+    static SILENCE_HOOK: Once = Once::new();
+
+    pub fn silence_hook() {
+        SILENCE_HOOK.call_once(|| {
+            panic::set_hook(Box::new(|_| {}));
+        });
+    }
+
+    pub fn raise(code: i64) -> ! {
+        panic::panic_any(code);
+    }
+
+    pub fn catch<F: FnOnce()>(f: F) -> Option<i64> {
+        silence_hook();
+        match panic::catch_unwind(panic::AssertUnwindSafe(f)) {
+            Ok(()) => None,
+            Err(p) => Some(payload_to_code(&p)),
+        }
+    }
+
+    fn payload_to_code(p: &Box<dyn std::any::Any + Send>) -> i64 {
+        if let Some(&code) = p.downcast_ref::<i64>() {
+            return code;
+        }
+        if let Some(s) = p.downcast_ref::<&'static str>() {
+            return map_msg(s);
+        }
+        if let Some(s) = p.downcast_ref::<String>() {
+            return map_msg(s.as_str());
+        }
+        1
+    }
+
+    fn map_msg(s: &str) -> i64 {
+        if s.contains("out of bounds") || s.contains("index out of") || s.contains("index ") {
+            return 4;
+        }
+        if s.contains("divide by zero") || s.contains("attempt to divide") || s.contains("remainder") {
+            return 5;
+        }
+        1
+    }
+}
+
+pub mod check {
+    use super::panic::raise;
+
+    pub fn div_i64(a: i64, b: i64) -> i64 {
+        if b == 0 {
+            raise(5);
+        }
+        a / b
+    }
+
+    pub fn mod_i64(a: i64, b: i64) -> i64 {
+        if b == 0 {
+            raise(5);
+        }
+        a % b
+    }
+
+    pub fn list_index<T: Clone>(xs: &[T], i: i64) -> T {
+        if i < 0 || (i as usize) >= xs.len() {
+            raise(4);
+        }
+        xs[i as usize].clone()
+    }
+}

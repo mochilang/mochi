@@ -319,6 +319,40 @@ func (i *IfStmt) RustString(ind int) string {
 	return sb.String()
 }
 
+// ---- TryCatchStmt ----
+
+// TryCatchStmt lowers Mochi's try { ... } catch e { ... } to a
+// std::panic::catch_unwind around the try body. CatchVar binds the
+// payload code (i64) when the try body panics.
+type TryCatchStmt struct {
+	TryBody   []Stmt
+	CatchVar  string
+	CatchBody []Stmt
+}
+
+func (*TryCatchStmt) rustStmt() {}
+
+func (t *TryCatchStmt) RustString(ind int) string {
+	pad := indent(ind)
+	var sb strings.Builder
+	sb.WriteString(pad)
+	sb.WriteString("match mochi_runtime::panic::catch(|| {\n")
+	for _, s := range t.TryBody {
+		sb.WriteString(s.RustString(ind + 1))
+		sb.WriteString("\n")
+	}
+	sb.WriteString(pad + "}) {\n")
+	sb.WriteString(indent(ind+1) + "None => {},\n")
+	fmt.Fprintf(&sb, "%sSome(%s) => {\n", indent(ind+1), t.CatchVar)
+	for _, s := range t.CatchBody {
+		sb.WriteString(s.RustString(ind + 2))
+		sb.WriteString("\n")
+	}
+	sb.WriteString(indent(ind+1) + "}\n")
+	sb.WriteString(pad + "}")
+	return sb.String()
+}
+
 // ---- WhileStmt ----
 
 // WhileStmt is `while cond { body }`.

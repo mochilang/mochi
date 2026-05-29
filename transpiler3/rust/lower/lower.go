@@ -455,6 +455,29 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (rtree.Stmt, error) {
 			Method:   "emit",
 			Args:     []rtree.Expr{val},
 		}}, nil
+	case *aotir.TryCatchStmt:
+		tryBody, err := l.lowerBlock(n.TryBody)
+		if err != nil {
+			return nil, fmt.Errorf("try body: %w", err)
+		}
+		catchBody, err := l.lowerBlock(n.CatchBody)
+		if err != nil {
+			return nil, fmt.Errorf("catch body: %w", err)
+		}
+		return &rtree.TryCatchStmt{
+			TryBody:   tryBody,
+			CatchVar:  n.CatchVar,
+			CatchBody: catchBody,
+		}, nil
+	case *aotir.PanicStmt:
+		code, err := l.lowerExpr(n.Code)
+		if err != nil {
+			return nil, fmt.Errorf("panic code: %w", err)
+		}
+		return &rtree.ExprStmt{Expr: &rtree.CallExpr{
+			Func: "mochi_runtime::panic::raise",
+			Args: []rtree.Expr{code},
+		}}, nil
 	}
 	return nil, fmt.Errorf("rust lower: unsupported stmt %T", s)
 }
@@ -908,11 +931,18 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 		if err != nil {
 			return nil, err
 		}
-		// xs[i as usize].clone() handles both Copy primitives and owned Strings.
-		return &rtree.CloneExpr{Expr: &rtree.IndexExpr{
-			Receiver: r,
-			Index:    &rtree.CastExpr{Expr: i, TypeName: "usize"},
-		}}, nil
+		// Route through the runtime so out-of-bounds raises a
+		// Mochi-coded i64 (4) instead of Rust's default string
+		// payload. The receiver is borrowed; the helper clones the
+		// element back out.
+		recv := r
+		if ce, ok := r.(*rtree.CloneExpr); ok {
+			recv = ce.Expr
+		}
+		return &rtree.CallExpr{
+			Func: "mochi_runtime::check::list_index",
+			Args: []rtree.Expr{&rtree.RefExpr{Expr: recv}, i},
+		}, nil
 	case *aotir.LenExpr:
 		r, err := l.lowerExpr(n.Receiver)
 		if err != nil {
@@ -1390,6 +1420,16 @@ func (l *lowerer) lowerBinaryExpr(b *aotir.BinaryExpr) (rtree.Expr, error) {
 			op = rtree.OpNe
 		}
 		return &rtree.BinaryExpr{Op: op, Left: left, Right: right}, nil
+	case aotir.BinDivI64:
+		return &rtree.CallExpr{
+			Func: "mochi_runtime::check::div_i64",
+			Args: []rtree.Expr{left, right},
+		}, nil
+	case aotir.BinModI64:
+		return &rtree.CallExpr{
+			Func: "mochi_runtime::check::mod_i64",
+			Args: []rtree.Expr{left, right},
+		}, nil
 	}
 	return &rtree.BinaryExpr{Op: rustBinOp(b.Op), Left: left, Right: right}, nil
 }
