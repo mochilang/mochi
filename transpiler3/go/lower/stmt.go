@@ -279,7 +279,7 @@ func (l *lowerer) letTypeText(s *aotir.LetStmt) (string, error) {
 		}
 		return l.lowerListType(s.ElemType)
 	case aotir.TypeMap:
-		return l.lowerMapType(s.KeyType, s.ValueType)
+		return l.lowerMapTypeWithList(s.KeyType, s.ValueType, s.ListValueElemType)
 	case aotir.TypeSet:
 		return l.lowerSetType(s.ElemType)
 	case aotir.TypeRecord:
@@ -301,6 +301,12 @@ func (l *lowerer) letTypeText(s *aotir.LetStmt) (string, error) {
 // lowerForEachStmt lowers Mochi `for x in xs { ... }` to
 // `for _, x := range xs { ... }`. The key (index) slot is
 // discarded with `_`.
+//
+// When the iteration variable is never read by the body
+// (as in the hash-join inner loop, where the C lowerer's
+// desugaring binds y but the select clause only projects x),
+// the binding is dropped to `for range xs { ... }` so Go's
+// "declared and not used" check does not fire.
 func (l *lowerer) lowerForEachStmt(s *aotir.ForEachStmt) (gotree.Stmt, error) {
 	xs, err := l.lowerExpr(s.List)
 	if err != nil {
@@ -309,6 +315,13 @@ func (l *lowerer) lowerForEachStmt(s *aotir.ForEachStmt) (gotree.Stmt, error) {
 	body, err := l.lowerBlock(s.Body)
 	if err != nil {
 		return nil, err
+	}
+	if !blockReferencesVar(s.Body, s.Var) {
+		return &gotree.RangeStmt{
+			Tok:  ":=",
+			X:    xs,
+			Body: body,
+		}, nil
 	}
 	return &gotree.RangeStmt{
 		Key:   &gotree.Ident{Name: "_"},
