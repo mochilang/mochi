@@ -1,6 +1,7 @@
 package build
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
@@ -204,6 +205,8 @@ func (d *Driver) Build(src, out string, target Target) error {
 		return buildGem(sf, fileBase, out)
 	case TargetRubyBundle:
 		return buildBundle(sf, fileBase, out)
+	case TargetIRubyKernel:
+		return buildIRubyNotebook(sf, fileBase, out)
 	}
 	return fmt.Errorf("ruby build: target %d not implemented", target)
 }
@@ -278,4 +281,62 @@ gem "mochi-runtime", ">= 0.1"
 		return fmt.Errorf("ruby build: write Gemfile: %w", err)
 	}
 	return nil
+}
+
+// buildIRubyNotebook emits a Jupyter notebook (.ipynb) carrying the lowered
+// Ruby as a single code cell, with kernelspec pinned to the IRuby kernel.
+// Open the notebook with `jupyter notebook <name>.ipynb` (or any nbformat 4
+// reader) once `iruby register` has installed the kernel.
+func buildIRubyNotebook(sf *rtree.SourceFile, name, out string) error {
+	if err := os.MkdirAll(out, 0o755); err != nil {
+		return err
+	}
+	source := sf.RubySource()
+	cellLines := splitKeepNewline(source)
+	nb := map[string]any{
+		"nbformat":       4,
+		"nbformat_minor": 5,
+		"metadata": map[string]any{
+			"kernelspec": map[string]any{
+				"name":         "ruby",
+				"display_name": "Ruby (IRuby)",
+				"language":     "ruby",
+			},
+			"language_info": map[string]any{
+				"name":           "ruby",
+				"file_extension": ".rb",
+			},
+		},
+		"cells": []any{
+			map[string]any{
+				"cell_type":       "code",
+				"execution_count": nil,
+				"metadata":        map[string]any{},
+				"outputs":         []any{},
+				"source":          cellLines,
+			},
+		},
+	}
+	buf, err := json.MarshalIndent(nb, "", " ")
+	if err != nil {
+		return fmt.Errorf("ruby build: encode notebook: %w", err)
+	}
+	nbPath := filepath.Join(out, name+".ipynb")
+	if err := os.WriteFile(nbPath, buf, 0o644); err != nil {
+		return fmt.Errorf("ruby build: write notebook: %w", err)
+	}
+	return nil
+}
+
+// splitKeepNewline mirrors the Jupyter "source" field convention: each list
+// element ends in a "\n" except (optionally) the last one.
+func splitKeepNewline(s string) []string {
+	if s == "" {
+		return []string{}
+	}
+	parts := strings.SplitAfter(s, "\n")
+	if last := len(parts) - 1; parts[last] == "" {
+		parts = parts[:last]
+	}
+	return parts
 }
