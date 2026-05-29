@@ -1,0 +1,14 @@
+type Box =
+  Small { v: int }
+  | Big { v: int }
+
+let b1: Box = Small { v: 10 }
+let b2: Box = Big { v: 100 }
+match b1 {
+  Small(v) => print(v)
+  Big(v) => print(v)
+}
+match b2 {
+  Small(v) => print(v)
+  Big(v) => print(v)
+}

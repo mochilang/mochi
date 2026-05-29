@@ -41,6 +41,8 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (gotree.Stmt, error) {
 		return l.lowerListSetStmt(s)
 	case *aotir.MapPutStmt:
 		return l.lowerMapPutStmt(s)
+	case *aotir.MatchStmt:
+		return l.lowerMatchStmt(s)
 	case *aotir.BreakStmt:
 		return &gotree.BranchStmt{Tok: "break"}, nil
 	case *aotir.ContinueStmt:
@@ -202,6 +204,11 @@ func (l *lowerer) letTypeText(s *aotir.LetStmt) (string, error) {
 			return "", fmt.Errorf("record let missing RecordName")
 		}
 		return s.RecordName, nil
+	case aotir.TypeUnion:
+		if s.UnionName == "" {
+			return "", fmt.Errorf("union let missing UnionName")
+		}
+		return s.UnionName, nil
 	}
 	return l.lowerType(s.VarType)
 }
@@ -265,6 +272,77 @@ func (l *lowerer) lowerMapPutStmt(s *aotir.MapPutStmt) (gotree.Stmt, error) {
 		Tok: "=",
 		Rhs: []gotree.Expr{val},
 	}, nil
+}
+
+// lowerMatchStmt emits a `switch <tmp>.Tag { case <n>: ... }` block.
+// The target is evaluated once into a fresh `__m<NNN>` local so each
+// arm can address `<tmp>.<Variant>_<Field>` for its bindings.
+func (l *lowerer) lowerMatchStmt(s *aotir.MatchStmt) (gotree.Stmt, error) {
+	target, err := l.lowerExpr(s.Target)
+	if err != nil {
+		return nil, fmt.Errorf("match target: %w", err)
+	}
+	tmp := l.freshName("__m")
+	tmpAssign := &gotree.AssignStmt{
+		Lhs: []gotree.Expr{&gotree.Ident{Name: tmp}},
+		Tok: ":=",
+		Rhs: []gotree.Expr{target},
+	}
+	cases := make([]*gotree.CaseClause, 0, len(s.Arms)+1)
+	for _, arm := range s.Arms {
+		body, err := l.lowerMatchArmBody(tmp, arm)
+		if err != nil {
+			return nil, fmt.Errorf("match arm %s: %w", arm.VariantName, err)
+		}
+		cases = append(cases, &gotree.CaseClause{
+			List: []gotree.Expr{&gotree.BasicLit{Kind: gotree.IntLit, Value: fmt.Sprintf("%d", arm.Tag)}},
+			Body: body,
+		})
+	}
+	if s.Default != nil {
+		body, err := l.lowerBlock(s.Default.Body)
+		if err != nil {
+			return nil, fmt.Errorf("match default: %w", err)
+		}
+		cases = append(cases, &gotree.CaseClause{Body: body.List})
+	}
+	sw := &gotree.SwitchStmt{
+		Init:  tmpAssign,
+		Tag:   &gotree.SelectorExpr{X: &gotree.Ident{Name: tmp}, Sel: "Tag"},
+		Cases: cases,
+	}
+	return sw, nil
+}
+
+// lowerMatchArmBody emits the per-arm body, with the pattern-variable
+// bindings introduced via `<v> := <tmp>.<Variant>_<Field>` assignments
+// before the user-written body runs. A trailing `_ = <v>` swallows any
+// unused-variable warning the Go compiler would raise if the body never
+// touched the binding.
+func (l *lowerer) lowerMatchArmBody(tmp string, arm aotir.MatchArm) ([]gotree.Stmt, error) {
+	out := make([]gotree.Stmt, 0, 2*len(arm.Bindings)+1)
+	for _, b := range arm.Bindings {
+		name := mangleIdent(b.VarName)
+		out = append(out, &gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.Ident{Name: name}},
+			Tok: ":=",
+			Rhs: []gotree.Expr{&gotree.SelectorExpr{
+				X:   &gotree.Ident{Name: tmp},
+				Sel: variantFieldName(arm.VariantName, b.FieldName),
+			}},
+		})
+		out = append(out, &gotree.AssignStmt{
+			Lhs: []gotree.Expr{&gotree.Ident{Name: "_"}},
+			Tok: "=",
+			Rhs: []gotree.Expr{&gotree.Ident{Name: name}},
+		})
+	}
+	body, err := l.lowerBlock(arm.Body)
+	if err != nil {
+		return nil, err
+	}
+	out = append(out, body.List...)
+	return out, nil
 }
 
 func (l *lowerer) lowerReturnStmt(s *aotir.ReturnStmt) (gotree.Stmt, error) {
