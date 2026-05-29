@@ -191,6 +191,8 @@ func lowerStmt(s aotir.Stmt) (rtree.Stmt, error) {
 		return lowerMatchStmt(s)
 	case *aotir.ClosureEnvStmt:
 		return lowerClosureEnvStmt(s)
+	case *aotir.QueryScopeStmt:
+		return lowerQueryScopeStmt(s)
 	case *aotir.MapPutStmt:
 		key, err := lowerExpr(s.Key)
 		if err != nil {
@@ -519,6 +521,30 @@ func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 			return nil, err
 		}
 		return &rtree.MethodCall{Receiver: recv, Method: e.FieldName}, nil
+	case *aotir.ListSortAscExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: recv, Method: "sort"}, nil
+	case *aotir.ListSliceExpr:
+		recv, err := lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		start, err := lowerExpr(e.Start)
+		if err != nil {
+			return nil, err
+		}
+		end, err := lowerExpr(e.End)
+		if err != nil {
+			return nil, err
+		}
+		// Mochi's slice semantics clamp End to len(recv); Ruby's range slice
+		// returns nil when Start is past the end, so coerce a nil result to
+		// an empty array.
+		return &rtree.RawExpr{Text: fmt.Sprintf("(%s[%s...%s] || [])",
+			recv.RubyExprString(), start.RubyExprString(), end.RubyExprString())}, nil
 	case *aotir.FunLit:
 		return lowerFunLit(e)
 	case *aotir.FunCallExpr:
@@ -691,6 +717,26 @@ func rubyBinOp(op aotir.BinOp) (string, bool) {
 		return "+", true
 	}
 	return "", false
+}
+
+// lowerQueryScopeStmt lowers a desugared from/where/select query. In C the
+// scope drives arena allocation; in Ruby it is a no-op wrapper since GC
+// handles the temp list. We just lower the inner Body inline and emit it
+// as a sequence of statements wrapped in a `begin ... end` so the lexical
+// shape mirrors the IR. (The body's AssignStmt+AppendExpr already mutates
+// the ResultVar declared just before this node.)
+func lowerQueryScopeStmt(s *aotir.QueryScopeStmt) (rtree.Stmt, error) {
+	body, err := lowerBlock(s.Body)
+	if err != nil {
+		return nil, err
+	}
+	var sb strings.Builder
+	sb.WriteString("begin\n")
+	for _, st := range body {
+		sb.WriteString(st.RubyString(1) + "\n")
+	}
+	sb.WriteString("end")
+	return &rtree.RawStmt{Text: sb.String()}, nil
 }
 
 // lowerClosureEnvStmt lowers the C lowerer's ClosureEnvStmt, which precedes
