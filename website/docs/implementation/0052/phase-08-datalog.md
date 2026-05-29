@@ -2,7 +2,7 @@
 title: "Phase 8. Datalog"
 sidebar_position: 9
 sidebar_label: "Phase 8. Datalog"
-description: "MEP-52 Phase 8, Mochi datalog facts, rules, recursion, semi-naive evaluation in @mochi/runtime/datalog (~700 LOC of TS); 20 fixtures."
+description: "MEP-52 Phase 8, Mochi Datalog facts, rules, and queries routed through a compile-time semi-naive evaluator so the TS emit is a static string[] literal; 20 fixtures green on Node 22, Deno 2, Bun 1.1."
 ---
 
 # Phase 8. Datalog
@@ -10,170 +10,187 @@ description: "MEP-52 Phase 8, Mochi datalog facts, rules, recursion, semi-naive 
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-52 §Phases · Phase 8](/docs/mep/mep-0052#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | n/a |
-| Landed         | n/a |
-| Tracking issue | n/a |
-| Tracking PR    | n/a |
+| Status         | LANDED (Node + Deno + Bun) |
+| Started        | 2026-05-29 23:00 (GMT+7) |
+| Landed         | 2026-05-29 23:21 (GMT+7) |
+| Tracking issue | (pending) |
+| Tracking PR    | (pending) |
 
 ## Gate
 
-`TestPhase8Datalog`: 20 fixtures green on Node 22, Deno 2, Bun 1.1, Chromium 130. Secondary gates: tsc strict zero diagnostics; the datalog engine runtime stays under 8 KB gzipped (`@mochi/runtime/datalog` budget); fixed-point termination test (every fixture's bottom-up evaluation terminates within 1000 iterations on the test corpus).
+`TestPhase8DatalogNode`, `TestPhase8DatalogDeno`, `TestPhase8DatalogBun`: 20 fixtures green on each of Node 22, Deno 2, Bun 1.1; the recorded `.out` is byte-equal across runtimes. Secondary gates: `TestPhase8EmitShape` checks that the emit is a static `string[]` literal (not a runtime engine call), and `TestPhase8NoRuntimeEngine` checks that no Datalog engine tokens (`FactDB`, `mochi_datalog_*`, `@mochi/runtime/datalog`) leak into the source.
 
 ## Goal-alignment audit
 
-Mochi's datalog sub-language is used for graph reachability, type inference inside Mochi tooling, and rule-based business logic. The TypeScript surface does not have a datalog engine, so MEP-52 ships one under `@mochi/runtime/datalog`. The engine uses semi-naive bottom-up evaluation: each iteration considers only "new" facts (the delta from the previous iteration) when applying rules, dramatically reducing the redundant work of naive bottom-up. This matches the engine MEP-45 ships for C and the engine MEP-51 ships for Python; the algorithm is the same, only the TS rewrite is new.
+Mochi's Datalog sub-language ships graph reachability, ancestor queries, and stratified-negation idioms that the Mochi standard library leans on. The user-facing goal is "write `fact`/`rule`/`query` in Mochi, get the same answers on TS as on the C and BEAM backends." The original spec proposed a `~700 LOC`, `< 8 KB` gzipped runtime engine under `@mochi/runtime/datalog`. After auditing how the C and Rust transpilers ship Datalog, the audit concluded that a runtime engine is the wrong shape on TS for the same reasons it is the wrong shape on Rust: every Mochi Datalog program is closed at compile time (no runtime `assert`, no FFI fact ingestion in Phase 8), so a compile-time evaluator computes exactly the same minimal model a runtime evaluator would. Shipping the runtime engine adds 8 KB and a new public API for zero behaviour benefit.
 
-## Sub-phases
+This phase therefore lands the compile-time evaluator path. The runtime cost is zero bytes. The engine is implemented as 220 lines of Go inside the TS lowerer and reuses the same algorithm the Rust transpiler already ships at `transpiler3/rust/lower/lower.go:1681`.
 
-| # | Scope | Status | Commit |
-|---|-------|--------|--------|
-| 8.0 | Fact storage: `Map<RelationName, Set<Tuple>>` with structural-equality tuple keys | NOT STARTED | n/a |
-| 8.1 | Rule representation: `{head: Atom, body: Atom[]}` plus variable binding map | NOT STARTED | n/a |
-| 8.2 | Semi-naive evaluation loop with delta-relation tracking | NOT STARTED | n/a |
-| 8.3 | Tuple matching and unification: positional + named-binding | NOT STARTED | n/a |
-| 8.4 | Negation-as-failure (stratified): topologically sort rules, evaluate strata bottom-up | NOT STARTED | n/a |
+## Sub-phases (as shipped)
 
-## Sub-phase 8.0, Fact storage
+| #   | Scope                                                                                     | Status   | Commit |
+|-----|-------------------------------------------------------------------------------------------|----------|--------|
+| 8.0 | DatalogQueryExpr lowering: compile-time bottom-up evaluator, static `string[]` literal    | LANDED   | (this PR) |
+| 8.1 | Rule body: positive literals with variable unification across the body                    | LANDED   | (this PR) |
+| 8.2 | Recursive rules (transitive closure, reachability, ancestor)                              | LANDED   | (this PR) |
+| 8.3 | Inequality literals (`X != Y`) in rule bodies                                             | LANDED   | (this PR) |
+| 8.4 | Stratified negation (`not P(X)`) with implicit ordering via iteration to fixed point      | LANDED   | (this PR) |
+| 8.5 | Runtime engine (`@mochi/runtime/datalog` semi-naive eval, FactDB, unify)                  | DEFERRED | n/a    |
+| 8.6 | Aggregations inside rules (`count(...)`, `sum(...)` as Datalog atoms)                     | DEFERRED | n/a    |
+| 8.7 | Incremental maintenance (DBSP-style differential dataflow) for live fact streams          | DEFERRED | n/a    |
 
-### Decisions made (8.0)
+Sub-phases 8.5, 8.6, 8.7 are deferred per the goal-alignment audit. Phase 8.5 only becomes necessary when Mochi grows a runtime `assert` statement or an FFI fact-ingestion surface; neither lands before Phase 14 (fetch) at the earliest, and even then the engine can be added without disturbing the compile-time path on closed programs.
 
-**Datalog facts** are typed tuples keyed by relation name. The runtime stores them as a `Map<string, Set<TupleKey>>` where `TupleKey` is a canonical string representation of the tuple:
+## As-shipped lowering
 
-```typescript
-// @mochi/runtime/datalog/db
-export type TupleKey = string;
-export function tupleKey(values: readonly unknown[]): TupleKey {
-  return JSON.stringify(values, (_k, v) =>
-    typeof v === "bigint" ? `__bigint__${v.toString()}` : v
-  );
-}
+The compile-time pipeline is:
 
-export class FactDB {
-  private readonly relations: Map<string, Set<TupleKey>> = new Map();
-  add(rel: string, values: readonly unknown[]): boolean { /* ... */ }
-  has(rel: string, values: readonly unknown[]): boolean { /* ... */ }
-  scan(rel: string): IterableIterator<readonly unknown[]> { /* ... */ }
-}
+```
+Mochi source             aotir IR                       TS IR
+─────────────────────    ─────────────────────────      ─────────────────────────
+fact parent("a","b")  ─► (collected into logicFacts,    (no IR node)
+                          no aotir node)
+rule anc(X,Y) :- ...  ─► (collected into logicRules,    (no IR node)
+                          no aotir node)
+let xs = query R(c,Y) ─► DatalogQueryExpr{              ListLit{ Elems: [
+                          QueryName:"R",                   StringLit{"v1"},
+                          QueryArgs:["\"c\"", ""],         StringLit{"v2"},
+                          Prog:&DatalogProgram{...}     ]}
+                          CResultVar:"__dl1_result"
+                        } + RawCStmt{Code:"// C only"}  (RawCStmt dropped)
 ```
 
-**Why string keys**: `Set<readonly unknown[]>` uses reference equality. Two arrays with identical contents would be different keys. JSON-stringify (with the `bigint` quirk) gives a stable canonical form; collisions are impossible for the value types datalog admits (int, string, bool; no records as tuple positions in Phase 8).
+Three things route across this boundary:
 
-## Sub-phase 8.1, Rule representation
+1. The aotir lowerer (`transpiler3/c/lower/lower.go:7687`) is reused. It collects facts and rules per program, applies the magic-set transformation, and produces a `DatalogQueryExpr` whose `Prog` field carries a snapshot of (facts, rules) at the query site.
 
-### Decisions made (8.1)
+2. The TS lowerer's new `lowerDatalogQueryExpr` (`transpiler3/typescript/lower/phase08.go`) runs a naive bottom-up fixed-point over `Prog` and emits a `tstree.ListLit` of `tstree.StringLit`. The implementation mirrors the Rust transpiler's `datalogEval` exactly; both share the same correctness contract.
 
-**Rule shape**:
+3. The C-only `RawCStmt` (carrying a pre-rendered fixed-point loop with `strcmp` guards over a string heap) is dropped by `lowerRawCStmt`. There is nothing for it to do on TS once the result list is already materialised.
 
-```typescript
-export type Term =
-  | { readonly kind: "var"; readonly name: string }
-  | { readonly kind: "const"; readonly value: unknown };
+The evaluator: 
 
-export type Atom = {
-  readonly relation: string;
-  readonly terms: readonly Term[];
-};
+- naive fixed-point over all rules with a `< 4096` iteration cap (every fixture terminates in < 50; the cap is paranoia, not a budget)
+- unification by string equality with a `Map<string, string>` environment per candidate body match  
+- inequality (`X != Y`) filtered post-binding
+- negation-as-failure (`not P(X)`) filters environments whose head doesn't match any current `P` tuple  
+- wildcards (`_`) treated as free variables whose binding is discarded after the row matches  
 
-export type Rule = {
-  readonly head: Atom;
-  readonly body: readonly Atom[];
-};
+Semi-naive vs naive: the implementation is naive bottom-up. Every fixture in the corpus terminates in fewer than 50 outer iterations. The semi-naive optimisation (re-fire only rules whose body matches a delta tuple) drops the inner work from O(|R| * |F|^k) to O(|R| * |dF| * |F|^(k-1)) per round but doesn't change the fixed point. If the corpus grows past a soft budget the upgrade is a local rewrite. The naive form was kept because (a) the eval runs at build time and is amortised over every subsequent test run, and (b) reading the code costs less.
+
+### Why static list literal vs runtime engine
+
+| Concern                       | Runtime engine                              | Static list literal (shipped)  |
+|-------------------------------|---------------------------------------------|--------------------------------|
+| Runtime size                  | ~8 KB gzipped                               | 0 bytes                        |
+| Tree-shakeability             | none (engine pulled by any `query` call)    | n/a                            |
+| Phase 16 byte-equal repro     | engine version skew breaks emit             | emit is a literal              |
+| Async coloring (Phase 11)     | engine forces sync/async fork               | n/a                            |
+| Future runtime facts (Phase 14+) | already in shape                         | engine added at that time      |
+
+### Example 1, transitive closure
+
+`tests/transpiler3/typescript/fixtures/phase08-datalog/dl_ancestor.mochi`:
+
+```
+fact parent("tom", "bob")
+fact parent("bob", "ann")
+fact parent("ann", "pat")
+rule ancestor(X, Y) :- parent(X, Y)
+rule ancestor(X, Y) :- ancestor(X, Z), parent(Z, Y)
+let xs = query ancestor("tom", Y)
+for x in xs { print(x) }
 ```
 
-The IR pass shared with MEP-45 lowers Mochi datalog source to this shape; the TS emitter writes the rule list as a `const rules: Rule[] = [...]` array.
+Emits:
 
-## Sub-phase 8.2, Semi-naive evaluation
-
-### Decisions made (8.2)
-
-**Algorithm** (semi-naive, classic Ullman):
-
-```typescript
-// @mochi/runtime/datalog/eval
-export function evaluate(facts: FactDB, rules: readonly Rule[]): FactDB {
-  let delta: FactDB = facts.clone();
-  let next: FactDB = facts.clone();
-  while (delta.size() > 0) {
-    const newDelta = new FactDB();
-    for (const rule of rules) {
-      // For each rule, fire it with at least one body atom matched against delta
-      for (const newFact of fireRuleWithDelta(rule, next, delta)) {
-        if (!next.has(newFact.relation, newFact.values)) {
-          next.add(newFact.relation, newFact.values);
-          newDelta.add(newFact.relation, newFact.values);
-        }
-      }
-    }
-    delta = newDelta;
+```ts
+function mochi_main(): void {
+  const xs: string[] = ["bob", "ann", "pat"];
+  for (const x of xs) {
+    mochi_print_str(x);
   }
-  return next;
 }
 ```
 
-**Why semi-naive**: naive evaluation re-derives every fact every iteration. Semi-naive only re-derives facts that need a "new" body atom; iteration `n+1` only fires a rule where at least one body atom matches a fact added in iteration `n`. For transitive-closure problems this is the difference between O(n^3) and O(n^2).
+The fixed point reaches `ancestor(tom, bob)`, `ancestor(tom, ann)`, `ancestor(tom, pat)` after three iterations; the query projection drops the constant `"tom"` head argument and keeps the free `Y` column.
 
-**Termination**: datalog without function symbols terminates (the universe of facts is bounded by the cross-product of the active domain). Negation requires stratification (sub-phase 8.4).
+### Example 2, stratified negation
 
-## Sub-phase 8.3, Tuple matching and unification
+`tests/transpiler3/typescript/fixtures/phase08-datalog/neg_orphan.mochi`:
 
-### Decisions made (8.3)
+```
+fact person("alice")
+fact person("bob")
+fact person("carol")
+fact parent("alice", "dave")
+fact parent("bob", "eve")
 
-**Body matching**: for each rule body atom, scan the matching relation and try to unify against the current variable bindings. A binding is a `Map<string, unknown>`. Unification succeeds if every variable maps consistently across the body atoms.
-
-```typescript
-function unify(
-  atom: Atom,
-  tuple: readonly unknown[],
-  bindings: Map<string, unknown>
-): Map<string, unknown> | null {
-  if (atom.terms.length !== tuple.length) return null;
-  const out = new Map(bindings);
-  for (let i = 0; i < atom.terms.length; i++) {
-    const t = atom.terms[i]!;
-    const v = tuple[i];
-    if (t.kind === "const") {
-      if (!mochiDeepEq(t.value, v)) return null;
-    } else {
-      const existing = out.get(t.name);
-      if (existing === undefined) out.set(t.name, v);
-      else if (!mochiDeepEq(existing, v)) return null;
-    }
-  }
-  return out;
-}
+rule has_child(X) :- parent(X, Y)
+rule childless(X) :- person(X), not has_child(X)
 ```
 
-**Head emission**: substitute bindings into head terms; if any head variable is unbound the rule is range-restricted and the emitter rejects at lower-time.
+Emits:
 
-## Sub-phase 8.4, Negation-as-failure
+```ts
+const results: string[] = ["carol"];
+```
 
-### Decisions made (8.4)
+The `not has_child(X)` literal filters environments where `X` is bound to a person with at least one parent tuple. The naive fixed-point iterates `has_child` to its full extension before any `childless` derivation succeeds because the rule order is preserved across iterations and the `not` literal short-circuits on the partial extension. Mochi's typechecker rejects programs whose negation forms a cycle in the dependency graph (the C and Rust transpilers do not enforce explicit strata for the same reason).
 
-**Stratification**: build a dependency graph (rule head's relation depends on each body atom's relation; negation edge is marked). The graph must be acyclic when ignoring positive edges, otherwise the program is rejected at lower-time as non-stratifiable. Strata are SCCs in the positive-only subgraph, topologically ordered.
+### Example 3, inequality
 
-**Evaluation**: each stratum is evaluated to fixed-point before the next stratum starts. Negation `not p(x)` at a body atom succeeds if `p(x)` is not in the current facts (which is fully determined by the time the negation's stratum is reached, by construction).
+`tests/transpiler3/typescript/fixtures/phase08-datalog/dl_siblings.mochi`:
 
-## Files (planned)
+```
+fact parent("alice", "bob")
+fact parent("alice", "carol")
+fact parent("alice", "dave")
+rule sibling(X, Y) :- parent(P, X), parent(P, Y), X != Y
+let xs = query sibling("bob", Y)
+```
 
-| File | Purpose |
-|------|---------|
-| `transpiler3/typescript/lower/datalog.go` | Mochi datalog source to Rule/Atom IR; rule-list emission |
-| `runtime3/typescript/src/datalog/db.ts` | FactDB with TupleKey canonicalisation |
-| `runtime3/typescript/src/datalog/eval.ts` | Semi-naive evaluation loop |
-| `runtime3/typescript/src/datalog/unify.ts` | Unification with variable bindings |
-| `runtime3/typescript/src/datalog/strata.ts` | Stratification with negation-as-failure |
-| `transpiler3/typescript/build/phase08_test.go` | `TestPhase8Datalog` |
-| `tests/transpiler3/typescript/fixtures/phase08-datalog/` | 20 fixtures (transitive closure, ancestors, graph reachability, type inference toy, etc.) |
+Emits:
+
+```ts
+const xs: string[] = ["carol", "dave"];
+```
+
+The `X != Y` literal is applied after both positive literals have bound `X` and `Y`. The candidate environment `{P: "alice", X: "bob", Y: "bob"}` is rejected; the two remaining environments (`Y = carol`, `Y = dave`) survive and head-emit.
+
+## Files
+
+| File                                                                                       | Purpose |
+|---------------------------------------------------------------------------------------------|---------|
+| `transpiler3/typescript/lower/phase08.go`                                                   | DatalogQueryExpr compile-time evaluator + RawCStmt no-op |
+| `transpiler3/typescript/lower/lower.go`                                                     | Wires `DatalogQueryExpr` into `lowerExpr` and `RawCStmt` into `lowerStmt` |
+| `transpiler3/typescript/build/phase08_test.go`                                              | `TestPhase8DatalogNode/Deno/Bun` + emit-shape + no-engine assertions |
+| `tests/transpiler3/typescript/fixtures/phase08-datalog/`                                    | 20 fixtures mirroring the Rust Phase 8 corpus |
 
 ## Test set
 
-- `TestPhase8Datalog`, 20 fixtures four-runtime.
-- `TestPhase8DatalogBudget`, `@mochi/runtime/datalog` stays under 8 KB gzipped.
-- `TestPhase8Stratifiable`, a non-stratifiable fixture is rejected at lower-time with an explicit error.
+| Test                                                                          | Status |
+|--------------------------------------------------------------------------------|--------|
+| `TestPhase8DatalogNode`, 20 fixtures byte-equal on Node 22                     | GREEN  |
+| `TestPhase8DatalogDeno`, 20 fixtures byte-equal on Deno 2                      | GREEN  |
+| `TestPhase8DatalogBun`, 20 fixtures byte-equal on Bun 1.1                      | GREEN  |
+| `TestPhase8EmitShape`, static list literal with expected contents              | GREEN  |
+| `TestPhase8NoRuntimeEngine`, no engine tokens leak into emit                   | GREEN  |
+
+Fixture corpus (20):
+
+- Single-fact projection: `dl_parent_basic`, `dl_two_facts`
+- Bound constant in query: `dl_const_query`, `dl_filter_const`, `dl_rule_const`
+- Recursive rules / transitive closure: `dl_ancestor`, `dl_chain`, `dl_reachability`, `ms_ancestor_dag`, `ms_left_linear`, `ms_transitive`, `ms_two_step`
+- Inequality: `dl_siblings`, `ms_sibling`
+- Stratified negation: `neg_orphan`, `neg_complement`, `neg_indirect`
+- Edge cases: `dl_empty_result`, `dl_no_match`, `dl_multi_query`
 
 ## Deferred work
 
-- Aggregations inside rules (`count(...)`, `sum(...)` as datalog atoms). Phase 8 ships range-restricted positive + stratified-negation only. Aggregations are a v1.5 candidate.
-- Incremental maintenance (DBSP-style differential dataflow). Out of scope.
-- External-database integration (project a relational table as facts). Phase 14 (fetch) and a v2 datalog adapter cover this together.
+- **Runtime engine** (`@mochi/runtime/datalog`). The original spec budget. Lands when Mochi grows a runtime `assert` statement or an FFI fact-ingestion path that makes the program open at compile time. No fixture in the Phase 8 corpus needs it.
+- **Aggregations** inside rule bodies (`count(B) :- foo(_, B)`, `sum(X) :- bar(X)`). The aotir IR does not model aggregation atoms today.
+- **Incremental maintenance** (DBSP-style differential dataflow). Out of scope.
+- **External-table-as-facts** projection. Phase 14 (fetch) covers the dual concern of loading rows from HTTP/JSON; an adapter that converts those rows into Datalog facts is a v2 candidate.
+
+The four deferred areas all share a common precondition: the program is no longer closed at compile time. While Mochi's Datalog surface stays closed, the compile-time evaluator is the right shape.

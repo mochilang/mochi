@@ -427,8 +427,10 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]tstree.Stmt, error) {
 		return l.lowerClosureEnvStmt(v)
 	case *aotir.QueryScopeStmt:
 		return l.lowerQueryScopeStmt(v)
+	case *aotir.RawCStmt:
+		return l.lowerRawCStmt(v)
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 7 surface)", s)
+		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 8 surface)", s)
 	}
 }
 
@@ -737,8 +739,10 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (tstree.Expr, error) {
 		return l.lowerVariantLit(v)
 	case *aotir.UnionVarRef:
 		return l.lowerUnionVarRef(v)
+	case *aotir.DatalogQueryExpr:
+		return l.lowerDatalogQueryExpr(v)
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 5 surface)", e)
+		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 8 surface)", e)
 	}
 }
 
