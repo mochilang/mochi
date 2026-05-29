@@ -337,7 +337,8 @@
       "implementation/0073/phase-03-type-mapping",
       "implementation/0073/phase-04-wrapper",
       "implementation/0073/phase-05-extern-emit",
-      "implementation/0073/phase-06-import-grammar"
+      "implementation/0073/phase-06-import-grammar",
+      "implementation/0073/phase-07-build"
     ]
   },
   "implementation/0074/index",
