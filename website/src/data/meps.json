@@ -472,6 +472,14 @@
     "slug": "/docs/mep/mep-0066"
   },
   {
+    "number": 67,
+    "title": "Mochi and Java package bridge: bidirectional Maven Central interop with JNI reflection ingest, auto-generated JNI wrapper, no-boilerplate import java syntax, Maven Central publish via Sonatype Central Portal, mochi.lock [[java-package]] pinning, and a content-addressed JAR cache under package3/java/",
+    "status": "Draft",
+    "type": "Standards Track",
+    "description": "Bidirectional package interop between Mochi and the Maven Central ecosystem. Direction 1 (Mochi as Maven consumer): an `import java \"<groupId>:<artifactId>@<version>\" as <alias>` surface form auto-resolves through mochi.lock, fetches the JAR from Maven Central into a content-addressed blob store under `~/.cache/mochi/java-deps/`, runs a JVM reflection tool to extract the public API surface as JSON, walks that surface through a closed Java-to-Mochi type translation table (int/long/float/double/boolean/String/byte[]/List<T>/Map<K,V>/Optional<T>/CompletableFuture<T>/struct/enum plus a refusal set for raw Object, wildcards, inner classes, varargs, reflective types, and unchecked generics), synthesises JNI wrapper Java source via javac, and emits matching extern java type and extern java fn Mochi declarations. Direction 2 (Mochi as Maven producer): a TargetJavaLibrary build target packages the wrapper JAR and POM for upload to Maven Central via the Sonatype Central Portal API, with optional GPG signing and Sigstore attestation. The bridge is implemented in package3/java/ and extends MEP-57's mochi.toml plus mochi.lock infrastructure. A 16-phase delivery plan covers skeleton, Maven Central HTTP client with SHA-1 verification, content-addressed JAR cache, JVM reflection tool, type mapping table, Mochi extern shim emitter, import java grammar wiring, JNI embedding driver, build orchestration pipeline and javac driver, mochi.lock integration, TargetJavaLibrary emit, Maven Central publish flow, Sigstore attestation, async CompletableFuture bridge, generics and type-erasure handling, and spec update.",
+    "slug": "/docs/mep/mep-0067"
+  },
+  {
     "number": 71,
     "title": "Mochi and Python package bridge: bidirectional PyPI interop with PEP 561 stub ingest, auto-generated cffi/cpython wrapper, no-boilerplate import python syntax, PyPI publish via Trusted Publishing + PEP 740 attestations, pylock.toml + mochi.lock dual pinning, and a content-addressed Python wheel cache under package3/python/",
     "status": "Draft",
