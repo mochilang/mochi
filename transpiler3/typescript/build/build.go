@@ -81,14 +81,18 @@ type Driver struct {
 	// invocation walks the pipeline.
 	NoCache bool
 
-	// Deterministic is the SOURCE_DATE_EPOCH plumbing hook for
-	// Phase 16. Phase 1 has no time-, random-, or PATH-derived
-	// non-determinism in the lower + emit pipeline (the only
-	// PATH read is `node`, which is invoked but does not affect
-	// the emitted .ts text), so this is a no-op today. The flag
-	// stays in the surface so Phase 16 can wire SOURCE_DATE_EPOCH
-	// without changing the driver's exported API.
+	// Deterministic enables Phase 16 reproducible-build mode. When
+	// true, `npm pack` runs with SOURCE_DATE_EPOCH=<SourceDateEpoch>
+	// + TZ=UTC so the tarball SHA256 is byte-identical across runs
+	// on the same host (and across hosts once 16.4 lands the
+	// cross-host gate).
 	Deterministic bool
+
+	// SourceDateEpoch is the Unix timestamp baked into tar headers
+	// when Deterministic is true. Convention: the latest commit's
+	// `%ct` value. Defaults to 0 (the epoch) when unset; never
+	// `time.Now()`, which would defeat reproducibility.
+	SourceDateEpoch int64
 
 	// nodePath / denoPath / bunPath cache resolved binary paths.
 	nodePath string
@@ -152,7 +156,11 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 		if _, err := emit.EmitPackage(file, outDir, emit.PackageInfo{Name: pkgName, Version: "0.0.0"}); err != nil {
 			return "", fmt.Errorf("ts build: emit pkg: %w", err)
 		}
-		tarball, err := runNpmPack(outDir)
+		var env []string
+		if d.Deterministic {
+			env = reproBuildEnv(d.SourceDateEpoch)
+		}
+		tarball, err := runNpmPack(outDir, env)
 		if err != nil {
 			return "", fmt.Errorf("ts build: npm pack: %w", err)
 		}
