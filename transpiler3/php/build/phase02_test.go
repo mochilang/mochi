@@ -91,6 +91,22 @@ func TestPhase2EmitFragments(t *testing.T) {
 			},
 		},
 		{
+			// Float equality must lower to PHP's strict `===` (same as
+			// int/string), not the loose `==` that performs numeric
+			// coercion on string/null/bool operands. The only other
+			// float-touching fragment cases (arith_float, float_nan_inf,
+			// float_neg_inf) exercise arithmetic and printing; without
+			// this entry, a regression that swapped `===` for `==` in
+			// the float-compare path would only fail under end-to-end
+			// PHP runs and silently pass on hosts without `php`.
+			fixture: "compare_float.mochi",
+			wants: []string{
+				`($a < $b)`,
+				`($a === $b)`,
+				`($b > $a)`,
+			},
+		},
+		{
 			fixture: "float_nan_inf.mochi",
 			wants: []string{
 				`fdiv(1, 0)`,
