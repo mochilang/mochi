@@ -224,6 +224,21 @@ func lowerStmt(s aotir.Stmt) (rtree.Stmt, error) {
 			Args:      args,
 			UseParens: true,
 		}}, nil
+	case *aotir.StreamEmitStmt:
+		st, err := lowerExpr(s.Stream)
+		if err != nil {
+			return nil, err
+		}
+		v, err := lowerExpr(s.Val)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.ExprStmt{X: &rtree.MethodCall{
+			Receiver:  st,
+			Method:    "emit",
+			Args:      []rtree.Expr{v},
+			UseParens: true,
+		}}, nil
 	case *aotir.ChanSendStmt:
 		ch, err := lowerExpr(s.Chan)
 		if err != nil {
@@ -622,6 +637,24 @@ func lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 			Args:      args,
 			UseParens: true,
 		}, nil
+	case *aotir.StreamMakeExpr:
+		cap, err := lowerExpr(e.Cap)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.RawExpr{Text: "Mochi::Runtime::Stream.new(" + cap.RubyExprString() + ")"}, nil
+	case *aotir.SubMakeExpr:
+		st, err := lowerExpr(e.Stream)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: st, Method: "subscribe"}, nil
+	case *aotir.SubRecvExpr:
+		sub, err := lowerExpr(e.Sub)
+		if err != nil {
+			return nil, err
+		}
+		return &rtree.MethodCall{Receiver: sub, Method: "pop"}, nil
 	case *aotir.ChanMakeExpr:
 		cap, err := lowerExpr(e.Cap)
 		if err != nil {

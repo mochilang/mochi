@@ -4,6 +4,7 @@
 # only this file; sub-modules are pulled in lazily as later phases need them.
 require_relative "runtime/version"
 require_relative "runtime/io"
+require_relative "runtime/stream"
 
 module Mochi
   module Runtime
