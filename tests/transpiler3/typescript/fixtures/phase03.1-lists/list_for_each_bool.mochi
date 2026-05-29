@@ -1,0 +1,4 @@
+let xs = [true, false, true]
+for b in xs {
+  print(b)
+}

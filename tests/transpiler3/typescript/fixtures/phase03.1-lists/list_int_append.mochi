@@ -1,0 +1,7 @@
+let xs = [1, 2, 3]
+let ys = append(xs, 4)
+print(ys[0])
+print(ys[1])
+print(ys[2])
+print(ys[3])
+print(len(ys))

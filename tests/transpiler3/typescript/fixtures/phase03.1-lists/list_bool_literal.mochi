@@ -1,0 +1,4 @@
+let xs = [true, false, true]
+print(xs[0])
+print(xs[1])
+print(xs[2])

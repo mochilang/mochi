@@ -1,0 +1,9 @@
+let xs = ["a", "b", "c"]
+if "b" in xs {
+  print("yes")
+}
+if "z" in xs {
+  print("nope")
+} else {
+  print("no")
+}

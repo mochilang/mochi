@@ -41,6 +41,18 @@ type runtimeFlags struct {
 	strAt       bool
 	strSlice    bool
 	strContains bool
+	// Phase 3 list helpers. `mochi_list_at` performs the bounds
+	// check that Mochi's index semantics require (panic on
+	// out-of-range, not silently undefined as bare `xs[i]` would
+	// produce under `--noUncheckedIndexedAccess`). `mochi_list_sum`,
+	// `_min`, `_max`, `_contains` cover the scalar reductions.
+	listAt       bool
+	listSum      bool
+	listMin      bool
+	listMax      bool
+	listContains bool
+	listSlice    bool
+	listSortAsc  bool
 }
 
 type lowerer struct {
@@ -97,6 +109,7 @@ func Lower(prog *aotir.Program, colours colour.ColourMap) (*tstree.SourceFile, e
 	// regardless of textual order, but emit ordering still
 	// matters for source-map stability and for human readability.
 	decls := l.runtimeDecls()
+	decls = append(decls, l.runtimeListDecls()...)
 	decls = append(decls, userDecls...)
 
 	mainDecl := &tstree.FuncDecl{
@@ -320,8 +333,12 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]tstree.Stmt, error) {
 		return []tstree.Stmt{&tstree.ContinueStmt{}}, nil
 	case *aotir.ReturnStmt:
 		return l.lowerReturnStmt(v)
+	case *aotir.ForEachStmt:
+		return l.lowerForEachStmt(v)
+	case *aotir.ListSetStmt:
+		return l.lowerListSetStmt(v)
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 2 surface)", s)
+		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 3 surface)", s)
 	}
 }
 
@@ -365,8 +382,11 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) ([]tstree.Stmt, error) {
 // lowerLetStmt translates `let x: T = init` (immutable) and
 // `var y: T = init` (mutable). Mochi guarantees the binding has
 // an Init expression; the C lowerer rejects bare declarations.
+//
+// Phase 3 widens the type renderer to compound containers: list
+// slots emit `T[]` using the LetStmt's ElemType side-channel.
 func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) ([]tstree.Stmt, error) {
-	tn, err := tsTypeFor(s.VarType)
+	tn, err := tsTypeForCompound(s.VarType, s.ElemType)
 	if err != nil {
 		return nil, fmt.Errorf("ts lower: let %q: %w", s.Name, err)
 	}
@@ -544,8 +564,28 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (tstree.Expr, error) {
 			Callee: &tstree.IdentExpr{Name: "mochi_str_contains"},
 			Args:   []tstree.Expr{recv, needle},
 		}, nil
+	case *aotir.ListLit:
+		return l.lowerListLit(v)
+	case *aotir.IndexExpr:
+		return l.lowerIndexExpr(v)
+	case *aotir.LenExpr:
+		return l.lowerLenExpr(v)
+	case *aotir.AppendExpr:
+		return l.lowerAppendExpr(v)
+	case *aotir.ListContainsExpr:
+		return l.lowerListContainsExpr(v)
+	case *aotir.ListSumExpr:
+		return l.lowerListSumExpr(v)
+	case *aotir.ListMinExpr:
+		return l.lowerListMinExpr(v)
+	case *aotir.ListMaxExpr:
+		return l.lowerListMaxExpr(v)
+	case *aotir.ListSliceExpr:
+		return l.lowerListSliceExpr(v)
+	case *aotir.ListSortAscExpr:
+		return l.lowerListSortAscExpr(v)
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 2 surface)", e)
+		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 3 surface)", e)
 	}
 }
 

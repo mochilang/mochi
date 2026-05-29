@@ -1,0 +1,5 @@
+var xs = [1, 2, 3]
+xs[1] = 42
+print(xs[0])
+print(xs[1])
+print(xs[2])

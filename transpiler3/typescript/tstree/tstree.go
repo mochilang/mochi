@@ -149,6 +149,9 @@ type FuncDecl struct {
 	Modifiers []string
 	// Name is the emitted identifier.
 	Name string
+	// Generics lists type parameters (e.g. ["T"], ["K", "V"]).
+	// Phase 3 introduces this for the polymorphic list helpers.
+	Generics []string
 	// Params lists formal parameters.
 	Params []FuncParam
 	// ReturnType is the declared return type (e.g. "void",
@@ -181,6 +184,16 @@ func (d *FuncDecl) TsString(indent int) string {
 	}
 	b.WriteString("function ")
 	b.WriteString(d.Name)
+	if len(d.Generics) > 0 {
+		b.WriteByte('<')
+		for i, g := range d.Generics {
+			if i > 0 {
+				b.WriteString(", ")
+			}
+			b.WriteString(g)
+		}
+		b.WriteByte('>')
+	}
 	b.WriteByte('(')
 	for i, p := range d.Params {
 		if i > 0 {
