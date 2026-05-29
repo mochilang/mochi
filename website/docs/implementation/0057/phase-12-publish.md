@@ -359,22 +359,22 @@ Field names map to the abbreviations in Phase 8.3's parser.
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgpublish/preflight.go` | Manifest validation |
-| `pkg/pkgpublish/tar.go` | Deterministic tar writer |
-| `pkg/pkgpublish/glob.go` | Include/exclude resolution |
-| `pkg/pkgpublish/compress.go` | zstd encoder |
-| `pkg/pkgpublish/artefact.go` | Build pipeline + dual-hash |
-| `pkg/pkgpublish/client.go` | Registry HTTPS client |
-| `pkg/pkgpublish/dryrun.go` | Dry-run renderer |
-| `pkg/pkgpublish/index_entry.go` | JSONL line builder |
-| `cmd/mochi/publish.go` | CLI wiring |
-| `tests/pkgsystem/publish/tiny-lib/*` | Golden tarball |
-| `tests/pkgsystem/publish/with-excludes/*` | Exclude rules |
-| `tests/pkgsystem/publish/deterministic/*` | Twice-build byte-compare |
-| `tests/pkgsystem/publish/missing-license/*` | Preflight rejection |
-| `tests/pkgsystem/publish/dryrun/*` | Dry-run output golden |
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgpublish/preflight.go` | Manifest validation | Owner |
+| `pkg/pkgpublish/tar.go` | Deterministic tar writer (consumes Phase 17 SDE) | Owner |
+| `pkg/pkgpublish/glob.go` | Include/exclude resolution | Owner |
+| `pkg/pkgpublish/compress.go` | zstd encoder | Owner |
+| `pkg/pkgpublish/artefact.go` | Build pipeline + dual-hash | Owner |
+| `pkg/pkgpublish/client.go` | Registry HTTPS client | Owner |
+| `pkg/pkgpublish/dryrun.go` | Dry-run renderer | Owner |
+| `pkg/pkgpublish/index_entry.go` | JSONL line builder | Owner |
+| `cmd/mochi/publish.go` | `mochi pkg publish` handler (extended by Phase 14 `--target`) | Owner |
+| `tests/pkgsystem/publish/tiny-lib/*` | Golden tarball | Owner |
+| `tests/pkgsystem/publish/with-excludes/*` | Exclude rules | Owner |
+| `tests/pkgsystem/publish/deterministic/*` | Twice-build byte-compare | Owner |
+| `tests/pkgsystem/publish/missing-license/*` | Preflight rejection | Owner |
+| `tests/pkgsystem/publish/dryrun/*` | Dry-run output golden | Owner |
 
 ## Error code surface
 

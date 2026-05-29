@@ -271,24 +271,24 @@ Network access during rebuild: git clone of source repo. No registry access (the
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgrepro/clock.go` | `SOURCE_DATE_EPOCH` parsing |
-| `pkg/pkgrepro/walk.go` | Sorted, NFC walker |
-| `pkg/pkgrepro/locale.go` | Locale enforcement |
-| `pkg/pkgrepro/normalise.go` | Line-ending normalisation |
-| `pkg/pkgrepro/verify.go` | Twice-build + compare |
-| `pkg/pkgrepro/diagnose.go` | Diffoscope-style report |
-| `pkg/pkgrepro/rebuild.go` | Consumer-side rebuild |
-| `pkg/pkgpublish/sign.go` | Honour SDE in in-toto |
-| `cmd/mochi/pack.go` | `--verify-reproducible` flag |
-| `cmd/mochi/rebuild.go` | `mochi pkg rebuild` |
-| `tests/pkgsystem/repro/cross-tz/*` | TZ-invariance |
-| `tests/pkgsystem/repro/cross-umask/*` | umask-invariance |
-| `tests/pkgsystem/repro/cross-locale/*` | LC-invariance |
-| `tests/pkgsystem/repro/cross-fs/*` | filesystem-invariance |
-| `tests/pkgsystem/repro/sde/*` | SOURCE_DATE_EPOCH respected |
-| `tests/pkgsystem/repro/diagnose/*` | Diagnostic output golden |
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgrepro/clock.go` | `SOURCE_DATE_EPOCH` parsing | Owner |
+| `pkg/pkgrepro/walk.go` | Sorted, NFC walker | Owner |
+| `pkg/pkgrepro/locale.go` | Locale enforcement | Owner |
+| `pkg/pkgrepro/normalise.go` | Line-ending normalisation | Owner |
+| `pkg/pkgrepro/verify.go` | Twice-build + compare | Owner |
+| `pkg/pkgrepro/diagnose.go` | Diffoscope-style report | Owner |
+| `pkg/pkgrepro/rebuild.go` | Consumer-side rebuild | Owner |
+| `pkg/pkgpublish/sign.go` | Honour SDE in in-toto | Extends (Phase 13) |
+| `cmd/mochi/pack.go` | `--verify-reproducible` flag | Owner |
+| `cmd/mochi/rebuild.go` | `mochi pkg rebuild` handler | Owner |
+| `tests/pkgsystem/repro/cross-tz/*` | TZ-invariance | Owner |
+| `tests/pkgsystem/repro/cross-umask/*` | umask-invariance | Owner |
+| `tests/pkgsystem/repro/cross-locale/*` | LC-invariance | Owner |
+| `tests/pkgsystem/repro/cross-fs/*` | filesystem-invariance | Owner |
+| `tests/pkgsystem/repro/sde/*` | SOURCE_DATE_EPOCH respected | Owner |
+| `tests/pkgsystem/repro/diagnose/*` | Diagnostic output golden | Owner |
 
 ## Error code surface
 

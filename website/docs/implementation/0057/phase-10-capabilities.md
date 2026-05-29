@@ -374,22 +374,22 @@ The VM3 trace tag is used in `mochi run --trace-capabilities`, which logs every 
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgcap/cap.go` | Closed set + `Set` type |
-| `pkg/pkgcap/audit.go` | Monotonicity check |
-| `pkg/pkgcap/suspicious.go` | xz-pattern detector |
-| `pkg/pkgmanifest/capabilities.go` | `[capabilities]` parsing |
-| `pkg/pkgmanifest/dep.go` | Consumer `capabilities = [...]` pin |
-| `pkg/pkgsolver/pubgrub/check_capability.go` | Solver integration |
-| `pkg/pkglock/capability_seen.go` | Lockfile aggregation |
-| `cmd/mochi/audit_capabilities.go` | `mochi pkg audit capabilities` |
-| `cmd/mochi/why_capability.go` | `mochi pkg why-capability` |
-| `pkg/pkgemit/capsfile.go` | `.caps.json` sidecar writer |
-| `tests/pkgsystem/capabilities/closed-set/*` | Reject open names |
-| `tests/pkgsystem/capabilities/pin-narrows/*` | Solver rejects over-broad versions |
-| `tests/pkgsystem/capabilities/patch-add/*` | Audit catches monotonicity break |
-| `tests/pkgsystem/capabilities/xz-pattern/*` | Suspicious detector fires |
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgcap/cap.go` | Closed set + `Set` type | Owner |
+| `pkg/pkgcap/audit.go` | Monotonicity check | Owner |
+| `pkg/pkgcap/suspicious.go` | xz-pattern detector | Owner |
+| `pkg/pkgmanifest/capabilities.go` | `[capabilities]` parsing | Owner |
+| `pkg/pkgmanifest/dep.go` | Consumer `capabilities = [...]` pin | Owner |
+| `pkg/pkgsolver/pubgrub/check_capability.go` | Solver integration | Owner |
+| `pkg/pkglock/capability_seen.go` | Lockfile aggregation | Owner |
+| `cmd/mochi/audit_capabilities.go` | `mochi pkg audit capabilities` handler | Owner |
+| `cmd/mochi/why_capability.go` | `mochi pkg why-capability` handler | Owner |
+| `pkg/pkgemit/capsfile.go` | `.caps.json` sidecar writer | Owner |
+| `tests/pkgsystem/capabilities/closed-set/*` | Reject open names | Owner |
+| `tests/pkgsystem/capabilities/pin-narrows/*` | Solver rejects over-broad versions | Owner |
+| `tests/pkgsystem/capabilities/patch-add/*` | Audit catches monotonicity break | Owner |
+| `tests/pkgsystem/capabilities/xz-pattern/*` | Suspicious detector fires | Owner |
 
 ## Error code surface
 

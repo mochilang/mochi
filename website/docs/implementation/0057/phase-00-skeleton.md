@@ -2,7 +2,7 @@
 title: "Phase 0. Skeleton"
 sidebar_position: 1
 sidebar_label: "Phase 0. Skeleton"
-description: "MEP-57 Phase 0 — Go package stubs for the Mochi module and package system: pkg/pkgmanifest, pkg/pkglock, pkg/pkgsolver/pubgrub, pkg/pkgindex, pkg/pkgblob, pkg/pkgsign, pkg/pkgcap, pkg/pkgfanout. CI workflow."
+description: "MEP-57 Phase 0 — Go package stubs for the Mochi module and package system: pkg/pkgmanifest, pkg/pkglock, pkg/pkgsolver/pubgrub, pkg/pkgregistry, pkg/pkgblob, pkg/pkgsign, pkg/pkgcap, pkg/pkgfanout. CI workflow."
 ---
 
 # Phase 0. Skeleton
@@ -18,7 +18,7 @@ description: "MEP-57 Phase 0 — Go package stubs for the Mochi module and packa
 
 ## Gate
 
-`TestPhase0Skeleton`: `go build ./pkg/pkgmanifest/... ./pkg/pkglock/... ./pkg/pkgsolver/... ./pkg/pkgindex/... ./pkg/pkgblob/... ./pkg/pkgsign/... ./pkg/pkgcap/... ./pkg/pkgfanout/...` exits 0 and `go vet ./pkg/...` passes clean. No fixture execution in Phase 0; the gate is structural.
+`TestPhase0Skeleton`: `go build ./pkg/pkgmanifest/... ./pkg/pkglock/... ./pkg/pkgsolver/... ./pkg/pkgregistry/... ./pkg/pkgblob/... ./pkg/pkgsign/... ./pkg/pkgcap/... ./pkg/pkgfanout/...` exits 0 and `go vet ./pkg/...` passes clean. No fixture execution in Phase 0; the gate is structural.
 
 ## Goal-alignment audit
 
@@ -31,7 +31,7 @@ Phase 0 has no user-facing output. Its value is that every subsequent phase star
 | 0.0 | `pkg/pkgmanifest` package stubs | NOT STARTED | — |
 | 0.1 | `pkg/pkglock` package stubs | NOT STARTED | — |
 | 0.2 | `pkg/pkgsolver/pubgrub` package stubs | NOT STARTED | — |
-| 0.3 | `pkg/pkgindex` and `pkg/pkgblob` package stubs | NOT STARTED | — |
+| 0.3 | `pkg/pkgregistry` and `pkg/pkgblob` package stubs | NOT STARTED | — |
 | 0.4 | `pkg/pkgsign`, `pkg/pkgcap`, `pkg/pkgfanout` package stubs | NOT STARTED | — |
 | 0.5 | `cmd/mochi pkg ...` subcommand wiring | NOT STARTED | — |
 | 0.6 | CI workflow skeleton (`.github/workflows/pkgsystem-test.yml`) | NOT STARTED | — |
@@ -212,15 +212,15 @@ func (s *Solver) Solve(ctx context.Context) (*Solution, error) {
 }
 ```
 
-## Sub-phase 0.3 — pkg/pkgindex + pkg/pkgblob stubs
+## Sub-phase 0.3 — pkg/pkgregistry + pkg/pkgblob stubs
 
 ```
-pkg/pkgindex/
-  index.go           # Index interface (FetchPackage, ListPackages)
-  sparse.go          # SparseHTTPSIndex implementation
-  filesystem.go      # FilesystemIndex for local-fixture tests
-  cache.go           # HTTP cache with ETag + If-Modified-Since
-  index_test.go
+pkg/pkgregistry/
+  registry.go        # Registry interface (Versions, Manifest, Blob)
+  sparse/sparse.go   # SparseRegistry (HTTPS) stub
+  local/local.go     # FilesystemRegistry stub
+  sparse/cache.go    # HTTP cache with ETag + If-Modified-Since stub
+  registry_test.go
 
 pkg/pkgblob/
   blob.go            # Blob fetch / store interface
@@ -318,18 +318,44 @@ jobs:
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgmanifest/*.go` | Manifest parse / validate / write |
-| `pkg/pkglock/*.go` | Lockfile parse / write / diff |
-| `pkg/pkgsolver/pubgrub/*.go` | PubGrub solver stub |
-| `pkg/pkgindex/*.go` | Sparse index stubs |
-| `pkg/pkgblob/*.go` | Content-addressed blob store stubs |
-| `pkg/pkgsign/*.go` | Sigstore bundle stubs |
-| `pkg/pkgcap/*.go` | Capability whitelist stubs |
-| `pkg/pkgfanout/*.go` | Polyglot fan-out stubs |
-| `cmd/mochi/pkg.go` | `mochi pkg ...` subcommand wiring |
-| `.github/workflows/pkgsystem-test.yml` | CI workflow skeleton |
+Conventions used across the phase tracking pages:
+
+- **Owner** column: `Owner` = phase introduces the file or directory.
+  `Extends` = phase adds new exported symbols / new responsibilities.
+  `Rewrites` = phase replaces previous implementation wholesale.
+- **Package layout**: there is one Go package per registry-side concern.
+  Phase 0 reserves `pkg/pkgregistry/` (was earlier called `pkg/pkgindex/` in
+  research notes); all index, sparse, mirror, and offline code lives under
+  that root. There is no `pkg/pkgindex/` directory at v1.
+- **CLI layout**: every package-system verb is a subcommand of `mochi pkg`.
+  `cmd/mochi/pkg.go` (this phase) wires the verb tree; later phases add files
+  named after the verb they implement (`cmd/mochi/lock.go`, etc.) but only
+  register handlers, never a top-level command.
+
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgmanifest/*.go` | Manifest parse / validate / write stubs | Owner |
+| `pkg/pkglock/*.go` | Lockfile parse / write / diff stubs | Owner |
+| `pkg/pkgsolver/pubgrub/*.go` | PubGrub solver stubs | Owner |
+| `pkg/pkgregistry/*.go` | Registry interface + sparse index stubs | Owner |
+| `pkg/pkgblob/*.go` | Content-addressed blob store stubs | Owner |
+| `pkg/pkgsign/*.go` | Sigstore bundle stubs | Owner |
+| `pkg/pkgcap/*.go` | Capability whitelist stubs | Owner |
+| `pkg/pkgfanout/*.go` | Polyglot fan-out stubs | Owner |
+| `pkg/pkgresolve/*.go` | Local resolution stubs (extended by Phase 2) | Owner |
+| `pkg/pkgworkspace/*.go` | Workspace stubs (extended by Phase 3) | Owner |
+| `pkg/pkgpublish/*.go` | Publish-pipeline stubs (extended by Phase 12) | Owner |
+| `pkg/pkgsbom/*.go` | SBOM stubs (extended by Phase 15) | Owner |
+| `pkg/pkgadvisory/*.go` | Advisory feed stubs (extended by Phase 16) | Owner |
+| `pkg/pkgrepro/*.go` | Reproducibility stubs (extended by Phase 17) | Owner |
+| `pkg/pkgvendor/*.go` | Vendor stubs (extended by Phase 18) | Owner |
+| `pkg/pkgnet/*.go` | Network-policy stubs (extended by Phase 18) | Owner |
+| `pkg/pkgstore/*.go` | Shared cache stubs (extended by Phase 19) | Owner |
+| `pkg/pkgtrace/*.go` | Tracing stubs (extended by Phase 19) | Owner |
+| `pkg/pkgwhy/*.go` | Explanation stubs (extended by Phase 6) | Owner |
+| `pkg/pkgemit/*.go` | Sidecar emitter stubs (extended by Phase 10) | Owner |
+| `cmd/mochi/pkg.go` | `mochi pkg ...` subcommand tree | Owner |
+| `.github/workflows/pkgsystem-test.yml` | CI workflow skeleton | Owner |
 
 ## Test set
 

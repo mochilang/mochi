@@ -286,22 +286,22 @@ Mmap-based read: the lockfile is mmapped (read-only) for parse. For a typical 10
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgstore/store.go` | Shared cache |
-| `pkg/pkgstore/install.go` | Hardlink installer |
-| `pkg/pkgstore/fetch.go` | Parallel pool |
-| `pkg/pkgstore/gc.go` | LRU GC |
-| `pkg/pkgsolver/cache.go` | Cross-member memoisation |
-| `pkg/pkgblob/extract_concurrent.go` | Parallel extract |
-| `pkg/pkgtrace/trace.go` | Chrome trace emitter |
-| `cmd/mochi/bench.go` | `mochi pkg bench` |
-| `cmd/mochi/cache_gc.go` | `mochi pkg cache gc` |
-| `tests/pkgsystem/perf/500-pkg/*` | Cold/warm budgets |
-| `tests/pkgsystem/perf/workspace-10/*` | Member cache reuse |
-| `tests/pkgsystem/perf/regress/*` | Bench fail injection |
-| `bench/baseline.json` | Rolling perf baseline |
-| `.github/workflows/bench.yml` | Nightly + PR gate |
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgstore/store.go` | Shared cache | Owner |
+| `pkg/pkgstore/install.go` | Hardlink installer | Owner |
+| `pkg/pkgstore/fetch.go` | Parallel pool | Owner |
+| `pkg/pkgstore/gc.go` | LRU GC | Owner |
+| `pkg/pkgsolver/cache.go` | Cross-member memoisation | Owner |
+| `pkg/pkgblob/extract_concurrent.go` | Parallel extract | Owner |
+| `pkg/pkgtrace/trace.go` | Chrome trace emitter | Owner |
+| `cmd/mochi/bench.go` | `mochi pkg bench` handler | Owner |
+| `cmd/mochi/cache_gc.go` | `mochi pkg cache gc` handler | Owner |
+| `tests/pkgsystem/perf/500-pkg/*` | Cold/warm budgets | Owner |
+| `tests/pkgsystem/perf/workspace-10/*` | Member cache reuse | Owner |
+| `tests/pkgsystem/perf/regress/*` | Bench fail injection | Owner |
+| `bench/baseline.json` | Rolling perf baseline | Owner |
+| `.github/workflows/bench.yml` | Nightly + PR gate | Owner |
 
 ## Error code surface
 

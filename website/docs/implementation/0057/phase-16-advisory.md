@@ -322,21 +322,21 @@ Implementation lives outside the Mochi binary (it is an external Go script that 
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgadvisory/schema.go` | YAML schema + parser |
-| `pkg/pkgadvisory/severity.go` | CVSS parsing |
-| `pkg/pkgadvisory/feed.go` | Sparse-index style feed client |
-| `pkg/pkgadvisory/cache.go` | Local cache |
-| `pkg/pkgadvisory/match.go` | Range match against lockfile |
-| `pkg/pkgadvisory/audit.go` | Audit core |
-| `pkg/pkgadvisory/fix.go` | Bump suggestion via solver |
-| `cmd/mochi/audit.go` | CLI |
-| `tests/pkgsystem/audit/cve-hit/*` | Match a known advisory |
-| `tests/pkgsystem/audit/cve-fix/*` | Bump suggestion |
-| `tests/pkgsystem/audit/eol/*` | EOL warning |
-| `tests/pkgsystem/audit/ignore/*` | Ignore list suppresses |
-| `tests/pkgsystem/audit/offline/*` | Offline mode uses cache |
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgadvisory/schema.go` | YAML schema + parser (extended by Phase 18 offline snapshot) | Owner |
+| `pkg/pkgadvisory/severity.go` | CVSS parsing | Owner |
+| `pkg/pkgadvisory/feed.go` | Sparse-index style feed client | Owner |
+| `pkg/pkgadvisory/cache.go` | Local cache | Owner |
+| `pkg/pkgadvisory/match.go` | Range match against lockfile | Owner |
+| `pkg/pkgadvisory/audit.go` | Audit core | Owner |
+| `pkg/pkgadvisory/fix.go` | Bump suggestion via solver | Owner |
+| `cmd/mochi/audit.go` | `mochi pkg audit` advisory subcommand | Extends (Phase 9) |
+| `tests/pkgsystem/audit/cve-hit/*` | Match a known advisory | Owner |
+| `tests/pkgsystem/audit/cve-fix/*` | Bump suggestion | Owner |
+| `tests/pkgsystem/audit/eol/*` | EOL warning | Owner |
+| `tests/pkgsystem/audit/ignore/*` | Ignore list suppresses | Owner |
+| `tests/pkgsystem/audit/offline/*` | Offline mode uses cache | Owner |
 
 ## Error code surface
 

@@ -347,22 +347,22 @@ Staging strategy: each driver builds to `~/.cache/mochi/fanout/<target>/<version
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgfanout/dispatcher.go` | Driver dispatch |
-| `pkg/pkgfanout/driver.go` | `Driver` interface |
-| `pkg/pkgfanout/npm/*` | npm + JSR driver |
-| `pkg/pkgfanout/pypi/*` | PyPI driver |
-| `pkg/pkgfanout/maven/*` | Maven Central driver |
-| `pkg/pkgfanout/nuget/*` | NuGet driver |
-| `pkg/pkgfanout/spi/*` | Swift Package Index driver |
-| `pkg/pkgfanout/kotlinmp/*` | Kotlin MP driver |
-| `pkg/pkgfanout/cratesio/*` | crates.io driver |
-| `pkg/pkgfanout/hex/*` | Hex driver |
-| `pkg/pkgfanout/mapping/mapping.go` | Field mapping table |
-| `cmd/mochi/publish.go` | `--target=<list>`, `--strict` flags |
-| `tests/pkgsystem/fanout/<target>/dry-run/*` | Per-target golden artefacts |
-| `tests/pkgsystem/fanout/<target>/upload/*` | Mock registry round-trip |
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgfanout/dispatcher.go` | Driver dispatch | Owner |
+| `pkg/pkgfanout/driver.go` | `Driver` interface | Owner |
+| `pkg/pkgfanout/npm/*` | npm + JSR driver | Owner |
+| `pkg/pkgfanout/pypi/*` | PyPI driver | Owner |
+| `pkg/pkgfanout/maven/*` | Maven Central driver | Owner |
+| `pkg/pkgfanout/nuget/*` | NuGet driver | Owner |
+| `pkg/pkgfanout/spi/*` | Swift Package Index driver | Owner |
+| `pkg/pkgfanout/kotlinmp/*` | Kotlin MP driver | Owner |
+| `pkg/pkgfanout/cratesio/*` | crates.io driver | Owner |
+| `pkg/pkgfanout/hex/*` | Hex driver | Owner |
+| `pkg/pkgfanout/mapping/mapping.go` | Field mapping table | Owner |
+| `cmd/mochi/publish.go` | `--target=<list>`, `--strict` flags | Extends (Phase 12) |
+| `tests/pkgsystem/fanout/<target>/dry-run/*` | Per-target golden artefacts | Owner |
+| `tests/pkgsystem/fanout/<target>/upload/*` | Mock registry round-trip | Owner |
 
 ## Error code surface
 

@@ -270,21 +270,21 @@ The `sbom verify` exit code feeds into `mochi pkg audit --supply-chain` (Phase 1
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgsbom/cyclonedx/emit.go` | CycloneDX 1.6 |
-| `pkg/pkgsbom/cyclonedx/types.go` | Schema types |
-| `pkg/pkgsbom/spdx/emit.go` | SPDX 3.0 |
-| `pkg/pkgsbom/cbom/cbom.go` | Capability BOM properties |
-| `pkg/pkgsbom/intoto/builder.go` | SLSA predicate builder |
-| `pkg/pkgsbom/bundle/writer.go` | `.mochi-pkg/` writer |
-| `pkg/pkgsbom/validate/cdx.go` | Schema validation |
-| `pkg/pkgsbom/validate/spdx.go` | SPDX validator wrapper |
-| `cmd/mochi/sbom.go` | `mochi pkg sbom` subcommands |
-| `tests/pkgsystem/sbom/cdx-roundtrip/*` | CycloneDX golden + validate |
-| `tests/pkgsystem/sbom/spdx-roundtrip/*` | SPDX golden + validate |
-| `tests/pkgsystem/sbom/intoto/*` | SLSA verifier passes |
-| `tests/pkgsystem/sbom/cbom/*` | Capability properties present |
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgsbom/cyclonedx/emit.go` | CycloneDX 1.6 | Owner |
+| `pkg/pkgsbom/cyclonedx/types.go` | Schema types | Owner |
+| `pkg/pkgsbom/spdx/emit.go` | SPDX 3.0 | Owner |
+| `pkg/pkgsbom/cbom/cbom.go` | Capability BOM properties | Owner |
+| `pkg/pkgsbom/intoto/builder.go` | SLSA predicate builder | Owner |
+| `pkg/pkgsbom/bundle/writer.go` | `.mochi-pkg/` writer | Owner |
+| `pkg/pkgsbom/validate/cdx.go` | Schema validation | Owner |
+| `pkg/pkgsbom/validate/spdx.go` | SPDX validator wrapper | Owner |
+| `cmd/mochi/sbom.go` | `mochi pkg sbom ...` handler | Owner |
+| `tests/pkgsystem/sbom/cdx-roundtrip/*` | CycloneDX golden + validate | Owner |
+| `tests/pkgsystem/sbom/spdx-roundtrip/*` | SPDX golden + validate | Owner |
+| `tests/pkgsystem/sbom/intoto/*` | SLSA verifier passes | Owner |
+| `tests/pkgsystem/sbom/cbom/*` | Capability properties present | Owner |
 
 ## Error code surface
 

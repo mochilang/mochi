@@ -295,19 +295,19 @@ Plain-text mode (non-TTY or `--no-color`): no ANSI escapes; the test harness use
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgsolver/pubgrub/explain.go` | `BuildExplanation` |
-| `pkg/pkgsolver/pubgrub/render.go` | UNSAT prose renderer |
-| `pkg/pkgsolver/pubgrub/fixoptions.go` | `ComputeFixOptions` |
-| `pkg/pkgwhy/why.go` | `PrintWhy` |
-| `pkg/pkgwhy/tree.go` | `mochi pkg tree` |
-| `pkg/pkgwhy/color.go` | TTY detection |
-| `cmd/mochi/why.go` | `mochi pkg why <pkg>` |
-| `cmd/mochi/tree.go` | `mochi pkg tree` |
-| `tests/pkgsystem/solver-unsat/*` | UNSAT fixtures |
-| `tests/pkgsystem/solver-why/*` | SAT `why` fixtures |
-| `tests/pkgsystem/solver-tree/*` | `tree` fixtures |
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgsolver/pubgrub/explain.go` | `BuildExplanation` | Owner |
+| `pkg/pkgsolver/pubgrub/render.go` | UNSAT prose renderer | Owner |
+| `pkg/pkgsolver/pubgrub/fixoptions.go` | `ComputeFixOptions` | Owner |
+| `pkg/pkgwhy/why.go` | `PrintWhy` | Owner |
+| `pkg/pkgwhy/tree.go` | `mochi pkg tree` core | Owner |
+| `pkg/pkgwhy/color.go` | TTY detection | Owner |
+| `cmd/mochi/why.go` | `mochi pkg why <pkg>` handler | Owner |
+| `cmd/mochi/tree.go` | `mochi pkg tree` handler | Owner |
+| `tests/pkgsystem/solver-unsat/*` | UNSAT fixtures | Owner |
+| `tests/pkgsystem/solver-why/*` | SAT `why` fixtures | Owner |
+| `tests/pkgsystem/solver-tree/*` | `tree` fixtures | Owner |
 
 ## Fix-option coverage matrix
 

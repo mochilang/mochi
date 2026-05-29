@@ -457,27 +457,27 @@ Embedded pinning at build time avoids a TOFU window on first run.
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgsign/oidc/provider.go` | OIDC abstraction |
-| `pkg/pkgsign/oidc/github.go` | GitHub Actions provider |
-| `pkg/pkgsign/oidc/gitlab.go` | GitLab CI provider |
-| `pkg/pkgsign/oidc/browser.go` | Interactive flow |
-| `pkg/pkgsign/fulcio/fulcio.go` | Fulcio client |
-| `pkg/pkgsign/dsse/envelope.go` | DSSE encode/decode |
-| `pkg/pkgsign/intoto/statement.go` | In-toto Statement v1 |
-| `pkg/pkgsign/slsa/provenance.go` | SLSA v1 predicate |
-| `pkg/pkgsign/rekor/rekor.go` | Rekor client |
-| `pkg/pkgsign/bundle/bundle.go` | Sigstore bundle protobuf |
-| `pkg/pkgsign/verify/verify.go` | Bundle verification |
-| `pkg/pkgsign/tuf/tuf.go` | TUF root loader |
-| `pkg/pkgpublish/sign.go` | Wires signing into publish |
-| `cmd/mochi/publish_register.go` | Binding registration |
-| `cmd/mochi/audit_signatures.go` | `mochi pkg audit signatures` |
-| `tests/pkgsystem/sigstore/roundtrip/*` | End-to-end against mock |
-| `tests/pkgsystem/sigstore/tampered/*` | Verify catches flipped byte |
-| `tests/pkgsystem/sigstore/wrong-publisher/*` | E006 on binding miss |
-| `tests/pkgsystem/sigstore/mockinfra/*` | Mock Fulcio + Rekor |
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgsign/oidc/provider.go` | OIDC abstraction | Owner |
+| `pkg/pkgsign/oidc/github.go` | GitHub Actions provider | Owner |
+| `pkg/pkgsign/oidc/gitlab.go` | GitLab CI provider | Owner |
+| `pkg/pkgsign/oidc/browser.go` | Interactive flow | Owner |
+| `pkg/pkgsign/fulcio/fulcio.go` | Fulcio client | Owner |
+| `pkg/pkgsign/dsse/envelope.go` | DSSE encode/decode | Owner |
+| `pkg/pkgsign/intoto/statement.go` | In-toto Statement v1 | Owner |
+| `pkg/pkgsign/slsa/provenance.go` | SLSA v1 predicate | Owner |
+| `pkg/pkgsign/rekor/rekor.go` | Rekor client | Owner |
+| `pkg/pkgsign/bundle/bundle.go` | Sigstore bundle protobuf | Owner |
+| `pkg/pkgsign/verify/verify.go` | Bundle verification | Owner |
+| `pkg/pkgsign/tuf/tuf.go` | TUF root loader | Owner |
+| `pkg/pkgpublish/sign.go` | Wires signing into publish (extended by Phase 17 SDE) | Owner |
+| `cmd/mochi/publish_register.go` | `mochi pkg publish register` handler | Owner |
+| `cmd/mochi/audit_signatures.go` | `mochi pkg audit signatures` handler | Owner |
+| `tests/pkgsystem/sigstore/roundtrip/*` | End-to-end against mock | Owner |
+| `tests/pkgsystem/sigstore/tampered/*` | Verify catches flipped byte | Owner |
+| `tests/pkgsystem/sigstore/wrong-publisher/*` | E006 on binding miss | Owner |
+| `tests/pkgsystem/sigstore/mockinfra/*` | Mock Fulcio + Rekor | Owner |
 
 ## Error code surface
 

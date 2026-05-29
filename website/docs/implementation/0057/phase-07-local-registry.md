@@ -22,7 +22,7 @@ description: "MEP-57 Phase 7 — `file://` registry backend mirroring the sparse
 
 Pass criteria:
 
-1. URL parity. The `Registry` interface implemented by `pkg/pkgindex/local` returns identical bytes to the planned `pkg/pkgindex/sparse` (HTTP) backend, given identical on-disk content. The harness compares `Versions(name)` and `Manifest(name, ver)` outputs across both backends.
+1. URL parity. The `Registry` interface implemented by `pkg/pkgregistry/local` returns identical bytes to the planned `pkg/pkgregistry/sparse` (HTTP) backend, given identical on-disk content. The harness compares `Versions(name)` and `Manifest(name, ver)` outputs across both backends.
 2. Solver parity. Running `mochi pkg lock` with `[registry] default = "file:///opt/mochi-cache"` produces a lockfile byte-identical to the same lock against the HTTP backend (`https://index.mochi.dev`) seeded with the same fixture content.
 3. Blob retrieval. `Blob(blake3)` returns the byte-identical tarball whether sourced from disk or HTTPS.
 4. Init helper. `mochi registry init <root>` populates a usable filesystem registry from a set of input manifests + tarballs.
@@ -40,7 +40,7 @@ Phase 7 deliberately does *not* implement HTTP semantics (ETag, conditional GET,
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 7.0 | `pkg/pkgindex/local` package: parse `file://` URL, walk filesystem | NOT STARTED | — |
+| 7.0 | `pkg/pkgregistry/local` package: parse `file://` URL, walk filesystem | NOT STARTED | — |
 | 7.1 | URL scheme on disk: `<root>/<bucket>/<scope>/<name>` | NOT STARTED | — |
 | 7.2 | Blob lookup: `<root>/blobs/<blake3-hex>` | NOT STARTED | — |
 | 7.3 | `mochi registry serve --local=<root>` debug command | NOT STARTED | — |
@@ -48,12 +48,12 @@ Phase 7 deliberately does *not* implement HTTP semantics (ETag, conditional GET,
 | 7.5 | Cross-backend parity tests | NOT STARTED | — |
 | 7.6 | Negative paths (missing pkg -> 404 analog, malformed JSONL -> M057_INDEX_E002) | NOT STARTED | — |
 
-## Sub-phase 7.0 — `pkg/pkgindex/local` package
+## Sub-phase 7.0 — `pkg/pkgregistry/local` package
 
 The shared `Registry` interface:
 
 ```go
-// pkg/pkgindex/registry.go
+// pkg/pkgregistry/registry.go
 type Registry interface {
     Versions(pkg string) ([]VersionEntry, error)
     Manifest(pkg, version string) (*pkgmanifest.Manifest, error)
@@ -77,10 +77,10 @@ type VersionEntry struct {
 }
 ```
 
-`pkg/pkgindex/local`:
+`pkg/pkgregistry/local`:
 
 ```go
-// pkg/pkgindex/local/local.go
+// pkg/pkgregistry/local/local.go
 type FilesystemRegistry struct {
     Root string // absolute path
 }
@@ -255,16 +255,21 @@ Cases:
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgindex/registry.go` | `Registry` interface |
-| `pkg/pkgindex/local/local.go` | Filesystem backend |
-| `pkg/pkgindex/local/jsonl.go` | JSONL parser |
-| `pkg/pkgindex/local/init.go` | `mochi registry init` core |
-| `pkg/pkgindex/local/serve.go` | HTTPS reverse-proxy front-end |
-| `cmd/mochi/registry.go` | CLI subcommand wiring |
-| `tests/pkgsystem/local-registry/fixture-tree/` | Sample registry root |
-| `tests/pkgsystem/local-registry/parity_test.go` | Cross-backend parity |
+All registry-side code lives under `pkg/pkgregistry/` (canonical name). The
+research notes that pre-date this decision use `pkg/pkgindex/` as a working
+name; that directory does not exist at v1, every reference is rewritten to
+`pkg/pkgregistry/`.
+
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgregistry/registry.go` | `Registry` interface (extended by Phase 8, 11, 18) | Owner |
+| `pkg/pkgregistry/local/local.go` | Filesystem backend | Owner |
+| `pkg/pkgregistry/local/jsonl.go` | JSONL parser | Owner |
+| `pkg/pkgregistry/local/init.go` | `mochi pkg registry init` core | Owner |
+| `pkg/pkgregistry/local/serve.go` | HTTPS reverse-proxy front-end | Owner |
+| `cmd/mochi/registry.go` | `mochi pkg registry ...` handlers | Owner |
+| `tests/pkgsystem/local-registry/fixture-tree/` | Sample registry root | Owner |
+| `tests/pkgsystem/local-registry/parity_test.go` | Cross-backend parity | Owner |
 
 ## Error code surface
 

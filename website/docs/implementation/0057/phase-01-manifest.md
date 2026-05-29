@@ -398,22 +398,22 @@ Forward compatibility: unknown sub-keys (inside known tables) emit warnings on t
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgmanifest/parse.go` | `ParseFile` / `ParseBytes` entry points |
-| `pkg/pkgmanifest/validate.go` | `Validate` with E001-E012 error codes |
-| `pkg/pkgmanifest/semver.go` | Range / Comparator / Version / `ParseRange` / `Matches` |
-| `pkg/pkgmanifest/schema.go` | Closed top-level / target / capability sets |
-| `pkg/pkgmanifest/write.go` | Canonical TOML writer |
-| `pkg/pkgmanifest/workspace.go` | `ResolveInheritance` |
-| `pkg/pkgmanifest/edition.go` | Edition dispatch |
-| `pkg/pkgmanifest/errors.go` | Sentinel error vars (`ErrManifestE001` etc.) |
-| `tests/pkgsystem/manifest/positive/*.toml` | Round-trip corpus |
-| `tests/pkgsystem/manifest/positive/golden/*.json` | Expected parse output |
-| `tests/pkgsystem/manifest/negative/eNNN/*.toml` | Per-error-code fixtures |
-| `tests/pkgsystem/manifest/semver/cases.json` | Range matching corpus |
-| `tests/pkgsystem/manifest/workspace/*` | Inheritance fixtures |
-| `pkg/pkgmanifest/manifest_test.go` | `TestPhase1Manifest` driver |
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgmanifest/parse.go` | `ParseFile` / `ParseBytes` entry points | Owner |
+| `pkg/pkgmanifest/validate.go` | `Validate` with E001-E012 error codes | Owner |
+| `pkg/pkgmanifest/semver.go` | Range / Comparator / Version / `ParseRange` / `Matches` | Owner |
+| `pkg/pkgmanifest/schema.go` | Closed top-level / target / capability sets | Owner |
+| `pkg/pkgmanifest/write.go` | Canonical TOML writer | Owner |
+| `pkg/pkgmanifest/workspace.go` | `ResolveInheritance` (extended by Phase 3) | Owner |
+| `pkg/pkgmanifest/edition.go` | Edition dispatch | Owner |
+| `pkg/pkgmanifest/errors.go` | Sentinel error vars (`ErrManifestE001` etc.) | Owner |
+| `tests/pkgsystem/manifest/positive/*.toml` | Round-trip corpus | Owner |
+| `tests/pkgsystem/manifest/positive/golden/*.json` | Expected parse output | Owner |
+| `tests/pkgsystem/manifest/negative/eNNN/*.toml` | Per-error-code fixtures | Owner |
+| `tests/pkgsystem/manifest/semver/cases.json` | Range matching corpus | Owner |
+| `tests/pkgsystem/manifest/workspace/*` | Inheritance fixtures | Owner |
+| `pkg/pkgmanifest/manifest_test.go` | `TestPhase1Manifest` driver | Owner |
 
 ## Test set
 

@@ -55,7 +55,7 @@ The classifier is a single function over the first character class plus FFI tag 
 | First character | Specifier shape                               | Resolver path                                 |
 |-----------------|-----------------------------------------------|-----------------------------------------------|
 | `.` or `/`      | file-relative path (existing)                 | `runtime/mod/mod.go` walk-and-join (unchanged)|
-| `@`             | scoped package: `@scope/name[@req]`           | `pkg/pkgmanifest` + `pkg/pkgsolver` + `pkg/pkgindex` |
+| `@`             | scoped package: `@scope/name[@req]`           | `pkg/pkgmanifest` + `pkg/pkgsolver` + `pkg/pkgregistry` |
 | `[a-z]`         | unscoped package: `name[@req]`                | same as scoped, scope inferred from registry  |
 | (lang tag)      | FFI: `go|python|typescript|rust "..."`        | per-target FFI driver (unchanged)             |
 
@@ -321,20 +321,20 @@ Sorted by `(scope, name, version)`. Compared against `golden.json` byte-for-byte
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgresolve/classify.go` | Specifier classifier |
-| `pkg/pkgresolve/discover.go` | Manifest discovery |
-| `pkg/pkgresolve/resolve.go` | Top-level `Resolve` dispatch |
-| `pkg/pkgresolve/cache.go` | Cache lookup + integrity verification |
-| `pkg/pkgresolve/dump.go` | Canonical JSON dump |
-| `pkg/pkgresolve/errors.go` | Sentinel errors (M057_AMBIGUOUS_SPEC, etc.) |
-| `parser/import.go` | Dispatch hook |
-| `tests/pkgsystem/local-resolve/path-only/*.mochi` | Path regression corpus |
-| `tests/pkgsystem/local-resolve/scoped-cached/*.mochi` | Scoped cache-hit corpus |
-| `tests/pkgsystem/local-resolve/version-mismatch/*.mochi` | Mismatch corpus |
-| `tests/pkgsystem/local-resolve/classify/cases.json` | Classifier coverage |
-| `tests/pkgsystem/local-resolve/discover/*` | Discovery test trees |
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgresolve/classify.go` | Specifier classifier | Owner |
+| `pkg/pkgresolve/discover.go` | Manifest discovery | Owner |
+| `pkg/pkgresolve/resolve.go` | Top-level `Resolve` dispatch (extended by Phase 3) | Owner |
+| `pkg/pkgresolve/cache.go` | Cache lookup + integrity verification | Owner |
+| `pkg/pkgresolve/dump.go` | Canonical JSON dump | Owner |
+| `pkg/pkgresolve/errors.go` | Sentinel errors (M057_AMBIGUOUS_SPEC, etc.) | Owner |
+| `parser/import.go` | Dispatch hook | Extends |
+| `tests/pkgsystem/local-resolve/path-only/*.mochi` | Path regression corpus | Owner |
+| `tests/pkgsystem/local-resolve/scoped-cached/*.mochi` | Scoped cache-hit corpus | Owner |
+| `tests/pkgsystem/local-resolve/version-mismatch/*.mochi` | Mismatch corpus | Owner |
+| `tests/pkgsystem/local-resolve/classify/cases.json` | Classifier coverage | Owner |
+| `tests/pkgsystem/local-resolve/discover/*` | Discovery test trees | Owner |
 
 ## Error code surface
 

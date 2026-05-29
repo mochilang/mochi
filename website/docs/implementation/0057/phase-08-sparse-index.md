@@ -55,7 +55,7 @@ The phase intentionally leaves Sigstore verification to Phase 13 (the blob fetch
 ## Sub-phase 8.0 — HTTPS client
 
 ```go
-// pkg/pkgindex/sparse/sparse.go
+// pkg/pkgregistry/sparse/sparse.go
 type SparseRegistry struct {
     Endpoint string         // e.g. "https://index.mochi.dev"
     client   *http.Client   // HTTP/2 enabled
@@ -209,7 +209,7 @@ Field abbreviations match research note 07 §3. The parser is tolerant of unknow
 ## Sub-phase 8.4 — Mock fixture harness
 
 ```go
-// pkg/pkgindex/sparse/testserver/server.go
+// pkg/pkgregistry/sparse/testserver/server.go
 type Mock struct {
     *httptest.Server
     Script map[string][]Response  // pkg -> sequence of responses
@@ -327,19 +327,19 @@ This prevents the registry from being frozen by every new field requiring a clie
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgindex/sparse/sparse.go` | `SparseRegistry` |
-| `pkg/pkgindex/sparse/cache.go` | ETag + body cache |
-| `pkg/pkgindex/sparse/jsonl.go` | JSONL parser |
-| `pkg/pkgindex/sparse/backoff.go` | Backoff + jitter |
-| `pkg/pkgindex/sparse/failover.go` | `FailoverRegistry` |
-| `pkg/pkgindex/sparse/testserver/server.go` | Mock harness |
-| `cmd/mochi/config.go` | `mochi config registry ...` |
-| `tests/pkgsystem/sparse-index/normal/*` | Happy path |
-| `tests/pkgsystem/sparse-index/resilience/*` | 503/429/partial |
-| `tests/pkgsystem/sparse-index/etag/*` | Cache hit/miss sequences |
-| `tests/pkgsystem/sparse-index/failover/*` | Alternate registry |
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgregistry/sparse/sparse.go` | `SparseRegistry` | Owner |
+| `pkg/pkgregistry/sparse/cache.go` | ETag + body cache | Owner |
+| `pkg/pkgregistry/sparse/jsonl.go` | JSONL parser | Owner |
+| `pkg/pkgregistry/sparse/backoff.go` | Backoff + jitter | Owner |
+| `pkg/pkgregistry/sparse/failover.go` | `FailoverRegistry` (reused by Phase 11 mirror chain) | Owner |
+| `pkg/pkgregistry/sparse/testserver/server.go` | Mock harness | Owner |
+| `cmd/mochi/config.go` | `mochi pkg config registry ...` handler | Owner |
+| `tests/pkgsystem/sparse-index/normal/*` | Happy path | Owner |
+| `tests/pkgsystem/sparse-index/resilience/*` | 503/429/partial | Owner |
+| `tests/pkgsystem/sparse-index/etag/*` | Cache hit/miss sequences | Owner |
+| `tests/pkgsystem/sparse-index/failover/*` | Alternate registry | Owner |
 
 ## Error code surface
 

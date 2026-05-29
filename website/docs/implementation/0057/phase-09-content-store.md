@@ -318,22 +318,22 @@ A mismatch is a P0 forensic signal.
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgblob/hash.go` | Dual-hash streaming writer |
-| `pkg/pkgblob/fetch.go` | HTTP blob fetch |
-| `pkg/pkgblob/extract.go` | Tar + zstd extractor with safety guards |
-| `pkg/pkgblob/cache.go` | Cache layout + path helpers |
-| `pkg/pkgblob/lock.go` | fcntl per-blob lock |
-| `pkg/pkgblob/lock_unix.go` | POSIX implementation |
-| `pkg/pkgblob/lock_windows.go` | Windows implementation |
-| `pkg/pkgblob/audit.go` | `mochi pkg audit blobs` core |
-| `cmd/mochi/cache.go` | `mochi pkg cache size / prune / clean / verify` |
-| `cmd/mochi/audit.go` | `mochi pkg audit blobs` |
-| `tests/pkgsystem/content-store/normal/*` | Happy path |
-| `tests/pkgsystem/content-store/poisoned/*` | Reject mismatched bytes |
-| `tests/pkgsystem/content-store/path-escape/*` | Reject `..` in tar |
-| `tests/pkgsystem/content-store/concurrent-install/*` | Two processes, one blob |
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgblob/hash.go` | Dual-hash streaming writer | Owner |
+| `pkg/pkgblob/fetch.go` | HTTP blob fetch | Owner |
+| `pkg/pkgblob/extract.go` | Tar + zstd extractor with safety guards | Owner |
+| `pkg/pkgblob/cache.go` | Cache layout + path helpers | Owner |
+| `pkg/pkgblob/lock.go` | fcntl per-blob lock | Owner |
+| `pkg/pkgblob/lock_unix.go` | POSIX implementation | Owner |
+| `pkg/pkgblob/lock_windows.go` | Windows implementation | Owner |
+| `pkg/pkgblob/audit.go` | `mochi pkg audit blobs` core | Owner |
+| `cmd/mochi/cache.go` | `mochi pkg cache size / prune / clean / verify` (extended by Phase 19 `gc`) | Owner |
+| `cmd/mochi/audit.go` | `mochi pkg audit blobs` handler (extended by Phase 10 `capabilities`, Phase 13 `signatures`, Phase 16 advisory feed) | Owner |
+| `tests/pkgsystem/content-store/normal/*` | Happy path | Owner |
+| `tests/pkgsystem/content-store/poisoned/*` | Reject mismatched bytes | Owner |
+| `tests/pkgsystem/content-store/path-escape/*` | Reject `..` in tar | Owner |
+| `tests/pkgsystem/content-store/concurrent-install/*` | Two processes, one blob | Owner |
 
 ## Error code surface
 

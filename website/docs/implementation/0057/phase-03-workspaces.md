@@ -276,19 +276,19 @@ Cycles raise `M057_WORKSPACE_CYCLE` with the full cycle path in the error messag
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgmanifest/workspace.go` | Workspace struct + glob expansion |
-| `pkg/pkgworkspace/state.go` | WorkspaceState + member discovery |
-| `pkg/pkgworkspace/inherit.go` | `ResolveMemberDeps` |
-| `pkg/pkgworkspace/cycle.go` | DAG cycle check |
-| `pkg/pkgresolve/resolve.go` | Cross-member short-circuit hook |
-| `cmd/mochi/workspace.go` | CLI subcommand wiring |
-| `tests/pkgsystem/workspace/two-member/*` | A imports B fixture |
-| `tests/pkgsystem/workspace/inherited-deps/*` | Inheritance fixture |
-| `tests/pkgsystem/workspace/glob-members/*` | Glob expansion fixture |
-| `tests/pkgsystem/workspace/exclude/*` | Exclude fixture |
-| `tests/pkgsystem/workspace/cycle/*` | Cycle detection fixture |
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgmanifest/workspace.go` | Workspace struct + glob expansion | Extends (Phase 1) |
+| `pkg/pkgworkspace/state.go` | WorkspaceState + member discovery | Owner |
+| `pkg/pkgworkspace/inherit.go` | `ResolveMemberDeps` | Owner |
+| `pkg/pkgworkspace/cycle.go` | DAG cycle check | Owner |
+| `pkg/pkgresolve/resolve.go` | Cross-member short-circuit hook | Extends (Phase 2) |
+| `cmd/mochi/workspace.go` | `mochi pkg workspace ...` handlers | Owner |
+| `tests/pkgsystem/workspace/two-member/*` | A imports B fixture | Owner |
+| `tests/pkgsystem/workspace/inherited-deps/*` | Inheritance fixture | Owner |
+| `tests/pkgsystem/workspace/glob-members/*` | Glob expansion fixture | Owner |
+| `tests/pkgsystem/workspace/exclude/*` | Exclude fixture | Owner |
+| `tests/pkgsystem/workspace/cycle/*` | Cycle detection fixture | Owner |
 
 ## Error code surface
 

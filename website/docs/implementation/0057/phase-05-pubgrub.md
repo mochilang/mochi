@@ -379,21 +379,21 @@ PubGrub's correctness guarantee says it always terminates on finite registries; 
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgsolver/pubgrub/range.go` | `Range` and algebra |
-| `pkg/pkgsolver/pubgrub/term.go` | `Term` |
-| `pkg/pkgsolver/pubgrub/incompat.go` | `Incompatibility` + causes |
-| `pkg/pkgsolver/pubgrub/propagate.go` | Unit propagation |
-| `pkg/pkgsolver/pubgrub/decide.go` | Decision making |
-| `pkg/pkgsolver/pubgrub/conflict.go` | Conflict resolution |
-| `pkg/pkgsolver/pubgrub/backtrack.go` | Backtracking |
-| `pkg/pkgsolver/pubgrub/mochi_ext.go` | Capability / target / compiler / multi-version |
-| `pkg/pkgsolver/pubgrub/solver.go` | `Solve` entry point + watchdog |
-| `pkg/pkgsolver/pubgrub/mockregistry/mock.go` | Mock registry |
-| `tests/pkgsystem/solver/dart-reference/*` | Dart suite port |
-| `tests/pkgsystem/solver/uv-regression/*` | uv issue suite port |
-| `tests/pkgsystem/solver/mochi-specific/*` | Capability / target / compiler / multi-version |
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgsolver/pubgrub/range.go` | `Range` and algebra | Owner |
+| `pkg/pkgsolver/pubgrub/term.go` | `Term` | Owner |
+| `pkg/pkgsolver/pubgrub/incompat.go` | `Incompatibility` + causes (extended by Phase 10) | Owner |
+| `pkg/pkgsolver/pubgrub/propagate.go` | Unit propagation | Owner |
+| `pkg/pkgsolver/pubgrub/decide.go` | Decision making | Owner |
+| `pkg/pkgsolver/pubgrub/conflict.go` | Conflict resolution | Owner |
+| `pkg/pkgsolver/pubgrub/backtrack.go` | Backtracking | Owner |
+| `pkg/pkgsolver/pubgrub/mochi_ext.go` | Capability / target / compiler / multi-version | Owner |
+| `pkg/pkgsolver/pubgrub/solver.go` | `Solve(ctx)` entry point + watchdog | Owner |
+| `pkg/pkgsolver/pubgrub/mockregistry/mock.go` | Mock registry | Owner |
+| `tests/pkgsystem/solver/dart-reference/*` | Dart suite port | Owner |
+| `tests/pkgsystem/solver/uv-regression/*` | uv issue suite port | Owner |
+| `tests/pkgsystem/solver/mochi-specific/*` | Capability / target / compiler / multi-version | Owner |
 
 ## Error code surface
 

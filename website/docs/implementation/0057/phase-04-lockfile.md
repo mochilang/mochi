@@ -351,23 +351,23 @@ No hand-merging. Most conflicts touch separate package blocks, but `--refresh` i
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkglock/lock.go` | Schema |
-| `pkg/pkglock/canonical.go` | Canonical writer |
-| `pkg/pkglock/parse.go` | Version-dispatched reader |
-| `pkg/pkglock/manifest_hash.go` | `ManifestHash` |
-| `pkg/pkglock/check.go` | `CheckLock` (stale + drift) |
-| `pkg/pkglock/capsdelta.go` | `DetectNewCapabilities` |
-| `pkg/pkglock/refresh.go` | `LockRefresh` |
-| `cmd/mochi/lock.go` | `mochi pkg lock`, `mochi pkg lock --check`, `mochi pkg lock --refresh`, `mochi pkg lock --accept-capabilities` |
-| `tests/pkgsystem/lockfile/roundtrip/*` | Round-trip corpus |
-| `tests/pkgsystem/lockfile/byte-identity/*` | Cross-platform identity fixture |
-| `tests/pkgsystem/lockfile/stale-check/*` | E001 fixture |
-| `tests/pkgsystem/lockfile/drift-check/*` | E002 fixture |
-| `tests/pkgsystem/lockfile/version-envelope/*` | E003 fixture |
-| `tests/pkgsystem/lockfile/caps-delta/*` | E006 fixture |
-| `tests/pkgsystem/lockfile/workspace/*` | Workspace source kind |
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkglock/lock.go` | Schema (extended by Phase 10 caps, Phase 11 registry, Phase 13 provenance) | Owner |
+| `pkg/pkglock/canonical.go` | Canonical writer | Owner |
+| `pkg/pkglock/parse.go` | Version-dispatched reader | Owner |
+| `pkg/pkglock/manifest_hash.go` | `ManifestHash` | Owner |
+| `pkg/pkglock/check.go` | `CheckLock` (stale + drift) | Owner |
+| `pkg/pkglock/capsdelta.go` | `DetectNewCapabilities` | Owner |
+| `pkg/pkglock/refresh.go` | `LockRefresh` | Owner |
+| `cmd/mochi/lock.go` | `mochi pkg lock`, `--check`, `--refresh`, `--accept-capabilities` | Owner |
+| `tests/pkgsystem/lockfile/roundtrip/*` | Round-trip corpus | Owner |
+| `tests/pkgsystem/lockfile/byte-identity/*` | Cross-platform identity fixture | Owner |
+| `tests/pkgsystem/lockfile/stale-check/*` | E001 fixture | Owner |
+| `tests/pkgsystem/lockfile/drift-check/*` | E002 fixture | Owner |
+| `tests/pkgsystem/lockfile/version-envelope/*` | E003 fixture | Owner |
+| `tests/pkgsystem/lockfile/caps-delta/*` | E006 fixture | Owner |
+| `tests/pkgsystem/lockfile/workspace/*` | Workspace source kind | Owner |
 
 ## Error code surface
 

@@ -251,21 +251,21 @@ Use case: compliance-controlled CI that must demonstrate it cannot exfiltrate.
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgvendor/vendor.go` | `mochi pkg vendor` |
-| `pkg/pkgvendor/verify.go` | `mochi pkg vendor verify` |
-| `pkg/pkgvendor/layout.go` | `vendor/` schema |
-| `pkg/pkgnet/offline.go` | Network deny |
-| `pkg/pkgregistry/offline.go` | Cache-only registry |
-| `pkg/pkgadvisory/offline.go` | Offline audit |
-| `cmd/mochi/vendor.go` | CLI |
-| `cmd/mochi/build.go` | `--offline` flag |
-| `tests/pkgsystem/offline/vendor-roundtrip/*` | Vendor + build |
-| `tests/pkgsystem/offline/cache-miss/*` | Miss raises E001 |
-| `tests/pkgsystem/offline/frozen-drift/*` | Frozen rejection |
-| `tests/pkgsystem/offline/verify-tamper/*` | Tampered vendor caught |
-| `tests/pkgsystem/offline/hard/*` | MOCHI_OFFLINE=hard behaviour |
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgvendor/vendor.go` | `mochi pkg vendor` | Owner |
+| `pkg/pkgvendor/verify.go` | `mochi pkg vendor verify` | Owner |
+| `pkg/pkgvendor/layout.go` | `vendor/` schema | Owner |
+| `pkg/pkgnet/offline.go` | Network deny | Owner |
+| `pkg/pkgregistry/offline.go` | Cache-only registry | Extends (Phase 7) |
+| `pkg/pkgadvisory/offline.go` | Offline audit | Extends (Phase 16) |
+| `cmd/mochi/vendor.go` | `mochi pkg vendor` handler | Owner |
+| `cmd/mochi/build.go` | `--offline` flag | Extends (compiler driver) |
+| `tests/pkgsystem/offline/vendor-roundtrip/*` | Vendor + build | Owner |
+| `tests/pkgsystem/offline/cache-miss/*` | Miss raises E001 | Owner |
+| `tests/pkgsystem/offline/frozen-drift/*` | Frozen rejection | Owner |
+| `tests/pkgsystem/offline/verify-tamper/*` | Tampered vendor caught | Owner |
+| `tests/pkgsystem/offline/hard/*` | MOCHI_OFFLINE=hard behaviour | Owner |
 
 ## Error code surface
 

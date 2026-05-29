@@ -285,18 +285,18 @@ This makes "did this build hit the corporate mirror?" auditable by reading the l
 
 ## Files changed
 
-| File | Purpose |
-|------|---------|
-| `pkg/pkgregistry/config.go` | `[default]` + `[[alternate]]` parsing |
-| `pkg/pkgregistry/failover.go` | Chained `Versions` / `Blob` |
-| `pkg/pkgregistry/mirror.go` | Sync engine |
-| `cmd/mochi/mirror.go` | `mochi pkg mirror sync / serve` |
-| `cmd/mochi/audit_mirror.go` | `mochi pkg audit mirror` |
-| `pkg/pkglock/lock.go` | `registry` field per package |
-| `tests/pkgsystem/mirror/sync-roundtrip/*` | Sync then resolve through mirror |
-| `tests/pkgsystem/mirror/tampered/*` | Hash mismatch rejection |
-| `tests/pkgsystem/mirror/failover/*` | Upstream 503, alternate 200 |
-| `tests/pkgsystem/mirror/divergence/*` | Audit detects divergence |
+| File | Purpose | Owner |
+|------|---------|-------|
+| `pkg/pkgregistry/config.go` | `[default]` + `[[alternate]]` parsing | Owner |
+| `pkg/pkgregistry/failover.go` | Chained `Versions` / `Blob` (rewrites Phase 8 stub) | Rewrites (Phase 8) |
+| `pkg/pkgregistry/mirror.go` | Sync engine | Owner |
+| `cmd/mochi/mirror.go` | `mochi pkg mirror sync / serve` handler | Owner |
+| `cmd/mochi/audit_mirror.go` | `mochi pkg audit mirror` handler | Owner |
+| `pkg/pkglock/lock.go` | `registry` field per package | Extends (Phase 4) |
+| `tests/pkgsystem/mirror/sync-roundtrip/*` | Sync then resolve through mirror | Owner |
+| `tests/pkgsystem/mirror/tampered/*` | Hash mismatch rejection | Owner |
+| `tests/pkgsystem/mirror/failover/*` | Upstream 503, alternate 200 | Owner |
+| `tests/pkgsystem/mirror/divergence/*` | Audit detects divergence | Owner |
 
 ## Error code surface
 
