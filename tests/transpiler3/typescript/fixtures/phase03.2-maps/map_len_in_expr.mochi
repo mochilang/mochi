@@ -1,0 +1,4 @@
+let m: map<string, int> = {"a": 1, "b": 2, "c": 3}
+let n = len(m)
+print(n)
+print(n * 2)

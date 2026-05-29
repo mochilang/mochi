@@ -1,0 +1,4 @@
+let m: map<string, string> = {"red": "rouge", "blue": "azure"}
+print(m["red"])
+print(m["blue"])
+print(len(m))

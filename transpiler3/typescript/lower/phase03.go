@@ -76,6 +76,35 @@ func tsTypeForCompound(t aotir.Type, elem aotir.Type) (string, error) {
 	return es + "[]", nil
 }
 
+// tsTypeForMapSlot returns the TS type for a map slot (`Map<K, V>`).
+// Phase 3.2 only handles scalar key/value types (int / float / bool /
+// string); record-valued maps land with sub-phase 3.4.
+func tsTypeForMapSlot(key aotir.Type, value aotir.Type) (string, error) {
+	ks, err := tsTypeForList(key)
+	if err != nil {
+		return "", fmt.Errorf("ts lower: map key: %w", err)
+	}
+	vs, err := tsTypeForList(value)
+	if err != nil {
+		return "", fmt.Errorf("ts lower: map value: %w", err)
+	}
+	return "Map<" + ks + ", " + vs + ">", nil
+}
+
+// tsTypeForLetSlot picks the right type renderer for a LetStmt's
+// declared shape. Lists use ElemType; maps use KeyType + ValueType;
+// every other VarType falls through to tsTypeFor.
+func tsTypeForLetSlot(t, elem, key, value aotir.Type) (string, error) {
+	switch t {
+	case aotir.TypeList:
+		return tsTypeForCompound(t, elem)
+	case aotir.TypeMap:
+		return tsTypeForMapSlot(key, value)
+	default:
+		return tsTypeFor(t)
+	}
+}
+
 // lowerListLit translates an aotir ListLit (`[a, b, c]`) into a TS
 // array literal.
 func (l *lowerer) lowerListLit(e *aotir.ListLit) (tstree.Expr, error) {
@@ -262,6 +291,154 @@ func (l *lowerer) lowerListSetStmt(s *aotir.ListSetStmt) ([]tstree.Stmt, error) 
 	}}, nil
 }
 
+// ---- Phase 3.2 maps ----
+
+// lowerMapLit translates `{k1: v1, k2: v2}` to
+// `new Map<K, V>([[k1, v1], [k2, v2]])`. The Mochi semantic guarantees
+// every key shares KeyType and every value shares ValueType; the
+// emitter therefore renders one parameterised constructor call. An
+// empty map literal `{}` lowers to `new Map<K, V>()`.
+func (l *lowerer) lowerMapLit(e *aotir.MapLit) (tstree.Expr, error) {
+	if len(e.Keys) != len(e.Values) {
+		return nil, fmt.Errorf("ts lower: map literal keys/values length mismatch: %d vs %d", len(e.Keys), len(e.Values))
+	}
+	keyTy, err := tsTypeForList(e.KeyType)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: map literal key: %w", err)
+	}
+	valTy, err := tsTypeForList(e.ValueType)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: map literal value: %w", err)
+	}
+	keys := make([]tstree.Expr, 0, len(e.Keys))
+	vals := make([]tstree.Expr, 0, len(e.Values))
+	for i := range e.Keys {
+		k, err := l.lowerExpr(e.Keys[i])
+		if err != nil {
+			return nil, fmt.Errorf("ts lower: map literal key %d: %w", i, err)
+		}
+		v, err := l.lowerExpr(e.Values[i])
+		if err != nil {
+			return nil, fmt.Errorf("ts lower: map literal value %d: %w", i, err)
+		}
+		keys = append(keys, k)
+		vals = append(vals, v)
+	}
+	return &tstree.NewMapExpr{
+		KeyType:   keyTy,
+		ValueType: valTy,
+		Keys:      keys,
+		Values:    vals,
+	}, nil
+}
+
+// lowerMapGetExpr translates `m[k]` through a `mochi_map_get` runtime
+// helper. The helper raises on a missing key (matching aotir's
+// "panic if absent" contract documented on MapGetExpr); fixtures that
+// might miss must guard with `k in m`.
+//
+// Reason for a helper rather than bare `m.get(k)`: `Map.prototype.get`
+// returns `V | undefined`, which under `--noUncheckedIndexedAccess` /
+// `--strict` forces every caller to narrow. The helper bounds-checks
+// once and returns `V` so the emit stays clean.
+func (l *lowerer) lowerMapGetExpr(e *aotir.MapGetExpr) (tstree.Expr, error) {
+	l.runtime.mapGet = true
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: map-get receiver: %w", err)
+	}
+	key, err := l.lowerExpr(e.Key)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: map-get key: %w", err)
+	}
+	return &tstree.CallExpr{
+		Callee: &tstree.IdentExpr{Name: "mochi_map_get"},
+		Args:   []tstree.Expr{recv, key},
+	}, nil
+}
+
+// lowerMapHasExpr translates `k in m` to `m.has(k)`.
+// `Map.prototype.has` uses SameValueZero comparison which matches
+// Mochi's scalar key equality (NaN -> NaN, +0 -> -0).
+func (l *lowerer) lowerMapHasExpr(e *aotir.MapHasExpr) (tstree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: map-has receiver: %w", err)
+	}
+	key, err := l.lowerExpr(e.Key)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: map-has key: %w", err)
+	}
+	return &tstree.MemberCallExpr{
+		Receiver: recv,
+		Method:   "has",
+		Args:     []tstree.Expr{key},
+	}, nil
+}
+
+// lowerMapLenExpr translates `len(m)` to `m.size`.
+// Note: vm3 has a known bug where `len(m)` reads the original
+// allocation length and does not update after a mutation; the
+// TypeScript emit reads the actual live entry count.
+// Fixtures avoid post-mutation len checks to stay byte-equal.
+func (l *lowerer) lowerMapLenExpr(e *aotir.MapLenExpr) (tstree.Expr, error) {
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: map-len receiver: %w", err)
+	}
+	return &tstree.MemberAccessExpr{Receiver: recv, Member: "size"}, nil
+}
+
+// lowerMapKeysExpr translates `keys(m)` (and the synthesised list
+// inside `for k in m`) to `mochi_map_keys_sorted(m)`. vm3 iterates a
+// map in lexicographic-by-string-of-key order regardless of insertion
+// order; the helper sorts by `String(k)` ascending.
+func (l *lowerer) lowerMapKeysExpr(e *aotir.MapKeysExpr) (tstree.Expr, error) {
+	l.runtime.mapKeysSorted = true
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: map-keys receiver: %w", err)
+	}
+	return &tstree.CallExpr{
+		Callee: &tstree.IdentExpr{Name: "mochi_map_keys_sorted"},
+		Args:   []tstree.Expr{recv},
+	}, nil
+}
+
+// lowerMapValuesExpr translates `values(m)` to
+// `mochi_map_values_sorted(m)` (values in key-sorted order, mirroring
+// the keys helper so a parallel iteration prints the same shape).
+func (l *lowerer) lowerMapValuesExpr(e *aotir.MapValuesExpr) (tstree.Expr, error) {
+	l.runtime.mapValuesSorted = true
+	recv, err := l.lowerExpr(e.Receiver)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: map-values receiver: %w", err)
+	}
+	return &tstree.CallExpr{
+		Callee: &tstree.IdentExpr{Name: "mochi_map_values_sorted"},
+		Args:   []tstree.Expr{recv},
+	}, nil
+}
+
+// lowerMapPutStmt translates `m[k] = v` to `m.set(k, v);`.
+func (l *lowerer) lowerMapPutStmt(s *aotir.MapPutStmt) ([]tstree.Stmt, error) {
+	key, err := l.lowerExpr(s.Key)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: map-put key: %w", err)
+	}
+	val, err := l.lowerExpr(s.Value)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: map-put value: %w", err)
+	}
+	return []tstree.Stmt{&tstree.ExprStmt{
+		Expr: &tstree.MemberCallExpr{
+			Receiver: &tstree.IdentExpr{Name: s.Name},
+			Method:   "set",
+			Args:     []tstree.Expr{key, val},
+		},
+	}}, nil
+}
+
 // runtimeListDecls returns the Phase 3 list runtime helper decls
 // keyed off the runtimeFlags. Order is deterministic.
 func (l *lowerer) runtimeListDecls() []tstree.Decl {
@@ -371,6 +548,75 @@ func (l *lowerer) runtimeListDecls() []tstree.Decl {
 			ReturnType: "T[]",
 			Body: []tstree.Stmt{
 				&tstree.RawStmt{Text: "return xs.toSorted((a, b) => (a < b ? -1 : a > b ? 1 : 0));"},
+			},
+		})
+	}
+	return out
+}
+
+// runtimeMapDecls emits Phase 3.2 map helpers. Order matches the
+// flag-declaration order in runtimeFlags so two builds of the same
+// program emit the same byte sequence (Phase 16 gate).
+func (l *lowerer) runtimeMapDecls() []tstree.Decl {
+	var out []tstree.Decl
+	if l.runtime.mapGet {
+		out = append(out, &tstree.FuncDecl{
+			Doc: []string{
+				"Return m[k], panicking on a missing key.",
+				"`Map.prototype.get` returns V | undefined; this helper",
+				"raises so the emit can stay strict-mode clean without",
+				"forcing every caller to narrow.",
+			},
+			Name:     "mochi_map_get",
+			Generics: []string{"K", "V"},
+			Params: []tstree.FuncParam{
+				{Name: "m", Type: "ReadonlyMap<K, V>"},
+				{Name: "k", Type: "K"},
+			},
+			ReturnType: "V",
+			Body: []tstree.Stmt{
+				&tstree.RawStmt{Text: "if (!m.has(k)) { throw new RangeError(\"mochi_map_get: missing key \" + String(k)); }"},
+				&tstree.RawStmt{Text: "return m.get(k) as V;"},
+			},
+		})
+	}
+	if l.runtime.mapKeysSorted {
+		out = append(out, &tstree.FuncDecl{
+			Doc: []string{
+				"Return the map's keys sorted ascending by String(k).",
+				"Matches vm3's iteration order (lexicographic by",
+				"stringified key) so `for k in m` output is byte-equal.",
+			},
+			Name:     "mochi_map_keys_sorted",
+			Generics: []string{"K", "V"},
+			Params: []tstree.FuncParam{
+				{Name: "m", Type: "ReadonlyMap<K, V>"},
+			},
+			ReturnType: "K[]",
+			Body: []tstree.Stmt{
+				&tstree.RawStmt{Text: "const ks = [...m.keys()];"},
+				&tstree.RawStmt{Text: "ks.sort((a, b) => { const sa = String(a); const sb = String(b); return sa < sb ? -1 : sa > sb ? 1 : 0; });"},
+				&tstree.RawStmt{Text: "return ks;"},
+			},
+		})
+	}
+	if l.runtime.mapValuesSorted {
+		out = append(out, &tstree.FuncDecl{
+			Doc: []string{
+				"Return the map's values, ordered by sorted-String(key).",
+				"Mirrors mochi_map_keys_sorted so parallel iteration",
+				"produces matching (k, v) pairs.",
+			},
+			Name:     "mochi_map_values_sorted",
+			Generics: []string{"K", "V"},
+			Params: []tstree.FuncParam{
+				{Name: "m", Type: "ReadonlyMap<K, V>"},
+			},
+			ReturnType: "V[]",
+			Body: []tstree.Stmt{
+				&tstree.RawStmt{Text: "const ks = [...m.keys()];"},
+				&tstree.RawStmt{Text: "ks.sort((a, b) => { const sa = String(a); const sb = String(b); return sa < sb ? -1 : sa > sb ? 1 : 0; });"},
+				&tstree.RawStmt{Text: "return ks.map((k) => m.get(k) as V);"},
 			},
 		})
 	}

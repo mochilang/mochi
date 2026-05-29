@@ -118,10 +118,11 @@ func tsUnOp(op aotir.UnOp) (string, error) {
 }
 
 // paramType maps an aotir.Param to its emitted TS type string.
-// Phase 3 widens the renderer to lift list parameters via the
-// param's ElemType side-channel; bare scalars stay on tsTypeFor.
+// Phase 3 widens the renderer to lift list and map parameters via
+// the param's ElemType / KeyType / ValueType side-channels;
+// bare scalars stay on tsTypeFor.
 func paramType(p aotir.Param) (string, error) {
-	return tsTypeForCompound(p.Type, p.ElemType)
+	return tsTypeForLetSlot(p.Type, p.ElemType, p.KeyType, p.ValueType)
 }
 
 // lowerFunction emits one user-defined function. Mochi `fun add(a:
@@ -141,7 +142,7 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*tstree.FuncDecl, error) {
 		}
 		params = append(params, tstree.FuncParam{Name: p.Name, Type: tn})
 	}
-	ret, err := tsTypeForCompound(fn.ReturnType, fn.ReturnElemType)
+	ret, err := tsTypeForLetSlot(fn.ReturnType, fn.ReturnElemType, fn.ReturnKeyType, fn.ReturnValueType)
 	if err != nil {
 		return nil, fmt.Errorf("ts lower: return type of %q: %w", fn.Name, err)
 	}

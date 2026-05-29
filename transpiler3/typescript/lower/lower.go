@@ -53,6 +53,15 @@ type runtimeFlags struct {
 	listContains bool
 	listSlice    bool
 	listSortAsc  bool
+	// Phase 3.2 map helpers. `mochi_map_get` raises on a missing
+	// key (matches the aotir MapGetExpr "panic if absent" contract
+	// and keeps the strict-mode emit clean of `V | undefined`
+	// narrowing). `mochi_map_keys_sorted` and
+	// `mochi_map_values_sorted` sort by `String(k)` to match vm3's
+	// lex-sort iteration order.
+	mapGet          bool
+	mapKeysSorted   bool
+	mapValuesSorted bool
 }
 
 type lowerer struct {
@@ -110,6 +119,7 @@ func Lower(prog *aotir.Program, colours colour.ColourMap) (*tstree.SourceFile, e
 	// matters for source-map stability and for human readability.
 	decls := l.runtimeDecls()
 	decls = append(decls, l.runtimeListDecls()...)
+	decls = append(decls, l.runtimeMapDecls()...)
 	decls = append(decls, userDecls...)
 
 	mainDecl := &tstree.FuncDecl{
@@ -337,6 +347,8 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]tstree.Stmt, error) {
 		return l.lowerForEachStmt(v)
 	case *aotir.ListSetStmt:
 		return l.lowerListSetStmt(v)
+	case *aotir.MapPutStmt:
+		return l.lowerMapPutStmt(v)
 	default:
 		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 3 surface)", s)
 	}
@@ -386,7 +398,7 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) ([]tstree.Stmt, error) {
 // Phase 3 widens the type renderer to compound containers: list
 // slots emit `T[]` using the LetStmt's ElemType side-channel.
 func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) ([]tstree.Stmt, error) {
-	tn, err := tsTypeForCompound(s.VarType, s.ElemType)
+	tn, err := tsTypeForLetSlot(s.VarType, s.ElemType, s.KeyType, s.ValueType)
 	if err != nil {
 		return nil, fmt.Errorf("ts lower: let %q: %w", s.Name, err)
 	}
@@ -584,6 +596,18 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (tstree.Expr, error) {
 		return l.lowerListSliceExpr(v)
 	case *aotir.ListSortAscExpr:
 		return l.lowerListSortAscExpr(v)
+	case *aotir.MapLit:
+		return l.lowerMapLit(v)
+	case *aotir.MapGetExpr:
+		return l.lowerMapGetExpr(v)
+	case *aotir.MapHasExpr:
+		return l.lowerMapHasExpr(v)
+	case *aotir.MapLenExpr:
+		return l.lowerMapLenExpr(v)
+	case *aotir.MapKeysExpr:
+		return l.lowerMapKeysExpr(v)
+	case *aotir.MapValuesExpr:
+		return l.lowerMapValuesExpr(v)
 	default:
 		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 3 surface)", e)
 	}

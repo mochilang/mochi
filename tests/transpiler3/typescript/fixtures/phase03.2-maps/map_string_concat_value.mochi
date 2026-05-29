@@ -1,0 +1,2 @@
+let m: map<string, string> = {"first": "Hello", "second": "World"}
+print(m["first"] + " " + m["second"])

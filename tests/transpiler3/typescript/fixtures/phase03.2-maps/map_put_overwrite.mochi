@@ -1,0 +1,3 @@
+var m: map<string, int> = {"k": 1}
+m["k"] = 99
+print(m["k"])
