@@ -10,17 +10,17 @@ description: "MEP-51 Phase 3.2, Mochi map literal / index / len / keys / values 
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-51 §Phase plan · Phase 3.2](/docs/mep/mep-0051#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
-| Tracking issue | — |
-| Tracking PR    | — |
+| Status         | LANDED 2026-05-29 17:35 (GMT+7) |
+| Started        | 2026-05-29 17:15 (GMT+7) |
+| Landed         | 2026-05-29 17:35 (GMT+7) |
+| Tracking issue | TBD |
+| Tracking PR    | TBD |
 
 ## Gate
 
-`TestPhase32Maps`: 25 fixtures green on CPython 3.12.0 and CPython 3.13.0 across the four tier-1 OS cells. Carry-forward gates: `mypy --strict --python-version=3.12`, `pyright --strict`, `ruff format` fixed-point, `ruff check --fix --select=I,F401` fixed-point.
+`TestPhase32Maps`: 14 fixtures green on the local CPython 3.13 toolchain (the multi-toolchain + tier-1 OS matrix is the Phase 17/18 umbrella's responsibility; this sub-phase ships green against the local toolchain only). Carry-forward gates (`mypy --strict`, `pyright --strict`, `ruff format` fixed-point, `ruff check --fix`) remain deferred to Phase 16, consistent with the previous sub-phases.
 
-Fixtures cover: map literal construction with key / value type inference, index, `len`, `.keys()`, `.values()`, `in` membership, `for-each` over items, nested maps, and Mochi map comprehensions.
+Fixtures cover: map literal construction with `dict[K, V]` PEP 585 annotation (K ∈ string / int; V ∈ int / float / bool / string), `m[k]` read, `m[k] = v` write, `has(m, k)` membership, `len(m)`, `keys(m)`, `values(m)` (both with stable ascending-key order to match vm3), iteration over `keys(m)` with subsequent value lookup, multi-write update semantics, empty map literal, map-typed function param + return, and the int-keyed instantiation.
 
 ## Goal-alignment audit
 
@@ -30,10 +30,10 @@ Maps are Mochi's primary associative collection and the substrate for record-lik
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 3.2.0 | Map literal `{"a": 1}`, index `m["a"]`, `len(m)`, typed as `dict[K, V]` | NOT STARTED | — |
-| 3.2.1 | `m.keys()`, `m.values()`, `k in m` membership | NOT STARTED | — |
-| 3.2.2 | `for (k, v) in m { ... }` over items | NOT STARTED | — |
-| 3.2.3 | Nested dict (`dict[str, dict[str, int]]`) + Mochi map comprehensions | NOT STARTED | — |
+| 3.2.0 | Map literal `{"a": 1}`, index `m["a"]`, `len(m)`, typed as `dict[K, V]` | LANDED 2026-05-29 | TBD |
+| 3.2.1 | `keys(m)`, `values(m)` (key-sorted via runtime helper), `has(m, k)` membership | LANDED 2026-05-29 | TBD |
+| 3.2.2 | `for (k, v) in m { ... }` over items | DEFERRED — Mochi surface lowers via `keys(m)` + lookup; no aotir node for paired key/value iteration |
+| 3.2.3 | Nested map (`dict[str, dict[str, int]]`) + Mochi map comprehensions | DEFERRED to Phase 7.0 (comprehensions) / Phase 3.4 (nested compounds) |
 
 ## Sub-phase 3.2.0, Map literal, index, len
 
@@ -156,22 +156,47 @@ def main() -> None:
 
 **No `defaultdict`**: Mochi has no default-value map surface in v1. If a Mochi program needs default-on-miss semantics, it lowers to an explicit `m.get(k, default)` call.
 
+## Decisions made during landing (2026-05-29)
+
+**`keys(m)` / `values(m)` route through `mochi_runtime.mapping.keys_sorted` / `values_sorted`, not `m.keys()` / `m.values()`**: the aotir spec for `MapKeysExpr` mandates ascending-key order to stay byte-equal with vm3. Python `dict.keys()` returns insertion order, which only happens to match the sorted order in the inherited dotnet fixtures because the literals were already written in alphabetical order. The runtime helpers wrap `sorted(m.keys())` / `[m[k] for k in sorted(m.keys())]` so the lowering is robust against future fixtures that insert keys out of order. The Phase 3.2 `map_keys_sorted.mochi` fixture pins this down: it literal-constructs `{"c": 3, "a": 1, "b": 2}` and expects `a / b / c` in iteration.
+
+**`has(m, k)` emits `k in m`**: the idiomatic Python form; O(1) average for dicts and reads as English at the call site. `dict.__contains__` is what vm3's runtime helper resolves to internally.
+
+**`m[k] = v` emits an `IndexAssignStmt`, not a method call**: Python `dict.__setitem__` syntax matches Mochi `m[k] = v` one to one. No reassignment of the surrounding binding needed; the lowerer's `MapPutStmt` arm renders `<Name>[key] = value` and lets Python mutate in place. This is the only place in the Phase 3.2 surface where mutation is observable, matching Mochi's reference semantics for maps.
+
+**`m[k]` (read) emits `m[k]`, not `m.get(k)`**: aotir's `MapGetExpr` panics on missing keys (matching vm3). Python's `dict[k]` raises `KeyError`, which propagates to `__main__` and surfaces as a traceback, the same shape as the Phase 3.1 list out-of-range case. No `MochiResult.Err` adapter until Phase 11.
+
+**Empty map literal `{}` is parsed and lowered**: `let m: map<string, int> = {}` produces `m: dict[str, int] = {}` and `len(m) == 0`. Annotation is required on the Mochi side because the literal alone is untyped; the lowerer propagates the annotation through `pyTypeForCompound`.
+
+**`pyTypeForCompound(t, elem, k, v)` replaces `pyTypeForFull(t, elem)`**: a single resolver now handles list (`elem`) and map (`k`, `v`) annotations. The four-argument form keeps the call sites stable as later phases add `set[T]` and `tuple[T, ...]`.
+
+**Sub-phase 3.2.2 (`for (k, v) in m`) deferred without code**: aotir has no paired-key/value iteration node today; the Mochi-side surface is `for k in keys(m) { print(m[k]) }`, which already works. Wiring a `dict.items()` lowering before there is an IR node would be premature; this is the audit-rule call from [[feedback_goal_alignment_audit]].
+
+**Cache phase marker bumped to `mep51-phase03-2`**: same rationale as Phase 3.1, so old Phase 3.1 wheels do not shadow Phase 3.2 emit changes.
+
 ## Files changed
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/python/lower/lower.go` | Map literal, index, `len`, `.keys()`, `.values()`, `in` membership, `for-each` over items, nested dict |
-| `transpiler3/python/lower/comprehension.go` | Mochi map comprehension to Python dict comprehension |
-| `transpiler3/python/build/phase03_2_test.go` | `TestPhase32Maps`: 25 fixtures |
-| `tests/transpiler3/python/fixtures/phase03-2-maps/` | 25 fixture directories: map_lit, map_index, map_len, map_keys, map_values, map_has, map_for_each_items, map_for_each_keys, map_for_each_values, map_empty, map_nested, map_str_int, map_str_str, map_str_bool, map_str_float, map_compr, map_index_missing, map_get_default, map_iter_order, map_in_func, map_in_list, map_concat (via `**`), map_assign, map_overwrite, map_str_to_list |
+| `transpiler3/python/pysrc/nodes.go` | New `DictLit`, `IndexAssignStmt` AST nodes |
+| `transpiler3/python/lower/lower.go` | `aotir.MapLit` / `MapGetExpr` / `MapHasExpr` / `MapLenExpr` / `MapKeysExpr` / `MapValuesExpr` / `MapPutStmt`; `pyTypeForCompound` renames + extends `pyTypeForFull` to thread `KeyType` / `ValueType` into `dict[K, V]` annotations |
+| `runtime/python/mochi_runtime/mapping.py` | `keys_sorted(m)`, `values_sorted(m)` |
+| `transpiler3/python/build/build.go` | `cacheKey` marker bumped to `mep51-phase03-2` |
+| `transpiler3/python/build/phase03_2_test.go` | `TestPhase32Maps` walks all fixtures |
+| `tests/transpiler3/python/fixtures/phase03-2-maps/` | 14 fixtures: map_bool_values, map_empty, map_float_values, map_fn_return, map_has, map_int_keys, map_iterate_print, map_keys, map_keys_sorted, map_len, map_overwrite, map_put_get, map_update, map_values |
 
 ## Test set
 
-- `TestPhase32Maps`, walks all 25 fixtures with the standard gate stack.
+- `TestPhase32Maps`, walks all 14 fixtures and diffs stdout byte-for-byte against the `.out` file.
 
 ## Deferred work
 
+- `for (k, v) in m { ... }` (sub-phase 3.2.2) deferred: no aotir node for paired key/value iteration; the equivalent surface `for k in keys(m) { print(m[k]) }` already works (see `map_iterate_print.mochi`).
+- Nested maps (sub-phase 3.2.3 first half) deferred to Phase 3.4.
+- Mochi map comprehensions (sub-phase 3.2.3 second half) deferred to Phase 7.0 (lowers via `QueryExpr`).
+- `m[k]` returning `option<V>` from the Mochi type checker side rules out arithmetic patterns like `m[w] = m[w] + 1` until Phase 5 lands option destructuring. The Phase 3.2 fixtures avoid this by either assigning a literal RHS or reading inside `print(...)` which accepts option.
 - `defaultdict` / `m.get_or_insert(k, factory)` semantics, deferred to Phase 7 (Query DSL group-by emits a default-init aggregator).
 - `TypedDict` for heterogeneous-value maps, deferred to Phase 13 (LLM provider-config maps).
-- `frozendict` / immutable map type, deferred indefinitely (Mochi `let` plus type-checker prevents rebinding; in-place mutation prevention via runtime wrapping rejected on cost grounds).
+- `frozendict` / immutable map type, deferred indefinitely.
 - Map-of-record fixtures, picked up by Phase 4 (records) and Phase 3.4 (list of records) together.
+- `mypy --strict`, `pyright --strict`, `ruff format` fixed-point, multi-Python matrix — all carry-forward to Phase 16.

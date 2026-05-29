@@ -34,7 +34,7 @@ func TestPhase2Scalars(t *testing.T) {
 		c := c
 		t.Run(c.name, func(t *testing.T) {
 			outDir := t.TempDir()
-			d := &Driver{CacheDir: t.TempDir()}
+			d := &Driver{}
 			if err := d.Build(c.fixture, outDir, TargetRubySource); err != nil {
 				t.Fatalf("Build %s: %v", c.fixture, err)
 			}
@@ -131,7 +131,7 @@ func TestPhase2InlineFixtures(t *testing.T) {
 			}
 
 			outDir := t.TempDir()
-			d := &Driver{CacheDir: t.TempDir()}
+			d := &Driver{}
 			if err := d.Build(src, outDir, TargetRubySource); err != nil {
 				t.Fatalf("Build: %v", err)
 			}

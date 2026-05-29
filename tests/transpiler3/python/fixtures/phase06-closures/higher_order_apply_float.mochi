@@ -1,0 +1,7 @@
+fun apply_f(x: float, f: fun(float): float): float {
+  return f(x)
+}
+
+let neg = fun(v: float): float => 0.0 - v
+print(apply_f(1.5, neg))
+print(apply_f(0.0 - 2.25, neg))

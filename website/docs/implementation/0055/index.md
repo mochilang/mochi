@@ -39,7 +39,7 @@ All 18 phases shipped together on `impl/mep-0055-php`, merged to `main` via [PR 
 
 ## Audit follow-up PRs
 
-Eleven post-merge audits caught soft spots that the umbrella PR's CI did not. Each landed as its own PR on `main`:
+Fourteen post-merge audit PRs (rounds 1 through 6) caught soft spots that the umbrella PR's CI did not. Each landed as its own PR on `main`:
 
 | Round | PR     | Issue   | Fix                                                                                           |
 |-------|--------|---------|-----------------------------------------------------------------------------------------------|

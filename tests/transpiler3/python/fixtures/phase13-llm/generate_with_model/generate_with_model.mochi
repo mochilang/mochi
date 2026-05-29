@@ -1,0 +1,2 @@
+let r = generate openai { model: "gpt-4o-mini", prompt: "Say hi." }
+print(r)

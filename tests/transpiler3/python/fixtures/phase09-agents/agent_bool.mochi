@@ -1,0 +1,11 @@
+agent Switch {
+    var active: bool = false
+    intent toggle() { active = !active }
+    intent is_on(): bool { return active }
+}
+let s = Switch { active: false }
+print(s.is_on())
+s.toggle()
+print(s.is_on())
+s.toggle()
+print(s.is_on())

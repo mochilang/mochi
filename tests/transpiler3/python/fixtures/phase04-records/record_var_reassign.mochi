@@ -1,0 +1,8 @@
+type Pt {
+  x: int
+}
+
+var p = Pt { x: 1 }
+print(p.x)
+p = Pt { x: 99 }
+print(p.x)

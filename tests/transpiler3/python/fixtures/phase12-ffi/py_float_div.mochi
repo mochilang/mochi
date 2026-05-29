@@ -1,0 +1,4 @@
+extern python fun py_div(a: float, b: float): float
+
+let result: float = py_div(7.5, 2.5)
+print(result)

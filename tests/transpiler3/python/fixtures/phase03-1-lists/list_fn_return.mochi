@@ -1,0 +1,6 @@
+fun make(): list<int> {
+  return [10, 20, 30]
+}
+let xs = make()
+print(len(xs))
+print(xs[2])

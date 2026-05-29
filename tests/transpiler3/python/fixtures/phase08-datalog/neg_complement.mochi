@@ -1,0 +1,19 @@
+// Stratified negation: connected(X,Y) + not connected means unreachable.
+// Stratum 0: connected derived from edge facts.
+// Stratum 1: isolated uses not connected.
+fact node("a")
+fact node("b")
+fact node("c")
+fact node("d")
+fact edge("a", "b")
+fact edge("b", "c")
+
+rule connected(X, Y) :- edge(X, Y)
+rule connected(X, Y) :- connected(X, Z), edge(Z, Y)
+rule reachable_from_a(Y) :- connected("a", Y)
+rule isolated(X) :- node(X), not reachable_from_a(X)
+
+let results = query isolated(_)
+for r in results {
+    print(r)
+}

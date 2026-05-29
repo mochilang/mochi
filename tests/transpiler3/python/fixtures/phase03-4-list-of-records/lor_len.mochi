@@ -1,0 +1,9 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let a = [Pt { x: 1, y: 1 }]
+let b = [Pt { x: 1, y: 1 }, Pt { x: 2, y: 2 }, Pt { x: 3, y: 3 }, Pt { x: 4, y: 4 }]
+print(len(a))
+print(len(b))

@@ -1,0 +1,4 @@
+extern python fun py_sub(x: int, y: int): int
+
+let result: int = py_sub(10, 3)
+print(result)

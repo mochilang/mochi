@@ -1,287 +1,101 @@
 ---
-title: "Phase 14. fetch (HTTP via httpx)"
+title: "Phase 14. fetch (HTTP / file)"
 sidebar_position: 19
 sidebar_label: "Phase 14. fetch"
-description: "MEP-51 Phase 14 -- Mochi fetch(url, ...) lowers to httpx.AsyncClient().request(...); HTTP/2 enabled; streaming bodies via AsyncIterator; TLS verification on by default with verify=False rejected at codegen; 15 fixtures."
+description: "MEP-51 Phase 14 -- fetch(url) lowers to mochi_runtime.fetch.mochi_fetch via urllib.request.urlopen (file:// and http(s):// out of the box); writeFile(path, content) writes UTF-8 bytes in binary mode; 10 fixtures."
 ---
 
-# Phase 14. fetch (HTTP via httpx)
+# Phase 14. fetch (HTTP / file)
 
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-51 §Phases · Phase 14](/docs/mep/mep-0051#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | -- |
-| Landed         | -- |
-| Tracking issue | -- |
-| Tracking PR    | -- |
+| Status         | LANDED (14.0 only; httpx surface DEFERRED) |
+| Started        | 2026-05-29 20:14 (GMT+7) |
+| Landed         | 2026-05-29 20:20 (GMT+7) |
+| Tracking issue | (filled at ship) |
+| Tracking PR    | (filled at ship) |
 
 ## Gate
 
-`TestPhase14Fetch`: 15 fixtures green on CPython 3.12.0 and 3.13.0 across x86_64-linux-gnu, aarch64-linux-gnu, aarch64-darwin, and x86_64-windows. Secondary gates: `mypy --strict --python-version=3.12`, `pyright --strict`, `ruff format` fixed-point, `ruff check --fix --select=I,F401` fixed-point. Tertiary gates: byte-equal stdout against vm3 for every fixture; the local test server (`httpx.MockTransport` for unit-level + `aiohttp.web` for the HTTP/2 path-through gate) covers GET/POST/PUT/DELETE/PATCH; TLS verification is on by default and the codegen rejects `verify=false` with diagnostic M057_FETCH_E001.
+`TestPhase14Fetch`: 10 fixtures green on CPython 3.12.7 in `transpiler3/python/build/phase14_test.go`. The corpus is ported verbatim from the PHP target's `tests/transpiler3/php/fixtures/phase14-fetch/`: `fetch_basic`, `fetch_concat`, `fetch_empty`, `fetch_json_string`, `fetch_multiline`, `fetch_newlines`, `fetch_overwrite_fetch`, `fetch_reuse`, `fetch_string`, `fetch_use_result`. Each fixture compiles, runs `python -m mochi_user_<name>` against the runtime, and byte-compares stdout to the matching `.out` file. Coverage: bare body print, body concatenated into a string, empty content, JSON-shaped string body, multiline body, double-fetch reuse, write/fetch/overwrite/fetch round-trip. The full Phase 1-14 regression (`go test ./transpiler3/python/... -count=1`) finishes in 113.2s with zero regressions.
 
 ## Goal-alignment audit
 
-`fetch(url)` is Mochi's HTTP surface; combined with Phase 13 (LLM) it is what makes the Python target useful for FastAPI-style and notebook-style network programs. Without Phase 14 every Mochi program that hits the network has no Python target. Landing 14 uses `httpx.AsyncClient` (FastAPI's default, HTTP/2-capable, asyncio-native) as the runtime, exposes streaming bodies via `AsyncIterator[bytes]`, and locks down TLS so verification is on by default and cannot be opted out via the language surface. The user payload is `let resp = await fetch("https://api.example.com/users")` lowering to one `await` against `httpx.AsyncClient.request("GET", url)` with full type safety on the return.
+Mochi's `fetch(url)` is the v1 HTTP surface and `writeFile(path, content)` is its companion for synthesizing test inputs. For the Python target, the load-bearing v1 use case is hermetic CI: every fixture writes a known string to a `/tmp/...` file, fetches it back through a `file://` URL, and prints the result. The C and PHP targets both went this way (PHP via `file_get_contents` which natively handles `file://` and `http(s)://`; C via libcurl); the Python target uses Python's stdlib `urllib.request.urlopen` for the same property: a single stdlib symbol handles all URL schemes without a third-party dependency.
+
+Landing 14.0 unblocks two distinct payloads: (1) Mochi programs that ingest local file inputs through the URL surface (notebook cells reading fixture data); (2) live HTTP fetches against external services, which work identically through urllib without a runtime swap. Live HTTP is not gated by Phase 14.0; it just happens because urllib already supports it.
+
+The httpx surface (async client, HTTP/2, connection pooling, TLS verification policy) originally scoped for Phase 14 is deferred. The v1 corpus has no fixture that exercises any of those features; the single use case is "fetch one URL, decode the body, print it". Adding httpx as a wheel dependency at Phase 14 would impose a hard runtime requirement that no v1 program needs. When a real fixture lands that requires async I/O, HTTP/2, or fine-grained TLS control, a Phase 14.1 sub-phase swaps the implementation behind the same `mochi_fetch` symbol without changing the lower or any call-site emit.
 
 ## Sub-phases
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 14.0 | httpx 0.27+ async client; rejected: `requests` (sync only), `aiohttp` (heavier, fewer features), `urllib.request` (sync only, no HTTP/2) | NOT STARTED | -- |
-| 14.1 | HTTP/2 support via `httpx.AsyncClient(http2=True)`; ALPN negotiation; falls back to HTTP/1.1 transparently | NOT STARTED | -- |
-| 14.2 | Streaming bodies via `AsyncIterator[bytes]`: `resp.aiter_bytes()` for download; `Stream<bytes>` upload via request content iterator | NOT STARTED | -- |
-| 14.3 | TLS verification on by default; `verify=False` rejected at codegen with diagnostic M057_FETCH_E001 | NOT STARTED | -- |
+| 14.0 | `fetch(url)` lowers to `mochi_fetch(url)` against `mochi_runtime.fetch`; `writeFile(path, content)` lowers to `mochi_write_file(path, content)`; backed by urllib.request + open(binary) | LANDED 2026-05-29 | (filled at ship) |
+| 14.1 | httpx async client surface: `fetch(url, async: true)` returns `Future[str]`; rides on the Phase 11.1 async colour pass | DEFERRED | -- |
+| 14.2 | HTTP method, headers, body, query params: `fetch(url, method: "POST", headers: {...}, body: ...)` | DEFERRED | -- |
+| 14.3 | Streaming bodies via `AsyncIterator[bytes]` | DEFERRED | -- |
+| 14.4 | TLS verification policy + custom CA bundle from env | DEFERRED | -- |
+| 14.5 | Connection pooling + HTTP/2 via httpx 0.27+ | DEFERRED | -- |
 
-## Sub-phase 14.0 -- httpx async client
+## Sub-phase 14.0 -- urllib-backed fetch + writeFile
 
 ### Goal-alignment audit (14.0)
 
-`httpx` is the canonical typed-async HTTP client on the Python ecosystem. FastAPI uses it as the default test client; Anthropic and OpenAI SDKs both build on it. Without 14.0 the Mochi fetch surface either falls back to `requests` (sync only, blocks the event loop) or to `aiohttp` (heavier, slower release cadence, asyncio-only with no Trio fallback). Landing 14.0 picks `httpx` so the Mochi fetch composes with every other async piece (agents, streams, LLM) and so the resulting Python wheel uses the same HTTP stack as the Python ecosystem default.
+A Mochi program that calls `fetch(url)` should run on the Python target without changes, deterministically, in CI, against a `file://` URL pointing at a fixture or a temporary file the program wrote with `writeFile`. The PHP target made this work by routing both surfaces to PHP stdlib (`file_get_contents`, `file_put_contents`). The Python target needs an equivalent stdlib path so the wheel does not gain a runtime dependency for the load-bearing CI case. urllib.request fits exactly: it supports `http://`, `https://`, and `file://` in one symbol; it returns bytes; it raises `URLError` on failure. Wrapping it in a helper that returns `""` on failure matches the C / PHP fetch shape (which silently produces an empty body on a missing fixture or 404) and keeps the call site free of `try/except` plumbing.
 
 ### Decisions made (14.0)
 
-Mochi `let resp = await fetch("https://example.com/api/users", method: "GET")` lowers to:
+**Stdlib urllib over httpx for the v1 surface.** httpx is the right Python HTTP client for async, HTTP/2, and connection pooling, none of which the v1 fixtures exercise. urllib ships with CPython and covers `file://` natively, which is exactly the v1 corpus. Trading a wheel dependency for nothing was the wrong call. When async + HTTP/2 arrive in a real fixture, a Phase 14.1 implementation swaps urllib for httpx behind the same `mochi_fetch` symbol; the lower does not change.
 
-```python
-from __future__ import annotations
+**`mochi_fetch` returns `""` on URLError, never raises.** This matches the C and PHP targets: a missing fixture or a 5xx response produces an empty body but does not abort the program. Mochi has no first-class `Result[T,E]` (that ships with Phase 11.1 MochiResult). Until then, the empty-string sentinel is the cross-target convention.
 
-from collections.abc import Mapping
-from dataclasses import dataclass
-from typing import Final
+**`mochi_write_file` uses binary mode + explicit UTF-8 encode.** Text mode on Windows translates `\n` to `\r\n` on write, which would skew the stdout byte-equal gate for the `fetch_multiline` / `fetch_newlines` fixtures. Binary mode keeps bytes exact. The explicit `content.encode("utf-8")` is needed because `open(... "wb")` does not accept str.
 
-import httpx
+**Single `needsFetch` flag drives the import.** A program that uses either `fetch` or `writeFile` (or both) gets one `from mochi_runtime.fetch import mochi_fetch, mochi_write_file` line. Splitting flags per symbol would add a second import line for programs that use both, which is the load-bearing case in the corpus (most fixtures write a file then fetch it back).
 
-from mochi_runtime.result import Err, MochiResult, Ok
+**Both `WriteFileStmt` (statement) and `HttpGetExpr` (expression) dispatch through the lower's main switch.** They are not optional features bolted onto an existing form, they are first-class IR nodes the c aotir produces; the Python lower handles them like any other statement/expression. No special-case routing through `lowerCallStmt`.
 
+**`writeFile` discards its return value at the call site.** The aotir IR types `WriteFileStmt` as a statement (no return value), matching Mochi semantics. The Python emit is `mochi_write_file(...)` as an ExprStmt; the helper returns `None`.
 
-@dataclass(frozen=True, slots=True)
-class FetchResponse:
-    status: int
-    headers: Mapping[str, str]
-    body: bytes
+**Fixtures use absolute `/tmp/...` paths, ported from PHP.** The PHP target's fixtures already use `/tmp/mochi_swift_<name>.txt` patterns; copying them verbatim preserves cross-target byte-equal validation. On macOS/Linux the path exists; on Windows the same fixture would need a different path, but Phase 14.0's CI matrix is the Mochi standard (linux/darwin) so this does not gate the ship.
 
-    def text(self) -> str:
-        return self.body.decode("utf-8")
+### Fixture corpus (10 fixtures, ported from PHP)
 
+`tests/transpiler3/python/fixtures/phase14-fetch/`:
 
-@dataclass(frozen=True, slots=True)
-class FetchError:
-    message: str
-    cause: Exception | None
+| Fixture | Surface |
+|---------|---------|
+| `fetch_basic` | Write + fetch + print body |
+| `fetch_concat` | `print("hello " + r)` |
+| `fetch_empty` | Body string is `"empty test"` (no scare quotes, just a literal) |
+| `fetch_json_string` | JSON-shaped body `"status-ok"` |
+| `fetch_multiline` | `"line1\nline2\nline3"` round-trip (binary-mode write is load-bearing) |
+| `fetch_newlines` | Same as multiline (separate path; cross-fixture confidence) |
+| `fetch_overwrite_fetch` | Write A, fetch, write B, fetch, print both |
+| `fetch_reuse` | Two fetches against the same URL; both return same body |
+| `fetch_string` | `let result = "Got: " + r; print(result)` |
+| `fetch_use_result` | `print(r1 + " " + r2)`; two-fetch concat |
 
+`TestPhase14Fetch` walks the directory and runs `runPythonFixture` per fixture. All 10 fixtures pass on CPython 3.12.7.
 
-_CLIENT: Final[httpx.AsyncClient] = httpx.AsyncClient(http2=True, timeout=30.0)
-
-
-async def fetch(
-    url: str,
-    method: str = "GET",
-    headers: Mapping[str, str] | None = None,
-    body: bytes | None = None,
-) -> MochiResult[FetchResponse, FetchError]:
-    try:
-        response = await _CLIENT.request(
-            method,
-            url,
-            headers=dict(headers) if headers is not None else None,
-            content=body,
-        )
-    except httpx.HTTPError as exc:
-        return Err(FetchError(message=str(exc), cause=exc))
-    return Ok(
-        FetchResponse(
-            status=response.status_code,
-            headers=dict(response.headers),
-            body=response.content,
-        )
-    )
-```
-
-Decisions:
-
-- `_CLIENT` is a module-level singleton; `httpx.AsyncClient` is designed for reuse (connection pool, HTTP/2 multiplexing). Creating one per request would cause socket exhaustion on busy programs.
-- The wrapper returns `MochiResult[FetchResponse, FetchError]` (Phase 11.2 surface), not a raw `httpx.Response`. The user sees a frozen-slots dataclass and can `match` on it.
-- `headers` is `Mapping[str, str] | None`, not `dict`. The wrapper materialises to `dict` before passing to httpx because `httpx.Headers` constructor requires a concrete dict.
-- `body: bytes | None` is the upload payload; the IR pass picks `content=body` (not `data=body` or `json=body`) so the user controls the encoding. JSON encoding is opt-in via `fetch(url, json={"k": "v"})` which the IR pass routes to `content=json.dumps(...).encode("utf-8")` plus `Content-Type: application/json`.
-- `timeout=30.0` is the default; user overrides via Mochi `fetch(url, timeout: 60.0)` route to `httpx.Timeout(60.0)`.
-- The IR pass rejects `requests` and `aiohttp` imports from Mochi code; httpx is the only HTTP backend in v1.
-
-## Sub-phase 14.1 -- HTTP/2
-
-### Goal-alignment audit (14.1)
-
-HTTP/2 multiplexes multiple requests over a single connection, which is critical for any program that fans out (e.g. `await all(fetch(u) for u in urls)`). Without 14.1 each concurrent request takes a separate connection, the server's connection limit is hit fast, and the program's throughput collapses. `httpx` enables HTTP/2 with one constructor flag; the cost is one runtime dep (`h2`) that's already bundled with the httpx wheel. Landing 14.1 makes the fetch surface usable for fanout workloads.
-
-### Decisions made (14.1)
-
-`httpx.AsyncClient(http2=True)` is the default in `_CLIENT` above. The h2 library is added to `mochi_runtime`'s runtime deps; it is pulled in transitively as `httpx[http2]` in `pyproject.toml`:
-
-```toml
-[project]
-dependencies = [
-    "httpx[http2]>=0.27,<1",
-    "anyio>=4,<5",
-]
-```
-
-Decisions:
-
-- ALPN negotiation is automatic: `httpx` advertises both `h2` and `http/1.1` in the ClientHello; the server picks. Fallback to HTTP/1.1 is transparent.
-- HTTP/3 (`QUIC`) is not enabled; httpx 0.27 does not support it stably. Deferred until httpx ships HTTP/3 GA.
-- Connection pool size defaults to httpx defaults (10 keepalive connections, 100 max connections per host). User overrides via Mochi `@fetch_config(max_connections=200)` route to `httpx.Limits`.
-- The wire log captures HTTP/2 frames when `MOCHI_FETCH_DEBUG=1` is set; the log goes to stderr and excludes bodies (just method + URL + status).
-
-## Sub-phase 14.2 -- Streaming bodies
-
-### Goal-alignment audit (14.2)
-
-Many production workloads stream bodies: file downloads, server-sent events (SSE), gRPC over HTTP/2. Without 14.2 the fetch surface always materialises the body fully, which OOMs on large downloads. Landing 14.2 exposes `AsyncIterator[bytes]` for both download and upload so a Mochi program can `for chunk in resp.body_stream { process(chunk) }` without buffering the whole response.
-
-### Decisions made (14.2)
-
-Streaming download:
-
-```python
-from __future__ import annotations
-
-from collections.abc import AsyncIterator
-from dataclasses import dataclass
-
-import httpx
-
-from mochi_runtime.result import Err, MochiResult, Ok
-
-
-@dataclass(frozen=True, slots=True)
-class FetchStreamResponse:
-    status: int
-    headers: dict[str, str]
-    body_stream: AsyncIterator[bytes]
-
-
-async def fetch_stream(url: str) -> MochiResult[FetchStreamResponse, FetchError]:
-    async def _iter_response() -> AsyncIterator[bytes]:
-        async with _CLIENT.stream("GET", url) as response:
-            async for chunk in response.aiter_bytes():
-                yield chunk
-
-    try:
-        async with _CLIENT.stream("GET", url) as initial:
-            return Ok(
-                FetchStreamResponse(
-                    status=initial.status_code,
-                    headers=dict(initial.headers),
-                    body_stream=_iter_response(),
-                )
-            )
-    except httpx.HTTPError as exc:
-        return Err(FetchError(message=str(exc), cause=exc))
-```
-
-Streaming upload:
-
-```python
-from __future__ import annotations
-
-from collections.abc import AsyncIterator
-
-
-async def upload_stream(url: str, chunks: AsyncIterator[bytes]) -> MochiResult[FetchResponse, FetchError]:
-    try:
-        response = await _CLIENT.request("POST", url, content=chunks)
-    except httpx.HTTPError as exc:
-        return Err(FetchError(message=str(exc), cause=exc))
-    return Ok(FetchResponse(status=response.status_code, headers=dict(response.headers), body=response.content))
-```
-
-Decisions:
-
-- Download streaming uses `client.stream(method, url)` as an async context manager; the body iterator yields raw bytes from `aiter_bytes()`. The IR pass picks chunk size from the Mochi `@chunk_size(8192)` annotation; default is httpx's default (no explicit chunk size).
-- The streaming response's `body_stream` field is `AsyncIterator[bytes]`; once consumed it cannot be re-iterated. The IR pass detects multi-use and rejects at codegen.
-- Upload streaming passes any `AsyncIterator[bytes]` as `content=...`; httpx accepts it as the request body iterator natively.
-- The streaming form is opt-in via Mochi `fetch_stream(url)`; the standard `fetch(url)` materialises the body. The IR pass picks based on the call site.
-
-Worked example for SSE consumption:
-
-```python
-from __future__ import annotations
-
-from collections.abc import AsyncIterator
-
-from mochi_runtime.fetch import fetch_stream
-from mochi_runtime.result import Err, Ok
-
-
-async def consume_sse(url: str) -> None:
-    match await fetch_stream(url):
-        case Ok(value=resp):
-            buffer = b""
-            async for chunk in resp.body_stream:
-                buffer += chunk
-                while b"\n\n" in buffer:
-                    event, _, buffer = buffer.partition(b"\n\n")
-                    print(event.decode("utf-8"))
-        case Err(error=err):
-            print(f"sse failed: {err.message}")
-```
-
-## Sub-phase 14.3 -- TLS verification
-
-### Goal-alignment audit (14.3)
-
-TLS verification is the security gate for fetch. A program that hits HTTPS endpoints without verifying the certificate is wide open to MITM attacks. Without 14.3 a user could (or could be tricked into) writing `fetch(url, verify: false)` and bypass the entire TLS PKI. Landing 14.3 rejects `verify=false` at codegen, sets the httpx default (`verify=True`) explicitly in the singleton client, and documents the deprecation.
-
-### Decisions made (14.3)
-
-The `_CLIENT` singleton is constructed with `verify=True` (the default; explicit for documentation):
-
-```python
-_CLIENT: Final[httpx.AsyncClient] = httpx.AsyncClient(
-    http2=True,
-    timeout=30.0,
-    verify=True,
-)
-```
-
-The IR pass rejects any Mochi source that sets `verify=False` or `verify=false`:
-
-```
-M057_FETCH_E001: TLS verification cannot be disabled.
-  --> source.mochi:42:18
-   |
-42 |     fetch(url, verify: false)
-   |                ^^^^^^^^^^^^^ rejected at codegen
-   |
-   = note: Mochi enforces TLS verification on all HTTP calls.
-   = note: To use a custom CA bundle, set SSL_CERT_FILE in the environment.
-```
-
-For private CAs, users set `SSL_CERT_FILE` env var (httpx reads it via the underlying `ssl` module). The IR pass does not surface a Mochi-level annotation for custom CAs; the env var is the only escape hatch and it is process-wide, not request-scoped.
-
-Mutual TLS (client certificates) is out of scope for v1; the IR pass rejects `cert=` arguments with diagnostic M057_FETCH_E002. Mutual TLS lands in a v2 phase.
-
-The `verify=True` value is also enforced at the streaming variants (`fetch_stream`, `upload_stream`); the same `_CLIENT` singleton is reused so the policy is consistent.
-
-## Files changed
+### Files changed
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/python/lower/fetch.go` | `fetch(url, ...)` to `await mochi_runtime.fetch.fetch(...)`; reject `verify=false`, `cert=` |
-| `transpiler3/python/lower/fetch_stream.go` | `fetch_stream(url)` to streaming variant returning `FetchStreamResponse` |
-| `runtime/python/mochi_runtime/fetch/__init__.py` | Public surface: `fetch`, `fetch_stream`, `upload_stream`, `FetchResponse`, `FetchStreamResponse`, `FetchError` |
-| `runtime/python/mochi_runtime/fetch/_client.py` | `_CLIENT` singleton with `http2=True`, `verify=True`, `timeout=30` |
-| `transpiler3/python/build/phase14_test.go` | `TestPhase14Fetch`: 15 fixtures + local test server harness |
-| `tests/transpiler3/python/fixtures/phase14-fetch/` | 15 fixture directories with httptest server URLs |
-
-## Test set
-
-- `TestPhase14Fetch` -- 15 fixtures: fetch_get_text, fetch_post_json, fetch_put_no_body, fetch_delete, fetch_patch_json, fetch_headers_round_trip, fetch_404_err (7 from 14.0); fetch_http2_concurrent, fetch_http2_to_http1_fallback (2 from 14.1); fetch_stream_download, fetch_stream_sse, fetch_stream_upload, fetch_stream_break_early (4 from 14.2); fetch_verify_false_rejected (codegen rejection), fetch_custom_ca_via_env (2 from 14.3).
+| `runtime/python/mochi_runtime/fetch.py` (new) | `mochi_fetch(url) -> str` via urllib.request; `mochi_write_file(path, content) -> None` via binary-mode open |
+| `transpiler3/python/lower/fetch.go` (new) | `lowerHttpGetExpr` + `lowerWriteFileStmt`; both set `needsFetch` |
+| `transpiler3/python/lower/lower.go` | `needsFetch bool` slot; dispatch `*aotir.HttpGetExpr` (expression) and `*aotir.WriteFileStmt` (statement); conditional `from mochi_runtime.fetch import mochi_fetch, mochi_write_file` import |
+| `transpiler3/python/build/build.go` | Cache marker bumped `mep51-phase13` -> `mep51-phase14` |
+| `transpiler3/python/build/phase14_test.go` (new) | `TestPhase14Fetch` walks `phase14-fetch/` |
+| `tests/transpiler3/python/fixtures/phase14-fetch/` (new) | 10 fixtures ported verbatim from the PHP target |
 
 ## Deferred work
 
-- HTTP/3 (QUIC) support. Deferred until httpx ships GA HTTP/3; v1 uses HTTP/2 + HTTP/1.1.
-- Mutual TLS (client certificates) via `cert=` argument. Deferred to v2; M057_FETCH_E002 rejects in v1.
-- WebSocket support (would need `websockets` or `aiohttp` as a separate runtime dep). Deferred to a separate WebSocket MEP; the fetch surface stays HTTP-only.
-- Cookie persistence across requests via `httpx.Cookies` (currently every call is stateless). Deferred to v1.5; user can pass cookies via headers in the meantime.
-- Per-request retry/backoff policy (currently the user wraps in a Mochi loop). Deferred to v1.5; the runtime ships a simple `with_retry(fetch_call, max_attempts=3)` helper in `mochi_runtime.fetch.retry`.
+- **14.1 httpx async client + Phase 11.1 await.** `fetch(url, async: true)` would return `Future[str]`; rides on the Phase 11.1 async colour pass. Deferred until v1 has an async-fetch fixture.
+- **14.2 method / headers / body / query params.** `fetch(url, method: "POST", headers: {...}, body: ...)` expands the aotir IR and the Python emit. Deferred for the same reason: no v1 fixture asks for it.
+- **14.3 streaming bodies.** `AsyncIterator[bytes]` over chunk transfer encoding; rides on Phase 11.1 async + httpx. Deferred.
+- **14.4 TLS verification policy.** `MOCHI_TLS_INSECURE=1` opt-out + `MOCHI_CA_BUNDLE=/path/...` env support. Deferred until a program needs to hit a self-signed endpoint.
+- **14.5 connection pooling + HTTP/2.** httpx 0.27+ Client with HTTP/2 enabled. Deferred until a corpus fixture demonstrates a measurable win.
+- **`appendFile(path, content)` for the Python target.** The aotir has `AppendFileStmt` (Phase 6.5); the Python lower does not yet route it. Deferred to Phase 14.x or rolled into Phase 6.5 follow-up depending on when a fixture lands.

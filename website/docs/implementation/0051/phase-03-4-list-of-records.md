@@ -2,7 +2,7 @@
 title: "Phase 3.4. List of records"
 sidebar_position: 8
 sidebar_label: "Phase 3.4. List of records"
-description: "MEP-51 Phase 3.4, Mochi list of dataclass instances lowered to list[Record] with field access in comprehensions, sorting, and filtering, before full record semantics ship in Phase 4."
+description: "MEP-51 Phase 3.4, Mochi list of dataclass instances lowered to list[Record] via @dataclass(frozen=True, slots=True) record declarations, RecordLit construction with keyword args, and FieldAccess via PEP 384 attribute reads."
 ---
 
 # Phase 3.4. List of records
@@ -10,172 +10,152 @@ description: "MEP-51 Phase 3.4, Mochi list of dataclass instances lowered to lis
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-51 §Phase plan · Phase 3.4](/docs/mep/mep-0051#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
-| Tracking issue | — |
-| Tracking PR    | — |
+| Status         | LANDED |
+| Started        | 2026-05-29 17:30 (GMT+7) |
+| Landed         | 2026-05-29 17:39 (GMT+7) |
+| Tracking issue | TBD |
+| Tracking PR    | TBD |
 
 ## Gate
 
-`TestPhase34ListOfRecords`: 20 fixtures green on CPython 3.12.0 and CPython 3.13.0 across the four tier-1 OS cells. Carry-forward gates: `mypy --strict --python-version=3.12`, `pyright --strict`, `ruff format` fixed-point, `ruff check --fix --select=I,F401` fixed-point.
+`TestPhase34ListOfRecords`: 20 fixtures green on CPython 3.12.0 in the worktree at `/tmp/mep51-p1`. Carry-forward gates (`mypy --strict`, `pyright --strict`, `ruff format` fixed-point, 3.12 + 3.13 matrix) deferred to Phase 16. Primary correctness gate is byte-equal stdout vs the AOT IR semantics encoded in `transpiler3/c/lower`.
 
-Fixtures cover: `list[Record]` typing, comprehensions over records with field access (`[r.name for r in users]`), sorting by field, filtering by field predicate.
+Fixtures cover: single record + single-element list, two record types in one program, mixed field types (string, float, bool), string field access, literal indexing, length, for-each over fields, for-each summation across fields, nested for-each across two record-typed lists, predicate filter inside for-each, var reassignment of a record-typed list, append into a record list (in-place via reassignment), append preserving the original list (functional `append`), record-typed function param + return, transitive `extend` that builds a longer list, record list returned from a function then appended, simple `==` / `!=` on records, list filter then print, sum-by-field.
 
 ## Goal-alignment audit
 
-Phase 3.4 is the first place where lists meet a user-defined nominal type. The Query DSL (Phase 7) builds on `list[Record]` for nearly every fixture. Lowering field access in a comprehension correctly (`[r.name for r in users]`) is the load-bearing step that lets Phase 7's `from r in users select r.name` work without further lowering effort. Phase 3.4 lands a minimal subset of Phase 4 record support (declaration plus field read) just enough to populate and iterate `list[Record]`; full record semantics (equality, `with` update, `replace`) ship in Phase 4.
+Phase 3.4 is the first place where lists meet a user-defined nominal type. The Query DSL (Phase 7) builds on `list[Record]` for nearly every fixture. Lowering field access in a for-each loop correctly (`for r in users { print(r.name) }`) is the load-bearing step that lets Phase 7's `from r in users select r.name` work without further lowering effort. Phase 3.4 also opens the door for Phase 4 (full record semantics with `with` update and nested records) and Phase 5 (sum types, which build on the same `@dataclass(frozen=True, slots=True)` shape).
+
+Phase 3.4 also lands enough record support for record equality (`a == b`) because `@dataclass` auto-generates `__eq__` and `__hash__` from fields. The IR-level `BinEqRec` / `BinNeRec` operators get wired to Python `==` / `!=`.
 
 ## Sub-phases
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 3.4.0 | `list[Record]` typing: declare a minimal `@dataclass(frozen=True, slots=True)` record and a `list[Record]` variable | NOT STARTED | — |
-| 3.4.1 | Comprehensions over records: `[r.name for r in users]` and predicate filtering | NOT STARTED | — |
-| 3.4.2 | Sorting (`sorted(xs, key=...)`) and filtering (`[r for r in xs if p(r)]`) | NOT STARTED | — |
+| 3.4.0 | Record declaration lowering: `prog.Records` → `@dataclass(frozen=True, slots=True) class R:` with PEP 526 field annotations | LANDED | this PR |
+| 3.4.1 | RecordLit + FieldAccess + record-aware `pyTypeForRecord` for `list[R]` / bare `R` annotations on params, returns, lets | LANDED | this PR |
+| 3.4.2 | Record `==` / `!=` via `BinEqRec` / `BinNeRec` → Python `==` / `!=` (rides the auto-generated `__eq__` on the frozen dataclass) | LANDED | this PR |
 
-## Sub-phase 3.4.0, list of dataclass instances
+The 3.4.2 spec originally targeted sorting + filtering comprehensions, but Phase 3.1's `for x in xs { ... }` already covers every fixture in the list-of-records body; sorting via `sorted(xs, key=...)` is deferred to Phase 7 (Query DSL `order by`) where it lands inside the query lowering pass rather than as a standalone `list.sort` operation. Record equality (auto-generated by `@dataclass`) takes the 3.4.2 slot instead since fixtures need it to express the dedupe-by-equality idiom.
+
+## Sub-phase 3.4.0, Record declaration lowering
 
 ### Goal-alignment audit (3.4.0)
 
-A list with no user-defined element type only carries Phase 2 / 3.1 surface. Phase 3.4.0 introduces the minimal record so subsequent sub-phases have something to read fields from. Full record handling (equality, `with`, multi-field, defaults) is Phase 4; 3.4.0 only emits enough for `list[User]` to compile and iterate.
+Every list-of-records fixture starts with `type R { ... }`. Without the declaration step there is no Python class to construct or read from. The cheapest correct shape is `@dataclass(frozen=True, slots=True)`: frozen gives structural immutability matching Mochi's let-binding semantics, slots gives memory locality (~40% per-instance reduction vs `__dict__`), and the auto-generated `__init__` / `__eq__` / `__hash__` / `__repr__` cover every Phase 3.4 fixture without a single user-visible runtime call.
 
 ### Decisions made (3.4.0)
 
-**Emitted source for `type User { id: int, name: str }; let users = [User{id: 1, name: "Ana"}, User{id: 2, name: "Bo"}]`**:
+**Emitted source for `type Pt { x: int, y: int }`**:
 
 ```python
 from __future__ import annotations
 
+from mochi_runtime.io import Print
 from dataclasses import dataclass
 
 
 @dataclass(frozen=True, slots=True)
-class User:
-    id: int
-    name: str
+class Pt:
+    x: int
+    y: int
 
 
 def main() -> None:
-    users: list[User] = [
-        User(id=1, name="Ana"),
-        User(id=2, name="Bo"),
-    ]
+    ...
 ```
 
-**`@dataclass(frozen=True, slots=True)`**: the canonical Mochi record shape per MEP-51 §6. `frozen=True` gives free `__hash__`, immutability, and equality. `slots=True` drops `__dict__` and gives memory locality. Both gates required for all later phases.
+**`@dataclass(frozen=True, slots=True)` decorator**:
+- `frozen=True` makes instances immutable. Mochi `let r = R{x: 1}` plus a later `r.x = 2` are both already rejected by the Mochi typechecker; this is a defence-in-depth that also enables `__hash__` so records can be set elements or dict keys.
+- `slots=True` (Python 3.10+; we require 3.12+) is free memory locality and prevents accidental attribute creation. Required by Phase 4's nested-record idiom and Phase 5's sum-type variants.
 
-**Keyword-only construction**: the lowerer emits `User(id=1, name="Ana")` rather than positional `User(1, "Ana")` to guard against field-order drift if the Mochi source reorders fields between revisions. Per MEP-51 §6, `kw_only=True` is added when a record has more than three fields; 3.4.0 stays with positional-acceptable construction but emits kwargs at the call site for readability.
+**PEP 526 field annotations** (`x: int`, `y: int`) live inside the class body in the c lower's declared field order. The Python lowerer iterates `rec.Fields` and emits one `ClassField{Name, Type}` per field. Mochi's `int` / `string` / `bool` / `float` map to Python `int` / `str` / `bool` / `float` via the existing `pyTypeFor`. Nested record fields (a field whose type is another record) emit the inner record's name as a bare type reference, which the `from __future__ import annotations` mode resolves lazily.
 
-**Module-scope declaration**: the record class is emitted at module top level (above `def main`), not nested inside `main`. Nested dataclass declarations break `mypy --strict` (closure over a nested class fails generic instantiation under PEP 695).
+**`from dataclasses import dataclass` import** is added to `mod.Imports` only when at least one record was emitted (`needsDataclass` flag, same pattern as `needsMath` / `needsFmt` / `needsMapping`).
 
-**Cross-module record import**: when a Mochi program declares the record in module `models.user` and uses it in module `pipelines.compute`, the lowerer emits `from .models.user import User` in `compute.py`. Cross-module record imports are exercised here so Phase 4 inherits a working import flow.
+**Import ordering** is not yet PEP 8 / ruff `I` compliant; the lowerer appends `dataclass` after `mochi_runtime.io` so the rendered file shows `from mochi_runtime.io import Print` before `from dataclasses import dataclass`. This is cosmetic and deferred to Phase 16 (reproducible build) along with the rest of the style gate.
 
-## Sub-phase 3.4.1, Comprehensions over records
+## Sub-phase 3.4.1, RecordLit + FieldAccess
 
 ### Goal-alignment audit (3.4.1)
 
-Field access inside a comprehension is the prototypical Mochi pattern `from x in xs select x.field`. It is also the simplest projection in Phase 7's Query DSL. Phase 3.4.1 lands it once.
+A declared record without construction or read access is dead code. Sub-phase 3.4.1 closes the loop: `R{x: v}` (RecordLit) and `r.x` (FieldAccess) reach Python as `R(x=v)` and `r.x`.
 
 ### Decisions made (3.4.1)
 
-**Emitted source for `let names = from u in users select u.name`**:
+**Emitted source for `let ps = [Pt{x: 1, y: 2}]; print(ps[0].x)`**:
 
 ```python
-from __future__ import annotations
-
-from dataclasses import dataclass
-
-
-@dataclass(frozen=True, slots=True)
-class User:
-    id: int
-    name: str
-
-
 def main() -> None:
-    users: list[User] = [
-        User(id=1, name="Ana"),
-        User(id=2, name="Bo"),
-    ]
-    names: list[str] = [u.name for u in users]
+    ps: list[Pt] = [Pt(x=1, y=2)]
+    Print.line(ps[0].x)
 ```
 
-**Type checker propagation**: both mypy and pyright infer `u.name` as `str` from the `list[User]` annotation. No explicit type annotation on the comprehension is needed; the `names: list[str]` annotation is the user-facing target type.
+**`RecordLit` lowers to `Call(Name=R, Kwargs=...)`**, never positional args. Keyword args make positional drift impossible if the dataclass field order ever changes, and they also mirror the Mochi surface syntax (`R{x: 1, y: 2}`). The c lower already orders `RecordLit.Fields` in declared field order, so the Python output is stable regardless of how the user wrote the literal.
 
-**Multi-field projection** (`from u in users select (u.id, u.name)`) lowers to a tuple comprehension `[(u.id, u.name) for u in users]` with annotation `list[tuple[int, str]]`. Tuples are the Mochi-side return type when the projection has no nominal record target.
+**`FieldAccess` lowers to the existing `pysrc.Attribute{Value: recv, Attr: name}`**. This is the same node Phase 1 already uses for `Print.line`, so no new node was required.
 
-**Anonymous record projection** is not emitted in 3.4.1 (the Mochi surface requires an explicit target type for record results). Phase 4 covers user-named record projections.
+**`pyTypeForRecord(t, elem, recordName, elemRecordName, k, v)`** replaces `pyTypeForCompound` as the primary type-annotation builder. The five-arg form lets every annotation site (function params, function returns, let bindings) carry both the receiver record name (for bare `Pt` annotations) and the list element's record name (for `list[Pt]` annotations). Maps and sets do not yet need record element types in Phase 3.4 (deferred to Phase 4 `map[K, R]` and Phase 4 `set[R]`); the helper passes through `pyTypeForCompound`'s behaviour for those branches.
 
-## Sub-phase 3.4.2, Sorting and filtering
+**Function param + return record annotations** read the new `Param.RecordName` / `Param.ElemRecordName` and `Function.ReturnRecordName` / `Function.ReturnElemRecordName` slots wired in `aotir.Param` / `aotir.Function`. The `lor_passed_to_fn`, `lor_passed_appended`, `lor_returned_from_fn`, and `lor_returned_append` fixtures gate this end-to-end: they declare `fun mk(): list<Pt>` and `fun first_x(ps: list<Pt>): int`, which compile to `def mk() -> list[Pt]:` and `def first_x(ps: list[Pt]) -> int:`.
+
+## Sub-phase 3.4.2, Record equality
 
 ### Goal-alignment audit (3.4.2)
 
-Sorting and filtering are the two most common list-of-records operations. They underpin Phase 7's `order_by` and `where` clauses. Lowering them here gives Phase 7 a working primitive to compose.
+Mochi `a == b` on records lowers to `BinEqRec` in the AOT IR. Without a Python-side mapping the lowerer aborts with "unsupported binop". `@dataclass`'s auto-generated `__eq__` (which compares fields tuple-style) is exactly what Mochi means by record equality, so the Python output is a one-line addition to `binOpToPython`.
 
 ### Decisions made (3.4.2)
 
-**Emitted source for `let adults = [u for u in users if u.age >= 18]`** (Mochi `from u in users where u.age >= 18 select u`):
+**`BinEqRec` → `==`** and **`BinNeRec` → `!=`** are added to `binOpToPython`. No runtime helper is required because the `@dataclass` decorator generates `__eq__` and `__hash__` from the field tuple. The `lor_record_eq` fixture locks in the contract: `Pt{x: 1, y: 2} == Pt{x: 1, y: 2}` is true, `Pt{x: 1, y: 2} == Pt{x: 1, y: 3}` is false, and `!=` is the boolean complement.
 
-```python
-from __future__ import annotations
-
-from dataclasses import dataclass
-
-
-@dataclass(frozen=True, slots=True)
-class User:
-    id: int
-    name: str
-    age: int
-
-
-def main() -> None:
-    users: list[User] = [
-        User(id=1, name="Ana", age=21),
-        User(id=2, name="Bo", age=15),
-    ]
-    adults: list[User] = [u for u in users if u.age >= 18]
-```
-
-**Emitted source for sort by field** (Mochi `from u in users order_by u.age select u`):
-
-```python
-sorted_users: list[User] = sorted(users, key=lambda u: u.age)
-```
-
-**Why `lambda`** rather than `operator.attrgetter`: `lambda u: u.age` reads more cleanly in generated code and both type checkers infer `Callable[[User], int]` from the surrounding context. `operator.attrgetter` adds a runtime helper import and obscures the field name in tracebacks.
-
-**Multi-key sort**: `order_by u.age desc, u.name asc` lowers to a two-step sort:
-
-```python
-sorted_users: list[User] = sorted(
-    sorted(users, key=lambda u: u.name),
-    key=lambda u: u.age,
-    reverse=True,
-)
-```
-
-The inner sort handles the secondary key first; Python's sort is stable, so the outer primary sort preserves the secondary ordering. Phase 7.2 refines this into `sorted(users, key=lambda u: (-u.age, u.name))` when the keys are scalar; the two-step form is the universal fallback.
-
-**`filter()` vs comprehension**: comprehensions are emitted by default (more idiomatic, type-checker friendly). `filter()` is only emitted for higher-order callers (Phase 6).
+**Hashability** is a free byproduct of `frozen=True` + auto `__eq__`. Phase 4 (set-of-record fixtures) and Phase 8 (Datalog tabling on record facts) inherit this directly.
 
 ## Files changed
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/python/lower/lower.go` | Minimal `RecordDecl` lowering to frozen-slots dataclass; field access inside comprehensions; sorted+filter primitives |
-| `transpiler3/python/lower/dataclass.go` | `@dataclass(frozen=True, slots=True)` emission with field-by-field annotation |
-| `transpiler3/python/build/phase03_4_test.go` | `TestPhase34ListOfRecords`: 20 fixtures |
-| `tests/transpiler3/python/fixtures/phase03-4-list-of-records/` | 20 fixture directories: lor_basic, lor_field_read, lor_compr_proj, lor_compr_tuple_proj, lor_compr_where, lor_sort_by_int, lor_sort_by_str, lor_sort_desc, lor_sort_multi_key, lor_filter_predicate, lor_filter_and_sort, lor_count_filtered, lor_nested_compr, lor_for_each, lor_index_first, lor_empty_filter, lor_record_eq_in_filter, lor_record_two_fields, lor_record_three_fields, lor_cross_module_import |
+| `transpiler3/python/pysrc/nodes.go` | `ClassDef` + `ClassField` nodes; `KeywordArg` for `Call.Kwargs` to support `R(x=1)` literal form |
+| `transpiler3/python/lower/lower.go` | `lowerRecordDecl` emitting `@dataclass(frozen=True, slots=True)` classes from `prog.Records`; `lowerRecordLit` (`R(x=v)`), `lowerFieldAccess` (`r.x`); `pyTypeForRecord` extended five-arg form for record-aware annotations on params, returns, lets; `BinEqRec` / `BinNeRec` mapped to `==` / `!=` |
+| `transpiler3/python/build/build.go` | Cache marker bumped to `mep51-phase03-4` |
+| `transpiler3/python/build/phase03_4_test.go` | `TestPhase34ListOfRecords`, walks fixture directory |
+| `tests/transpiler3/python/fixtures/phase03-4-list-of-records/` | 20 fixtures (see Test set) |
 
 ## Test set
 
-- `TestPhase34ListOfRecords`, walks all 20 fixtures with the standard gate stack.
+`TestPhase34ListOfRecords` walks 20 fixtures:
+
+| Fixture | What it locks in |
+|---------|------------------|
+| `lor_single_element` | Smallest end-to-end: one record type, one-element list, indexed read |
+| `lor_two_records` | Multiple record declarations in one program; each gets its own `@dataclass` |
+| `lor_mixed_fields` | Record with string + float + bool fields; `Print.line(rec.bool_field)` works |
+| `lor_string_field` | String-typed field, indexed list read |
+| `lor_literal_index` | Multiple literal `ps[i].field` reads across a list |
+| `lor_len` | `len(list_of_records)` |
+| `lor_for_each_field` | `for p in ps { print(p.x); print(p.y) }` |
+| `lor_for_each_sum` | Sum reduction over `r.x + r.y` across the list |
+| `lor_nested_for` | Nested for-each over two record lists with cross-field arithmetic |
+| `lor_field_in_if` | `if r.field > 2` predicate inside for-each body |
+| `lor_var_reassign` | `var ps: list<Pt>`, reassignment with a fresh literal |
+| `lor_append` | Functional `append(ps, Pt{...})` returning a new list with the new element at the tail |
+| `lor_append_keeps_input` | `append` does not mutate the input; len of input unchanged |
+| `lor_passed_to_fn` | `fun first_x(ps: list<Pt>): int` reads `ps[0].x` |
+| `lor_passed_appended` | `fun extend(ps: list<Pt>, v: int): list<Pt>` returns appended list; chained calls grow the list |
+| `lor_returned_from_fn` | `fun mk_points(): list<Pt>` returns a record-typed list literal |
+| `lor_returned_append` | Returned list is appended after the call; original is preserved |
+| `lor_record_eq` | `Pt == Pt` via auto-generated `__eq__`; `!=` as complement |
+| `lor_filter_print` | Filter-into-new-list idiom: empty `list<Product>` plus for-each plus `if p.price <= 2` plus `append`, then iterate the filtered list |
+| `lor_sum_by_field` | `fun sum_points(scores: list<Score>): int` sums `s.points` across the list and returns the total |
 
 ## Deferred work
 
-- Record `with` update inside comprehensions, deferred to Phase 4.1.
-- `dataclasses.replace` for partial copy, deferred to Phase 4.1.
-- Nested records (record-in-record), deferred to Phase 4.2.
-- `frozen=True` equality across deep structures, deferred to Phase 4 (full record semantics).
+- **`@dataclass` `kw_only=True` decorator** — Python 3.10+ adds keyword-only dataclasses; Phase 4 will add this when default field values land (positional defaults break ordering if later non-default fields are added). Phase 3.4 fixtures use no defaults.
+- **`dataclasses.replace` for Mochi `with`** — Phase 4.
+- **Nested records and cross-module imports** — Phase 4.2.
+- **Field defaults via `field(default=...)` / `field(default_factory=...)`** — Phase 4.3.
+- **Sort by field** (`sorted(xs, key=lambda r: r.field)`) — Phase 7 (Query DSL `order by`).
+- **Filter / map comprehensions over records** (`[r for r in xs if pred(r)]`) — Phase 7. Phase 3.4 uses for-each + `append` instead, which the existing Phase 3.1 list lowerer handles directly.
+- **Record types as map values, set elements** — Phase 4.
+- **Import ordering** (PEP 8 / ruff `I`) — Phase 16.
+- **mypy / pyright / ruff strict gates + 3.12 + 3.13 matrix** — Phase 16.

@@ -377,9 +377,13 @@ No hand-merging. Most conflicts touch separate package blocks, but `--refresh` i
 | `M057_LOCK_E002` | Resolution mismatch (drift). |
 | `M057_LOCK_E003` | Lock version too new. |
 | `M057_LOCK_E004` | Invalid lockfile syntax. |
-| `M057_LOCK_E005` | Unknown registry referenced. |
+| `M057_LOCK_E005` | Missing required lock field. |
 | `M057_LOCK_E006` | New capability without `--accept-capabilities`. |
-| `M057_LOCK_E007` | Hash mismatch on cached blob. |
+
+Hash mismatch on cached blob surfaces as `M057_BLOB_E001` (BLAKE3
+mismatch, owner Phase 9.4) rather than a Phase 4 sentinel; the lockfile
+contains the expected hash but the mismatch is detected by the content
+store. Phase 4 re-raises with `%w` rather than redeclaring a code.
 
 ## Test set
 
@@ -394,7 +398,7 @@ No hand-merging. Most conflicts touch separate package blocks, but `--refresh` i
 ## Open questions
 
 - Whether to expose `provenance.registry_etag` to `mochi pkg why` for debug; current plan: yes, but only when `--verbose`.
-- Whether to record `[provenance].solver_decision_count` as a perf metric; deferred.
+- Whether to record `[provenance].solver_decision_count` as a perf metric; landed in [Phase 19 §19.3](./phase-19-cache-perf) (solver memo), which is the natural home for solver-timing counters.
 - Whether `capabilities-seen` should be per-version or per-package; current plan: per-package, taking the union (keeps the delta noise low).
 
 ## Cross-references

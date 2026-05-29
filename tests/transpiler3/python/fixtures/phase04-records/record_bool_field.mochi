@@ -1,0 +1,8 @@
+type Flag {
+  enabled: bool
+}
+
+let f = Flag { enabled: true }
+print(f.enabled)
+let g = Flag { enabled: false }
+print(g.enabled)

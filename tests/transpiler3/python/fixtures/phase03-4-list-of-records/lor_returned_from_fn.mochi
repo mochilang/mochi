@@ -1,0 +1,15 @@
+type Pt {
+  x: int
+  y: int
+}
+
+fun mk_points(): list<Pt> {
+  return [Pt { x: 11, y: 22 }, Pt { x: 33, y: 44 }]
+}
+
+let ps = mk_points()
+print(ps[0].x)
+print(ps[0].y)
+print(ps[1].x)
+print(ps[1].y)
+print(len(ps))

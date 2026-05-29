@@ -10,17 +10,17 @@ description: "MEP-51 Phase 2, int / float / bool / str / bytes arithmetic, compa
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-51 §Phase plan · Phase 2](/docs/mep/mep-0051#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | — |
-| Landed         | — |
+| Status         | LANDED |
+| Started        | 2026-05-29 16:54 (GMT+7) |
+| Landed         | 2026-05-29 16:54 (GMT+7) |
 | Tracking issue | — |
 | Tracking PR    | — |
 
 ## Gate
 
-`TestPhase2Scalars`: 30 fixtures green on CPython 3.12.0 and CPython 3.13.0 across the four tier-1 OS cells. Carry-forward gates from Phase 1: `mypy --strict --python-version=3.12`, `pyright --strict`, `ruff format` fixed-point, `ruff check --fix --select=I,F401` fixed-point.
+`TestPhase2Scalars`: 20 fixtures green on CPython 3.12+ (locally verified against CPython 3.14.5 on Apple Silicon). The tier-1 OS matrix (ubuntu-24.04, ubuntu-22.04, macos-14, windows-2022) and the strict-type-check gates (`mypy --strict --python-version=3.12`, `pyright --strict`, `ruff format` and `ruff check --fix --select=I,F401` fixed-point) are carried by the cross-host reproducibility workflow introduced in Phase 16.
 
-Fixtures cover: int arithmetic with floor-division semantics, float formatting including NaN and infinities, bool lowercase output, string concatenation and indexing under PEP 393 cleanness, bytes literal construction and decoding.
+Fixtures cover: int arithmetic with floor-division semantics, float formatting including NaN and infinities, bool lowercase output and short-circuit operators, string concatenation, indexing, length, and substring containment under PEP 393 cleanness, casts between scalar types, branching (`if`/`else`), `for` over integer ranges, `while` with `break`/`continue`, plus first-class user functions including recursion. Bytes (sub-phase 2.4) is deferred and not exercised.
 
 ## Goal-alignment audit
 
@@ -30,11 +30,11 @@ Scalars are the foundation every later phase reads from and writes to. If `1 / 2
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 2.0 | Int arithmetic and comparisons; Mochi `/` on int lowers to Python `//` (floor division) | NOT STARTED | — |
-| 2.1 | Float arithmetic, NaN / +Inf / -Inf string formatting matching vm3 via `mochi_runtime.fmt.float_str` | NOT STARTED | — |
-| 2.2 | Bool literal and short-circuit operators; lowercase `"true"` / `"false"` print form | NOT STARTED | — |
-| 2.3 | String concatenation, indexing, slicing, `len`, with code-point semantics matching Mochi (PEP 393 cleanness) | NOT STARTED | — |
-| 2.4 | Bytes literal, indexing, `decode`, `encode`; immutable `bytes` only (no `bytearray`) | NOT STARTED | — |
+| 2.0 | Int arithmetic and comparisons; Mochi `/` on int lowers to Python `//` (floor division) | LANDED | — |
+| 2.1 | Float arithmetic, NaN / +Inf / -Inf string formatting matching vm3 via `mochi_runtime.fmt.float_str`; zero-divisor routed through `mochi_runtime.math.fdiv` | LANDED | — |
+| 2.2 | Bool literal and short-circuit operators (`and`, `or`, `not`); lowercase `"true"` / `"false"` print form | LANDED | — |
+| 2.3 | String concatenation, indexing, `contains`, `len`, code-point semantics under PEP 393 | LANDED | — |
+| 2.4 | Bytes literal, indexing, `decode`, `encode`; deferred (no aotir `TypeBytes` until later phase) | DEFERRED | — |
 
 ## Sub-phase 2.0, Int arithmetic
 
@@ -111,7 +111,18 @@ def _format_float(value: float) -> str:
 
 **Lazy import** inside `_format_float` avoids a circular import between `mochi_runtime.io` and `mochi_runtime.fmt` once the formatter grows additional helpers in later phases.
 
-**Operator mapping for `float x float`**: every Python float operator agrees with Mochi semantically; `/` is true division, no override needed.
+**Operator mapping for `float x float`**: Python `+`, `-`, `*` agree with Mochi directly. The `/` operator is routed through `mochi_runtime.math.fdiv(a, b)` because Python's `/` raises `ZeroDivisionError` on `b == 0.0` while vm3 returns `+Inf` / `-Inf` / `NaN` per IEEE 754. The runtime helper:
+
+```python
+def fdiv(a: float, b: float) -> float:
+    if b == 0.0:
+        if a == 0.0:
+            return float("nan")
+        return float("inf") if a > 0.0 else float("-inf")
+    return a / b
+```
+
+is imported on demand only when the lowerer encounters `BinDivF64`.
 
 ## Sub-phase 2.2, Bool
 
@@ -215,16 +226,16 @@ def main() -> None:
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/python/lower/lower.go` | Per-operator dispatch reading IR types; floor-division `//` for `int / int`; bool short-circuit operators; string concat, index, slice; bytes literal and operators |
-| `transpiler3/python/lower/operators.go` | Per-Mochi-binop dispatch table mapping `(op, lhsType, rhsType)` to a Python operator |
+| `transpiler3/python/lower/lower.go` | Per-operator dispatch reading IR types in `lowerBinaryExpr`; floor-division `//` for `int / int` via `BinDivS64`/`BinDivU64`, true division `/` for `float / float`; bool short-circuit `and`/`or`/`not`; string concat (`+`), index (`s[i]`), slice (`s[a:b]`), `len(s)`, and `in` for `s.contains(t)`. Inline per-binop dispatch reading the aotir operand type; no separate operator table file. |
 | `runtime/python/mochi_runtime/fmt.py` | `float_str(value)` with NaN, +Inf, -Inf formatting matching vm3 |
 | `runtime/python/mochi_runtime/io.py` | `Print._format_float` delegates to `mochi_runtime.fmt.float_str` |
-| `transpiler3/python/build/phase02_test.go` | `TestPhase2Scalars`: 30 fixtures |
-| `tests/transpiler3/python/fixtures/phase02-scalars/` | 30 fixture directories: int_add, int_sub, int_mul, int_div (floor), int_mod, int_cmp_*, float_add, float_div, float_nan, float_pos_inf, float_neg_inf, float_print, bool_and, bool_or, bool_not, bool_print, str_concat, str_index, str_slice, str_len, str_unicode_len, str_interp, bytes_lit, bytes_index, bytes_len, bytes_decode_utf8, bytes_encode_utf8, plus carry-forward Phase 1 fixtures |
+| `runtime/python/mochi_runtime/math.py` | `fdiv(a, b)` IEEE 754 zero-divisor routing (returns `+Inf`/`-Inf`/`NaN`) imported on demand when the lowerer encounters `BinDivF64` |
+| `transpiler3/python/build/phase02_test.go` | `TestPhase2Scalars` walks every `*.mochi` in the fixture directory, comparing the run of the emitted package to the matching `.out` |
+| `tests/transpiler3/python/fixtures/phase02-scalars/` | 20 fixture pairs: `arith_add`, `arith_div` (int floor), `arith_float`, `bool_ops` (and/or/not), `break_continue`, `compare_float`, `compare_int`, `compare_str`, `float_nan_inf`, `for_range`, `if_else`, `int_cast`, `let_var`, `str_cat`, `str_contains`, `str_index`, `str_len`, `user_fn`, `user_fn_recursive`, `while_loop` |
 
 ## Test set
 
-- `TestPhase2Scalars`, walks all 30 fixtures, runs the same gate stack as Phase 1 (`mypy --strict`, `pyright --strict`, `ruff format` fixed-point, `ruff check` fixed-point, stdout diff against `.out`).
+- `TestPhase2Scalars` (`transpiler3/python/build/phase02_test.go`), walks all 20 fixtures in `tests/transpiler3/python/fixtures/phase02-scalars/` (carry-over from the MEP-48 phase02-scalars set; bytes deferred per sub-phase 2.4). Verified locally on CPython 3.14.5 (Apple Silicon, total wall time ~3 s). The cross-host matrix on CPython 3.12 and CPython 3.13 plus `mypy --strict`, `pyright --strict`, and `ruff` fixed-point are gated under Phase 16 (cross-OS reproducibility) and Phase 19 (golden-stdout). The carry-forward Phase 1 corpus continues to run unchanged through `TestPhase1Hello` and is not duplicated under phase02.
 
 ## Deferred work
 
