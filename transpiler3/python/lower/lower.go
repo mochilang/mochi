@@ -495,6 +495,57 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (pysrc.Expr, error) {
 		}
 		l.needsMapping = true
 		return &pysrc.Call{Func: &pysrc.Name{Id: "values_sorted"}, Args: []pysrc.Expr{recv}}, nil
+	case *aotir.SetLiteralExpr:
+		elems, err := l.lowerExprs(v.Elems)
+		if err != nil {
+			return nil, err
+		}
+		if len(elems) == 0 {
+			// `{}` is a dict literal in Python; empty set must use `set()`.
+			return &pysrc.Call{Func: &pysrc.Name{Id: "set"}}, nil
+		}
+		return &pysrc.SetLit{Elems: elems}, nil
+	case *aotir.SetAddExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		elem, err := l.lowerExpr(v.Elem)
+		if err != nil {
+			return nil, err
+		}
+		// Functional add: union with singleton. `s | {x}` allocates a
+		// fresh set, matching the aotir spec where SetAddExpr returns
+		// TypeSet rather than mutating the receiver.
+		return &pysrc.BinaryExpr{
+			Left:  recv,
+			Op:    "|",
+			Right: &pysrc.SetLit{Elems: []pysrc.Expr{elem}},
+		}, nil
+	case *aotir.SetHasExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		elem, err := l.lowerExpr(v.Elem)
+		if err != nil {
+			return nil, err
+		}
+		return &pysrc.BinaryExpr{Left: elem, Op: "in", Right: recv}, nil
+	case *aotir.SetLenExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &pysrc.Call{Func: &pysrc.Name{Id: "len"}, Args: []pysrc.Expr{recv}}, nil
+	case *aotir.SetToListExpr:
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		// vm3 returns the elements in sorted order for byte-equal stdout.
+		// Python set iteration order is undefined; sorted(s) produces a list.
+		return &pysrc.Call{Func: &pysrc.Name{Id: "sorted"}, Args: []pysrc.Expr{recv}}, nil
 	case *aotir.FunLit:
 		// Closure-converted FunLit. The c lower lifts the closure body
 		// to a top-level aotir.Function emitted by lowerFunction above,
@@ -618,6 +669,12 @@ func pyTypeForCompound(t, elem, k, v aotir.Type) pysrc.TypeRef {
 			return pysrc.TypeRef{}
 		}
 		return pysrc.TypeRef{Name: "dict[" + kr.Name + ", " + vr.Name + "]"}
+	case aotir.TypeSet:
+		inner := pyTypeFor(elem)
+		if inner.Name == "" {
+			return pysrc.TypeRef{}
+		}
+		return pysrc.TypeRef{Name: "set[" + inner.Name + "]"}
 	}
 	return pyTypeFor(t)
 }

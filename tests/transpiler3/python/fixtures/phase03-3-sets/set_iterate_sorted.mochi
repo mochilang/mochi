@@ -1,0 +1,4 @@
+let s = set{3, 1, 2}
+for x in s {
+  print(x)
+}

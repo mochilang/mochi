@@ -1,0 +1,5 @@
+var s: set<int> = set{1, 2, 3}
+s = add(s, 4)
+print(has(s, 2))
+print(has(s, 5))
+print(len(s))
