@@ -1,0 +1,4 @@
+let body = readFile("/tmp/mochi_go_jsondec_concat.json")
+let m = json_decode(body)
+let r = "Hello " + m["name"]
+print(r)

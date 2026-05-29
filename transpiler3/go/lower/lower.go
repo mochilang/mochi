@@ -773,26 +773,37 @@ func helperDecl(name string) gotree.Decl {
 	_ = w.WriteAll(data)
 	w.Flush()
 }`}
-	case "mochiHttpGet":
-		return &gotree.RawDecl{Code: `func mochiHttpGet(urlStr string) string {
-	if strings.HasPrefix(urlStr, "file://") {
-		path := strings.TrimPrefix(urlStr, "file://")
-		b, err := os.ReadFile(path)
-		if err != nil {
-			return ""
+	case "mochiJsonDecode":
+		return &gotree.RawDecl{Code: `func mochiJsonDecode(s string) map[string]string {
+	var raw map[string]interface{}
+	if err := json.Unmarshal([]byte(s), &raw); err != nil {
+		return map[string]string{}
+	}
+	out := make(map[string]string, len(raw))
+	for k, v := range raw {
+		switch x := v.(type) {
+		case string:
+			out[k] = x
+		case float64:
+			if x == float64(int64(x)) {
+				out[k] = fmt.Sprintf("%d", int64(x))
+			} else {
+				out[k] = fmt.Sprintf("%g", x)
+			}
+		case bool:
+			if x {
+				out[k] = "true"
+			} else {
+				out[k] = "false"
+			}
+		case nil:
+			out[k] = "null"
+		default:
+			b, _ := json.Marshal(v)
+			out[k] = string(b)
 		}
-		return strings.TrimRight(string(b), "\n")
 	}
-	resp, err := http.Get(urlStr)
-	if err != nil {
-		return ""
-	}
-	defer resp.Body.Close()
-	b, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return ""
-	}
-	return strings.TrimRight(string(b), "\n")
+	return out
 }`}
 	case "mochiPanicValue":
 		return &gotree.RawDecl{Code: `type mochiPanicValue struct {

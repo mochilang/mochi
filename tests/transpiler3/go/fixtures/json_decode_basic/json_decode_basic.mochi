@@ -1,0 +1,4 @@
+let body = readFile("/tmp/mochi_go_jsondec_basic.json")
+let m = json_decode(body)
+print(m["name"])
+print(m["city"])

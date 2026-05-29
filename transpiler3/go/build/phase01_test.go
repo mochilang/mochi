@@ -36,9 +36,9 @@ func TestPhase1Hello(t *testing.T) {
 		if !e.IsDir() {
 			continue
 		}
-		// LLM fixtures carry a cassette/ subdir and need
-		// MOCHI_LLM_CASSETTE_DIR set; they run under phase13_test.go.
-		if _, err := os.Stat(filepath.Join(base, e.Name(), "cassette")); err == nil {
+		// Skip fixtures that need ambient setup: a `setup/` subdir
+		// means pre-written /tmp files (phase14_2_test.go owns them).
+		if _, err := os.Stat(filepath.Join(base, e.Name(), "setup")); err == nil {
 			continue
 		}
 		names = append(names, e.Name())

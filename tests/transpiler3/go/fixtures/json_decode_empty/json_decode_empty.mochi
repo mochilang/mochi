@@ -1,0 +1,3 @@
+let body = readFile("/tmp/mochi_go_jsondec_empty.json")
+let m = json_decode(body)
+print(len(m))
