@@ -1274,6 +1274,104 @@
     ]
   },
   {
+    "number": 71,
+    "title": "MEP-71 research bundle",
+    "slug": "/docs/research/0071/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "Overview",
+        "docId": "research/0071/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "01. Language surface",
+        "docId": "research/0071/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "02. Design philosophy",
+        "docId": "research/0071/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-bridges",
+        "order": 3,
+        "isIndex": false,
+        "label": "03. Prior-art bridges",
+        "docId": "research/0071/prior-art-bridges"
+      },
+      {
+        "stem": "04-pep561-stub-ingest",
+        "order": 4,
+        "isIndex": false,
+        "label": "04. PEP 561 stub ingest",
+        "docId": "research/0071/pep561-stub-ingest"
+      },
+      {
+        "stem": "05-type-mapping",
+        "order": 5,
+        "isIndex": false,
+        "label": "05. Type mapping",
+        "docId": "research/0071/type-mapping"
+      },
+      {
+        "stem": "06-pypi-publish-flow",
+        "order": 6,
+        "isIndex": false,
+        "label": "06. PyPI publish flow",
+        "docId": "research/0071/pypi-publish-flow"
+      },
+      {
+        "stem": "07-sigstore-pypi-trusted-publishing",
+        "order": 7,
+        "isIndex": false,
+        "label": "07. Sigstore + Trusted Publishing",
+        "docId": "research/0071/sigstore-pypi-trusted-publishing"
+      },
+      {
+        "stem": "08-async-bridge",
+        "order": 8,
+        "isIndex": false,
+        "label": "08. Async bridge",
+        "docId": "research/0071/async-bridge"
+      },
+      {
+        "stem": "09-abi-stability",
+        "order": 9,
+        "isIndex": false,
+        "label": "09. ABI stability",
+        "docId": "research/0071/abi-stability"
+      },
+      {
+        "stem": "10-gil-and-cextensions",
+        "order": 10,
+        "isIndex": false,
+        "label": "10. GIL and C extensions",
+        "docId": "research/0071/gil-and-cextensions"
+      },
+      {
+        "stem": "11-pyodide-wasi-embedded",
+        "order": 11,
+        "isIndex": false,
+        "label": "11. Pyodide / WASI / embedded",
+        "docId": "research/0071/pyodide-wasi-embedded"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "12. Risks and alternatives",
+        "docId": "research/0071/risks-and-alternatives"
+      }
+    ]
+  },
+  {
     "number": 73,
     "title": "MEP-73 research bundle",
     "slug": "/docs/research/0073/",
@@ -1368,6 +1466,202 @@
         "isIndex": false,
         "label": "12. Risks",
         "docId": "research/0073/risks-and-alternatives"
+      }
+    ]
+  },
+  {
+    "number": 74,
+    "title": "MEP-74 research bundle",
+    "slug": "/docs/research/0074/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "Overview",
+        "docId": "research/0074/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "01. Language surface",
+        "docId": "research/0074/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "02. Design philosophy",
+        "docId": "research/0074/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-bridges",
+        "order": 3,
+        "isIndex": false,
+        "label": "03. Prior-art bridges",
+        "docId": "research/0074/prior-art-bridges"
+      },
+      {
+        "stem": "04-go-doc-ast-ingest",
+        "order": 4,
+        "isIndex": false,
+        "label": "04. go/packages ingest",
+        "docId": "research/0074/go-doc-ast-ingest"
+      },
+      {
+        "stem": "05-type-mapping",
+        "order": 5,
+        "isIndex": false,
+        "label": "05. Type mapping",
+        "docId": "research/0074/type-mapping"
+      },
+      {
+        "stem": "06-go-module-publish-flow",
+        "order": 6,
+        "isIndex": false,
+        "label": "06. Module publish flow",
+        "docId": "research/0074/go-module-publish-flow"
+      },
+      {
+        "stem": "07-sigstore-go-checksumdb",
+        "order": 7,
+        "isIndex": false,
+        "label": "07. Sigstore + sum.golang.org",
+        "docId": "research/0074/sigstore-go-checksumdb"
+      },
+      {
+        "stem": "08-goroutine-bridge",
+        "order": 8,
+        "isIndex": false,
+        "label": "08. Goroutine bridge",
+        "docId": "research/0074/goroutine-bridge"
+      },
+      {
+        "stem": "09-abi-stability",
+        "order": 9,
+        "isIndex": false,
+        "label": "09. ABI stability",
+        "docId": "research/0074/abi-stability"
+      },
+      {
+        "stem": "10-interface-and-method-set",
+        "order": 10,
+        "isIndex": false,
+        "label": "10. Interfaces and method sets",
+        "docId": "research/0074/interface-and-method-set"
+      },
+      {
+        "stem": "11-tinygo-embedded-wasm",
+        "order": 11,
+        "isIndex": false,
+        "label": "11. TinyGo and embedded",
+        "docId": "research/0074/tinygo-embedded-wasm"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "12. Risks and alternatives",
+        "docId": "research/0074/risks-and-alternatives"
+      }
+    ]
+  },
+  {
+    "number": 76,
+    "title": "MEP-76 research bundle",
+    "slug": "/docs/research/0076/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "Overview",
+        "docId": "research/0076/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "01. Language surface",
+        "docId": "research/0076/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "02. Design philosophy",
+        "docId": "research/0076/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art",
+        "order": 3,
+        "isIndex": false,
+        "label": "03. Prior art",
+        "docId": "research/0076/prior-art"
+      },
+      {
+        "stem": "04-rbs-yard-ingest",
+        "order": 4,
+        "isIndex": false,
+        "label": "04. RBS and YARD ingest",
+        "docId": "research/0076/rbs-yard-ingest"
+      },
+      {
+        "stem": "05-type-mapping",
+        "order": 5,
+        "isIndex": false,
+        "label": "05. Type mapping",
+        "docId": "research/0076/type-mapping"
+      },
+      {
+        "stem": "06-rubygems-publish-flow",
+        "order": 6,
+        "isIndex": false,
+        "label": "06. Publish",
+        "docId": "research/0076/rubygems-publish-flow"
+      },
+      {
+        "stem": "07-oidc-trusted-publishing",
+        "order": 7,
+        "isIndex": false,
+        "label": "07. Trusted publishing",
+        "docId": "research/0076/oidc-trusted-publishing"
+      },
+      {
+        "stem": "08-native-extensions",
+        "order": 8,
+        "isIndex": false,
+        "label": "08. Native extensions",
+        "docId": "research/0076/native-extensions"
+      },
+      {
+        "stem": "09-bundler-lockfile",
+        "order": 9,
+        "isIndex": false,
+        "label": "09. Bundler and mochi.lock",
+        "docId": "research/0076/bundler-lockfile"
+      },
+      {
+        "stem": "10-ractor-concurrency",
+        "order": 10,
+        "isIndex": false,
+        "label": "10. Ractor and Fiber",
+        "docId": "research/0076/ractor-concurrency"
+      },
+      {
+        "stem": "11-version-resolution",
+        "order": 11,
+        "isIndex": false,
+        "label": "11. Version resolution",
+        "docId": "research/0076/version-resolution"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "12. Risks",
+        "docId": "research/0076/risks-and-alternatives"
       }
     ]
   }
