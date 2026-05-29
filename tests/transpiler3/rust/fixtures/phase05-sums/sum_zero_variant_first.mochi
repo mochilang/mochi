@@ -1,0 +1,17 @@
+type Maybe = None | Some(v: int)
+
+let a: Maybe = Some(7)
+let b: Maybe = None
+
+let av = match a {
+  None => 0
+  Some(v) => v
+}
+
+let bv = match b {
+  None => 0
+  Some(v) => v
+}
+
+print(av)
+print(bv)

@@ -1,0 +1,5 @@
+let nums = [10, 20, 30, 40, 50, 60]
+let r = from n in nums where n > 10 take 2 select n
+for x in r {
+  print(x)
+}

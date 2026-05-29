@@ -1,0 +1,11 @@
+var i: int = 0
+while i < 4 {
+  try {
+    let r: int = 10 / (i - 2)
+    print(r)
+  } catch e {
+    print("caught")
+    print(e)
+  }
+  i = i + 1
+}

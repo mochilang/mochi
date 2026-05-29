@@ -1,0 +1,8 @@
+let classify = fun(x: int): string {
+  if x > 0 {
+    return "positive"
+  }
+  return "non-positive"
+}
+print(classify(5))
+print(classify(-1))

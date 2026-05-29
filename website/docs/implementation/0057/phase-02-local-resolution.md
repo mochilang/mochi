@@ -25,8 +25,8 @@ Pass criteria:
 1. Specifier classifier. `pkgresolve.Classify(spec)` returns the right kind for every entry in `tests/pkgsystem/local-resolve/classify/cases.json` (250+ rows covering path, scoped, unscoped, FFI-tagged, mixed-shape, and degenerate inputs).
 2. Manifest discovery. Given a working directory, `pkgresolve.DiscoverManifest(cwd)` walks parents and returns either a manifest path (preferring `mochi.workspace.toml` over `mochi.toml`) or a "manifest-less" verdict. Both outcomes are covered by separate fixtures.
 3. Cache lookup. For every scoped import in `tests/pkgsystem/local-resolve/scoped-cached/`, the resolver returns a `ResolvedModule` whose source path lives under the test cache root (`tests/pkgsystem/local-resolve/scoped-cached/cache/`). The resolved tree is dumped as canonical JSON and compared against `golden.json`.
-4. Manifest-less mode. Path-form and FFI imports work without a manifest. Any scoped import in manifest-less mode raises `M057_NO_MANIFEST` and the error message contains the literal hint `did you forget mochi init?`.
-5. Version mismatch. When the in-source `@req` disagrees with the manifest pin, `pkgresolve.Resolve` raises `M057_VERSION_MISMATCH` and the error message shows both the in-source and in-manifest specs.
+4. Manifest-less mode. Path-form and FFI imports work without a manifest. Any scoped import in manifest-less mode raises `M057_RESOLVE_E002` and the error message contains the literal hint `did you forget mochi init?`.
+5. Version mismatch. When the in-source `@req` disagrees with the manifest pin, `pkgresolve.Resolve` raises `M057_RESOLVE_E003` and the error message shows both the in-source and in-manifest specs.
 6. Regression. Every `examples/v0.7/**/*.mochi` still resolves without changes; the test harness reuses `tests/examples_test.go` for the regression sweep.
 
 ## Goal-alignment audit
@@ -42,7 +42,7 @@ The scoped-import surface is purely additive: no existing token is repurposed, n
 | 2.0 | Specifier classifier (path / scoped / unscoped / FFI / ambiguous) | NOT STARTED | — |
 | 2.1 | Manifest discovery (walk parents for `mochi.workspace.toml` / `mochi.toml`) | NOT STARTED | — |
 | 2.2 | Cache lookup at `$MOCHI_HOME/store/extracted/<blake3>/` (see [layout](./phase-00-skeleton#sub-phase-06--ci-workflow)) | NOT STARTED | — |
-| 2.3 | Manifest-less mode: path + FFI work; scoped fails with M057_NO_MANIFEST | NOT STARTED | — |
+| 2.3 | Manifest-less mode: path + FFI work; scoped fails with M057_RESOLVE_E002 | NOT STARTED | — |
 | 2.4 | In-source `@req` vs manifest `version` mismatch detection | NOT STARTED | — |
 | 2.5 | Resolver dispatch wired into `parser/import.go` | NOT STARTED | — |
 | 2.6 | Regression: every existing example under `examples/v0.7/` still resolves | NOT STARTED | — |
@@ -110,7 +110,7 @@ func Classify(stmt parser.ImportStmt) (Classification, error) {
 }
 ```
 
-The mixed-shape case (`import "./util@^1" as x`) raises `M057_AMBIGUOUS_SPEC`. The classifier does no I/O.
+The mixed-shape case (`import "./util@^1" as x`) raises `M057_RESOLVE_E001`. The classifier does no I/O.
 
 ## Sub-phase 2.1 — Manifest discovery
 
@@ -150,7 +150,7 @@ func DiscoverManifest(startDir string) (DiscoveryResult, error) {
 
 Filesystem stop conditions: filesystem root (`/`), volume root on Windows, or the user home directory (configurable via `MOCHI_DISCOVERY_STOP_AT`). Symlinks are resolved but not followed across volume boundaries.
 
-A directory containing both `mochi.toml` and `mochi.workspace.toml` is rejected with `M057_AMBIGUOUS_MANIFEST` to avoid ambiguity (research note 04 §8).
+A directory containing both `mochi.toml` and `mochi.workspace.toml` is rejected with `M057_RESOLVE_E010` to avoid ambiguity (research note 04 §8).
 
 ## Sub-phase 2.2 — Cache lookup
 
@@ -187,7 +187,7 @@ func (r *PkgResolver) Resolve(c Classification, ctx *Context) (ResolvedModule, e
     }
     if c.Req != "" {
         if err := assertReqMatches(c.Req, locked.Version); err != nil {
-            return ResolvedModule{}, err  // M057_VERSION_MISMATCH
+            return ResolvedModule{}, err  // M057_RESOLVE_E003
         }
     }
 
@@ -216,7 +216,7 @@ When `DiscoverManifest` returns `ManifestLess: true`:
 
 - Path imports work. The existing `runtime/mod/mod.go` resolver is used unchanged.
 - FFI imports work. The per-language driver is dispatched unchanged.
-- Scoped imports raise `M057_NO_MANIFEST`:
+- Scoped imports raise `M057_RESOLVE_E002`:
 
 ```
 error: scoped import "@mochi/strings@^0.4" requires a manifest
@@ -249,7 +249,7 @@ func assertReqMatches(sourceReq, lockedVersion string) error {
 
 If the in-source `@req` is absent, the locked version wins (research note 01 §2).
 
-If the in-manifest version range and the in-source `@req` disagree (e.g. manifest says `^0.4`, source says `@^0.5`), the parser raises `M057_VERSION_MISMATCH` regardless of which one matches the locked version.
+If the in-manifest version range and the in-source `@req` disagree (e.g. manifest says `^0.4`, source says `@^0.5`), the parser raises `M057_RESOLVE_E003` regardless of which one matches the locked version.
 
 ## Sub-phase 2.5 — Resolver dispatch wired in
 
@@ -332,7 +332,7 @@ Sorted by `(scope, name, version)`. Compared against `golden.json` byte-for-byte
 | `pkg/pkgresolve/resolve.go` | Top-level `Resolve` dispatch (extended by Phase 3) | Owner |
 | `pkg/pkgresolve/cache.go` | Cache lookup + integrity verification | Owner |
 | `pkg/pkgresolve/dump.go` | Canonical JSON dump | Owner |
-| `pkg/pkgresolve/errors.go` | Sentinel errors (M057_AMBIGUOUS_SPEC, etc.) | Owner |
+| `pkg/pkgresolve/errors.go` | Sentinel errors (M057_RESOLVE_E001, etc.) | Owner |
 | `parser/import.go` | Dispatch hook | Extends |
 | `tests/pkgsystem/local-resolve/path-only/*.mochi` | Path regression corpus | Owner |
 | `tests/pkgsystem/local-resolve/scoped-cached/*.mochi` | Scoped cache-hit corpus | Owner |
@@ -342,15 +342,18 @@ Sorted by `(scope, name, version)`. Compared against `golden.json` byte-for-byte
 
 ## Error code surface
 
+Sources (see [error registry](./errors)). Verbal aliases used in early
+drafts are renamed to the canonical `M057_RESOLVE_E<NNN>` form:
+
 | Code | Trigger |
 |------|---------|
-| `M057_NO_MANIFEST` | Scoped import without a discoverable manifest. |
-| `M057_AMBIGUOUS_SPEC` | Mixed-shape specifier (e.g. `./foo@^1`). |
-| `M057_AMBIGUOUS_MANIFEST` | Both `mochi.toml` and `mochi.workspace.toml` in the same directory. |
-| `M057_VERSION_MISMATCH` | In-source `@req` disagrees with manifest or lockfile. |
-| `M057_LOCKED_PKG_MISSING` | Resolved import is not in the lockfile. |
-| `M057_CACHE_POISONED` | Cache entry exists but BLAKE3 does not match the lockfile. |
-| `M057_COLD_CACHE` | Phase 2 only: cache miss for a scoped import; Phase 8 will resolve this. |
+| `M057_RESOLVE_E002` | Scoped import without a discoverable manifest. |
+| `M057_RESOLVE_E001` | Mixed-shape specifier (e.g. `./foo@^1`). |
+| `M057_RESOLVE_E010` | Both `mochi.toml` and `mochi.workspace.toml` in the same directory. |
+| `M057_RESOLVE_E003` | In-source `@req` disagrees with manifest or lockfile. |
+| `M057_RESOLVE_E004` | Resolved import is not in the lockfile (or 404 at registry). |
+| `M057_RESOLVE_E009` | Cache entry exists but BLAKE3 does not match the lockfile. |
+| `M057_RESOLVE_E007` | Phase 2 only: cold-cache sentinel for a scoped import; Phase 8 resolves it. |
 
 ## Fixtures
 
@@ -366,8 +369,8 @@ Sorted by `(scope, name, version)`. Compared against `golden.json` byte-for-byte
 - `TestPhase2Classify` — classifier `cases.json`.
 - `TestPhase2Discover` — manifest discovery.
 - `TestPhase2CacheHit` — scoped imports against pre-populated cache.
-- `TestPhase2ManifestLess` — scoped raises `M057_NO_MANIFEST`.
-- `TestPhase2VersionMismatch` — `M057_VERSION_MISMATCH`.
+- `TestPhase2ManifestLess` — scoped raises `M057_RESOLVE_E002`.
+- `TestPhase2VersionMismatch` — `M057_RESOLVE_E003`.
 - `TestPhase2Regression` — `examples/v0.7/**/*.mochi` still resolves.
 
 ## Open questions

@@ -1,0 +1,9 @@
+agent Counter {
+    var n: int = 0
+    intent inc() { n = n + 1 }
+    intent get(): int { return n }
+}
+let c = Counter { n: 0 }
+c.inc()
+c.inc()
+print(c.get())

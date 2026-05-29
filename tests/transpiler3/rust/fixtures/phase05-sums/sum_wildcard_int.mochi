@@ -1,0 +1,9 @@
+type Code = Zero | One | Two | Three | Four
+
+let c: Code = Four
+let v = match c {
+  Zero => 0
+  One => 1
+  _ => 99
+}
+print(v)

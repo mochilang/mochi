@@ -437,7 +437,7 @@ func (l *lowerer) lowerCallExpr(e *aotir.CallExpr) (gotree.Expr, error) {
 		args = append(args, v)
 	}
 	return &gotree.CallExpr{
-		Fun:  &gotree.Ident{Name: e.Func},
+		Fun:  &gotree.Ident{Name: stripFFIPrefix(e.Func)},
 		Args: args,
 	}, nil
 }

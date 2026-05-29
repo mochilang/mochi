@@ -1,0 +1,3 @@
+writeFile("/tmp/mochi_swift_fetch4.txt", "status-ok")
+let body = fetch("file:///tmp/mochi_swift_fetch4.txt")
+print(body)

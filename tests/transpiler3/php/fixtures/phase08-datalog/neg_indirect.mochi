@@ -1,0 +1,17 @@
+// Three-stratum stratified negation:
+// Stratum 0: has_blocked_friend derived from friend + blocked facts.
+// Stratum 1: trustworthy uses not has_blocked_friend.
+fact person("alice")
+fact person("bob")
+fact person("carol")
+fact blocked("dave")
+fact friend("alice", "dave")
+fact friend("bob", "eve")
+
+rule has_blocked_friend(X) :- friend(X, Y), blocked(Y)
+rule trustworthy(X) :- person(X), not has_blocked_friend(X)
+
+let results = query trustworthy(_)
+for r in results {
+    print(r)
+}

@@ -1,0 +1,7 @@
+// Phase 10.2: Go FFI native call.
+// extern go fun resolves to a user-supplied Go function in the
+// sibling go_ffi_add_ints.go file (package main).
+extern go fun add_ints(a: int, b: int): int
+
+let result = add_ints(7, 35)
+print(result)

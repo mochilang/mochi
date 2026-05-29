@@ -36,7 +36,7 @@ func TestPhase25TargetTebako(t *testing.T) {
 	}
 
 	out := t.TempDir()
-	d := &Driver{CacheDir: t.TempDir()}
+	d := &Driver{}
 	if err := d.Build(src, out, TargetTebako); err != nil {
 		t.Fatalf("Build TargetTebako: %v", err)
 	}

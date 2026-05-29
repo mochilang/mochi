@@ -1,0 +1,4 @@
+let double: fun(int): int = fun(x: int): int => x + x
+let triple: fun(int): int = fun(x: int): int => x * 3
+print(double(7))
+print(triple(7))

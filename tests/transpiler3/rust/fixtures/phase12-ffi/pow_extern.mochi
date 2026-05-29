@@ -1,0 +1,4 @@
+extern fun c_pow(base: int, exp: int): int
+print(c_pow(2, 10))
+print(c_pow(3, 4))
+print(c_pow(5, 0))

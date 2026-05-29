@@ -1,0 +1,10 @@
+print("start")
+try {
+  print("before")
+  let z: int = 100 / 0
+  print(z)
+} catch e {
+  print("caught")
+  print(e)
+}
+print("done")

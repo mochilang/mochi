@@ -1,0 +1,6 @@
+let xs = [1, 2, 3]
+let ys = [1, 2, 3]
+let result = from x in xs from y in ys where x != y select x * 10 + y
+for r in result {
+  print(r)
+}

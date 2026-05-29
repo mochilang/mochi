@@ -1,0 +1,34 @@
+{
+    "name": "mochi/runtime",
+    "description": "Mochi runtime library for the PHP 8.4 transpiler (MEP-55).",
+    "type": "library",
+    "license": "Apache-2.0",
+    "require": {
+        "php": "^8.4",
+        "ext-mbstring": "*",
+        "ext-gmp": "*"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.12",
+        "phpstan/phpstan-strict-rules": "^1.6",
+        "phpstan/phpstan-deprecation-rules": "^1.2",
+        "vimeo/psalm": "^6.0",
+        "friendsofphp/php-cs-fixer": "^3.65",
+        "phpunit/phpunit": "^11.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Mochi\\Runtime\\": "src/Mochi/Runtime/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Mochi\\Runtime\\Tests\\": "tests/Mochi/Runtime/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "preferred-install": "dist"
+    },
+    "minimum-stability": "stable"
+}

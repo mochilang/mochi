@@ -1,0 +1,9 @@
+fun triple(x: int): int {
+    return x * 3
+}
+let f1 = async triple(4)
+let f2 = async triple(7)
+let r1 = await f1
+let r2 = await f2
+print(r1)
+print(r2)

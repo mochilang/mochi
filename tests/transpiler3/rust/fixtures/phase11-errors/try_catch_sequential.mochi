@@ -1,0 +1,13 @@
+try {
+  let a: int = 10 / 0
+  print(a)
+} catch e {
+  print(e)
+}
+try {
+  let b: int = 20 / 0
+  print(b)
+} catch e {
+  print(e)
+}
+print("end")

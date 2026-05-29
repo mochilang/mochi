@@ -1,0 +1,2 @@
+extern fun c_mul(a: int, b: int): int
+print(c_mul(6, 7))

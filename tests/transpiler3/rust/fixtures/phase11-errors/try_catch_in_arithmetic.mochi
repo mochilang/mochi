@@ -1,0 +1,12 @@
+var total: int = 0
+let denoms: list<int> = [1, 2, 0, 4]
+var i: int = 0
+while i < 4 {
+  try {
+    total = total + (100 / denoms[i])
+  } catch e {
+    total = total - 1
+  }
+  i = i + 1
+}
+print(total)

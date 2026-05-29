@@ -1,0 +1,6 @@
+writeFile("/tmp/mochi_swift_mf1.txt", "file one")
+writeFile("/tmp/mochi_swift_mf2.txt", "file two")
+let a = readFile("/tmp/mochi_swift_mf1.txt")
+let b = readFile("/tmp/mochi_swift_mf2.txt")
+print(a)
+print(b)

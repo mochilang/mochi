@@ -1,0 +1,6 @@
+extern fun c_clamp(x: int, lo: int, hi: int): int
+print(c_clamp(5, 0, 10))
+print(c_clamp(-3, 0, 10))
+print(c_clamp(99, 0, 10))
+print(c_clamp(0, 0, 10))
+print(c_clamp(10, 0, 10))

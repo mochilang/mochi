@@ -1,0 +1,10 @@
+agent Doubler {
+    var v: int = 0
+    intent inc() { v = v + v + 1 }
+    intent get(): int { return v }
+}
+let d = Doubler { v: 1 }
+d.inc()
+d.inc()
+d.inc()
+print(d.get())

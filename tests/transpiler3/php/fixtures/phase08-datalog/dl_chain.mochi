@@ -1,0 +1,10 @@
+fact link("n1", "n2")
+fact link("n2", "n3")
+fact link("n3", "n4")
+fact link("n4", "n5")
+rule reach(X, Y) :- link(X, Y)
+rule reach(X, Y) :- reach(X, Z), link(Z, Y)
+let xs = query reach("n1", Y)
+for x in xs {
+    print(x)
+}

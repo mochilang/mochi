@@ -1,0 +1,11 @@
+type Weekday = Mon | Tue | Wed | Thu | Fri
+
+let d: Weekday = Wed
+let name = match d {
+  Mon => "monday"
+  Tue => "tuesday"
+  Wed => "wednesday"
+  Thu => "thursday"
+  Fri => "friday"
+}
+print(name)

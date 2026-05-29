@@ -1,0 +1,13 @@
+let s: stream<int> = make_stream(10)
+let sub = subscribe(s)
+var i = 0
+while i < 5 {
+    emit(s, i)
+    i = i + 1
+}
+var j = 0
+while j < 5 {
+    let v = recv_sub(sub)
+    print(v)
+    j = j + 1
+}

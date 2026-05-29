@@ -1,0 +1,8 @@
+let s: stream<float> = make_stream(4)
+let sub = subscribe(s)
+emit(s, 1.5)
+emit(s, 2.5)
+let a = recv_sub(sub)
+let b = recv_sub(sub)
+print(a)
+print(b)

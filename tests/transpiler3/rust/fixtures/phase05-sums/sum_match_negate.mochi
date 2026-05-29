@@ -1,0 +1,11 @@
+type Sign = Plus(v: int) | Minus(v: int)
+
+fun value(s: Sign): int {
+  return match s {
+    Plus(v) => v
+    Minus(v) => -v
+  }
+}
+
+print(value(Plus(7)))
+print(value(Minus(11)))

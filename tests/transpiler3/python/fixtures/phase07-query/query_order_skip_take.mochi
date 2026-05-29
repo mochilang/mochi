@@ -1,0 +1,5 @@
+let nums: list<int> = [5, 2, 8, 1, 9, 3, 7, 4, 6]
+let page = from n in nums order by n skip 2 take 4 select n
+for x in page {
+    print(x)
+}
