@@ -1,0 +1,10 @@
+var m: omap<string,int> = omap{"first": 1}
+m["second"] = 2
+m["third"] = 3
+print(m["first"])
+print(m["second"])
+print(m["third"])
+print(len(m))
+m["second"] = 99
+print(m["second"])
+print(len(m))

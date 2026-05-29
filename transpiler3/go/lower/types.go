@@ -95,6 +95,29 @@ func (l *lowerer) lowerSetType(elem aotir.Type) (string, error) {
 	return "map[" + et + "]struct{}", nil
 }
 
+// lowerOMapType produces the Go type expression `*mochiOMap[K, V]` for an
+// omap<K,V> value. The mochiOMap runtime helper is a small generic struct
+// that pairs a Go map (for O(1) get / has) with an insertion-order keys
+// slice (for iteration). The pointer form means OMapPutStmt can mutate
+// the receiver in place, matching Mochi's mutable-ordered-map semantics.
+func (l *lowerer) lowerOMapType(key, value aotir.Type) (string, error) {
+	kt, err := l.lowerType(key)
+	if err != nil {
+		return "", fmt.Errorf("omap key: %w", err)
+	}
+	if kt == "" {
+		return "", fmt.Errorf("transpiler3/go/lower: omap key type cannot be unit")
+	}
+	vt, err := l.lowerType(value)
+	if err != nil {
+		return "", fmt.Errorf("omap value: %w", err)
+	}
+	if vt == "" {
+		return "", fmt.Errorf("transpiler3/go/lower: omap value type cannot be unit")
+	}
+	return "*mochiOMap[" + kt + ", " + vt + "]", nil
+}
+
 // lowerFunType produces `func(T1, T2, ...) R` for a fun-typed value.
 // Phase 6.1 restricts the parameter and return types to scalar primitives
 // and unit (matching the aotir FunSig restriction).

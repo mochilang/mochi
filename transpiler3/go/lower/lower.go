@@ -198,6 +198,9 @@ func (l *lowerer) paramTypeText(p aotir.Param) (string, error) {
 		return l.lowerMapType(p.KeyType, p.ValueType)
 	case aotir.TypeSet:
 		return l.lowerSetType(p.ElemType)
+	case aotir.TypeOMap:
+		l.addHelper("mochiOMap")
+		return l.lowerOMapType(p.KeyType, p.ValueType)
 	case aotir.TypeRecord:
 		if p.RecordName == "" {
 			return "", fmt.Errorf("record param missing RecordName")
@@ -231,6 +234,9 @@ func (l *lowerer) returnTypeText(fn *aotir.Function) (string, error) {
 		return l.lowerMapType(fn.ReturnKeyType, fn.ReturnValueType)
 	case aotir.TypeSet:
 		return l.lowerSetType(fn.ReturnElemType)
+	case aotir.TypeOMap:
+		l.addHelper("mochiOMap")
+		return l.lowerOMapType(fn.ReturnKeyType, fn.ReturnValueType)
 	case aotir.TypeRecord:
 		if fn.ReturnRecordName == "" {
 			return "", fmt.Errorf("record return missing ReturnRecordName")
@@ -673,6 +679,35 @@ func helperDecl(name string) gotree.Decl {
 	case "mochiPanic":
 		return &gotree.RawDecl{Code: `func mochiPanic(code int64, msg string) {
 	panic(mochiPanicValue{code: code, msg: msg})
+}`}
+	case "mochiOMap":
+		return &gotree.RawDecl{Code: `type mochiOMap[K comparable, V any] struct {
+	keys []K
+	vals map[K]V
+}`}
+	case "mochiOMapNew":
+		return &gotree.RawDecl{Code: `func mochiOMapNew[K comparable, V any]() *mochiOMap[K, V] {
+	return &mochiOMap[K, V]{vals: map[K]V{}}
+}`}
+	case "mochiOMapSet":
+		return &gotree.RawDecl{Code: `func mochiOMapSet[K comparable, V any](m *mochiOMap[K, V], k K, v V) {
+	if _, ok := m.vals[k]; !ok {
+		m.keys = append(m.keys, k)
+	}
+	m.vals[k] = v
+}`}
+	case "mochiOMapGet":
+		return &gotree.RawDecl{Code: `func mochiOMapGet[K comparable, V any](m *mochiOMap[K, V], k K) V {
+	return m.vals[k]
+}`}
+	case "mochiOMapHas":
+		return &gotree.RawDecl{Code: `func mochiOMapHas[K comparable, V any](m *mochiOMap[K, V], k K) bool {
+	_, ok := m.vals[k]
+	return ok
+}`}
+	case "mochiOMapLen":
+		return &gotree.RawDecl{Code: `func mochiOMapLen[K comparable, V any](m *mochiOMap[K, V]) int64 {
+	return int64(len(m.keys))
 }`}
 	case "mochiTry":
 		return &gotree.RawDecl{Code: `func mochiTry(try func(), catch func(code int64)) {
