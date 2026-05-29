@@ -1,0 +1,6 @@
+fun greet(name: string): unit {
+  print("hi " + name)
+}
+
+greet("ada")
+greet("bob")

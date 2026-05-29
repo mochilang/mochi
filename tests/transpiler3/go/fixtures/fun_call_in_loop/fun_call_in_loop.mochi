@@ -1,0 +1,9 @@
+fun add1(x: int): int {
+  return x + 1
+}
+
+var i = 0
+while i < 3 {
+  print(add1(i))
+  i = i + 1
+}

@@ -1,0 +1,9 @@
+fun sum_list(xs: list<int>): int {
+  var total = 0
+  for x in xs {
+    total = total + x
+  }
+  return total
+}
+
+print(sum_list([1, 2, 3, 4, 5]))

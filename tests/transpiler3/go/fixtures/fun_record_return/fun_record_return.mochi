@@ -1,0 +1,12 @@
+type Pair {
+  a: int
+  b: int
+}
+
+fun mk(): Pair {
+  return Pair { a: 7, b: 11 }
+}
+
+let p = mk()
+print(p.a)
+print(p.b)
