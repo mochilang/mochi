@@ -29,7 +29,7 @@ A phase is LANDED only when its gate is green for every applicable target (consu
 | 11 | `TargetGoLibrary` emit (`go.mod` + exported package + `_cgo_export.h`) | LANDED (baseline; 11.1+ deferred) | (pending) | [phase-11](/docs/implementation/0074/phase-11-library-emit) |
 | 12 | Git-tag publish flow (`mochi pkg publish --to=git-tag`) + canonical-import-path gate | LANDED (baseline; 12.1+ deferred) | (pending) | [phase-12](/docs/implementation/0074/phase-12-git-tag-publish) |
 | 13 | Cosign-on-sibling-tag opt-in (`mochi pkg publish --cosign-sign`) | LANDED (baseline; 13.1+ deferred) | (pending) | [phase-13](/docs/implementation/0074/phase-13-cosign) |
-| 14 | Goroutine bridge (cgo handle pool + channel-as-handle + callback-as-handle) | NOT STARTED | — | [phase-14](/docs/implementation/0074/phase-14-goroutine-bridge) |
+| 14 | Goroutine bridge (cgo handle pool + channel-as-handle + callback-as-handle) | LANDED (baseline; 14.1+ deferred) | (pending) | [phase-14](/docs/implementation/0074/phase-14-goroutine-bridge) |
 | 15 | Monomorphisation (`[go.monomorphise]` manifest + per-instantiation wrapper) | NOT STARTED | — | [phase-15](/docs/implementation/0074/phase-15-monomorphise) |
 | 16 | TinyGo embedded subset (`profile = "embedded"` + `//go:linkname` wrapper) | NOT STARTED | — | [phase-16](/docs/implementation/0074/phase-16-tinygo-embedded) |
 | 17 | Vanity-import resolver + wasm-wasip1 / wasm-js publish gate (wazero host integration) | NOT STARTED | — | [phase-17](/docs/implementation/0074/phase-17-vanity-and-wasm) |
@@ -54,7 +54,7 @@ Each phase's LANDED gate must be green for every applicable target. `n/a` cells 
 | 11. TargetGoLibrary emit | LANDED (baseline) | required | required | required | required |
 | 12. git-tag publish | LANDED (baseline) | n/a (publish is host-only) | n/a | n/a | n/a |
 | 13. cosign on tag.sig | LANDED (baseline) | n/a | n/a | n/a | n/a |
-| 14. goroutine bridge | NOT STARTED | required | required | n/a (no goroutines on wasm-js without scheduler shim) | required |
+| 14. goroutine bridge | LANDED (baseline) | required | required | n/a (no goroutines on wasm-js without scheduler shim) | required |
 | 15. monomorphisation | NOT STARTED | required | required | required | required |
 | 16. TinyGo embedded subset | NOT STARTED | n/a | n/a | required (wasm-js via tinygo) | required |
 | 17. vanity-import + WASI publish | NOT STARTED | required | required | required | n/a |
@@ -108,7 +108,7 @@ The `package3/go/` location is shared with the broader MEP-57 polyglot package w
 
 ## Status snapshot
 
-As of 2026-05-30: phases 0-13 LANDED on `main` (phases 6 + 7 + 9 + 11 + 12 + 13 baseline only; phase 10 schema only; sub-phases 6.1+/7.1+/9.1+/10.1+/11.1+/12.1+/13.1+ deferred), phases 14-17 NOT STARTED.
+As of 2026-05-30: phases 0-14 LANDED on `main` (phases 6 + 7 + 9 + 11 + 12 + 13 + 14 baseline only; phase 10 schema only; sub-phases 6.1+/7.1+/9.1+/10.1+/11.1+/12.1+/13.1+/14.1+ deferred), phases 15-17 NOT STARTED.
 
 ## Cross-references
 
