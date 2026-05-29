@@ -36,7 +36,9 @@ class Print:
 
     @staticmethod
     def _format_float(value: float) -> str:
-        return repr(value)
+        from mochi_runtime.fmt import float_str
+
+        return float_str(value)
 
 
 _PRINT_LINE: Final = Print.line
