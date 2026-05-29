@@ -270,7 +270,8 @@
       "implementation/0056/phase-28-audit",
       "implementation/0056/phase-29-runtime-matrix",
       "implementation/0056/phase-30-runtime-gem-tests",
-      "implementation/0056/phase-31-audit-6"
+      "implementation/0056/phase-31-audit-6",
+      "implementation/0056/phase-32-audit-7"
     ]
   },
   "implementation/0057/index",
@@ -306,5 +307,6 @@
     "items": [
       "implementation/0073/phase-00-skeleton"
     ]
-  }
+  },
+  "implementation/0074/index"
 ]
