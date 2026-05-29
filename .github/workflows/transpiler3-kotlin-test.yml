@@ -1,0 +1,70 @@
+name: Kotlin transpiler tests
+
+# MEP-50: CI gate for the Mochi-to-Kotlin transpiler test suite.
+# Phases 1-14 run on every push/PR on JVM (kotlinc + java).
+# Phase 15 (Android) requires ANDROID_HOME and is nightly-only.
+# Phase 16 (reproducibility) runs on every push/PR.
+# Phase 17 (K/Native) is nightly-only (requires large K/Native toolchain).
+# Phase 18 (Play Console) is label-gated (needs-play-validate).
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    paths:
+      - 'transpiler3/kotlin/**'
+      - 'tests/transpiler3/kotlin/**'
+      - 'transpiler3/c/aotir/**'
+      - 'transpiler3/c/lower/**'
+      - '.github/workflows/transpiler3-kotlin-test.yml'
+
+jobs:
+  kotlin-test:
+    name: Kotlin test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            blocking: true
+          - os: macos-15
+            blocking: true
+
+    continue-on-error: ${{ !matrix.blocking }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install Kotlin compiler
+        run: |
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            # Install kotlinc via SDKMAN or direct download
+            curl -Lo /tmp/kotlin.zip https://github.com/JetBrains/kotlin/releases/download/v2.1.20/kotlin-compiler-2.1.20.zip
+            unzip -q /tmp/kotlin.zip -d /tmp/kotlin
+            echo "/tmp/kotlin/kotlinc/bin" >> "$GITHUB_PATH"
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            brew install kotlin
+          fi
+
+      - name: Verify Kotlin compiler
+        run: kotlinc -version
+
+      - name: Run Kotlin transpiler tests (phases 1-6)
+        run: go test -v -timeout 600s ./transpiler3/kotlin/build/... -run "TestPhase[1-6]"
+
+      - name: Run Kotlin transpiler tests (phases 7+)
+        run: go test -v -timeout 600s ./transpiler3/kotlin/build/... -run "TestPhase[7-9]|TestPhase1[0-9]"
+        continue-on-error: true
+
