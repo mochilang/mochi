@@ -1,0 +1,5 @@
+let s: set<string> = set{"", "a", "ab", "abc"}
+print(has(s, ""))
+print(has(s, "a"))
+print(has(s, "abcd"))
+print(len(s))

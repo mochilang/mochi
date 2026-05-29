@@ -1,0 +1,8 @@
+let primes: set<int> = set{2, 3, 5, 7, 11, 13}
+var i: int = 1
+while i <= 14 {
+  if has(primes, i) {
+    print(i)
+  }
+  i = i + 1
+}

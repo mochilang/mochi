@@ -113,6 +113,53 @@ func (e *SpreadAppendExpr) TsString(_ int) string {
 	return "[..." + e.List.TsString(0) + ", " + e.Tail.TsString(0) + "]"
 }
 
+// NewSetExpr is `new Set<T>([e1, e2, ...])`. Mochi set literals
+// (`set{e1, e2, ...}`) lower here; the element type argument is
+// emitted explicitly because `tsc --strict` can't infer it for an
+// empty literal and emitting it uniformly keeps the printed form
+// consistent. An empty literal renders `new Set<T>()`.
+type NewSetExpr struct {
+	ElemType string
+	Elems    []Expr
+}
+
+func (e *NewSetExpr) exprNode() {}
+func (e *NewSetExpr) TsString(_ int) string {
+	var b strings.Builder
+	b.WriteString("new Set<")
+	b.WriteString(e.ElemType)
+	b.WriteString(">(")
+	if len(e.Elems) == 0 {
+		b.WriteByte(')')
+		return b.String()
+	}
+	b.WriteByte('[')
+	for i, el := range e.Elems {
+		if i > 0 {
+			b.WriteString(", ")
+		}
+		b.WriteString(el.TsString(0))
+	}
+	b.WriteString("])")
+	return b.String()
+}
+
+// SetAddNewExpr is `new Set<T>([...recv, elem])`. Mochi's `add(s, x)`
+// is functional (returns a fresh set without mutating the input);
+// rendering it as a Set constructor over a spread keeps the emit
+// expression-shaped (Mochi may use it inside a re-assignment, a
+// function argument, or a return statement).
+type SetAddNewExpr struct {
+	ElemType string
+	Receiver Expr
+	Elem     Expr
+}
+
+func (e *SetAddNewExpr) exprNode() {}
+func (e *SetAddNewExpr) TsString(_ int) string {
+	return "new Set<" + e.ElemType + ">([..." + e.Receiver.TsString(0) + ", " + e.Elem.TsString(0) + "])"
+}
+
 // NewMapExpr is `new Map<K, V>([[k1, v1], [k2, v2], ...])`. Mochi map
 // literals lower here; the K/V type arguments are emitted explicitly
 // because `tsc --strict` can't always infer them for an empty literal

@@ -1,0 +1,9 @@
+let xs: list<int> = [1, 2, 2, 3, 3, 3, 4]
+var s: set<int> = set{1}
+for x in xs {
+  s = add(s, x)
+}
+print(len(s))
+print(has(s, 1))
+print(has(s, 4))
+print(has(s, 5))
