@@ -1,0 +1,13 @@
+type Op = Add(a: int, b: int) | Mul(a: int, b: int) | Sub(a: int, b: int)
+
+fun eval(op: Op): int {
+  return match op {
+    Add(a, b) => a + b
+    Mul(a, b) => a * b
+    Sub(a, b) => a - b
+  }
+}
+
+print(eval(Add(2, 3)))
+print(eval(Mul(4, 5)))
+print(eval(Sub(10, 3)))

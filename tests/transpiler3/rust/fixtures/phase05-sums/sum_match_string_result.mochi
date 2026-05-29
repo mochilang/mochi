@@ -1,0 +1,9 @@
+type Status = Active | Inactive | Pending
+
+let s: Status = Pending
+let label = match s {
+  Active => "active"
+  Inactive => "inactive"
+  Pending => "pending"
+}
+print(label)

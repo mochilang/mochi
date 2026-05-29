@@ -44,11 +44,22 @@ func CrateName(src string) string {
 type lowerer struct {
 	colours colour.ColourMap
 	prog    *aotir.Program
+	// matchBindings maps a variant field name to the pattern-variable
+	// name bound in the current match arm; used so VariantFieldAccess
+	// resolves to the in-scope binding identifier.
+	matchBindings map[string]string
+	// unions indexes union decls by name so the lowerer can stamp
+	// canonical union names onto EnumVariantLits and patterns.
+	unions map[string]*aotir.UnionDecl
 }
 
 // Lower translates an aotir.Program into a rtree.File.
 func Lower(prog *aotir.Program, colours colour.ColourMap, crateName string) (*rtree.File, error) {
 	l := &lowerer{colours: colours, prog: prog}
+	l.unions = make(map[string]*aotir.UnionDecl, len(prog.Unions))
+	for _, ud := range prog.Unions {
+		l.unions[ud.Name] = ud
+	}
 
 	mainFn := prog.Functions[prog.Main]
 	mainBody, err := l.lowerBlock(mainFn.Body)
@@ -69,6 +80,10 @@ func Lower(prog *aotir.Program, colours colour.ColourMap, crateName string) (*rt
 	// Records first so types are in scope.
 	for _, rd := range prog.Records {
 		file.Items = append(file.Items, lowerRecordDecl(rd))
+	}
+	// Unions next; emit declaration-order to keep diffable output.
+	for _, ud := range prog.Unions {
+		file.Items = append(file.Items, lowerUnionDecl(ud))
 	}
 
 	file.Items = append(file.Items, mainItem)
@@ -121,6 +136,54 @@ func rustFieldTypeName(t aotir.Type, recordName string) string {
 	return rustTypeName(t)
 }
 
+// rustNamedTypeName resolves a Rust type name that may carry a nominal
+// identity. recordName is used for TypeRecord, unionName for TypeUnion.
+// Other types fall back to rustTypeName.
+func rustNamedTypeName(t aotir.Type, recordName, unionName string) string {
+	switch t {
+	case aotir.TypeRecord:
+		if recordName != "" {
+			return recordName
+		}
+	case aotir.TypeUnion:
+		if unionName != "" {
+			return unionName
+		}
+	}
+	return rustTypeName(t)
+}
+
+// lowerUnionDecl translates an aotir.UnionDecl into a Rust enum
+// declaration. Derives mirror lowerRecordDecl: Debug, Clone, PartialEq
+// always; Eq+Hash are added only when no variant field is a float so
+// the derive holds.
+func lowerUnionDecl(ud *aotir.UnionDecl) rtree.Item {
+	derives := []string{"Debug", "Clone", "PartialEq"}
+	hasFloat := false
+	variants := make([]rtree.EnumVariant, 0, len(ud.Variants))
+	for _, v := range ud.Variants {
+		fields := make([]rtree.StructField, 0, len(v.Fields))
+		for _, f := range v.Fields {
+			if f.FieldType == aotir.TypeFloat {
+				hasFloat = true
+			}
+			fields = append(fields, rtree.StructField{
+				Name:     f.Name,
+				TypeName: rustNamedTypeName(f.FieldType, f.RecordName, f.UnionName),
+			})
+		}
+		variants = append(variants, rtree.EnumVariant{Name: v.Name, Fields: fields})
+	}
+	if !hasFloat {
+		derives = append(derives, "Eq", "Hash")
+	}
+	return &rtree.EnumDecl{
+		Derives:  derives,
+		Name:     ud.Name,
+		Variants: variants,
+	}
+}
+
 func (l *lowerer) lowerFunction(fn *aotir.Function) (*rtree.FnDecl, error) {
 	body, err := l.lowerBlock(fn.Body)
 	if err != nil {
@@ -130,12 +193,12 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*rtree.FnDecl, error) {
 	for _, p := range fn.Params {
 		params = append(params, rtree.FnParam{
 			Name:     p.Name,
-			TypeName: rustFieldTypeName(p.Type, p.RecordName),
+			TypeName: rustNamedTypeName(p.Type, p.RecordName, p.UnionName),
 		})
 	}
 	retTy := ""
 	if fn.ReturnType != aotir.TypeUnit {
-		retTy = rustFieldTypeName(fn.ReturnType, fn.ReturnRecordName)
+		retTy = rustNamedTypeName(fn.ReturnType, fn.ReturnRecordName, fn.ReturnUnionName)
 	}
 	return &rtree.FnDecl{
 		Name:       fn.Name,
@@ -151,12 +214,32 @@ func (l *lowerer) lowerBlock(b *aotir.Block) ([]rtree.Stmt, error) {
 		return nil, nil
 	}
 	out := make([]rtree.Stmt, 0, len(b.Statements))
-	for _, s := range b.Statements {
-		ls, err := l.lowerStmt(s)
+	i := 0
+	for i < len(b.Statements) {
+		s := b.Statements[i]
+		// Peep: `let mut X` followed by `MatchStmt{ResultVar: X}` collapses
+		// to `let mut X = match ... { ... };` which is idiomatic Rust.
+		if ls, ok := s.(*aotir.LetStmt); ok && ls.Init == nil && i+1 < len(b.Statements) {
+			if ms, ok := b.Statements[i+1].(*aotir.MatchStmt); ok && ms.ResultVar == ls.Name {
+				matchExpr, err := l.lowerMatchExpr(ms)
+				if err != nil {
+					return nil, err
+				}
+				out = append(out, &rtree.LetStmt{
+					Mutable: ls.Mutable,
+					Name:    ls.Name,
+					Value:   matchExpr,
+				})
+				i += 2
+				continue
+			}
+		}
+		stmt, err := l.lowerStmt(s)
 		if err != nil {
 			return nil, err
 		}
-		out = append(out, ls)
+		out = append(out, stmt)
+		i++
 	}
 	return out, nil
 }
@@ -187,8 +270,106 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) (rtree.Stmt, error) {
 		return l.lowerMapPutStmt(n)
 	case *aotir.ListSetStmt:
 		return l.lowerListSetStmt(n)
+	case *aotir.MatchStmt:
+		return l.lowerMatchStmt(n)
 	}
 	return nil, fmt.Errorf("rust lower: unsupported stmt %T", s)
+}
+
+// lowerMatchStmt handles a match in statement position. When ResultVar
+// is set the C lowerer already emitted a preceding `let mut X` with
+// nil Init; lowerBlock combines the pair into a `let mut X = match`
+// statement. Falling through here means either the result is unused
+// (each arm is a unit-returning side effect) or the surrounding code
+// has already declared the variable. In the second case we emit an
+// AssignStmt wrapping the MatchExpr; in the first case we wrap as an
+// ExprStmt that evaluates the match for side effects.
+func (l *lowerer) lowerMatchStmt(s *aotir.MatchStmt) (rtree.Stmt, error) {
+	matchExpr, err := l.lowerMatchExpr(s)
+	if err != nil {
+		return nil, err
+	}
+	if s.ResultVar != "" {
+		return &rtree.AssignStmt{Target: &rtree.Ident{Name: s.ResultVar}, Value: matchExpr}, nil
+	}
+	return &rtree.ExprStmt{Expr: matchExpr}, nil
+}
+
+// lowerMatchExpr lowers an aotir.MatchStmt into a rtree.MatchExpr.
+// For ResultVar match each arm body ends with an AssignStmt to the
+// result variable; the lowerer strips that and lifts its RHS to the
+// arm tail so the match itself produces the value. For non-result
+// matches the body stays as side-effect statements.
+func (l *lowerer) lowerMatchExpr(s *aotir.MatchStmt) (*rtree.MatchExpr, error) {
+	target, err := l.lowerExpr(s.Target)
+	if err != nil {
+		return nil, err
+	}
+	arms := make([]rtree.MatchArm, 0, len(s.Arms)+1)
+	for i := range s.Arms {
+		arm, err := l.lowerMatchArm(s.UnionName, &s.Arms[i], s.ResultVar)
+		if err != nil {
+			return nil, fmt.Errorf("match arm %q: %w", s.Arms[i].VariantName, err)
+		}
+		arms = append(arms, arm)
+	}
+	if s.Default != nil {
+		arm, err := l.lowerMatchArm(s.UnionName, s.Default, s.ResultVar)
+		if err != nil {
+			return nil, fmt.Errorf("match default arm: %w", err)
+		}
+		arm.Pat = "_"
+		arms = append(arms, arm)
+	}
+	return &rtree.MatchExpr{Target: target, Arms: arms}, nil
+}
+
+func (l *lowerer) lowerMatchArm(unionName string, arm *aotir.MatchArm, resultVar string) (rtree.MatchArm, error) {
+	pat := matchArmPattern(unionName, arm)
+
+	saved := l.matchBindings
+	l.matchBindings = make(map[string]string, len(arm.Bindings))
+	for _, b := range arm.Bindings {
+		l.matchBindings[b.FieldName] = b.VarName
+	}
+	body, err := l.lowerBlock(arm.Body)
+	l.matchBindings = saved
+	if err != nil {
+		return rtree.MatchArm{}, err
+	}
+
+	var tail rtree.Expr
+	if resultVar != "" && len(body) > 0 {
+		if as, ok := body[len(body)-1].(*rtree.AssignStmt); ok {
+			if id, ok := as.Target.(*rtree.Ident); ok && id.Name == resultVar {
+				tail = as.Value
+				body = body[:len(body)-1]
+			}
+		}
+	}
+	return rtree.MatchArm{Pat: pat, Body: body, Tail: tail}, nil
+}
+
+// matchArmPattern renders the Rust pattern for one match arm.
+// Unit variants render as `Enum::Variant`; field-bearing variants
+// render with named-field destructuring. Pattern variable names use
+// the field-name shorthand when binding name matches the field name.
+func matchArmPattern(unionName string, arm *aotir.MatchArm) string {
+	if arm.VariantName == "" {
+		return "_"
+	}
+	if len(arm.Bindings) == 0 {
+		return unionName + "::" + arm.VariantName
+	}
+	parts := make([]string, len(arm.Bindings))
+	for i, b := range arm.Bindings {
+		if b.VarName == b.FieldName {
+			parts[i] = b.FieldName
+		} else {
+			parts[i] = b.FieldName + ": " + b.VarName
+		}
+	}
+	return unionName + "::" + arm.VariantName + " { " + strings.Join(parts, ", ") + " }"
 }
 
 func (l *lowerer) lowerForEachStmt(s *aotir.ForEachStmt) (rtree.Stmt, error) {
@@ -241,14 +422,19 @@ func (l *lowerer) lowerListSetStmt(s *aotir.ListSetStmt) (rtree.Stmt, error) {
 }
 
 func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) (rtree.Stmt, error) {
+	if s.Init == nil {
+		// Bare declaration. Rust requires a type annotation here since
+		// there is no initializer to infer from.
+		return &rtree.LetStmt{
+			Mutable:  s.Mutable,
+			Name:     s.Name,
+			TypeName: rustNamedTypeName(s.VarType, s.RecordName, s.UnionName),
+		}, nil
+	}
 	v, err := l.lowerExpr(s.Init)
 	if err != nil {
 		return nil, err
 	}
-	ty := ""
-	// Only emit explicit type when needed (e.g. integer literal without inference target).
-	// For now leave inferred to keep output simple and rustfmt-friendly.
-	_ = ty
 	return &rtree.LetStmt{
 		Mutable: s.Mutable,
 		Name:    s.Name,
@@ -662,6 +848,43 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 		fa := &rtree.FieldAccess{Receiver: r, Field: n.FieldName}
 		if n.Result == aotir.TypeString {
 			// Owned String field: clone on read to avoid moving out of receiver.
+			return &rtree.CloneExpr{Expr: fa}, nil
+		}
+		return fa, nil
+	case *aotir.VariantLit:
+		fields := make([]rtree.StructLitField, 0, len(n.Fields))
+		for _, f := range n.Fields {
+			v, err := l.lowerExpr(f.Value)
+			if err != nil {
+				return nil, err
+			}
+			fields = append(fields, rtree.StructLitField{Name: f.Name, Value: v})
+		}
+		return &rtree.EnumVariantLit{
+			EnumName:    n.UnionName,
+			VariantName: n.VariantName,
+			Fields:      fields,
+		}, nil
+	case *aotir.UnionVarRef:
+		// Union values are owning; clone on read so the receiver stays usable.
+		return &rtree.CloneExpr{Expr: &rtree.Ident{Name: n.Name}}, nil
+	case *aotir.VariantFieldAccess:
+		// Inside a match arm the binding name shadows the field access.
+		if l.matchBindings != nil {
+			if varName, ok := l.matchBindings[n.FieldName]; ok {
+				ident := rtree.Expr(&rtree.Ident{Name: varName})
+				if isOwnedType(n.Result) {
+					return &rtree.CloneExpr{Expr: ident}, nil
+				}
+				return ident, nil
+			}
+		}
+		r, err := l.lowerExpr(n.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		fa := &rtree.FieldAccess{Receiver: r, Field: n.FieldName}
+		if isOwnedType(n.Result) {
 			return &rtree.CloneExpr{Expr: fa}, nil
 		}
 		return fa, nil

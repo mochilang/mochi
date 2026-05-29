@@ -766,3 +766,89 @@ func (*CloneExpr) rustExpr() {}
 func (c *CloneExpr) RustExpr() string {
 	return c.Expr.RustExpr() + ".clone()"
 }
+
+// ---- EnumVariantLit ----
+
+// EnumVariantLit constructs an enum value: `EnumName::Variant` for a
+// unit variant, or `EnumName::Variant { field: expr, ... }` when the
+// variant carries named fields.
+type EnumVariantLit struct {
+	EnumName    string
+	VariantName string
+	Fields      []StructLitField
+}
+
+func (*EnumVariantLit) rustExpr() {}
+
+func (e *EnumVariantLit) RustExpr() string {
+	var sb strings.Builder
+	sb.WriteString(e.EnumName)
+	sb.WriteString("::")
+	sb.WriteString(e.VariantName)
+	if len(e.Fields) > 0 {
+		sb.WriteString(" { ")
+		for i, f := range e.Fields {
+			if i > 0 {
+				sb.WriteString(", ")
+			}
+			fmt.Fprintf(&sb, "%s: %s", f.Name, f.Value.RustExpr())
+		}
+		sb.WriteString(" }")
+	}
+	return sb.String()
+}
+
+// ---- MatchExpr ----
+
+// MatchArm is one arm of a MatchExpr. Pat is the rendered Rust pattern
+// (e.g. `Shape::Circle { r }` or `_`). Body holds optional leading
+// statements; Tail is the optional tail expression that becomes the
+// arm's value. Exactly one of Body and Tail must be non-empty for the
+// arm to produce a value.
+type MatchArm struct {
+	Pat  string
+	Body []Stmt
+	Tail Expr
+}
+
+// MatchExpr is `match target { arms... }`. Rust treats this as an
+// expression so the same node serves both expression and statement
+// positions.
+type MatchExpr struct {
+	Target Expr
+	Arms   []MatchArm
+}
+
+func (*MatchExpr) rustExpr() {}
+
+func (m *MatchExpr) RustExpr() string {
+	var sb strings.Builder
+	sb.WriteString("match ")
+	sb.WriteString(m.Target.RustExpr())
+	sb.WriteString(" {\n")
+	for _, a := range m.Arms {
+		sb.WriteString(indent(1))
+		sb.WriteString(a.Pat)
+		sb.WriteString(" => ")
+		hasBody := len(a.Body) > 0
+		if hasBody {
+			sb.WriteString("{ ")
+			for _, s := range a.Body {
+				sb.WriteString(s.RustString(0))
+				sb.WriteByte(' ')
+			}
+			if a.Tail != nil {
+				sb.WriteString(a.Tail.RustExpr())
+				sb.WriteByte(' ')
+			}
+			sb.WriteString("}")
+		} else if a.Tail != nil {
+			sb.WriteString(a.Tail.RustExpr())
+		} else {
+			sb.WriteString("{}")
+		}
+		sb.WriteString(",\n")
+	}
+	sb.WriteString("}")
+	return sb.String()
+}
