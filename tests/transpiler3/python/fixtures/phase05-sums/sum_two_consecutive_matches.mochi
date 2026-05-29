@@ -1,0 +1,18 @@
+type Light = Red | Yellow | Green
+
+let l: Light = Yellow
+
+let name = match l {
+  Red => "red"
+  Yellow => "yellow"
+  Green => "green"
+}
+
+let go = match l {
+  Red => false
+  Yellow => false
+  Green => true
+}
+
+print(name)
+print(go)

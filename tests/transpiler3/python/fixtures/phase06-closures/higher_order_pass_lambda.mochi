@@ -1,0 +1,6 @@
+fun run(x: int, f: fun(int): int): int {
+  return f(x)
+}
+
+print(run(5, fun(n: int): int => n * n))
+print(run(6, fun(n: int): int => n * n + 1))

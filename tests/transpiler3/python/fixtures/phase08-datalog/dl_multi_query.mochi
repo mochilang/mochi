@@ -1,0 +1,11 @@
+fact color("apple", "red")
+fact color("sky", "blue")
+fact color("grass", "green")
+let reds = query color("apple", Y)
+for x in reds {
+    print(x)
+}
+let blues = query color("sky", Y)
+for x in blues {
+    print(x)
+}

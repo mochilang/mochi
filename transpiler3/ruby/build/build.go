@@ -48,7 +48,6 @@ const (
 // Toolchain holds resolved paths to Ruby tools and the detected version.
 type Toolchain struct {
 	Ruby  string // absolute path to ruby binary
-	Bundle string // absolute path to bundle binary (optional)
 	Major int    // Ruby major version (3, 4, ...)
 	Minor int    // Ruby minor version
 }
@@ -68,15 +67,11 @@ func resolveToolchain() (*Toolchain, error) {
 	if major < 3 || (major == 3 && minor < 2) {
 		return nil, fmt.Errorf("ruby 3.2+ required (for Data.define); found %d.%d at %s", major, minor, rubyPath)
 	}
-	tc := &Toolchain{
+	return &Toolchain{
 		Ruby:  rubyPath,
 		Major: major,
 		Minor: minor,
-	}
-	if bp, err := exec.LookPath("bundle"); err == nil {
-		tc.Bundle = bp
-	}
-	return tc, nil
+	}, nil
 }
 
 // findRuby returns a Ruby 3.2+ binary, preferring (in order):
@@ -88,9 +83,10 @@ func resolveToolchain() (*Toolchain, error) {
 // ships /usr/bin/ruby 2.6) does not preempt a Homebrew install.
 func findRuby() (string, error) {
 	if p := os.Getenv("MOCHI_RUBY"); p != "" {
-		if _, err := os.Stat(p); err == nil {
-			return p, nil
+		if _, err := os.Stat(p); err != nil {
+			return "", fmt.Errorf("MOCHI_RUBY points to %q which is not accessible: %w", p, err)
 		}
+		return p, nil
 	}
 	candidates := []string{
 		"/opt/homebrew/opt/ruby/bin/ruby",
@@ -142,17 +138,7 @@ func rubyVersion(rubyPath string) (int, int, error) {
 
 // Driver is the Ruby transpiler pipeline entry point.
 type Driver struct {
-	// CacheDir overrides the default ~/.cache/mochi/ruby/ location.
-	CacheDir string
-	tc       *Toolchain
-}
-
-func (d *Driver) effectiveCacheDir() string {
-	if d.CacheDir != "" {
-		return d.CacheDir
-	}
-	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".cache", "mochi", "ruby")
+	tc *Toolchain
 }
 
 // Build compiles src to the given target artefact at out. For

@@ -1,0 +1,4 @@
+let xs = ["a", "b", "c"]
+for s in xs {
+  print(s)
+}

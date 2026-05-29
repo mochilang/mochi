@@ -1,0 +1,6 @@
+var s: set<bool> = set{true}
+s = add(s, false)
+s = add(s, true)
+print(len(s))
+print(has(s, true))
+print(has(s, false))

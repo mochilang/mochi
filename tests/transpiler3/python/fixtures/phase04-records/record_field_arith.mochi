@@ -1,0 +1,8 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let p = Pt { x: 3, y: 4 }
+print(p.x + p.y)
+print(p.x * p.y)

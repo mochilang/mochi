@@ -27,7 +27,7 @@ func TestPhase28DriverErrorPaths(t *testing.T) {
 		if err := os.WriteFile(src, []byte("let x ="), 0o644); err != nil {
 			t.Fatalf("write src: %v", err)
 		}
-		d := &Driver{CacheDir: t.TempDir()}
+		d := &Driver{}
 		err := d.Build(src, t.TempDir(), TargetRubySource)
 		if err == nil {
 			t.Fatalf("expected parse error, got nil")
@@ -43,7 +43,7 @@ func TestPhase28DriverErrorPaths(t *testing.T) {
 		if err := os.WriteFile(src, []byte("let x: int = \"not an int\"\n"), 0o644); err != nil {
 			t.Fatalf("write src: %v", err)
 		}
-		d := &Driver{CacheDir: t.TempDir()}
+		d := &Driver{}
 		err := d.Build(src, t.TempDir(), TargetRubySource)
 		if err == nil {
 			t.Fatalf("expected typecheck error, got nil")
@@ -54,7 +54,7 @@ func TestPhase28DriverErrorPaths(t *testing.T) {
 	})
 
 	t.Run("missing_file", func(t *testing.T) {
-		d := &Driver{CacheDir: t.TempDir()}
+		d := &Driver{}
 		err := d.Build("/nonexistent/path/does_not_exist.mochi", t.TempDir(), TargetRubySource)
 		if err == nil {
 			t.Fatalf("expected file error, got nil")
@@ -70,7 +70,7 @@ func TestPhase28DriverErrorPaths(t *testing.T) {
 		if err := os.WriteFile(src, []byte("print(\"hi\")\n"), 0o644); err != nil {
 			t.Fatalf("write src: %v", err)
 		}
-		d := &Driver{CacheDir: t.TempDir()}
+		d := &Driver{}
 		err := d.Build(src, t.TempDir(), Target(999))
 		if err == nil {
 			t.Fatalf("expected unknown-target error, got nil")
@@ -94,7 +94,7 @@ func TestPhase28DriverErrorPaths(t *testing.T) {
 		if err := os.WriteFile(outFile, []byte("blocker"), 0o644); err != nil {
 			t.Fatalf("seed blocker file: %v", err)
 		}
-		d := &Driver{CacheDir: t.TempDir()}
+		d := &Driver{}
 		err := d.Build(src, outFile, TargetRubySource)
 		if err == nil {
 			t.Fatalf("expected emit/mkdir error, got nil")

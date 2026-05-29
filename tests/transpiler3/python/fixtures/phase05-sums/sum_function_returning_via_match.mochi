@@ -1,0 +1,13 @@
+type Sign = Pos | Neg | Zero
+
+fun describe(s: Sign): string {
+  return match s {
+    Pos => "positive"
+    Neg => "negative"
+    Zero => "zero"
+  }
+}
+
+print(describe(Pos))
+print(describe(Neg))
+print(describe(Zero))

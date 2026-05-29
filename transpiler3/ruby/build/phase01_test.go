@@ -20,7 +20,7 @@ func TestPhase1HelloEnd2End(t *testing.T) {
 	src := filepath.Join(repoRoot, "examples", "v0.1", "hello.mochi")
 	outDir := t.TempDir()
 
-	d := &Driver{CacheDir: t.TempDir()}
+	d := &Driver{}
 	if err := d.Build(src, outDir, TargetRubySource); err != nil {
 		t.Fatalf("Build: %v", err)
 	}
