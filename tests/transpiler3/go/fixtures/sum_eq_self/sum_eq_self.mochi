@@ -1,0 +1,13 @@
+type Token =
+  Word { txt: string }
+  | Num { v: int }
+
+let t: Token = Num { v: 5 }
+match t {
+  Word(txt) => print(txt)
+  Num(v) => print(v)
+}
+match t {
+  Word(txt) => print(txt)
+  Num(v) => print(v * 2)
+}

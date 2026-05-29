@@ -1,0 +1,12 @@
+type Pkt =
+  Data { n: int }
+  | Ack { n: int }
+
+let p: Pkt = Data { n: 5 }
+match p {
+  Data(n) => {
+    let doubled = n + n
+    print(doubled)
+  }
+  Ack(n) => print(n)
+}

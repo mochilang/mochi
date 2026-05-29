@@ -69,6 +69,16 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerRecordLit(e)
 	case *aotir.FieldAccess:
 		return l.lowerFieldAccess(e)
+	case *aotir.VariantLit:
+		return l.lowerVariantLit(e)
+	case *aotir.UnionVarRef:
+		return &gotree.Ident{Name: mangleIdent(e.Name)}, nil
+	case *aotir.VariantFieldAccess:
+		recv, err := l.lowerExpr(e.Receiver)
+		if err != nil {
+			return nil, fmt.Errorf("variant field access receiver: %w", err)
+		}
+		return &gotree.SelectorExpr{X: recv, Sel: variantFieldName(e.VariantName, e.FieldName)}, nil
 	default:
 		return nil, fmt.Errorf("transpiler3/go/lower: does not handle expr %T", e)
 	}
@@ -104,6 +114,22 @@ func (l *lowerer) lowerFieldAccess(e *aotir.FieldAccess) (gotree.Expr, error) {
 		return nil, fmt.Errorf("field access receiver: %w", err)
 	}
 	return &gotree.SelectorExpr{X: recv, Sel: exportIdent(e.FieldName)}, nil
+}
+
+// lowerVariantLit emits a call to the variant's constructor.
+func (l *lowerer) lowerVariantLit(e *aotir.VariantLit) (gotree.Expr, error) {
+	args := make([]gotree.Expr, 0, len(e.Fields))
+	for _, f := range e.Fields {
+		v, err := l.lowerExpr(f.Value)
+		if err != nil {
+			return nil, fmt.Errorf("variant %s field %s: %w", e.VariantName, f.Name, err)
+		}
+		args = append(args, v)
+	}
+	return &gotree.CallExpr{
+		Fun:  &gotree.Ident{Name: variantCtorName(e.UnionName, e.VariantName)},
+		Args: args,
+	}, nil
 }
 
 // lowerSetLit emits an IIFE that builds the set with sequential
