@@ -1,0 +1,16 @@
+fun inner(): int {
+  panic(11, "x")
+  return 0
+}
+
+fun outer(): int {
+  return inner()
+}
+
+try {
+  let v: int = outer()
+  print(v)
+} catch e {
+  print("caught")
+  print(e)
+}

@@ -1,0 +1,7 @@
+fact age("alice", "30")
+fact age("bob", "25")
+fact age("carol", "30")
+let xs = query age(X, "30")
+for x in xs {
+    print(x)
+}

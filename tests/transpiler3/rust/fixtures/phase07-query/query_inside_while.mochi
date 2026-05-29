@@ -1,0 +1,7 @@
+let nums = [1, 2, 3, 4, 5]
+var i = 0
+while i < 3 {
+  let r = from n in nums where n > i select n
+  print(len(r))
+  i = i + 1
+}

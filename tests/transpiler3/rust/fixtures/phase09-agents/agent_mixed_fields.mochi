@@ -1,0 +1,18 @@
+agent Box {
+    var i: int = 0
+    var f: float = 0.0
+    var b: bool = false
+    intent setall(ni: int, nf: float, nb: bool) {
+        i = ni
+        f = nf
+        b = nb
+    }
+    intent geti(): int { return i }
+    intent getf(): float { return f }
+    intent getb(): bool { return b }
+}
+let x = Box { i: 0, f: 0.0, b: false }
+x.setall(7, 2.5, true)
+print(x.geti())
+print(x.getf())
+print(x.getb())

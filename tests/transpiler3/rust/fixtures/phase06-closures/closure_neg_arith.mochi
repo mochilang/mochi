@@ -1,0 +1,3 @@
+let weighted = fun(a: int, b: int): int => -a + (2 * b)
+print(weighted(3, 10))
+print(weighted(8, 0))

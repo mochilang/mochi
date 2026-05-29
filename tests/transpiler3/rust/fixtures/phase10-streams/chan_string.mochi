@@ -1,0 +1,7 @@
+let ch: chan<string> = make_chan(2)
+send(ch, "hello")
+send(ch, "world")
+let a = recv(ch)
+let b = recv(ch)
+print(a)
+print(b)

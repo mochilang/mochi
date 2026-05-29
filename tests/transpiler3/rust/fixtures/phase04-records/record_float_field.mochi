@@ -1,0 +1,8 @@
+type Vec {
+  dx: float
+  dy: float
+}
+
+let v = Vec { dx: 1.5, dy: 2.5 }
+print(v.dx)
+print(v.dy)

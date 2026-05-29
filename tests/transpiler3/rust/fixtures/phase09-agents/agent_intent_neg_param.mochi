@@ -1,0 +1,10 @@
+agent Stack {
+    var top: int = 0
+    intent push(n: int) { top = top + n }
+    intent get(): int { return top }
+}
+let s = Stack { top: 0 }
+s.push(10)
+s.push(-3)
+s.push(-2)
+print(s.get())

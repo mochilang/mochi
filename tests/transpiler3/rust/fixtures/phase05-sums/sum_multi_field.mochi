@@ -1,0 +1,27 @@
+type Pair = Both(a: int, b: int) | OnlyA(a: int) | OnlyB(b: int)
+
+let p1: Pair = Both(3, 4)
+let p2: Pair = OnlyA(10)
+let p3: Pair = OnlyB(20)
+
+let s1 = match p1 {
+  Both(a, b) => a + b
+  OnlyA(a) => a
+  OnlyB(b) => b
+}
+
+let s2 = match p2 {
+  Both(a, b) => a + b
+  OnlyA(a) => a
+  OnlyB(b) => b
+}
+
+let s3 = match p3 {
+  Both(a, b) => a + b
+  OnlyA(a) => a
+  OnlyB(b) => b
+}
+
+print(s1)
+print(s2)
+print(s3)

@@ -1,0 +1,6 @@
+extern fun c_is_prime(n: int): bool
+print(c_is_prime(1))
+print(c_is_prime(2))
+print(c_is_prime(7))
+print(c_is_prime(15))
+print(c_is_prime(97))

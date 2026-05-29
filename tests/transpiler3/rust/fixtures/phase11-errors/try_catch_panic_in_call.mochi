@@ -1,0 +1,12 @@
+fun boom(): int {
+  panic(77, "boom")
+  return 0
+}
+
+try {
+  let v: int = boom()
+  print(v)
+} catch e {
+  print("caught")
+  print(e)
+}

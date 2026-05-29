@@ -1,0 +1,7 @@
+let s: stream<string> = make_stream(4)
+let sub = subscribe(s)
+emit(s, "foo")
+emit(s, "bar")
+let a = recv_sub(sub)
+let b = recv_sub(sub)
+print(a + " " + b)

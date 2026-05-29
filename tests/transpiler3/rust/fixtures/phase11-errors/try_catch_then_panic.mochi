@@ -1,0 +1,14 @@
+try {
+  print("inside")
+  let z: int = 1 / 0
+  print(z)
+} catch first {
+  print("first")
+  print(first)
+}
+try {
+  panic(123, "rethrow")
+} catch second {
+  print("second")
+  print(second)
+}

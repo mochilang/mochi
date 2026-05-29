@@ -1,0 +1,12 @@
+let cmp = fun(x: int, y: int): int {
+  if x > y {
+    return 1
+  }
+  if x < y {
+    return -1
+  }
+  return 0
+}
+print(cmp(3, 5))
+print(cmp(5, 3))
+print(cmp(4, 4))

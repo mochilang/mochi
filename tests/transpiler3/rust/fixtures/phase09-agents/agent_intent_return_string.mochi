@@ -1,0 +1,6 @@
+agent Tag {
+    var name: string = "tag"
+    intent label(): string { return name + ":hello" }
+}
+let t = Tag { name: "tag" }
+print(t.label())

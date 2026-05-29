@@ -1,0 +1,4 @@
+let lt = fun(a: int, b: int): bool => a < b
+print(lt(2, 5))
+print(lt(5, 2))
+print(lt(3, 3))
