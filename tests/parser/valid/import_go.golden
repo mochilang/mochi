@@ -1,0 +1,7 @@
+(program
+  (import "github.com/spf13/cobra@v1.8.0" (lang go) (as cobra))
+  (import "gopkg.in/yaml.v3@v3.0.1" (lang go) (as yaml))
+  (import "golang.org/x/tools@v0.20.0" (lang go) (as tools))
+  (import fmt (lang go))
+  (import net/http (lang go) (as http))
+)

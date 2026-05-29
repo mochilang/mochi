@@ -37,6 +37,16 @@ var (
 		Message: "rust import path %q is not in `<crate>@<semver>` form",
 		Help:    "An `import rust \"...\" as <alias>` statement names a crates.io crate plus a version, eg. `import rust \"hex@0.4.3\" as hex`. The version is required because MEP-73 binds the synthesised wrapper crate to an exact upstream version.",
 	}
+	errInvalidGoImportPath = diagnostic.Template{
+		Code:    "P067",
+		Message: "go import path %q with `@` pin is not in `<module>@<semver>` form",
+		Help:    "An `import go \"...\" as <alias>` with a version pin names a Go module on proxy.golang.org plus a semver tag, eg. `import go \"github.com/spf13/cobra@v1.8.0\" as cobra`. The module path must be FQDN-style (the first path segment must contain a dot) and the version must be a semver tag (`v1.2.3`) or pseudo-version. Stdlib-only imports (`import go \"fmt\"`) remain valid without a pin.",
+	}
+	errGoImportMissingAlias = diagnostic.Template{
+		Code:    "P068",
+		Message: "go import %q with `@` pin requires `as <alias>`",
+		Help:    "MEP-74 requires the version-pinned form to carry an explicit alias so the Mochi caller can reference the extern fns under a single namespace. Add `as <alias>`, eg. `import go \"github.com/spf13/cobra@v1.8.0\" as cobra`.",
+	}
 )
 
 // knownImportLangs is the set of host-language identifiers Mochi recognises
@@ -179,6 +189,9 @@ func normalizeStatement(s *Statement) error {
 			return err
 		}
 		if err := validateRustImport(s.Import); err != nil {
+			return err
+		}
+		if err := validateGoImport(s.Import); err != nil {
 			return err
 		}
 	case s.Expr != nil:
@@ -378,6 +391,33 @@ func validateRustImport(im *ImportStmt) error {
 	}
 	if _, _, ok := RustImportRef(im.Path); !ok {
 		return errInvalidRustImportPath.New(im.Pos, im.Path)
+	}
+	return nil
+}
+
+// validateGoImport rejects `import go "<module>@<semver>"` whose path
+// carries an `@` pin but is not a valid `<module>@<semver>` form, and
+// also rejects a version-pinned go import that lacks `as <alias>`.
+//
+// The version pin is optional: pre-MEP-74 stdlib FFI imports like
+// `import go "fmt"` and `import go "net/http"` remain valid because
+// they carry no `@`. When a pin is present, MEP-74 requires the full
+// `<FQDN-style module>@<semver>` shape and an explicit alias so the
+// extern emitter (phase 7) and the build orchestrator (phase 9) can
+// resolve the import against proxy.golang.org and namespace the
+// generated extern fns under the user's chosen identifier.
+func validateGoImport(im *ImportStmt) error {
+	if im == nil || im.Lang == nil || *im.Lang != "go" {
+		return nil
+	}
+	if !HasGoSemverPin(im.Path) {
+		return nil
+	}
+	if _, _, ok := GoImportRef(im.Path); !ok {
+		return errInvalidGoImportPath.New(im.Pos, im.Path)
+	}
+	if im.As == "" {
+		return errGoImportMissingAlias.New(im.Pos, im.Path)
 	}
 	return nil
 }

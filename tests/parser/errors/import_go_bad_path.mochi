@@ -1,0 +1,1 @@
+import go "foo/bar@v1.0.0" as foo

@@ -1,0 +1,1 @@
+import go "github.com/spf13/cobra@" as cobra
