@@ -13,8 +13,8 @@ description: "MEP-52 Phase 9, Mochi agents as synchronous TypeScript classes (mu
 | Status         | LANDED (Node + Deno + Bun) |
 | Started        | 2026-05-29 23:30 (GMT+7) |
 | Landed         | 2026-05-29 23:55 (GMT+7) |
-| Tracking issue | (TBD when PR opens) |
-| Tracking PR    | (TBD when PR opens) |
+| Tracking issue | [#22852](https://github.com/mochilang/mochi/issues/22852) |
+| Tracking PR    | [#22853](https://github.com/mochilang/mochi/pull/22853) |
 
 ## Gate
 
