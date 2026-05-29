@@ -1,0 +1,7 @@
+fun apply2(f: fun(int, int): int, a: int, b: int): int {
+    return f(a, b)
+}
+let plus = fun(a: int, b: int): int => a + b
+let mul = fun(a: int, b: int): int => a * b
+print(plus(3, 4))
+print(mul(3, 4))

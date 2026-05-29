@@ -1,0 +1,5 @@
+let x = 10
+let add_x = fun(n: int): int => n + x
+print(add_x(5))
+print(add_x(0))
+print(add_x(-3))

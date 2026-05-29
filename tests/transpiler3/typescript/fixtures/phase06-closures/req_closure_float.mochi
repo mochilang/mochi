@@ -1,0 +1,3 @@
+let square = fun(x: float): float => x * x
+print(square(3.0))
+print(square(2.5))

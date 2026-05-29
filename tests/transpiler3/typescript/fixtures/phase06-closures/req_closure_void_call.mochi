@@ -1,0 +1,4 @@
+let label = fun(name: string): string => "hi " + name
+print(label("alice"))
+print(label("bob"))
+print(label("charlie"))

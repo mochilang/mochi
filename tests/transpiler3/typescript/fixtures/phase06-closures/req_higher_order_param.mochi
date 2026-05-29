@@ -1,0 +1,7 @@
+fun apply(f: fun(int): int, x: int): int {
+    return f(x)
+}
+let double = fun(x: int): int => x * 2
+let triple = fun(x: int): int => x * 3
+print(double(5))
+print(triple(4))
