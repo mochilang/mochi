@@ -25,7 +25,7 @@ var (
 	errUnknownImportLang = diagnostic.Template{
 		Code:    "P064",
 		Message: "unknown import language: %q",
-		Help:    "The supported languages are `go`, `python`, `typescript`, `zig`, `lua`, `clj`, `clojure`, and `rust`. Omit the language to use the Mochi default, or check the spelling.",
+		Help:    "The supported languages are `go`, `python`, `typescript`, `zig`, `lua`, `clj`, `clojure`, `rust`, and `erlang`. Omit the language to use the Mochi default, or check the spelling.",
 	}
 	errUselessExprStmt = diagnostic.Template{
 		Code:    "P065",
@@ -47,6 +47,11 @@ var (
 		Message: "go import %q with `@` pin requires `as <alias>`",
 		Help:    "MEP-74 requires the version-pinned form to carry an explicit alias so the Mochi caller can reference the extern fns under a single namespace. Add `as <alias>`, eg. `import go \"github.com/spf13/cobra@v1.8.0\" as cobra`.",
 	}
+	errInvalidErlangImportPath = diagnostic.Template{
+		Code:    "P069",
+		Message: "erlang import path %q is not a valid Hex.pm package name (optionally with `@<semver>` pin)",
+		Help:    "An `import erlang \"...\" as <alias>` statement names a Hex.pm package, eg. `import erlang \"cowboy\" as cowboy` or `import erlang \"cowboy@2.12.0\" as cowboy`. The package name must be lowercase ASCII letters, digits, and underscores, starting with a letter.",
+	}
 )
 
 // knownImportLangs is the set of host-language identifiers Mochi recognises
@@ -64,6 +69,7 @@ var knownImportLangs = map[string]struct{}{
 	"clj":        {},
 	"clojure":    {},
 	"rust":       {},
+	"erlang":     {},
 }
 
 // normalizeProgram performs the post-parse pass that turns the raw
@@ -192,6 +198,9 @@ func normalizeStatement(s *Statement) error {
 			return err
 		}
 		if err := validateGoImport(s.Import); err != nil {
+			return err
+		}
+		if err := validateErlangImport(s.Import); err != nil {
 			return err
 		}
 	case s.Expr != nil:
@@ -418,6 +427,20 @@ func validateGoImport(im *ImportStmt) error {
 	}
 	if im.As == "" {
 		return errGoImportMissingAlias.New(im.Pos, im.Path)
+	}
+	return nil
+}
+
+// validateErlangImport rejects `import erlang "..." as <alias>` whose path
+// is not a valid Hex.pm package name or `<package>@<semver>` form. The
+// package name component must be lowercase letters, digits, and underscores.
+// A version pin (`@<semver>`) is optional; when present it must be non-empty.
+func validateErlangImport(im *ImportStmt) error {
+	if im == nil || im.Lang == nil || *im.Lang != "erlang" {
+		return nil
+	}
+	if _, _, ok := ErlangImportRef(im.Path); !ok {
+		return errInvalidErlangImportPath.New(im.Pos, im.Path)
 	}
 	return nil
 }
