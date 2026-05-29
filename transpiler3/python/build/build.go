@@ -32,6 +32,10 @@ const (
 	TargetPythonApp
 	// TargetPythonIpykernel emits a Jupyter ipykernel package. Phase 17.
 	TargetPythonIpykernel
+	// TargetPythonPublish emits the wheel + sdist + a GitHub Actions
+	// workflow under .github/workflows/publish.yml that publishes to
+	// PyPI via Trusted Publishing (OIDC + sigstore + PEP 740). Phase 18.
+	TargetPythonPublish
 )
 
 // Toolchain holds the resolved python binary and version.
@@ -239,6 +243,19 @@ func (d *Driver) Build(src, out string, target Target) error {
 			return err
 		}
 		return nil
+	case TargetPythonPublish:
+		// Phase 18.0: wheel + sdist + Trusted Publishing GitHub
+		// Actions workflow. The actual publish runs on the CI side
+		// from a tagged release; the Go-side gate verifies the
+		// emitted workflow YAML shape.
+		rt, err := runtimeDir()
+		if err != nil {
+			return err
+		}
+		if _, err := buildPublishWorkflow(out, workDir, rt, pkgName); err != nil {
+			return err
+		}
+		return nil
 	default:
 		return fmt.Errorf("python build: target %d not supported until later phase", target)
 	}
@@ -272,7 +289,7 @@ func (d *Driver) cacheKey(srcBytes []byte) string {
 	if d.tc != nil {
 		fmt.Fprintf(h, "%d.%d.%d", d.tc.Major, d.tc.Minor, d.tc.Patch)
 	}
-	h.Write([]byte("mep51-phase17"))
+	h.Write([]byte("mep51-phase18"))
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
