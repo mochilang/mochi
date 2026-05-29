@@ -17,13 +17,18 @@ func Lower(prog *aotir.Program) (*gotree.File, error) {
 	if prog == nil {
 		return nil, fmt.Errorf("transpiler3/go/lower: nil program")
 	}
-	l := &lowerer{prog: prog, imports: map[string]struct{}{}}
+	l := &lowerer{
+		prog:    prog,
+		imports: map[string]struct{}{},
+		helpers: map[string]struct{}{},
+	}
 	return l.lowerProgram()
 }
 
 type lowerer struct {
 	prog    *aotir.Program
 	imports map[string]struct{}
+	helpers map[string]struct{}
 	tmpSeq  int
 }
 
@@ -82,6 +87,8 @@ func (l *lowerer) lowerProgram() (*gotree.File, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	f.Decls = append(f.Decls, l.emittedHelpers()...)
 
 	f.Decls = append(f.Decls, &gotree.FuncDecl{
 		Name: "main",
@@ -405,6 +412,8 @@ func (l *lowerer) findMain() (*aotir.Function, error) {
 
 func (l *lowerer) addImport(path string) { l.imports[path] = struct{}{} }
 
+func (l *lowerer) addHelper(name string) { l.helpers[name] = struct{}{} }
+
 func (l *lowerer) emittedImports() []gotree.ImportSpec {
 	out := make([]gotree.ImportSpec, 0, len(l.imports))
 	for p := range l.imports {
@@ -412,4 +421,54 @@ func (l *lowerer) emittedImports() []gotree.ImportSpec {
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].Path < out[j].Path })
 	return out
+}
+
+// emittedHelpers returns helper decls in deterministic order. Helpers
+// are inlined directly into the generated file so the emitter avoids
+// a separate runtime module dependency for tiny utilities.
+func (l *lowerer) emittedHelpers() []gotree.Decl {
+	if len(l.helpers) == 0 {
+		return nil
+	}
+	names := make([]string, 0, len(l.helpers))
+	for n := range l.helpers {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	out := make([]gotree.Decl, 0, len(names))
+	for _, n := range names {
+		if d := helperDecl(n); d != nil {
+			out = append(out, d)
+		}
+	}
+	return out
+}
+
+// helperDecl returns the gotree.Decl for a named inline helper.
+// Unknown names return nil and the caller silently skips them.
+func helperDecl(name string) gotree.Decl {
+	switch name {
+	case "mochiListSlice":
+		// func mochiListSlice[T any](xs []T, start, end int64) []T {
+		//   n := int64(len(xs))
+		//   if start < 0 { start = 0 } else if start > n { start = n }
+		//   if end < start { end = start } else if end > n { end = n }
+		//   return xs[start:end]
+		// }
+		return &gotree.RawDecl{Code: `func mochiListSlice[T any](xs []T, start, end int64) []T {
+	n := int64(len(xs))
+	if start < 0 {
+		start = 0
+	} else if start > n {
+		start = n
+	}
+	if end < start {
+		end = start
+	} else if end > n {
+		end = n
+	}
+	return xs[start:end]
+}`}
+	}
+	return nil
 }
