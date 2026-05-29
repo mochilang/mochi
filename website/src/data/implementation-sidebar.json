@@ -320,11 +320,19 @@
       "implementation/0057/phase-19-cache-perf"
     ]
   },
+  "implementation/0066/index",
+  {
+    "label": "MEP-66 phases",
+    "items": [
+      "implementation/0066/phase-00-skeleton"
+    ]
+  },
   "implementation/0071/index",
   {
     "label": "MEP-71 phases",
     "items": [
-      "implementation/0071/phase-00-skeleton"
+      "implementation/0071/phase-00-skeleton",
+      "implementation/0071/phase-01-simple-index"
     ]
   },
   "implementation/0073/index",

@@ -235,6 +235,24 @@
     ]
   },
   {
+    "label": "MEP-0066",
+    "items": [
+      "research/0066/index",
+      "research/0066/language-surface",
+      "research/0066/design-philosophy",
+      "research/0066/prior-art",
+      "research/0066/beam-typespec-ingest",
+      "research/0066/type-mapping",
+      "research/0066/hex-publish-flow",
+      "research/0066/oidc-trusted-publishing",
+      "research/0066/port-bridge-protocol",
+      "research/0066/rebar3-lockfile",
+      "research/0066/otp-behaviors",
+      "research/0066/version-resolution",
+      "research/0066/risks-and-alternatives"
+    ]
+  },
+  {
     "label": "MEP-0071",
     "items": [
       "research/0071/index",
