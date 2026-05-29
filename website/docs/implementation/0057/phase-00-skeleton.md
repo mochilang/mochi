@@ -402,6 +402,15 @@ Conventions used across the phase tracking pages:
   no separate config root; `config/` is a subtree of `$MOCHI_HOME` because
   registries.toml is read every command and the OS-defined config root adds
   a second lookup path that is rarely useful in CI containers.
+- **Schema key naming**: two conventions coexist by design.
+  Index JSONL entries (Phase 8) use compact short keys (`v`, `r`, `b3`,
+  `s2`, `deps`, `y`, `cap`, `tgt`) because each line is shipped over the
+  wire on every solve and the bytes add up. Manifests (`mochi.toml`,
+  Phase 1) and lockfiles (`mochi.lock`, Phase 4) use long keys (`version`,
+  `released`, `blake3`, `sha256`, `dependencies`, `yanked`, `capabilities`,
+  `targets`) because both are human-edited and reviewed in PRs. The
+  long-key form is canonical; the JSONL form is a wire encoding. Phase 8
+  documents the bidirectional mapping table.
 
 | File | Purpose | Owner |
 |------|---------|-------|

@@ -345,10 +345,14 @@ Implementation lives outside the Mochi binary (it is an external Go script that 
 
 | Code | Trigger |
 |------|---------|
-| `M057_AUDIT_E001` | Vulnerability found (exit code 1). |
-| `M057_AUDIT_E002` | Advisory feed unreachable AND no cache. |
-| `M057_AUDIT_E003` | Advisory YAML malformed. |
-| `M057_AUDIT_E004` | CVSS vector unparseable. |
+| `M057_ADV_E001` | Vulnerability found at or above `--fail-on` threshold (exit code 1). |
+| `M057_ADV_E002` | Advisory feed refresh failed AND no cache. |
+| `M057_ADV_E003` | Advisory YAML schema invalid. |
+| `M057_ADV_E004` | `[workspace.audit] ignore` references unknown ID. |
+
+CVSS-vector parse failure surfaces as `M057_ADV_E003` (schema invalid)
+since the CVSS string is a schema field; phase 16 does not declare a
+separate code. See the [error registry](./errors) for owners.
 
 ## Test set
 
