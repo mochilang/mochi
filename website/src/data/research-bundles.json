@@ -883,21 +883,21 @@
   },
   {
     "number": 54,
-    "title": "MEP-54 research bundle: Mochi to Go transpiler",
+    "title": "MEP-54 research notes",
     "slug": "/docs/research/0054/",
     "files": [
       {
         "stem": "index",
         "order": -1,
         "isIndex": true,
-        "label": "MEP-54",
+        "label": "Overview",
         "docId": "research/0054/index"
       },
       {
         "stem": "01-language-surface",
         "order": 1,
         "isIndex": false,
-        "label": "01. Language surface (Go target)",
+        "label": "01. Language surface",
         "docId": "research/0054/language-surface"
       },
       {
@@ -911,14 +911,14 @@
         "stem": "03-prior-art-transpilers",
         "order": 3,
         "isIndex": false,
-        "label": "03. Prior-art transpilers",
+        "label": "03. Prior art",
         "docId": "research/0054/prior-art-transpilers"
       },
       {
         "stem": "04-runtime",
         "order": 4,
         "isIndex": false,
-        "label": "04. Runtime building blocks",
+        "label": "04. Runtime",
         "docId": "research/0054/runtime"
       },
       {
@@ -932,7 +932,7 @@
         "stem": "06-type-lowering",
         "order": 6,
         "isIndex": false,
-        "label": "06. Type-system lowering",
+        "label": "06. Type lowering",
         "docId": "research/0054/type-lowering"
       },
       {
@@ -941,6 +941,13 @@
         "isIndex": false,
         "label": "07. Go target and portability",
         "docId": "research/0054/go-target-portability"
+      },
+      {
+        "stem": "07-runtime-portability",
+        "order": 7,
+        "isIndex": false,
+        "label": "07. Portability",
+        "docId": "research/0054/runtime-portability"
       },
       {
         "stem": "08-dataset-pipeline",
@@ -974,7 +981,7 @@
         "stem": "12-risks-and-alternatives",
         "order": 12,
         "isIndex": false,
-        "label": "12. Risks and alternatives",
+        "label": "12. Risks",
         "docId": "research/0054/risks-and-alternatives"
       }
     ]
@@ -1564,6 +1571,104 @@
         "isIndex": false,
         "label": "12. Risks and alternatives",
         "docId": "research/0074/risks-and-alternatives"
+      }
+    ]
+  },
+  {
+    "number": 75,
+    "title": "MEP-75 research bundle",
+    "slug": "/docs/research/0075/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "Overview",
+        "docId": "research/0075/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "01. Language surface",
+        "docId": "research/0075/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "02. Design philosophy",
+        "docId": "research/0075/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art-bridges",
+        "order": 3,
+        "isIndex": false,
+        "label": "03. Prior-art bridges",
+        "docId": "research/0075/prior-art-bridges"
+      },
+      {
+        "stem": "04-packagist-ingest",
+        "order": 4,
+        "isIndex": false,
+        "label": "04. Packagist ingest",
+        "docId": "research/0075/packagist-ingest"
+      },
+      {
+        "stem": "05-type-mapping",
+        "order": 5,
+        "isIndex": false,
+        "label": "05. Type mapping",
+        "docId": "research/0075/type-mapping"
+      },
+      {
+        "stem": "06-composer-publish-flow",
+        "order": 6,
+        "isIndex": false,
+        "label": "06. Composer publish flow",
+        "docId": "research/0075/composer-publish-flow"
+      },
+      {
+        "stem": "07-packagist-trusted-publishing-gap",
+        "order": 7,
+        "isIndex": false,
+        "label": "07. Packagist trust gap",
+        "docId": "research/0075/packagist-trusted-publishing-gap"
+      },
+      {
+        "stem": "08-async-bridge",
+        "order": 8,
+        "isIndex": false,
+        "label": "08. Async bridge",
+        "docId": "research/0075/async-bridge"
+      },
+      {
+        "stem": "09-psr-autoloading",
+        "order": 9,
+        "isIndex": false,
+        "label": "09. PSR-4 autoloading",
+        "docId": "research/0075/psr-autoloading"
+      },
+      {
+        "stem": "10-build-system",
+        "order": 10,
+        "isIndex": false,
+        "label": "10. Build system",
+        "docId": "research/0075/build-system"
+      },
+      {
+        "stem": "11-testing-gates",
+        "order": 11,
+        "isIndex": false,
+        "label": "11. Testing gates",
+        "docId": "research/0075/testing-gates"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "12. Risks",
+        "docId": "research/0075/risks-and-alternatives"
       }
     ]
   },
