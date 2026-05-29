@@ -1281,6 +1281,104 @@
     ]
   },
   {
+    "number": 66,
+    "title": "MEP-66 research bundle",
+    "slug": "/docs/research/0066/",
+    "files": [
+      {
+        "stem": "index",
+        "order": -1,
+        "isIndex": true,
+        "label": "Overview",
+        "docId": "research/0066/index"
+      },
+      {
+        "stem": "01-language-surface",
+        "order": 1,
+        "isIndex": false,
+        "label": "01. Language surface",
+        "docId": "research/0066/language-surface"
+      },
+      {
+        "stem": "02-design-philosophy",
+        "order": 2,
+        "isIndex": false,
+        "label": "02. Design philosophy",
+        "docId": "research/0066/design-philosophy"
+      },
+      {
+        "stem": "03-prior-art",
+        "order": 3,
+        "isIndex": false,
+        "label": "03. Prior-art bridges",
+        "docId": "research/0066/prior-art"
+      },
+      {
+        "stem": "04-beam-typespec-ingest",
+        "order": 4,
+        "isIndex": false,
+        "label": "04. BEAM typespec ingest",
+        "docId": "research/0066/beam-typespec-ingest"
+      },
+      {
+        "stem": "05-type-mapping",
+        "order": 5,
+        "isIndex": false,
+        "label": "05. Type mapping",
+        "docId": "research/0066/type-mapping"
+      },
+      {
+        "stem": "06-hex-publish-flow",
+        "order": 6,
+        "isIndex": false,
+        "label": "06. Hex.pm publish flow",
+        "docId": "research/0066/hex-publish-flow"
+      },
+      {
+        "stem": "07-oidc-trusted-publishing",
+        "order": 7,
+        "isIndex": false,
+        "label": "07. OIDC trusted publishing",
+        "docId": "research/0066/oidc-trusted-publishing"
+      },
+      {
+        "stem": "08-port-bridge-protocol",
+        "order": 8,
+        "isIndex": false,
+        "label": "08. Port bridge protocol",
+        "docId": "research/0066/port-bridge-protocol"
+      },
+      {
+        "stem": "09-rebar3-lockfile",
+        "order": 9,
+        "isIndex": false,
+        "label": "09. rebar3 and mochi.lock",
+        "docId": "research/0066/rebar3-lockfile"
+      },
+      {
+        "stem": "10-otp-behaviors",
+        "order": 10,
+        "isIndex": false,
+        "label": "10. OTP behaviors",
+        "docId": "research/0066/otp-behaviors"
+      },
+      {
+        "stem": "11-version-resolution",
+        "order": 11,
+        "isIndex": false,
+        "label": "11. Version resolution",
+        "docId": "research/0066/version-resolution"
+      },
+      {
+        "stem": "12-risks-and-alternatives",
+        "order": 12,
+        "isIndex": false,
+        "label": "12. Risks and alternatives",
+        "docId": "research/0066/risks-and-alternatives"
+      }
+    ]
+  },
+  {
     "number": 71,
     "title": "MEP-71 research bundle",
     "slug": "/docs/research/0071/",
