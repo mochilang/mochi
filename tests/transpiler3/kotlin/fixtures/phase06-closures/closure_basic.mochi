@@ -1,0 +1,5 @@
+fun apply(f: fun(int): int, x: int): int {
+    return f(x)
+}
+let double: fun(int): int = fun(n: int): int => n * 2
+print(apply(double, 5))

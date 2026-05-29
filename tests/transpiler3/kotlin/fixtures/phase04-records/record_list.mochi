@@ -1,0 +1,6 @@
+type Item {
+  value: int
+}
+let xs = [Item { value: 1 }, Item { value: 2 }]
+print(xs[0].value)
+print(xs[1].value)

@@ -1,0 +1,5 @@
+let names = ["Alice", "Bob"]
+let greetings = map(names, fun(name: string): string => "hello, " + name)
+for g in greetings {
+    print(g)
+}

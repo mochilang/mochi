@@ -1,0 +1,3 @@
+let nums = [1, 2, 3, 4, 5]
+let n = len(from x in nums where x > 0 select x)
+print(n)

@@ -1,0 +1,5 @@
+let m = {"b": 2, "a": 1}
+let ks = keys(m)
+for k in ks {
+    print(k)
+}

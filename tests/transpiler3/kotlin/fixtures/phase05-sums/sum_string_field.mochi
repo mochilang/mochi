@@ -1,0 +1,7 @@
+type Msg = Hello(name: string) | Bye(name: string)
+let m: Msg = Hello("world")
+let result = match m {
+  Hello(name) => "hello, " + name
+  Bye(name) => "bye, " + name
+}
+print(result)

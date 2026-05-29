@@ -1,0 +1,7 @@
+type Shape = Circle(r: float) | Square(side: float)
+let s: Shape = Circle(3.0)
+let result = match s {
+  Circle(r) => r
+  Square(side) => side
+}
+print(result)

@@ -1,0 +1,3 @@
+var s: set<int> = set{42}
+print(has(s, 42))
+print(len(s))

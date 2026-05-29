@@ -1,0 +1,6 @@
+fun compose(f: fun(int): int, g: fun(int): int, x: int): int {
+    return f(g(x))
+}
+let double: fun(int): int = fun(n: int): int => n * 2
+let inc: fun(int): int = fun(n: int): int => n + 1
+print(compose(double, inc, 3))

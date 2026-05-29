@@ -1,0 +1,4 @@
+let ch: chan<int> = make_chan(1)
+send(ch, 42)
+let x = recv(ch)
+print(x)

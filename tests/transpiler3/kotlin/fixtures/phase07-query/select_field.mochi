@@ -1,0 +1,13 @@
+type Person {
+  name: string
+  age: int
+}
+let people = [
+  Person { name: "Alice", age: 30 },
+  Person { name: "Bob", age: 25 },
+  Person { name: "Carol", age: 35 }
+]
+let names = from p in people where p.age > 25 select p.name
+for n in names {
+  print(n)
+}

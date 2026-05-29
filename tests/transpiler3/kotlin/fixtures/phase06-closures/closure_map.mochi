@@ -1,0 +1,5 @@
+let xs = [1, 2, 3, 4]
+let squares = map(xs, fun(n: int): int => n * n)
+for x in squares {
+    print(x)
+}
