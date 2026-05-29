@@ -21,9 +21,9 @@ A phase is LANDED only when its gate is green for every target in the runtime ma
 | 3 | EDoc XML fallback ingest (for packages with no -spec directives) | LANDED | 445e4a0 | [phase-03](/docs/implementation/0066/phase-03-edoc-fallback) |
 | 4 | Dialyzer typespec-to-Mochi type mapping + SkipReport emit | LANDED | 6b60b77 | [phase-04](/docs/implementation/0066/phase-04-type-mapping) |
 | 5 | Port bridge shim emitter (shim.erl gen_server + shim.mochi extern fn corpus) | LANDED | 21dcdcb | [phase-05](/docs/implementation/0066/phase-05-shim-emit) |
-| 6 | `import erlang "..."` grammar + parser | IN PROGRESS | — | [phase-06](/docs/implementation/0066/phase-06-import-grammar) |
-| 7 | Build orchestration (rebar3 compile + Port process spawn + workspace setup) | NOT STARTED | — | [phase-07](/docs/implementation/0066/phase-07-build) |
-| 8 | mochi.lock `[[erlang-package]]` integration + --check mode | NOT STARTED | — | [phase-08](/docs/implementation/0066/phase-08-lockfile) |
+| 6 | `import erlang "..."` grammar + parser | LANDED | 7080e01 | [phase-06](/docs/implementation/0066/phase-06-import-grammar) |
+| 7 | Build orchestration (rebar3 compile + Port process spawn + workspace setup) | LANDED | a68fe5e | [phase-07](/docs/implementation/0066/phase-07-build) |
+| 8 | mochi.lock `[[erlang-package]]` integration + --check mode | IN PROGRESS | — | [phase-08](/docs/implementation/0066/phase-08-lockfile) |
 | 9 | TargetErlangPort emit (rebar3 app skeleton + mochi_port_driver.erl + priv/mochi_binary) | NOT STARTED | — | [phase-09](/docs/implementation/0066/phase-09-target-erlang-port) |
 | 10 | Hex.pm trusted publishing (OIDC flow + rebar3 hex publish) | NOT STARTED | — | [phase-10](/docs/implementation/0066/phase-10-trusted-publish) |
 | 11 | OTP behavior bindings (gen_server call/cast, supervisor, application) | NOT STARTED | — | [phase-11](/docs/implementation/0066/phase-11-otp-behaviors) |
