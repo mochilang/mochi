@@ -20,178 +20,195 @@ shift.
 Considering means we like the idea but have not committed yet.
 :::
 
-## v0.15.0 (current release)
+## v0.16.0 (current release)
 
-v0.15.0 shipped in May 2026. The headline feature is the .NET/CLR
-transpiler reaching Final status under [MEP-48](/docs/mep/mep-0048).
-You can compile a Mochi program to a framework-dependent `.dll`, a
-self-contained publish directory, or a NativeAOT single-file binary
-with sub-30 ms cold start, without writing any C# or MSBuild
-configuration. The `Mochi.Runtime 0.15.0-alpha` NuGet package is
-published to nuget.org (Apache-2.0).
+v0.16.0 shipped in May 2026. It is the largest Mochi release to date:
+605 commits, 243 merged PRs, and +262,082 lines of new code across
+4,642 files. Seven MEPs are marked Final in this release.
+
+**New compile targets (all Final):**
 
 ```sh
-mochi build --target=dotnet-fx-dependent hello.mochi -o out/
-dotnet out/hello.dll
+mochi build --target=swift-macos        # MEP-49 — Swift, macOS 15+
+mochi build --target=swift-ios          # MEP-49 — iOS 18+ app bundle
+mochi build --target=swift-static-linux # MEP-49 — musl single-file binary
+mochi build --target=php                # MEP-55 — PHP 8.3+
+mochi build --target=ruby               # MEP-56 — CRuby 3.3+ / TruffleRuby
+mochi build --target=rust               # MEP-53 — Rust 1.78+ (phases 0-6)
+mochi build --target=typescript         # MEP-52 — Node 22 / Deno 2 / Bun 1 (phases 2-6)
+mochi build --target=go                 # MEP-54 — Go 1.26 (phases 2-6)
 ```
 
-The three previous minor releases are summarised below for context.
+**Completed package bridges (all Final):**
+
+```sh
+import python "numpy"                           # MEP-71 — PyPI, 18 phases
+import kotlin "io.ktor:ktor-client-core:3.0.0"  # MEP-70 — Maven Central, 14 phases
+import erlang "jason"                           # MEP-66 — Hex.pm, 13 phases
+import go "github.com/gin-gonic/gin"            # MEP-74 — GOPROXY, 18 phases
+import ruby "nokogiri"                          # MEP-76 — RubyGems.org, 12 phases
+```
+
+**Also in v0.16.0:** MEP-50 (Kotlin transpiler, all 18 phases), MEP-51
+(Python transpiler, all 18 phases), Java bridge phases 0-15 (MEP-67),
+.NET NuGet bridge phases 0-13 (MEP-68), PHP bridge phases 0-14 (MEP-75),
+Rust bridge phases 8-13 (MEP-73), and specs for the Swift bridge
+(MEP-69) and TypeScript/JS bridge (MEP-72).
+
+See the [v0.16.0 release notes](/docs/releases/v0.16.0) for the full
+per-language and per-platform breakdown.
+
+## v0.15.0 (May 2026)
+
+v0.15.0 completed the .NET/CLR transpiler under
+[MEP-48](/docs/mep/mep-0048). Mochi programs compile to a
+framework-dependent `.dll`, a self-contained publish directory, or a
+NativeAOT single-file binary with sub-30 ms cold start.
+`Mochi.Runtime 0.15.0-alpha` is published to NuGet.org.
 
 ## v0.14.0 (May 2026)
 
 v0.14.0 completed the JVM transpiler under [MEP-47](/docs/mep/mep-0047).
-Mochi programs now compile to runnable uberjars, `jlink` runtime images,
-`jpackage` OS installers, or GraalVM `native-image` binaries.
-`dev.mochi:mochi-runtime:0.14.0` is published to Maven Central.
+Runnable uberjars, `jlink` runtime images, `jpackage` OS installers, and
+GraalVM `native-image` binaries. `dev.mochi:mochi-runtime:0.14.0` on
+Maven Central.
 
 ## v0.13.0 (May 2026)
 
-v0.13.0 completed the BEAM/Erlang transpiler under [MEP-46](/docs/mep/mep-0046).
+v0.13.0 completed the BEAM/Erlang transpiler under
+[MEP-46](/docs/mep/mep-0046).
 
 ### Language core
 
-- Done. Bytecode VM with constant folding, inline caches for method
-  dispatch, and liveness-based dead-code elimination. `mochi run`
-  caches compiled bytecode under `~/.cache/mochi`, so a hot script
-  starts in single-digit milliseconds after the first run.
+- Done. Bytecode VM with constant folding, inline caches, and
+  liveness-based dead-code elimination. Hot scripts start in
+  single-digit milliseconds after the first run.
 - Done. Static type inference across function calls, generic
   instantiations, and `match` arms.
 - Done. `let` and `var` bindings with the immutable-by-default rule.
-- Done. Functions, closures, and arrow lambdas (`fun(x) => x + 1`).
-  Closures capture by reference and are first-class values.
-- Done. `type` for structs with inline methods (no separate `impl`
-  block). Field access uses the dot operator; field assignment
-  requires a `var` binding.
-- Done. Union types (`T | nil`, `A | B`) with exhaustiveness checking
-  on `match`.
+- Done. Functions, closures, and arrow lambdas. Closures capture by
+  reference and are first-class values.
+- Done. `type` for structs with inline methods. Field access uses the
+  dot operator; field assignment requires `var`.
+- Done. Union types with exhaustiveness checking on `match`.
 - Done. `for`, `while`, `if`/`else`, `match`, `break`, `continue`,
-  range expressions (`0..n`, `0..=n`).
-- Done. Built-in collections: `list<T>`, `map<K, V>`, `set<T>`,
-  `omap<K, V>` with the prelude methods (`.push`, `.keys`,
-  `.contains`, etc.).
-- Done. Packages and imports. A directory of `.mochi` files is a
-  package; `import "./pkg" as alias` resolves relative paths.
-- Done. Built-in test blocks (`test "name" { ... }`) with `expect`
-  assertions. `mochi test` walks the tree and runs every block.
-- Done. Agents and streams as first-class language constructs:
-  `agent`, `stream`, `emit`, `on Event as e`, `intent`.
-- Done. `generate text { ... }`, `generate embedding { ... }`, and
-  `generate <Provider> { ... }` expressions. Tool calling, structured
-  output (`as <Type>`), streaming responses, and cassette playback for
-  tests are part of the runtime.
-- Done. Dataset queries (`from x in xs where ... select ...`) with
-  `sort by`, `take`, `group by`, and `join`.
-- Done. Datalog (`assert`, `retract`, `query`) with bottom-up
-  semi-naïve evaluation.
-- Done. `async`/`await` with `mochi_async` spawn-monitor semantics.
-- Done. `fetch "<url>" into <var>` and `json_decode` via the runtime
-  library (BEAM, JVM, and .NET all ship native implementations).
-- Done. FFI through `extern` declarations (`extern dotnet fun`,
-  `extern java fun`, Go, Python).
-- Done. Pipe operator (`|`) for left-to-right function composition.
-- Done. Partial application with `_` placeholders.
+  range expressions.
+- Done. Built-in collections: `list<T>`, `map<K,V>`, `set<T>`,
+  `omap<K,V>` with the full prelude method set.
+- Done. Packages and imports.
+- Done. Built-in test blocks with `expect` assertions.
+- Done. Agents and streams: `agent`, `stream`, `emit`, `on Event`,
+  `intent`.
+- Done. `generate text {}`, `generate embedding {}`, and
+  `generate <Provider> {}`. Tool calling, structured output, streaming
+  responses, and cassette playback.
+- Done. Dataset queries with `sort by`, `take`, `group by`, `join`.
+- Done. Datalog with bottom-up semi-naïve evaluation.
+- Done. `async`/`await`.
+- Done. `fetch "<url>" into <var>` and `json_decode`.
+- Done. FFI through `extern` declarations.
+- Done. Pipe operator and partial application.
+- In progress. Language server (LSP). Diagnostics, hover types, and
+  goto-definition are working on the LSP branch.
+- Planned. `mochi fmt` formatter.
+- Planned. Generics type bounds (`<T: Comparable>`), error propagation
+  operator (`?`), and interface / protocol declarations.
 
 ### Tooling
 
 - Done. `mochi run`, `mochi test`, `mochi build`, `mochi serve`
   (MCP server mode), `mochi transpile`.
-- Done. Single static binary distribution. The release tarball is
-  under 20 MB on every supported platform.
+- Done. Single static binary under 20 MB on every supported platform.
 - Done. Docker image at `ghcr.io/mochilang/mochi`.
-- Done. Docker image `Dockerfile.beam-otp27` with OTP 27 for BEAM
-  targets.
-- Done. VS Code syntax highlighting via the `mochi-tm` TextMate
-  bundle.
-- Done. SHA-256 content-addressed build cache for .NET targets
-  (`~/.cache/mochi/dotnet/`). BLAKE3 cache for BEAM and JVM targets.
-- Done. Deterministic builds: `.beam` (OTP `deterministic` flag),
-  `.dll` (Roslyn `<Deterministic>true` + `PathMap`), and `.jar`
-  (sorted entries, fixed `SOURCE_DATE_EPOCH`).
-- In progress. Language server (LSP). Diagnostics, hover types, and
-  goto-definition are working on the LSP branch.
+- Done. VS Code syntax highlighting via the `mochi-tm` TextMate bundle.
+- Done. SHA-256 / BLAKE3 content-addressed build caches.
+- Done. Deterministic builds for all transpiler targets.
+- Done. `mochi.lock` with `[[python-package]]`, `[[kotlin-package]]`,
+  `[[erlang-package]]`, `[[go-package]]`, `[[ruby-package]]`,
+  `[[java-package]]`, `[[dotnet-package]]`, `[[php-package]]`,
+  `[[rust-package]]` TOML table support.
+- In progress. Language server (LSP).
 - In progress. Native Windows build without WSL.
 - Planned. `mochi fmt` formatter.
 - Planned. Package manager and registry.
 
 ### Transpilation
 
-- Done. `--to go`, `--to python`, `--to typescript`. Each target
-  produces idiomatic code that round-trips through the Mochi test
-  suite.
-- Done. `--to c` / `mochi build --target=native` (MEP-45). Produces
-  a single native binary via a C AOT IR pipeline.
-- Done. `--to beam` / `mochi build --target=escript|release|rebar3|mix|atomvm`
-  (MEP-46). The Erlang/BEAM transpiler is Final. Build targets:
-  escript (single-file runnable), rebar3 project, Mix/Elixir project,
-  OTP release, and AtomVM bundle. The runtime library `mochi_runtime`
-  covers `mochi_fetch`, `mochi_json`, `mochi_llm`, `mochi_async`, and
-  `mochi_stream`. Hex.pm packaging infrastructure is in place.
-- Done. `--to jvm` / `mochi build --target=jvm-uberjar|jlink|jpackage|jvm-native`
-  (MEP-47). The JVM transpiler is Final. Build targets: uberjar
-  (default), `jlink` runtime image, `jpackage` OS installer, GraalVM
-  `native-image`. `dev.mochi:mochi-runtime:0.14.0` on Maven Central.
-- Done. `mochi build --target=dotnet-fx-dependent|dotnet-self-contained|dotnet-aot`
-  (MEP-48). The .NET/CLR transpiler is Final. Agents lower to
-  `Channel<TMessage>`, streams to `IAsyncEnumerable<T>`, sum types
-  to `abstract sealed record` hierarchies, queries to LINQ. Async
-  colouring pass propagates `async Task<T>` through the call graph.
-  `Mochi.Runtime 0.15.0-alpha` published to NuGet. NativeAOT
-  single-file binaries with sub-30 ms cold start.
-- Considering. `--to lua`, `--to rust`. Prototypes exist.
-- Considering. `--to wasm`. Bytecode VM compiles to wasm; a clean
-  Mochi-to-wasm codegen path is a separate workstream.
+- Done. `mochi build --target=c-aot` (MEP-45).
+- Done. `mochi build --target=escript|release|rebar3|mix|atomvm` (MEP-46, Final).
+- Done. `mochi build --target=jvm-uberjar|jlink|jpackage|jvm-native` (MEP-47, Final).
+- Done. `mochi build --target=dotnet-fx-dependent|dotnet-self-contained|dotnet-aot` (MEP-48, Final).
+- Done. `mochi build --target=swift-macos|swift-ios|swift-static-linux|swift-appstore` (MEP-49, Final).
+- Done. `mochi build --target=kotlin|kotlin-android|kotlin-native|kotlin-kmp` (MEP-50, Final).
+- Done. `mochi build --target=python|python-wheel|python-pypi|pyodide` (MEP-51, Final).
+- Done. `mochi build --target=php|php-phar|php-rubygem` (MEP-55, Final).
+- Done. `mochi build --target=ruby|rubygem|ruby-bundle|iruby-kernel|tebako|truffleruby-native|mruby` (MEP-56, Final).
+- In progress. `mochi build --target=typescript|javascript` (MEP-52, phases 2-6 done; phases 7-18 in progress).
+- In progress. `mochi build --target=rust` (MEP-53, phases 0-6 done; phases 7-18 in progress).
+- In progress. `mochi build --target=go` (MEP-54, phases 2-6 done; phases 7-18 in progress).
 
 ### Platform
 
 - Done. macOS (Intel and Apple Silicon).
 - Done. Linux (x86_64 and ARM64).
 - Done. Docker.
-- Done. BEAM/OTP 27+ (via `mochi build --target=escript`).
-- Done. JDK 21 and JDK 25 LTS (via `mochi build --target=jvm-uberjar`).
-- Done. .NET 8 LTS and .NET 10 LTS (via `mochi build --target=dotnet-fx-dependent`).
+- Done. BEAM/OTP 27+.
+- Done. JDK 21 and JDK 25 LTS.
+- Done. .NET 8 LTS and .NET 10 LTS.
+- Done. Swift 6.0+, macOS 15+, iOS 18+.
+- Done. PHP 8.3+.
+- Done. CRuby 3.3+, JRuby 9.4, TruffleRuby, mruby.
+- Done. Rust 1.78+ (transpiler phases 0-6).
+- Done. Node.js 22+, Deno 2.x, Bun 1.x (TypeScript phases 2-6).
+- Done. Go 1.26 (Go transpiler phases 2-6).
+- Done. CPython 3.12+ (Mochi-to-Python transpiler, Final).
+- Done. Kotlin JVM / Android / K/Native / KMP (Kotlin transpiler, Final).
 - In progress. Windows native (without WSL).
-- Considering. WebAssembly via `mochi build --to wasm`.
-- Considering. AtomVM (microcontrollers) via `mochi build --target=atomvm`.
+- Planned. WebAssembly standalone target (WASI P2).
 
-## v0.16.0 (next release)
+## v0.17.0 (next release)
 
-v0.16.0 is scoped to [MEP-49](/docs/mep/mep-0049): the Swift
-transpiler. The goal is to let Mochi programs compile to Swift source
-and package as SwiftPM libraries, macOS/iOS/tvOS applications via
-Xcode, or statically-linked Linux binaries via the Swift Static Linux
-SDK. The pipeline reuses the `aotir` IR from MEP-45 and the
-monomorphisation and closure-conversion passes shared with MEP-46,
-MEP-47, and MEP-48.
+v0.17.0 will focus on completing the in-progress transpiler targets and
+advancing the open package bridges to Final status.
 
-What v0.16.0 adds:
+**Primary goals:**
 
-1. **Swift emit pass.** Lowers `aotir` to Swift source via a structural
-   `swiftsrc` AST. Swift `actor` lowers Mochi agents; `AsyncStream`
-   lowers Mochi streams; `enum` with associated values lowers sum types;
-   `struct` lowers records.
-2. **Build targets.** `mochi build --target=swift-macos`,
-   `--target=swift-linux`, `--target=swift-ios`. Correctness gate:
-   byte-equal stdout against vm3 on Swift 6.1+ (Xcode 16.3+) on
-   macOS arm64, Linux x86_64, and Linux arm64.
-3. **Agent lowering.** Mochi agents lower to Swift `actor` types with
-   async methods for each intent.
-4. **Stream lowering.** Mochi streams lower to `AsyncStream<T>`.
-5. **Type lowering.** Sum types to `enum` with associated values;
-   `match` to Swift `switch` with exhaustiveness; `fun` types to
-   `@escaping` closures.
-6. **Runtime library `Mochi.swift` (SwiftPM package).** Apache-2.0.
-   Thin layer over `Foundation.URLSession` (fetch), `Foundation.JSONDecoder`
-   (json_decode), and the Concurrency runtime (actors, AsyncStream,
-   TaskGroup).
-7. **LLM dispatch.** `generate` expressions via `Foundation.URLSession`
-   HTTP/2 to OpenAI and Anthropic, with cassette playback for CI.
+1. **TypeScript/JS transpiler Final (MEP-52 phases 7-18).** Agents,
+   streams, async/await, Datalog, file I/O, LLM cassette, fetch, npm
+   packaging, and reproducible builds. The three-runtime gate (Node 22 /
+   Deno 2 / Bun 1) continues for every new phase.
 
-The 18-phase delivery plan mirrors prior transpilers:
-hello-world -> scalars -> collections -> records -> sums -> closures ->
-queries -> datalog -> actors -> streams -> async -> Swift FFI -> LLM ->
-fetch -> SwiftPM packaging -> macOS app bundle -> Static Linux SDK ->
-reproducibility.
-Each phase is gated against vm3.
+2. **Rust transpiler Final (MEP-53 phases 7-18).** Closures and
+   higher-order functions (heap closures via `Box<dyn Fn>`), agents via
+   `Arc<Mutex<T>>`, streams via `tokio::sync::broadcast`, async/await,
+   Datalog, file I/O, LLM cassette, HTTP fetch, `cargo publish`
+   packaging, and reproducible builds.
+
+3. **Go transpiler Final (MEP-54 phases 7-18).** Closures, agents via
+   goroutine + channel, streams, async/await, Datalog, file I/O, LLM,
+   fetch, and `go mod` packaging.
+
+4. **Java package bridge Final (MEP-67 phases 16+).** Complete the
+   remaining phases: full async bridge for `CompletableFuture` chains,
+   JNI type-erasure edge cases, sealed class / record bridging.
+
+5. **PHP package bridge Final (MEP-75 phases 15+).** Close out the
+   remaining corpus validation phases and any deferred async edge cases.
+
+6. **Rust crates.io bridge Final (MEP-73 phases 14+).** Close out the
+   remaining phases including the full embedded/no_std validation corpus.
+
+7. **Swift package bridge implementation start (MEP-69).** The spec and
+   research bundle landed in v0.16.0. Implementation phases 0-6 are
+   the target for v0.17.0.
+
+8. **TypeScript/JS bridge implementation start (MEP-72).** The spec
+   landed in v0.16.0. Implementation phases 0-6 are the target for
+   v0.17.0.
+
+9. **LSP milestone.** Diagnostics, hover types, goto-definition, and
+   auto-completion complete enough to ship as the default `mochi lsp`
+   subcommand.
 
 ## v1.0 (stable language)
 
@@ -201,19 +218,20 @@ without a `--edition` opt-in.
 
 To get there, Mochi needs:
 
-- A versioned language specification document (today the spec lives
-  in the test suite and a handful of design notes).
+- A versioned language specification document.
 - Generics type bounds (`<T: Comparable>`), the error propagation
-  operator (`?`), and interface / protocol declarations shipped and
-  used in the standard library.
-- A stable standard library API, including `io`, `fs`, `time`,
-  `http`, `crypto`, and `json`. Not breaking these later is most of
-  the work.
-- A package registry with semantic-version resolution, lockfiles,
-  and a publish workflow.
+  operator (`?`), and interface / protocol declarations shipped and used
+  in the standard library.
+- A stable standard library API: `io`, `fs`, `time`, `http`, `crypto`,
+  `json`. Not breaking these later is most of the work.
+- A package registry with semantic-version resolution, lockfiles, and
+  a publish workflow. (The `mochi.lock` infrastructure that shipped in
+  v0.16.0 is the foundation.)
 - LSP feature-complete enough that VS Code and JetBrains feel like a
   first-class IDE experience.
 - Native Windows support without WSL.
+- All current in-progress transpilers (TypeScript, Rust, Go) reaching
+  Final status.
 - A test suite that exercises every spec example on every supported
   platform and every transpiler target.
 
@@ -222,32 +240,52 @@ list above is true and not before.
 
 ## Transpiler roadmap
 
-Each MEP delivers one new ecosystem exit. The order reflects
-implementation dependencies (later MEPs reuse IR passes from earlier
-ones).
-
 | MEP | Target | Ecosystem | Status |
 |-----|--------|-----------|--------|
 | [MEP-45](/docs/mep/mep-0045) | C / native binary | POSIX, static binaries | Done |
 | [MEP-46](/docs/mep/mep-0046) | BEAM / Erlang | OTP, Hex.pm, AtomVM | Done (v0.13.0) |
 | [MEP-47](/docs/mep/mep-0047) | JVM / Java | Maven Central, Loom, GraalVM | Done (v0.14.0) |
 | [MEP-48](/docs/mep/mep-0048) | .NET / C# | NuGet, NativeAOT, Channel agents | Done (v0.15.0) |
-| [MEP-49](/docs/mep/mep-0049) | Swift | App Store, SwiftPM, Static Linux SDK | In progress (v0.16.0) |
-| [MEP-50](/docs/mep/mep-0050) | Kotlin Multiplatform | Android, Google Play, KMP | Planned |
-| [MEP-51](/docs/mep/mep-0051) | Python | PyPI, CPython extension, Cython | Planned |
-| [MEP-52](/docs/mep/mep-0052) | WebAssembly | WASI, Wasmtime, browser | Planned |
+| [MEP-49](/docs/mep/mep-0049) | Swift | App Store, SwiftPM, Static Linux SDK | Done (v0.16.0) |
+| [MEP-50](/docs/mep/mep-0050) | Kotlin Multiplatform | Android, Play Console, K/Native, KMP | Done (v0.16.0) |
+| [MEP-51](/docs/mep/mep-0051) | Python | PyPI wheel, Jupyter kernel, Trusted Publishing | Done (v0.16.0) |
+| [MEP-52](/docs/mep/mep-0052) | TypeScript / JavaScript | Node.js, Deno, Bun, npm | In progress (v0.17.0) |
+| [MEP-53](/docs/mep/mep-0053) | Rust | crates.io, Cargo, embedded | In progress (v0.17.0) |
+| [MEP-54](/docs/mep/mep-0054) | Go | GOPROXY, go.sum, WASM | In progress (v0.17.0) |
+| [MEP-55](/docs/mep/mep-0055) | PHP | Packagist, Phar, Tebako | Done (v0.16.0) |
+| [MEP-56](/docs/mep/mep-0056) | Ruby | RubyGems, Bundler, IRuby, TruffleRuby, mruby | Done (v0.16.0) |
+
+## Package bridge roadmap
+
+Each package bridge MEP lets Mochi code call into an existing ecosystem
+package with a single `import` statement, automatic type mapping, and
+`mochi.lock` dependency pinning.
+
+| MEP | Ecosystem | Registry | Status |
+|-----|-----------|----------|--------|
+| [MEP-66](/docs/mep/mep-0066) | Erlang / OTP | Hex.pm | Done (v0.16.0) |
+| [MEP-67](/docs/mep/mep-0067) | Java | Maven Central | In progress (v0.17.0) |
+| [MEP-68](/docs/mep/mep-0068) | .NET / C# | NuGet.org | In progress (v0.17.0) |
+| [MEP-69](/docs/mep/mep-0069) | Swift | SwiftPM registry / git tag | Spec done; impl planned (v0.17.0) |
+| [MEP-70](/docs/mep/mep-0070) | Kotlin | Maven Central, AAR | Done (v0.16.0) |
+| [MEP-71](/docs/mep/mep-0071) | Python | PyPI, Pyodide, abi2026 | Done (v0.16.0) |
+| [MEP-72](/docs/mep/mep-0072) | TypeScript / JavaScript | npm, JSR | Spec done; impl planned (v0.17.0) |
+| [MEP-73](/docs/mep/mep-0073) | Rust | crates.io, no_std | In progress (v0.17.0) |
+| [MEP-74](/docs/mep/mep-0074) | Go | GOPROXY, vanity imports | Done (v0.16.0) |
+| [MEP-75](/docs/mep/mep-0075) | PHP | Packagist, Phar | In progress (v0.17.0) |
+| [MEP-76](/docs/mep/mep-0076) | Ruby | RubyGems.org, native ext | Done (v0.16.0) |
 
 ## Things we are deliberately not building
 
 To stay small, some doors stay closed:
 
-- Operator overloading. `+` on `string` and `list` is the only
-  overload, and it is in the language definition; users cannot
-  overload operators on their own types.
-- Macros. Code that generates code adds an extra layer of debugging
-  for a payoff that templates and codegen tools handle well enough.
-- Inheritance. Composition through structs and methods covers the
-  modeling cases; interfaces (when they ship) cover polymorphism.
+- Operator overloading. `+` on `string` and `list` is the only overload
+  and it is in the language definition; users cannot overload operators
+  on their own types.
+- Macros. Code that generates code adds an extra debugging layer for a
+  payoff that templates and codegen tools handle well enough.
+- Inheritance. Composition through structs and methods covers modeling;
+  interfaces (when they ship) cover polymorphism.
 - A template engine, web framework, or ORM in the standard library.
   These belong in third-party packages.
 
@@ -256,7 +294,7 @@ To stay small, some doors stay closed:
 - Open a [GitHub Discussion](https://github.com/mochilang/mochi/discussions)
   with the use case. Real programs help us pick the right design more
   than abstract requests.
-- File a bug with a reproduction. Bug reports get priority over
-  feature work.
+- File a bug with a reproduction. Bug reports get priority over feature
+  work.
 - Ship a patch. The contributor guide is in the repo; small PRs that
   add tests for missing behavior are easiest to land.
