@@ -1,0 +1,5 @@
+let f1 = fun(x: int): int => x + 1
+let f2 = fun(x: int): int => x + 100
+print(f1(5))
+print(f2(5))
+print(f1(f2(0)))

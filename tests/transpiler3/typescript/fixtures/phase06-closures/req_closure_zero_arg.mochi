@@ -1,0 +1,4 @@
+let value = 42
+let get = fun(): int => value
+print(get())
+print(get())

@@ -1,0 +1,7 @@
+type Sign = Plus | Minus
+
+let s: Sign = Minus
+match s {
+  Plus => print("positive")
+  Minus => print("negative")
+}

@@ -69,6 +69,10 @@ type runtimeFlags struct {
 	// across Node, Deno, and Bun even though JS Set iteration
 	// preserves insertion order.
 	setToListSorted bool
+	// Phase 5 exhaustiveness trap. `mochiUnreachable(x: never)`
+	// emits exactly when a match site lacks a wildcard arm so the
+	// helper opts in on first use and stays absent otherwise.
+	unreachable bool
 }
 
 type lowerer struct {
@@ -80,6 +84,13 @@ type lowerer struct {
 	// walks BinEqRec / BinNeRec sites; consumed by recordEqDecls
 	// in the prelude assembly. Phase 4.2.
 	recordEqFlags map[string]bool
+	// matchLocalCounter assigns a fresh suffix to every match
+	// target capture local (`__mochi_match_<n>`). Phase 5.
+	matchLocalCounter int
+	// liftedByName indexes the program's lifted (anonymous
+	// closure body / function-ref shim) functions by name so
+	// FunLit nodes can look up their body when inlining. Phase 6.
+	liftedByName map[string]*aotir.Function
 }
 
 // Lower translates an aotir.Program into a single-file
@@ -99,14 +110,31 @@ func Lower(prog *aotir.Program, colours colour.ColourMap) (*tstree.SourceFile, e
 	}
 	l := &lowerer{prog: prog, colours: colours}
 
+	// Phase 6: index lifted (closure-body / shim) functions by name
+	// so FunLit nodes can inline them at their use sites. Lifted
+	// functions are NOT emitted as top-level TS functions; JS
+	// closures get their captures from the enclosing lexical scope
+	// automatically.
+	l.liftedByName = make(map[string]*aotir.Function)
+	for _, fn := range prog.Functions {
+		if fn.IsLifted || isLiftedFuncName(fn.Name) {
+			l.liftedByName[fn.Name] = fn
+		}
+	}
+
 	// Lower non-main user functions first so the main body's
 	// CallExpr nodes resolve forwards. JS hoists `function`
 	// declarations regardless, but emitting in source order keeps
 	// the file readable and the byte-stable output property
-	// Phase 16 depends on intact.
+	// Phase 16 depends on intact. Phase 6: lifted closure bodies
+	// (__anon_*) and shim wrappers (__shim_*) are inlined at their
+	// FunLit sites, so they do not get their own top-level decl.
 	var userDecls []tstree.Decl
 	for i, fn := range prog.Functions {
 		if i == prog.Main {
+			continue
+		}
+		if fn.IsLifted || isLiftedFuncName(fn.Name) {
 			continue
 		}
 		d, err := l.lowerFunction(fn)
@@ -136,6 +164,15 @@ func Lower(prog *aotir.Program, colours colour.ColourMap) (*tstree.SourceFile, e
 		return nil, err
 	}
 	decls := recordClassDecls
+	// Phase 5: sum-type alias declarations. Emitted after record
+	// classes (so a union variant whose field is a record type can
+	// name that class) and before runtime helpers (so a future
+	// helper that operates on a union value can name the alias).
+	unionAliasDecls, err := l.unionDecls()
+	if err != nil {
+		return nil, err
+	}
+	decls = append(decls, unionAliasDecls...)
 	decls = append(decls, l.runtimeDecls()...)
 	decls = append(decls, l.runtimeListDecls()...)
 	decls = append(decls, l.runtimeMapDecls()...)
@@ -149,6 +186,12 @@ func Lower(prog *aotir.Program, colours colour.ColourMap) (*tstree.SourceFile, e
 		return nil, err
 	}
 	decls = append(decls, recordEqHelpers...)
+	// Phase 5: mochiUnreachable trap. Emitted after the structural
+	// helpers (it is itself a structural helper) and before user
+	// functions so a match-call inside a user function resolves
+	// forward. The flag is set by lowerMatchStmt during the user-
+	// function lowering pass that already ran above.
+	decls = append(decls, l.unreachableDecls()...)
 	decls = append(decls, userDecls...)
 
 	mainDecl := &tstree.FuncDecl{
@@ -378,8 +421,12 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]tstree.Stmt, error) {
 		return l.lowerListSetStmt(v)
 	case *aotir.MapPutStmt:
 		return l.lowerMapPutStmt(v)
+	case *aotir.MatchStmt:
+		return l.lowerMatchStmt(v)
+	case *aotir.ClosureEnvStmt:
+		return l.lowerClosureEnvStmt(v)
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 3 surface)", s)
+		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 6 surface)", s)
 	}
 }
 
@@ -427,9 +474,33 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) ([]tstree.Stmt, error) {
 // Phase 3 widens the type renderer to compound containers: list
 // slots emit `T[]` using the LetStmt's ElemType side-channel.
 func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) ([]tstree.Stmt, error) {
-	tn, err := tsTypeForLetSlot(s.VarType, s.ElemType, s.KeyType, s.ValueType, s.RecordName, s.ElemRecordName)
+	var tn string
+	var err error
+	if s.VarType == aotir.TypeFun {
+		tn, err = tsTypeForFunSig(s.FunSig)
+	} else {
+		tn, err = tsTypeForLetSlot(s.VarType, s.ElemType, s.KeyType, s.ValueType, s.RecordName, s.ElemRecordName, s.UnionName)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("ts lower: let %q: %w", s.Name, err)
+	}
+	// Phase 5: the C lowerer pre-emits `LetStmt{Init: nil}` for the
+	// match-as-expression result temp. The match arms then assign to
+	// the binding via AssignStmt. We render this as `let NAME!: T;`
+	// (definite assignment assertion); the exhaustiveness trap in
+	// the default arm proves the binding is assigned before use.
+	// Immutable (const) without an initialiser is a TS syntax error,
+	// so we reject that combination defensively.
+	if s.Init == nil {
+		if !s.Mutable {
+			return nil, fmt.Errorf("ts lower: let %q: immutable binding with nil Init has no TS surface (need `const NAME: T = E;`)", s.Name)
+		}
+		return []tstree.Stmt{&tstree.LetDecl{
+			Name:    s.Name,
+			Type:    tn,
+			Init:    nil,
+			Mutable: true,
+		}}, nil
 	}
 	init, err := l.lowerExpr(s.Init)
 	if err != nil {
@@ -542,7 +613,16 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (tstree.Expr, error) {
 	case *aotir.BoolLit:
 		return &tstree.BoolLit{Value: v.Value}, nil
 	case *aotir.VarRef:
-		return &tstree.IdentExpr{Name: v.Name}, nil
+		// Phase 6: the C lowerer stamps captured-variable refs
+		// inside a closure body as `__e->X` so its emitter can
+		// route them through the env struct. JS doesn't have an
+		// env struct, so we strip the prefix and let lexical
+		// scope resolve the identifier.
+		return &tstree.IdentExpr{Name: stripEnvPrefix(v.Name)}, nil
+	case *aotir.FunLit:
+		return l.lowerFunLit(v)
+	case *aotir.FunCallExpr:
+		return l.lowerFunCallExpr(v)
 	case *aotir.BinaryExpr:
 		return l.lowerBinary(v)
 	case *aotir.UnaryExpr:
@@ -651,8 +731,12 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (tstree.Expr, error) {
 		return l.lowerRecordLit(v)
 	case *aotir.FieldAccess:
 		return l.lowerFieldAccess(v)
+	case *aotir.VariantLit:
+		return l.lowerVariantLit(v)
+	case *aotir.UnionVarRef:
+		return l.lowerUnionVarRef(v)
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 3 surface)", e)
+		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 5 surface)", e)
 	}
 }
 

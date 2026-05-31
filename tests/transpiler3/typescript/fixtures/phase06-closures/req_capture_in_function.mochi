@@ -1,0 +1,9 @@
+fun make_adder(n: int): fun(int): int {
+    let f = fun(x: int): int => x + n
+    return f
+}
+let add5 = make_adder(5)
+let add10 = make_adder(10)
+print(add5(3))
+print(add5(7))
+print(add10(1))
