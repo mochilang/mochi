@@ -10,11 +10,11 @@ description: "MEP-52 Phase 4, Mochi records as TypeScript class with readonly fi
 | Field          | Value |
 |----------------|-------|
 | MEP            | [MEP-52 §Phases · Phase 4](/docs/mep/mep-0052#phase-plan) |
-| Status         | NOT STARTED |
-| Started        | n/a |
-| Landed         | n/a |
-| Tracking issue | n/a |
-| Tracking PR    | n/a |
+| Status         | IN PROGRESS (4.0 + 4.2 LANDED; 4.1 + 4.3 + 4.4 DEFERRED) |
+| Started        | 2026-05-29 20:00 (GMT+7) |
+| Landed         | n/a (umbrella PR open) |
+| Tracking issue | (this PR) |
+| Tracking PR    | (this PR) |
 
 ## Gate
 
@@ -28,11 +28,11 @@ Records are Mochi's nominal product type. The TypeScript surface offers four can
 
 | # | Scope | Status | Commit |
 |---|-------|--------|--------|
-| 4.0 | `record User { id: int, name: string }` to `class User { readonly id: bigint; readonly name: string; private constructor(...); static of(...): User }` | NOT STARTED | n/a |
-| 4.1 | Record methods (`fun (u: User) greet() -> string { ... }`) lower to instance methods on the generated class | NOT STARTED | n/a |
-| 4.2 | Structural equality: `mochiRecordEq(a, b)` runtime helper plus per-record `equals(other)` instance method (Phase 4 emits the helper-based form; the per-class override is generated only when the IR sees `==` between two records of the same type) | NOT STARTED | n/a |
-| 4.3 | Multi-file module layout under `src/generated/`; one record per file by default; per-package directory structure preserved (`record foo.bar.User` to `src/generated/foo/bar/user.ts`) | NOT STARTED | n/a |
-| 4.4 | Identifier mangling: TypeScript reserved-word collisions (`class_`, `import_`) and JS globals (`Object_`, `Promise_`) per MEP-52 §12 | NOT STARTED | n/a |
+| 4.0 | `type Pt { x: int, y: int }` to `class Pt { readonly x: number; readonly y: number; private constructor(opts); static of(opts): Pt }` | LANDED (Node + Deno + Bun) | inherited from Phase 3.4 |
+| 4.1 | Record methods (`fun (p: Pt) mag() -> int { ... }`) lower to instance methods on the generated class | DEFERRED (vm3 bug in method bodies returning composite arithmetic) | n/a |
+| 4.2 | Structural equality: per-record `mochi_eq_<R>(a, b): boolean` helper that ANDs scalar-field comparisons; `==` dispatches to the helper, `!=` wraps in unary `!`; helper emitted once per record name in `prog.Records` source order, only when the program uses `==` / `!=` on values of that record | LANDED (Node + Deno + Bun) | (this PR) |
+| 4.3 | Multi-file module layout under `src/generated/`; one record per file by default; per-package directory structure preserved | DEFERRED (single-file `src/index.ts` works for Phase 15 npm pack; no consumer is paying for multi-file complexity) | n/a |
+| 4.4 | Identifier mangling: TypeScript reserved-word collisions (`class_`, `import_`) and JS globals (`Object_`, `Promise_`) per MEP-52 §12 | DEFERRED (no fixture surfaces a collision today; will revisit if Phase 5+ fixtures use reserved words as record field names) | n/a |
 
 ## Sub-phase 4.0, class with readonly fields and static of()
 
@@ -91,29 +91,48 @@ Mochi methods receive `self` (or `u` here) explicitly; the emitter remaps the ex
 
 ## Sub-phase 4.2, Structural equality
 
-### Decisions made (4.2)
+### Decisions made (4.2) — as shipped
 
-**Default**: per-instance identity via JavaScript `===` is wrong for records (`User.of({id: 1n, name: "x"}) === User.of({id: 1n, name: "x"})` is `false`).
+**Default**: per-instance identity via JavaScript `===` is wrong for records (`Pt.of({x:1,y:2}) === Pt.of({x:1,y:2})` is `false` because they are two distinct instances). The MEP-52 spec sketched a runtime helper using `Object.keys` reflection plus a `mochiDeepEq` recurse; in implementation we chose a simpler, faster, type-aware emit.
 
-**Runtime helper**: `mochiRecordEq(a, b)` walks the field list:
+**Generated helper, one per record name**: each record name the program compares via `==` or `!=` gets a typed `mochi_eq_<R>(a: R, b: R): boolean` helper inlined into the same module. The body is a single `return` of `(a.f1 === b.f1) && (a.f2 === b.f2) && ...` (parenthesised per field, AND-joined left-to-right).
 
 ```typescript
-// @mochi/runtime/equality
-export function mochiRecordEq<T extends object>(a: T, b: T): boolean {
-  if (a === b) return true;
-  if (a.constructor !== b.constructor) return false;
-  for (const key of Object.keys(a)) {
-    const av = (a as Record<string, unknown>)[key];
-    const bv = (b as Record<string, unknown>)[key];
-    if (!mochiDeepEq(av, bv)) return false;
-  }
-  return true;
+function mochi_eq_Pt(a: Pt, b: Pt): boolean {
+  return (a.x === b.x) && (a.y === b.y);
+}
+
+function mochi_eq_User(a: User, b: User): boolean {
+  return (a.id === b.id) && (a.name === b.name);
 }
 ```
 
-`mochiDeepEq` handles primitive `===` for bigint, number, string, boolean; structural equality for arrays, Maps, Sets, and other records; NaN-aware equality (`Number.isNaN(a) && Number.isNaN(b)` is true).
+**Why a typed helper, not `mochiRecordEq` with `Object.keys`**: (1) `Object.keys` is reflection over enumerable own properties, which the V8/Deno/Bun JITs cannot speculatively specialise; the typed `(a.x === b.x) && (a.y === b.y)` form inlines to a sequence of property loads the JIT can fold. (2) `Object.keys` returns string-keyed entries, but Mochi field names are known at emit time, so the generic helper would force unnecessary indirection. (3) The typed helper is shorter to emit and stays inside the same module (no `@mochi/runtime/equality` import to wire up). (4) Bundle cost: a record with N fields produces one helper that's roughly `12 + 23*N` bytes minified, regardless of how many `==` sites reference it; the `Object.keys` helper would be a constant ~120 bytes plus a runtime branch on every call.
 
-**Per-class override**: when the IR sees `==` between two record values of the same type, the emitter generates a typed `equals(other: User): boolean` method that inlines the field-by-field check (no `Object.keys` reflection in the hot path). This is the recommended path; the runtime helper is the fallback for generic-record contexts.
+**`==` lowering**: `BinEqRec` lowers to `CallExpr{ mochi_eq_<R>, [lhs, rhs] }`. The aotir `BinaryExpr` doesn't carry the record name directly (Op + Left + Right + Result are the only carrier fields), so the lowerer recovers it via a TS-side `tsExprRecordName(e.Left)` mirroring the C-side helper. The Mochi frontend's typechecker has already proven both operands carry the same record name before stamping `BinEqRec`, so reading from `Left` alone is sufficient.
+
+**`!=` lowering**: `BinNeRec` lowers to a unary `!` wrap around the same helper call: `!mochi_eq_<R>(a, b)`. We deliberately chose a wrap over a parallel `mochi_ne_<R>` helper because (1) `!=` on records has no short-circuit semantics for the frontend to preserve (it is pure boolean negation), (2) the wrap saves us doubling the helper surface, (3) the JIT inlines `!` over a boolean-returning call to a single branch with no extra cost.
+
+**Helper emit order is `prog.Records` source order, not call-site order**: the lowerer walks `BinEqRec` sites during body lowering and stamps each referenced record name into a `recordEqFlags map[string]bool`. The prelude assembler then walks `prog.Records` (already in source order from the Mochi file) and emits a helper for every flagged name. This ordering is byte-stable across runs even when the lowerer visits call sites in a different order (future parallel lowerer changes will not regress Phase 16 reproducibility).
+
+**Helper emit is opt-in**: a record declared but never compared via `==` or `!=` gets NO helper. The bundle pays only for what the program uses. `TestPhase4_2UnusedRecordNoHelper` is the assertion gate.
+
+**Helper emit is exactly once per record name**: a program with N `==` sites against the same record type still gets exactly one helper declaration. `TestPhase4_2HelperEmittedOnce` is the assertion gate.
+
+**Field-type coverage**: the four scalar primitives (int → number, float → number, bool → boolean, string → string). All four use TS `===` (JS string equality is byte-wise; number equality is IEEE which matches vm3 for NaN-free fixtures; bool equality is trivial). Nested-record fields are gated out by aotir's Phase 3.0 `buildRecordDecl` (the verifier rejects records with non-scalar fields). When Phase 5 lifts that gate, `buildRecordEqDecl` will grow a recursive `mochi_eq_<Inner>(a.f, b.f)` case for nested-record fields.
+
+**Empty record special case**: a record with zero fields produces `return true;` (any two instances of an empty record are structurally equal). aotir's verifier permits empty records; the helper has to handle them.
+
+**No `equals` instance method**: the MEP-52 abstract suggested per-class `equals(other: User): boolean` methods overriding a `mochiRecordEq` fallback. We dropped the instance-method form for now because (1) Mochi `==` is a free-function dispatch in the IR, not a method call, (2) adding an instance method would require knowing at class emit time which records get compared, which is the same information we already use for the free-function form, just emitted on the wrong side, (3) consumers of the generated TS use `mochi_eq_Pt(a, b)`, not `a.equals(b)`, so the instance method would be dead emit.
+
+### Files (as shipped, 4.2)
+
+| File | Purpose |
+|------|---------|
+| `transpiler3/typescript/lower/phase04.go` | Adds `tsExprRecordName` (record-name extraction for binary operands), `lowerRecordEq` (BinEqRec/BinNeRec dispatch), `recordEqDecls` (walks `prog.Records` and emits one helper per flagged name in source order), `buildRecordEqDecl` (renders one helper body) |
+| `transpiler3/typescript/lower/lower.go` | Threads `recordEqFlags map[string]bool` on the lowerer; branches `lowerBinary` to `lowerRecordEq` for BinEqRec / BinNeRec; wires `recordEqDecls` into the prelude after `runtimeSetDecls` and before `userDecls` |
+| `transpiler3/typescript/build/phase04_2_test.go` | Five tests: `TestPhase4_2RecordEquality{Node,Deno,Bun}` (fixture corpus byte-equal stdout), `TestPhase4_2EmitWithoutRuntime` (per-fixture token assertions), `TestPhase4_2UnusedRecordNoHelper` (opt-in helper), `TestPhase4_2HelperEmittedOnce` (one helper per record name), `TestPhase4_2HelperOrder` (helpers in `prog.Records` source order) |
+| `tests/transpiler3/typescript/fixtures/phase04.2-record-equality/` | 28 .mochi/.out fixture pairs covering int/float/bool/string fields, multi-field records, two/three record types, self-equality, count-eq-loops, &&/\|\| chains, negation, function returns, var reassignment, while loops, field-access operands, unused-record skip |
 
 ## Sub-phase 4.3, Multi-file layout
 
@@ -150,23 +169,35 @@ Mochi tooling reading the emitted source recovers the original name.
 
 | File | Purpose |
 |------|---------|
-| `transpiler3/typescript/lower/records.go` | Record declaration to class; static of() factory; field readonly enforcement |
-| `transpiler3/typescript/lower/methods.go` | Record method to instance method; explicit-self to `this` rewrite |
-| `transpiler3/typescript/lower/equality.go` | Per-type `equals` method generation; `mochiRecordEq` fallback dispatch |
-| `transpiler3/typescript/emit/layout.go` | Multi-file layout under `src/generated/`; package directory tree; per-package `index.ts` |
-| `transpiler3/typescript/lower/mangle.go` | Reserved-word and global identifier mangling; `@mochiName` JSDoc emission |
-| `runtime3/typescript/src/equality/index.ts` | `mochiRecordEq`, `mochiDeepEq` |
-| `transpiler3/typescript/build/phase04_test.go` | `TestPhase4Records` |
-| `tests/transpiler3/typescript/fixtures/phase04-records/` | 35 fixtures |
+| `transpiler3/typescript/lower/records.go` | Record declaration to class; static of() factory; field readonly enforcement (shipped as `phase03_4.go`) |
+| `transpiler3/typescript/lower/methods.go` | Record method to instance method; explicit-self to `this` rewrite (deferred with 4.1) |
+| `transpiler3/typescript/lower/equality.go` | Per-record helper generation; `BinEqRec` / `BinNeRec` dispatch (shipped as `phase04.go`) |
+| `transpiler3/typescript/emit/layout.go` | Multi-file layout under `src/generated/`; package directory tree; per-package `index.ts` (deferred with 4.3) |
+| `transpiler3/typescript/lower/mangle.go` | Reserved-word and global identifier mangling; `@mochiName` JSDoc emission (deferred with 4.4) |
+| `runtime3/typescript/src/equality/index.ts` | `mochiRecordEq`, `mochiDeepEq` (superseded by per-record helper emit) |
+| `transpiler3/typescript/build/phase04_2_test.go` | `TestPhase4_2RecordEquality{Node,Deno,Bun}` + four shape gates (shipped) |
+| `tests/transpiler3/typescript/fixtures/phase04.2-record-equality/` | 28 fixtures (shipped) |
 
-## Test set
+## Test set (as shipped, 4.2)
 
-- `TestPhase4Records`, 35 fixtures four-runtime.
-- `TestPhase4StructuralEquality`, fixtures asserting `==` between distinct instances with the same field values returns `true`.
-- `TestPhase4PrivateConstructor`, asserts a hand-edited `.ts` calling `new User(...)` from outside the module fails tsc.
+- `TestPhase4_2RecordEqualityNode`, `TestPhase4_2RecordEqualityDeno`, `TestPhase4_2RecordEqualityBun`: 28 fixtures byte-equal stdout against vm3 reference.
+- `TestPhase4_2EmitWithoutRuntime`: seven representative fixtures asserted against the helper signature, field-wise comparison shape, `!=` wrap, and unused-record skip.
+- `TestPhase4_2UnusedRecordNoHelper`: a record never compared via `==` produces no helper emit.
+- `TestPhase4_2HelperEmittedOnce`: programs with multiple `==` sites against the same record name produce exactly one helper declaration.
+- `TestPhase4_2HelperOrder`: helpers appear in `prog.Records` source order (Phase 16 reproducibility gate).
 
 ## Deferred work
 
+- 4.1 record methods. Blocked by vm3 returning wrong values for record method bodies that evaluate composite arithmetic; without a working vm3 reference, byte-equal stdout cannot be asserted. Will unblock once vm3 lands a fix or once Phase 7 ships an aotir-direct gate.
+- 4.3 multi-file layout. Premature; single-file `src/index.ts` works for Phase 15 npm pack and keeps source-map stability simple. Will revisit when a consumer surfaces a need for per-record file splitting.
+- 4.4 identifier mangling. No fixture surfaces a TS-keyword collision today (none of the 28 Phase 4.2 fixtures uses a reserved word as a field or record name). Will revisit when a fixture in Phase 5+ exercises this.
 - Mutable record fields (Mochi `var` field in a record). Deferred to Phase 9 (agents have mutable state by definition).
 - Record inheritance / extension. Not in MEP-52 scope; Mochi records are flat.
 - Serialisation hooks (`toJSON`, `fromJSON`). Phase 4 emits `JSON.stringify`-friendly classes (own enumerable readonly fields); custom serialisation is a v2 add.
+- Nested-record fields (record fields whose type is another record). aotir's Phase 3.0 verifier rejects these today; when Phase 5 lifts the gate, `buildRecordEqDecl` will grow a recursive `mochi_eq_<Inner>(a.f, b.f)` case.
+- List-field and map-field record equality. aotir already has `BinEqList` / `BinEqMap` opcodes but the TS lowerer does not route those through structural helpers yet; Phase 4.2 ships only `BinEqRec` / `BinNeRec`.
+
+## Landing log
+
+- 2026-05-29 20:00 (GMT+7): Started Phase 4.2 work on `worktree-mep52-phase04.2`.
+- 2026-05-29 20:38 (GMT+7): All 28 fixtures green on Node + Deno + Bun; emit-shape tests green; opt-in / once / order assertions green.

@@ -1,0 +1,10 @@
+type Tag {
+  label: string
+}
+
+let t1 = Tag { label: "hello" }
+let t2 = Tag { label: "hello" }
+let t3 = Tag { label: "world" }
+print(t1 == t2)
+print(t1 == t3)
+print(t1 != t3)

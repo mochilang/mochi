@@ -1,0 +1,14 @@
+type Pt {
+  x: int
+  y: int
+}
+
+fun same(a: Pt, b: Pt): bool {
+  return a == b
+}
+
+let p1 = Pt { x: 1, y: 2 }
+let p2 = Pt { x: 1, y: 2 }
+let p3 = Pt { x: 9, y: 9 }
+print(same(p1, p2))
+print(same(p1, p3))

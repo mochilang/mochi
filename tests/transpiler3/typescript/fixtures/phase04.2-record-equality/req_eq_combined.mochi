@@ -1,0 +1,20 @@
+type P {
+  x: int
+  y: int
+}
+
+let a = P { x: 1, y: 2 }
+let b = P { x: 1, y: 2 }
+let c = P { x: 9, y: 9 }
+var matches = 0
+var misses = 0
+let xs = [a, b, c, a, c]
+for x in xs {
+  if x == a {
+    matches = matches + 1
+  } else {
+    misses = misses + 1
+  }
+}
+print(matches)
+print(misses)

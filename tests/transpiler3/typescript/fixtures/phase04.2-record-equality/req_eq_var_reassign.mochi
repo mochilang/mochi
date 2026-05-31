@@ -1,0 +1,15 @@
+type Pt {
+  x: int
+  y: int
+}
+
+var matched = false
+let a = Pt { x: 1, y: 1 }
+let b = Pt { x: 1, y: 1 }
+let c = Pt { x: 9, y: 9 }
+matched = a == b
+print(matched)
+matched = a == c
+print(matched)
+matched = a != c
+print(matched)

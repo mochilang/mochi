@@ -1,0 +1,10 @@
+type Quad {
+  a: int
+  b: int
+  c: int
+  d: int
+}
+
+let q1 = Quad { a: 1, b: 2, c: 3, d: 4 }
+let q2 = Quad { a: 1, b: 2, c: 3, d: 4 }
+print(q1 == q2)

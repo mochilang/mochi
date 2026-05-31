@@ -75,6 +75,11 @@ type lowerer struct {
 	prog    *aotir.Program
 	colours colour.ColourMap
 	runtime runtimeFlags
+	// recordEqFlags is the set of record names that need a
+	// `mochi_eq_<R>` helper generated. Populated as the lowerer
+	// walks BinEqRec / BinNeRec sites; consumed by recordEqDecls
+	// in the prelude assembly. Phase 4.2.
+	recordEqFlags map[string]bool
 }
 
 // Lower translates an aotir.Program into a single-file
@@ -135,6 +140,15 @@ func Lower(prog *aotir.Program, colours colour.ColourMap) (*tstree.SourceFile, e
 	decls = append(decls, l.runtimeListDecls()...)
 	decls = append(decls, l.runtimeMapDecls()...)
 	decls = append(decls, l.runtimeSetDecls()...)
+	// Phase 4.2: per-record equality helpers. Emitted after the
+	// record ClassDecls (so the `R` type is in scope) and after
+	// the runtime helpers (so the prelude reads top-to-bottom as
+	// container helpers, then structural helpers, then user code).
+	recordEqHelpers, err := l.recordEqDecls()
+	if err != nil {
+		return nil, err
+	}
+	decls = append(decls, recordEqHelpers...)
 	decls = append(decls, userDecls...)
 
 	mainDecl := &tstree.FuncDecl{
@@ -643,6 +657,13 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (tstree.Expr, error) {
 }
 
 func (l *lowerer) lowerBinary(e *aotir.BinaryExpr) (tstree.Expr, error) {
+	// Phase 4.2 record equality: BinEqRec / BinNeRec lower to a
+	// generated `mochi_eq_<R>` helper call, not a `===` operator
+	// (TS `===` on class instances is reference equality, not
+	// the structural equality Mochi `==` contracts).
+	if e.Op == aotir.BinEqRec || e.Op == aotir.BinNeRec {
+		return l.lowerRecordEq(e)
+	}
 	op, err := tsBinOp(e.Op)
 	if err != nil {
 		return nil, err

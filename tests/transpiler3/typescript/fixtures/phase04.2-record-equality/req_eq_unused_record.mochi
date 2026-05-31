@@ -1,0 +1,12 @@
+type A {
+  v: int
+}
+type B {
+  s: string
+}
+
+let a1 = A { v: 1 }
+let a2 = A { v: 1 }
+let b = B { s: "x" }
+print(a1 == a2)
+print(b.s)

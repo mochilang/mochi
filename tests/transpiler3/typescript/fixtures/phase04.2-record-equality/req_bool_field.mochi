@@ -1,0 +1,11 @@
+type Flag {
+  enabled: bool
+  level: int
+}
+
+let f1 = Flag { enabled: true, level: 3 }
+let f2 = Flag { enabled: true, level: 3 }
+let f3 = Flag { enabled: false, level: 3 }
+print(f1 == f2)
+print(f1 == f3)
+print(f1 != f3)
