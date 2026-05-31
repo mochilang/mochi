@@ -106,14 +106,74 @@ func (l *lowerer) lowerAgentIntentCallExpr(e *aotir.AgentIntentCallExpr) (gotree
 	}, nil
 }
 
-// lowerAsyncExpr emits the body expression synchronously for the Go target.
-// Full goroutine-backed futures land in a later phase.
+// lowerAsyncExpr emits `async expr` as a goroutine-backed buffered channel:
+//
+//	func() chan T { ch := make(chan T, 1); go func() { ch <- expr }(); return ch }()
 func (l *lowerer) lowerAsyncExpr(e *aotir.AsyncExpr) (gotree.Expr, error) {
-	return l.lowerExpr(e.Body)
+	body, err := l.lowerExpr(e.Body)
+	if err != nil {
+		return nil, fmt.Errorf("async body: %w", err)
+	}
+	et, err := l.lowerType(e.ElemType)
+	if err != nil {
+		return nil, fmt.Errorf("async elem type: %w", err)
+	}
+	chanType := "chan " + et
+
+	// ch := make(chan T, 1)
+	makeCh := &gotree.AssignStmt{
+		Lhs: []gotree.Expr{&gotree.Ident{Name: "ch"}},
+		Tok: ":=",
+		Rhs: []gotree.Expr{&gotree.CallExpr{
+			Fun: &gotree.Ident{Name: "make"},
+			Args: []gotree.Expr{
+				&gotree.RawExpr{Src: chanType},
+				&gotree.BasicLit{Kind: gotree.IntLit, Value: "1"},
+			},
+		}},
+	}
+
+	// go func() { ch <- body }()
+	goStmt := &gotree.GoStmt{
+		Call: &gotree.CallExpr{
+			Fun: &gotree.FuncLit{
+				Type: &gotree.FuncType{},
+				Body: &gotree.BlockStmt{
+					List: []gotree.Stmt{
+						&gotree.SendStmt{
+							Chan:  &gotree.Ident{Name: "ch"},
+							Value: body,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	// return ch
+	retCh := &gotree.ReturnStmt{
+		Results: []gotree.Expr{&gotree.Ident{Name: "ch"}},
+	}
+
+	return &gotree.CallExpr{
+		Fun: &gotree.FuncLit{
+			Type: &gotree.FuncType{
+				Results: []gotree.Field{{Type: &gotree.RawExpr{Src: chanType}}},
+			},
+			Body: &gotree.BlockStmt{
+				List: []gotree.Stmt{makeCh, goStmt, retCh},
+			},
+		},
+	}, nil
 }
 
-// lowerAwaitExpr unwraps a future. Paired with lowerAsyncExpr's synchronous
-// emit, this is a no-op pass-through.
+// lowerAwaitExpr unwraps a future. Paired with lowerAsyncExpr's goroutine
+// emit, this receives from the channel: <-future.
 func (l *lowerer) lowerAwaitExpr(e *aotir.AwaitExpr) (gotree.Expr, error) {
-	return l.lowerExpr(e.Future)
+	ch, err := l.lowerExpr(e.Future)
+	if err != nil {
+		return nil, fmt.Errorf("await: %w", err)
+	}
+	return &gotree.UnaryExpr{Op: "<-", X: ch}, nil
 }
+
