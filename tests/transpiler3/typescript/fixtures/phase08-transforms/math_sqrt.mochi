@@ -1,0 +1,4 @@
+let x = 9.0
+print(sqrt(x))
+let y = 4.0
+print(sqrt(y))

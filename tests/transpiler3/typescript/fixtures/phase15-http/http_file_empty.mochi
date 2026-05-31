@@ -1,0 +1,3 @@
+write_file("/tmp/mochi_ts_http_empty.txt", "")
+let content = http_get("file:///tmp/mochi_ts_http_empty.txt")
+print(len(content))

@@ -1,0 +1,6 @@
+let nums = [10, 20, 30, 40, 50]
+let big = from n in nums where n > 15 select n
+let result = from n in big where n < 45 select n
+for r in result {
+  print(r)
+}

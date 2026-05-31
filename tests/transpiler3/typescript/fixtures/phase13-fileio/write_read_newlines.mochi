@@ -1,0 +1,3 @@
+write_file("/tmp/mochi_ts_test_newlines.txt", "line1\nline2\nline3")
+let content = read_file("/tmp/mochi_ts_test_newlines.txt")
+print(content)

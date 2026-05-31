@@ -1,0 +1,7 @@
+write_file("/tmp/mochi_ts_http_cond.txt", "yes")
+let r = http_get("file:///tmp/mochi_ts_http_cond.txt")
+if r == "yes" {
+  print("got yes")
+} else {
+  print("unexpected: " + r)
+}

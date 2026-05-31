@@ -1,0 +1,11 @@
+agent Summer(total: int) {
+  intent add_range(from_n: int, to_n: int) {
+    for i in from_n..to_n {
+      total = total + i
+    }
+  }
+  intent get(): int { return total }
+}
+let s = Summer(0)
+s.add_range(1, 6)
+print(s.get())

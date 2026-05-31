@@ -1,0 +1,6 @@
+write_file("/tmp/mochi_ts_http_multi.txt", "line1\nline2\nline3")
+let content = http_get("file:///tmp/mochi_ts_http_multi.txt")
+let ls = split(content, "\n")
+for l in ls {
+  print(l)
+}

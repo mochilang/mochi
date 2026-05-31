@@ -1,0 +1,8 @@
+agent FloatStore(val: float) {
+  intent get(): float { return val }
+  intent double_it() { val = val * 2.0 }
+}
+let s = FloatStore(1.5)
+print(s.get())
+s.double_it()
+print(s.get())

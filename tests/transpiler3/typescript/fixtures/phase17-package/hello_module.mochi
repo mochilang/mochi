@@ -1,0 +1,4 @@
+fun main_fn(): string {
+  return "module works"
+}
+print(main_fn())

@@ -1,0 +1,3 @@
+let s = "Hello World"
+print(upper(s))
+print(lower(s))

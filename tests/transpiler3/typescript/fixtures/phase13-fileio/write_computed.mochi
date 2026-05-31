@@ -1,0 +1,4 @@
+let data = "value=" + str(42)
+write_file("/tmp/mochi_ts_test_computed.txt", data)
+let back = read_file("/tmp/mochi_ts_test_computed.txt")
+print(back)

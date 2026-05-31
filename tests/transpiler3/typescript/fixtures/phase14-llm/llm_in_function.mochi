@@ -1,0 +1,9 @@
+fun ask(prompt: string): string {
+  return llm.generate("openai", "gpt-4", prompt)
+}
+let r = ask("any question")
+if r == "" {
+  print("empty")
+} else {
+  print(r)
+}

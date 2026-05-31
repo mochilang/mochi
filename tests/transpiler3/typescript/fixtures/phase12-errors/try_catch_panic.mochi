@@ -1,0 +1,5 @@
+try {
+  panic(1, "something went wrong")
+} catch err {
+  print("caught: " + err)
+}

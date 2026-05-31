@@ -1,0 +1,3 @@
+let x = 3.7
+print(floor(x))
+print(ceil(x))

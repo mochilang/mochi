@@ -1,0 +1,7 @@
+var result = 0
+try {
+  result = 42
+} catch err {
+  result = -1
+}
+print(result)

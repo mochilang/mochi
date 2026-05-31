@@ -1,0 +1,4 @@
+let s = "hello"
+print(reverse(s))
+let t = "abcde"
+print(reverse(t))

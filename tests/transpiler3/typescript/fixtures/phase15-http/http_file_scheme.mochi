@@ -1,0 +1,3 @@
+write_file("/tmp/mochi_ts_http_test.txt", "hello from file")
+let content = http_get("file:///tmp/mochi_ts_http_test.txt")
+print(content)

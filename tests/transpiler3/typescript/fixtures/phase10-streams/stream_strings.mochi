@@ -1,0 +1,6 @@
+let s = stream<string>(5)
+let sub = subscribe(s)
+emit(s, "hello")
+emit(s, "world")
+print(recv(sub))
+print(recv(sub))

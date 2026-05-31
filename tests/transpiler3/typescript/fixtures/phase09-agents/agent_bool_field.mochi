@@ -1,0 +1,10 @@
+agent Toggle(on: bool) {
+  intent is_on(): bool { return on }
+  intent toggle() { on = !on }
+}
+let t = Toggle(false)
+print(t.is_on())
+t.toggle()
+print(t.is_on())
+t.toggle()
+print(t.is_on())

@@ -1,0 +1,13 @@
+fun might_fail(n: int): string {
+  try {
+    if n == 0 {
+      panic(1, "zero")
+    }
+    return "ok " + str(n)
+  } catch err {
+    return "err: " + err
+  }
+}
+print(might_fail(1))
+print(might_fail(0))
+print(might_fail(2))

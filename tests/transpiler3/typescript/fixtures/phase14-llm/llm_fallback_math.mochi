@@ -1,0 +1,8 @@
+let answer = llm.generate("openai", "gpt-4", "what is the square root of 16")
+let result = 0
+if answer == "" {
+  result = 4
+} else {
+  result = len(answer)
+}
+print(result)

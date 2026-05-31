@@ -1,0 +1,5 @@
+let words: list<string> = ["hello", "world", "foo", "bar", "baz"]
+let long_words = from w in words where len(w) > 3 select w
+for w in long_words {
+  print(w)
+}

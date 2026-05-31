@@ -1,0 +1,4 @@
+write_file("/tmp/mochi_ts_http_repeated.txt", "value")
+let a = http_get("file:///tmp/mochi_ts_http_repeated.txt")
+let b = http_get("file:///tmp/mochi_ts_http_repeated.txt")
+print(a == b)

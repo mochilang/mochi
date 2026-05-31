@@ -1,0 +1,10 @@
+fun inner(): future<int> {
+  return async 100
+}
+fun outer(): future<int> {
+  let f = inner()
+  let v = await f
+  return async (v + 1)
+}
+let fo = outer()
+print(await fo)

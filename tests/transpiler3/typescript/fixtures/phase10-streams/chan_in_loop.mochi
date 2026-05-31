@@ -1,0 +1,7 @@
+let ch = chan<int>(10)
+for i in 1..6 {
+  send(ch, i * i)
+}
+for i in 1..6 {
+  print(recv(ch))
+}

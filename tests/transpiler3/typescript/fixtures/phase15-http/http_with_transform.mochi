@@ -1,0 +1,3 @@
+write_file("/tmp/mochi_ts_http_transform.txt", "hello")
+let content = http_get("file:///tmp/mochi_ts_http_transform.txt")
+print(upper(content))

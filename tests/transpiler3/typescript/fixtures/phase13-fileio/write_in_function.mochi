@@ -1,0 +1,5 @@
+fun save_greeting(name: string) {
+  write_file("/tmp/mochi_ts_test_greeting.txt", "Hello, " + name + "!")
+}
+save_greeting("TypeScript")
+print(read_file("/tmp/mochi_ts_test_greeting.txt"))

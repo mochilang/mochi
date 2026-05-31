@@ -1,0 +1,6 @@
+fun check(): future<bool> {
+  return async true
+}
+let f = check()
+let result = await f
+print(result)

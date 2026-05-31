@@ -1,0 +1,21 @@
+agent Clamp(value: int) {
+  intent set(v: int) {
+    if v < 0 {
+      value = 0
+    } else {
+      if v > 100 {
+        value = 100
+      } else {
+        value = v
+      }
+    }
+  }
+  intent get(): int { return value }
+}
+let c = Clamp(50)
+c.set(200)
+print(c.get())
+c.set(-10)
+print(c.get())
+c.set(75)
+print(c.get())

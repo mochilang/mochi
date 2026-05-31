@@ -1,0 +1,9 @@
+agent Stack(top: int) {
+  intent push(v: int) { top = v }
+  intent peek(): int { return top }
+}
+let s = Stack(0)
+s.push(42)
+print(s.peek())
+s.push(99)
+print(s.peek())

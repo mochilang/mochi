@@ -1,0 +1,11 @@
+agent Point(x: int, y: int) {
+  intent get_x(): int { return x }
+  intent get_y(): int { return y }
+  intent move(dx: int, dy: int) { x = x + dx; y = y + dy }
+}
+let p = Point(1, 2)
+print(p.get_x())
+print(p.get_y())
+p.move(3, 4)
+print(p.get_x())
+print(p.get_y())

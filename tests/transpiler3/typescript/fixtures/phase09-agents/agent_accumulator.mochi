@@ -1,0 +1,9 @@
+agent Acc(total: int) {
+  intent add(n: int) { total = total + n }
+  intent get(): int { return total }
+}
+let a = Acc(0)
+a.add(10)
+a.add(20)
+a.add(30)
+print(a.get())

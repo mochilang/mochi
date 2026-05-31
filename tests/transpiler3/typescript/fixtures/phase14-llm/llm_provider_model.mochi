@@ -1,0 +1,9 @@
+let providers: list<string> = ["openai", "anthropic", "google"]
+var empty_count = 0
+for p in providers {
+  let r = llm.generate(p, "default", "hello")
+  if r == "" {
+    empty_count = empty_count + 1
+  }
+}
+print(empty_count)

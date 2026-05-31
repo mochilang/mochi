@@ -1,0 +1,7 @@
+fun square_async(x: int): future<int> {
+  return async (x * x)
+}
+for i in 1..4 {
+  let f = square_async(i)
+  print(await f)
+}

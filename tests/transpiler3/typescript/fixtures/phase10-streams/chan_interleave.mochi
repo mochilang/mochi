@@ -1,0 +1,6 @@
+let ch = chan<int>(10)
+send(ch, 1)
+let v1 = recv(ch)
+send(ch, 2)
+let v2 = recv(ch)
+print(v1 + v2)

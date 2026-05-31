@@ -1,0 +1,4 @@
+let a = llm.generate("anthropic", "claude-3", "test prompt 1")
+let b = llm.generate("openai", "gpt-4", "test prompt 2")
+print(len(a))
+print(len(b))

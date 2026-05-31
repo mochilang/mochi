@@ -1,0 +1,9 @@
+write_file("/tmp/mochi_ts_test_appendloop.txt", "")
+for i in 1..4 {
+  append_file("/tmp/mochi_ts_test_appendloop.txt", str(i) + "\n")
+}
+let ls = lines("/tmp/mochi_ts_test_appendloop.txt")
+let nonempty = filter(ls, fun(s: string): bool => len(s) > 0)
+for l in nonempty {
+  print(l)
+}

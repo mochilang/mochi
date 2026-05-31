@@ -1,0 +1,4 @@
+let n = 123
+let raw = str(n)
+let decoded = json_decode(raw)
+print(decoded)

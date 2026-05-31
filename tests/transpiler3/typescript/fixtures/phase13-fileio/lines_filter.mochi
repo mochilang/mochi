@@ -1,0 +1,6 @@
+write_file("/tmp/mochi_ts_test_linesfilter.txt", "alpha\nbeta\nfoo\ngamma\nbar")
+let ls = lines("/tmp/mochi_ts_test_linesfilter.txt")
+let long_ones = filter(ls, fun(s: string): bool => len(s) > 3)
+for l in long_ones {
+  print(l)
+}

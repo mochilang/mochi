@@ -1,0 +1,5 @@
+let nums = [1, 2, 3]
+let squares = from n in nums select n * n
+for s in squares {
+  print(s)
+}

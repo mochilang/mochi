@@ -1,0 +1,12 @@
+fun parse_int(s: string): int {
+  try {
+    if s == "" {
+      panic(1, "empty string")
+    }
+    return len(s)
+  } catch err {
+    return 0
+  }
+}
+print(parse_int("hello"))
+print(parse_int(""))

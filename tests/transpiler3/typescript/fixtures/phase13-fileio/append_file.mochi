@@ -1,0 +1,5 @@
+write_file("/tmp/mochi_ts_test_append.txt", "first\n")
+append_file("/tmp/mochi_ts_test_append.txt", "second\n")
+append_file("/tmp/mochi_ts_test_append.txt", "third")
+let content = read_file("/tmp/mochi_ts_test_append.txt")
+print(content)

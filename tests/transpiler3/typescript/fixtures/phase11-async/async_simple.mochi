@@ -1,0 +1,5 @@
+fun make_async(): future<int> {
+  return async 42
+}
+let f = make_async()
+print(await f)
