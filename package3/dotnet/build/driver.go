@@ -13,7 +13,30 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"mochi/package3/dotnet/publish"
+	"mochi/package3/dotnet/shimgen"
 )
+
+// Driver wraps the filesystem root for pipeline workspace operations.
+type Driver struct {
+	// WorkDir is the root directory for all generated workspace files.
+	WorkDir string
+}
+
+// NewDriver creates a Driver rooted at workDir.
+func NewDriver(workDir string) *Driver { return &Driver{WorkDir: workDir} }
+
+// PrepareWorkspace creates the workspace directory structure under d.WorkDir.
+func (d *Driver) PrepareWorkspace() error {
+	return os.MkdirAll(filepath.Join(d.WorkDir, "dotnet_workspace"), 0o755)
+}
+
+// WriteWorkspaceRoot materialises the workspace into d.WorkDir/dotnet_workspace and returns the sln path.
+func (d *Driver) WriteWorkspaceRoot(cfg publish.WorkspaceConfig, shims []*shimgen.Shim) (string, error) {
+	cfg.WorkDir = filepath.Join(d.WorkDir, "dotnet_workspace")
+	return publish.MaterialiseWorkspace(cfg, shims)
+}
 
 // WorkspaceConfig holds the paths and settings for the wrapper workspace.
 type WorkspaceConfig struct {

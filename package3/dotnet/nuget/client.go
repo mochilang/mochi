@@ -1,6 +1,4 @@
-// Package nuget implements a NuGet V3 protocol client for the MEP-68 bridge.
-// It handles service index discovery, package registration lookups, version
-// resolution, .nupkg content download, and the OIDC trusted-publishing flow.
+// Package nuget implements a NuGet V3 flat-container client for the MEP-68 bridge.
 // Protocol reference: https://learn.microsoft.com/en-us/nuget/api/overview
 package nuget
 
@@ -17,224 +15,188 @@ import (
 )
 
 const (
-	// defaultServiceIndex is the nuget.org V3 service index URL.
-	defaultServiceIndex = "https://api.nuget.org/v3/index.json"
+	// DefaultServiceIndexURL is the nuget.org V3 service index URL.
+	DefaultServiceIndexURL = "https://api.nuget.org/v3/index.json"
 
-	// cacheMaxAge is how long the service index and registration pages are
-	// cached before being re-fetched. nuget.org recommends 10-minute caching.
+	// DefaultFlatContainerBaseURL is the default flat-container base URL.
+	DefaultFlatContainerBaseURL = "https://api.nuget.org/v3-flatcontainer/"
+
+	// DefaultDownloadURLTemplate is the default .nupkg download URL template.
+	DefaultDownloadURLTemplate = "https://api.nuget.org/v3-flatcontainer/{id}/{version}/{id}.{version}.nupkg"
+
+	// DefaultUserAgent is sent in every outbound HTTP request.
+	DefaultUserAgent = "mochi/package3-dotnet (MEP-68)"
+
+	// cacheMaxAge is how long version lists are cached in memory.
 	cacheMaxAge = 10 * time.Minute
 )
 
-// Client is a NuGet V3 protocol client. It caches service index and
-// registration data in memory for the lifetime of the client instance.
+// Sentinel errors.
+var (
+	ErrPackageNotFound = fmt.Errorf("nuget: package not found")
+	ErrVersionNotFound = fmt.Errorf("nuget: no version matches constraint")
+)
+
+// Client is a NuGet V3 flat-container client.
 type Client struct {
-	serviceIndexURL string
-	httpClient      *http.Client
-	serviceIndex    *serviceIndex
-	indexFetchedAt  time.Time
+	// ServiceIndexURL is the nuget.org V3 service index URL (informational; not
+	// used for flat-container requests).
+	ServiceIndexURL string
+	// FlatContainerBaseURL is the base URL for the flat-container endpoint.
+	// Defaults to DefaultFlatContainerBaseURL.
+	FlatContainerBaseURL string
+	// DownloadURLTemplate is the URL template for .nupkg downloads.
+	// Use {id} and {version} as placeholders (both lower-cased).
+	DownloadURLTemplate string
+	// HTTP is the HTTP client used for all requests.
+	HTTP *http.Client
+	// UserAgent is sent in every outbound request.
+	UserAgent string
+
+	// versionCache caches version lists by lowercase package ID.
+	versionCache    map[string]versionCacheEntry
 }
 
-// NewClient creates a NuGet V3 client using the given service index URL.
-// Pass an empty string to use the nuget.org default.
+type versionCacheEntry struct {
+	versions  []string
+	fetchedAt time.Time
+}
+
+// NewClient creates a NuGet client. Pass an empty serviceIndexURL to use the
+// nuget.org default.
 func NewClient(serviceIndexURL string) *Client {
 	if serviceIndexURL == "" {
-		serviceIndexURL = defaultServiceIndex
+		serviceIndexURL = DefaultServiceIndexURL
 	}
 	return &Client{
-		serviceIndexURL: serviceIndexURL,
-		httpClient:      &http.Client{Timeout: 30 * time.Second},
+		ServiceIndexURL:      serviceIndexURL,
+		FlatContainerBaseURL: DefaultFlatContainerBaseURL,
+		DownloadURLTemplate:  DefaultDownloadURLTemplate,
+		HTTP:                 &http.Client{Timeout: 30 * time.Second},
+		UserAgent:            DefaultUserAgent,
+		versionCache:         make(map[string]versionCacheEntry),
 	}
 }
 
-type serviceIndex struct {
-	Version   string          `json:"version"`
-	Resources []serviceResource `json:"resources"`
-}
-
-type serviceResource struct {
-	ID      string `json:"@id"`
-	Type    string `json:"@type"`
-	Comment string `json:"comment"`
-}
-
-func (c *Client) getServiceIndex(ctx context.Context) (*serviceIndex, error) {
-	if c.serviceIndex != nil && time.Since(c.indexFetchedAt) < cacheMaxAge {
-		return c.serviceIndex, nil
+// FetchVersions returns all known versions for packageID from the flat-container
+// endpoint. Results are cached for cacheMaxAge.
+func (c *Client) FetchVersions(ctx context.Context, packageID string) ([]string, error) {
+	if packageID == "" {
+		return nil, fmt.Errorf("nuget: FetchVersions: empty package id")
 	}
-	body, err := c.get(ctx, c.serviceIndexURL)
+	id := strings.ToLower(packageID)
+	if e, ok := c.versionCache[id]; ok && time.Since(e.fetchedAt) < cacheMaxAge {
+		return e.versions, nil
+	}
+	base := strings.TrimSuffix(c.FlatContainerBaseURL, "/")
+	url := base + "/" + id + "/index.json"
+	body, status, err := c.get(ctx, url)
 	if err != nil {
-		return nil, fmt.Errorf("nuget: fetch service index: %w", err)
+		return nil, fmt.Errorf("nuget: FetchVersions %s: %w", packageID, err)
 	}
 	defer body.Close()
-	var idx serviceIndex
-	if err := json.NewDecoder(body).Decode(&idx); err != nil {
-		return nil, fmt.Errorf("nuget: decode service index: %w", err)
+	if status == http.StatusNotFound {
+		return nil, ErrPackageNotFound
 	}
-	c.serviceIndex = &idx
-	c.indexFetchedAt = time.Now()
-	return &idx, nil
+	if status != http.StatusOK {
+		return nil, fmt.Errorf("nuget: FetchVersions %s: HTTP %d", packageID, status)
+	}
+	var idx VersionsIndex
+	if err := json.NewDecoder(body).Decode(&idx); err != nil {
+		return nil, fmt.Errorf("nuget: FetchVersions %s: decode: %w", packageID, err)
+	}
+	if c.versionCache == nil {
+		c.versionCache = make(map[string]versionCacheEntry)
+	}
+	c.versionCache[id] = versionCacheEntry{versions: idx.Versions, fetchedAt: time.Now()}
+	return idx.Versions, nil
 }
 
-func (c *Client) resourceURL(ctx context.Context, typePref ...string) (string, error) {
-	idx, err := c.getServiceIndex(ctx)
+// LatestVersion returns the highest version of packageID that satisfies req.
+func (c *Client) LatestVersion(ctx context.Context, packageID string, req semver.Req) (string, error) {
+	versions, err := c.FetchVersions(ctx, packageID)
 	if err != nil {
 		return "", err
 	}
-	for _, want := range typePref {
-		for _, r := range idx.Resources {
-			if r.Type == want || strings.HasPrefix(r.Type, want+"/") {
-				return r.ID, nil
-			}
-		}
-	}
-	return "", fmt.Errorf("nuget: no resource of type %v in service index", typePref)
-}
-
-// RegistrationEntry holds the metadata for a specific package version as
-// returned by the NuGet V3 registration endpoint.
-type RegistrationEntry struct {
-	ID          string   `json:"id"`
-	Version     string   `json:"version"`
-	Description string   `json:"description"`
-	Authors     []string `json:"authors"`
-	PackageHash     string   `json:"packageHash"`
-	PackageHashAlgorithm string `json:"packageHashAlgorithm"`
-	PackageContent  string `json:"packageContent"` // .nupkg download URL
-	DependencyGroups []DepGroup `json:"dependencyGroups"`
-}
-
-// DepGroup is a group of dependencies for a specific target framework.
-type DepGroup struct {
-	TargetFramework string `json:"targetFramework"`
-	Dependencies    []Dep  `json:"dependencies"`
-}
-
-// Dep is a single dependency in a dependency group.
-type Dep struct {
-	ID    string `json:"id"`
-	Range string `json:"range"`
-}
-
-// registrationPage is a NuGet registration page (covers a version range).
-type registrationPage struct {
-	Lower string              `json:"lower"`
-	Upper string              `json:"upper"`
-	Count int                 `json:"count"`
-	Items []registrationLeaf  `json:"items"`
-	ID    string              `json:"@id"` // URL to fetch this page if Items is nil
-}
-
-type registrationLeaf struct {
-	CatalogEntry RegistrationEntry `json:"catalogEntry"`
-}
-
-type registrationIndex struct {
-	Count int                `json:"count"`
-	Items []registrationPage `json:"items"`
-}
-
-// Resolve queries the NuGet V3 registration endpoint for packageID, collects
-// all available versions satisfying constraint, and returns the highest one.
-// If allowPrerelease is false, prerelease versions are excluded.
-func (c *Client) Resolve(ctx context.Context, packageID string, constraint semver.Range, allowPrerelease bool) (*RegistrationEntry, error) {
-	baseURL, err := c.resourceURL(ctx,
-		"RegistrationsBaseUrl/3.6.0",
-		"RegistrationsBaseUrl/3.4.0",
-		"RegistrationsBaseUrl")
-	if err != nil {
-		return nil, err
-	}
-
-	url := strings.TrimSuffix(baseURL, "/") + "/" + strings.ToLower(packageID) + "/index.json"
-	body, err := c.get(ctx, url)
-	if err != nil {
-		return nil, fmt.Errorf("nuget: fetch registration for %s: %w", packageID, err)
-	}
-	defer body.Close()
-
-	var regIdx registrationIndex
-	if err := json.NewDecoder(body).Decode(&regIdx); err != nil {
-		return nil, fmt.Errorf("nuget: decode registration index for %s: %w", packageID, err)
-	}
-
-	var best *RegistrationEntry
-	var bestVer semver.Version
-
-	for _, page := range regIdx.Items {
-		leaves := page.Items
-		if len(leaves) == 0 && page.ID != "" {
-			// Fetch the page separately.
-			pageBody, err := c.get(ctx, page.ID)
-			if err != nil {
-				continue
-			}
-			var fullPage registrationPage
-			json.NewDecoder(pageBody).Decode(&fullPage)
-			pageBody.Close()
-			leaves = fullPage.Items
-		}
-		for _, leaf := range leaves {
-			e := leaf.CatalogEntry
-			v, err := semver.Parse(e.Version)
-			if err != nil {
-				continue
-			}
-			if !allowPrerelease && v.Pre != "" {
-				continue
-			}
-			if !constraint.Satisfies(v) {
-				continue
-			}
-			if best == nil || v.Compare(bestVer) > 0 {
-				entry := e
-				best = &entry
-				bestVer = v
-			}
-		}
-	}
-
-	if best == nil {
-		return nil, fmt.Errorf("nuget: no version of %s satisfies constraint %s", packageID, constraint)
-	}
-	return best, nil
-}
-
-// Download fetches the .nupkg archive for the given package entry and writes
-// it to w. It returns the number of bytes written.
-func (c *Client) Download(ctx context.Context, entry *RegistrationEntry, w io.Writer) (int64, error) {
-	if entry.PackageContent == "" {
-		// Fall back to flat-container URL.
-		flatBase, err := c.resourceURL(ctx, "PackageBaseAddress/3.0.0")
+	var best semver.Version
+	found := false
+	for _, vs := range versions {
+		v, err := semver.Parse(vs)
 		if err != nil {
-			return 0, err
+			continue
 		}
-		id := strings.ToLower(entry.ID)
-		ver := strings.ToLower(entry.Version)
-		entry.PackageContent = fmt.Sprintf("%s/%s/%s/%s.%s.nupkg",
-			strings.TrimSuffix(flatBase, "/"), id, ver, id, ver)
+		if !req.Satisfies(v) {
+			continue
+		}
+		if !found || best.Compare(v) < 0 {
+			best = v
+			found = true
+		}
 	}
-	body, err := c.get(ctx, entry.PackageContent)
+	if !found {
+		return "", ErrVersionNotFound
+	}
+	return best.String(), nil
+}
+
+// DownloadURLFor returns the .nupkg download URL for packageID at version.
+func (c *Client) DownloadURLFor(packageID, version string) (string, error) {
+	if packageID == "" {
+		return "", fmt.Errorf("nuget: DownloadURLFor: empty package id")
+	}
+	if version == "" {
+		return "", fmt.Errorf("nuget: DownloadURLFor: empty version")
+	}
+	id := strings.ToLower(packageID)
+	ver := strings.ToLower(version)
+	tmpl := c.DownloadURLTemplate
+	if tmpl == "" {
+		tmpl = DefaultDownloadURLTemplate
+	}
+	url := strings.ReplaceAll(tmpl, "{id}", id)
+	url = strings.ReplaceAll(url, "{version}", ver)
+	return url, nil
+}
+
+// FetchPackage downloads the .nupkg for packageID at version and writes it to w.
+// Returns the number of bytes written.
+func (c *Client) FetchPackage(ctx context.Context, packageID, version string, w io.Writer) (int64, error) {
+	url, err := c.DownloadURLFor(packageID, version)
 	if err != nil {
-		return 0, fmt.Errorf("nuget: download %s %s: %w", entry.ID, entry.Version, err)
+		return 0, err
+	}
+	body, status, err := c.get(ctx, url)
+	if err != nil {
+		return 0, fmt.Errorf("nuget: FetchPackage %s %s: %w", packageID, version, err)
 	}
 	defer body.Close()
+	if status == http.StatusNotFound {
+		return 0, ErrVersionNotFound
+	}
+	if status != http.StatusOK {
+		return 0, fmt.Errorf("nuget: FetchPackage %s %s: HTTP %d", packageID, version, status)
+	}
 	return io.Copy(w, body)
 }
 
-func (c *Client) get(ctx context.Context, url string) (io.ReadCloser, error) {
+func (c *Client) get(ctx context.Context, url string) (io.ReadCloser, int, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
+	ua := c.UserAgent
+	if ua == "" {
+		ua = DefaultUserAgent
+	}
+	req.Header.Set("User-Agent", ua)
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("User-Agent", "mochi/package3-dotnet (MEP-68)")
-	resp, err := c.httpClient.Do(req)
+	hc := c.HTTP
+	if hc == nil {
+		hc = http.DefaultClient
+	}
+	resp, err := hc.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	if resp.StatusCode != http.StatusOK {
-		resp.Body.Close()
-		return nil, fmt.Errorf("nuget: HTTP %d for %s", resp.StatusCode, url)
-	}
-	return resp.Body, nil
+	return resp.Body, resp.StatusCode, nil
 }
