@@ -3,8 +3,11 @@
 //
 // Phase 1 wires CallStmt for the four print runtime entries by
 // emitting matching `mochi_print_*` TypeScript helpers inline.
-// Later phases switch these to `import { mochi_print_str } from
-// "@mochi/runtime/io"` once the runtime package ships (Phase 15).
+// Phase 2 widens the surface to scalars + control flow + user
+// functions (let, var, if, while, for, break, continue, return,
+// binary and unary expressions, string len / index / contains).
+// Later phases switch the inline helpers to `import { mochi_print_str
+// } from "@mochi/runtime/io"` once the runtime package ships (Phase 15).
 //
 // Determinism: source-order traversal of prog.Functions (skipping
 // the Main entry, which is emitted last under the canonical
@@ -23,10 +26,21 @@ import (
 // program needs so the emit pass only includes the ones that are
 // actually used. The set grows phase by phase.
 type runtimeFlags struct {
+	// Phase 1 print helpers.
 	printStr  bool
-	printI64  bool // Phase 1 emits the i64 helper as a `number` print
+	printI64  bool
 	printF64  bool
 	printBool bool
+	// Phase 2 string helpers. `mochi_str_len` returns the code-
+	// point count (distinct from `.length` which counts UTF-16
+	// units). `mochi_str_at` and `mochi_str_slice` iterate code
+	// points to match Mochi indexing semantics. `mochi_str_contains`
+	// wraps `String.prototype.includes` (Mochi's empty-needle
+	// contract returns true, matching JS spec).
+	strLen      bool
+	strAt       bool
+	strSlice    bool
+	strContains bool
 }
 
 type lowerer struct {
@@ -37,12 +51,12 @@ type lowerer struct {
 
 // Lower translates an aotir.Program into a single-file
 // tstree.SourceFile. The file holds: (1) inline runtime helpers
-// the body needs, (2) one mochi_main() function carrying the
-// entry function's body, (3) a trailing mochi_main(); call.
+// the body needs, (2) user-defined functions in source order,
+// (3) one mochi_main() function carrying the entry function's
+// body, (4) a trailing mochi_main(); call.
 //
-// Phase 1 ignores colours (every function is Blue per the
-// Phase 11 stub). The parameter stays in the signature so the
-// caller does not need to change as Phase 11 lands.
+// Phase 1 ignored colours (every function is Blue per the
+// Phase 11 stub). Phase 2 keeps the stub.
 func Lower(prog *aotir.Program, colours colour.ColourMap) (*tstree.SourceFile, error) {
 	if prog == nil {
 		return nil, fmt.Errorf("ts lower: nil program")
@@ -51,6 +65,23 @@ func Lower(prog *aotir.Program, colours colour.ColourMap) (*tstree.SourceFile, e
 		return nil, fmt.Errorf("ts lower: invalid Main index %d", prog.Main)
 	}
 	l := &lowerer{prog: prog, colours: colours}
+
+	// Lower non-main user functions first so the main body's
+	// CallExpr nodes resolve forwards. JS hoists `function`
+	// declarations regardless, but emitting in source order keeps
+	// the file readable and the byte-stable output property
+	// Phase 16 depends on intact.
+	var userDecls []tstree.Decl
+	for i, fn := range prog.Functions {
+		if i == prog.Main {
+			continue
+		}
+		d, err := l.lowerFunction(fn)
+		if err != nil {
+			return nil, err
+		}
+		userDecls = append(userDecls, d)
+	}
 
 	mainFn := prog.Functions[prog.Main]
 	if mainFn.Body == nil {
@@ -66,6 +97,7 @@ func Lower(prog *aotir.Program, colours colour.ColourMap) (*tstree.SourceFile, e
 	// regardless of textual order, but emit ordering still
 	// matters for source-map stability and for human readability.
 	decls := l.runtimeDecls()
+	decls = append(decls, userDecls...)
 
 	mainDecl := &tstree.FuncDecl{
 		Doc: []string{
@@ -97,11 +129,14 @@ func Lower(prog *aotir.Program, colours colour.ColourMap) (*tstree.SourceFile, e
 //   - mochi_print_f64(value: number): void → 'g' -1 64 with
 //     NaN/+Inf/-Inf canonical labels matching vm3
 //   - mochi_print_bool(value: boolean): void → "true"/"false"
+//   - mochi_str_len(value: string): number → code-point count
+//   - mochi_str_at(value: string, index: number): string → i-th code point
+//   - mochi_str_slice(value: string, a: number, b: number): string → code-point slice
+//   - mochi_str_contains(haystack: string, needle: string): boolean
 //
 // Each helper is emitted exactly once per file, regardless of
 // how many call sites reference it. Order is deterministic
-// (str, i64, f64, bool) so the emitted file is byte-stable
-// across runs (Phase 16 reproducibility gate).
+// (Phase 16 reproducibility gate).
 func (l *lowerer) runtimeDecls() []tstree.Decl {
 	var out []tstree.Decl
 	if l.runtime.printStr {
@@ -121,9 +156,9 @@ func (l *lowerer) runtimeDecls() []tstree.Decl {
 		out = append(out, &tstree.FuncDecl{
 			Doc: []string{
 				"Print a 64-bit signed integer followed by a newline.",
-				"Phase 1 emits the bound argument as a TS `number`;",
-				"Phase 2 introduces the bigint vs number monomorphisation",
-				"per MEP-52 §6 (int).",
+				"Phase 2 emits the bound argument as a TS `number`.",
+				"The bigint specialisation per MEP-52 §6 (int) lands as a",
+				"sub-phase once the aotir IR carries a per-occurrence Repr.",
 			},
 			Name:       "mochi_print_i64",
 			Params:     []tstree.FuncParam{{Name: "value", Type: "number"}},
@@ -134,10 +169,6 @@ func (l *lowerer) runtimeDecls() []tstree.Decl {
 		})
 	}
 	if l.runtime.printF64 {
-		// vm3 contract: integer-valued floats print without a
-		// fractional part (`3.0` → "3"); other finite floats use
-		// the host's shortest round-trip ('g' equivalent); NaN
-		// renders as "NaN"; +/-Infinity render as "+Inf"/"-Inf".
 		out = append(out, &tstree.FuncDecl{
 			Doc: []string{
 				"Print a 64-bit float followed by a newline.",
@@ -167,6 +198,89 @@ func (l *lowerer) runtimeDecls() []tstree.Decl {
 			},
 		})
 	}
+	if l.runtime.strLen {
+		out = append(out, &tstree.FuncDecl{
+			Doc: []string{
+				"Return the number of Unicode code points in `value`.",
+				"`String.prototype.length` counts UTF-16 code units;",
+				"Mochi `len(s)` is code-point semantics, so the runtime",
+				"iterates the string (for...of is code-point granular).",
+			},
+			Name:       "mochi_str_len",
+			Params:     []tstree.FuncParam{{Name: "value", Type: "string"}},
+			ReturnType: "number",
+			Body: []tstree.Stmt{
+				&tstree.RawStmt{Text: "let n = 0;"},
+				&tstree.RawStmt{Text: "for (const _ of value) { n++; }"},
+				&tstree.RawStmt{Text: "return n;"},
+			},
+		})
+	}
+	if l.runtime.strAt {
+		out = append(out, &tstree.FuncDecl{
+			Doc: []string{
+				"Return the `index`-th Unicode code point of `value`",
+				"as a length-1-or-2 string. Surrogate pairs (U+10000+)",
+				"occupy two UTF-16 units but one code point; iterating",
+				"with for...of yields them as one step.",
+			},
+			Name: "mochi_str_at",
+			Params: []tstree.FuncParam{
+				{Name: "value", Type: "string"},
+				{Name: "index", Type: "number"},
+			},
+			ReturnType: "string",
+			Body: []tstree.Stmt{
+				&tstree.RawStmt{Text: "let i = 0;"},
+				&tstree.RawStmt{Text: "for (const ch of value) {"},
+				&tstree.RawStmt{Text: "  if (i === index) { return ch; }"},
+				&tstree.RawStmt{Text: "  i++;"},
+				&tstree.RawStmt{Text: "}"},
+				&tstree.RawStmt{Text: "throw new RangeError(\"mochi_str_at: index out of range\");"},
+			},
+		})
+	}
+	if l.runtime.strSlice {
+		out = append(out, &tstree.FuncDecl{
+			Doc: []string{
+				"Return the code-point slice `value[a..b)` as a fresh string.",
+			},
+			Name: "mochi_str_slice",
+			Params: []tstree.FuncParam{
+				{Name: "value", Type: "string"},
+				{Name: "a", Type: "number"},
+				{Name: "b", Type: "number"},
+			},
+			ReturnType: "string",
+			Body: []tstree.Stmt{
+				&tstree.RawStmt{Text: "let i = 0;"},
+				&tstree.RawStmt{Text: "let out = \"\";"},
+				&tstree.RawStmt{Text: "for (const ch of value) {"},
+				&tstree.RawStmt{Text: "  if (i >= a && i < b) { out += ch; }"},
+				&tstree.RawStmt{Text: "  i++;"},
+				&tstree.RawStmt{Text: "}"},
+				&tstree.RawStmt{Text: "return out;"},
+			},
+		})
+	}
+	if l.runtime.strContains {
+		out = append(out, &tstree.FuncDecl{
+			Doc: []string{
+				"Return true when `needle` is a substring of `haystack`.",
+				"Matches Mochi vm3's `str.contains` empty-needle rule",
+				"(empty needle is always contained).",
+			},
+			Name: "mochi_str_contains",
+			Params: []tstree.FuncParam{
+				{Name: "haystack", Type: "string"},
+				{Name: "needle", Type: "string"},
+			},
+			ReturnType: "boolean",
+			Body: []tstree.Stmt{
+				&tstree.RawStmt{Text: "return haystack.includes(needle);"},
+			},
+		})
+	}
 	return out
 }
 
@@ -183,21 +297,38 @@ func (l *lowerer) lowerBlock(stmts []aotir.Stmt) ([]tstree.Stmt, error) {
 	return out, nil
 }
 
-// lowerStmt translates one aotir statement. Phase 1 supports
-// CallStmt for the four print builtins only; other statement
-// kinds return an explicit error so missing surface lands as a
-// clear "unsupported" diagnostic rather than silent emission.
+// lowerStmt translates one aotir statement. Phase 1 supported only
+// CallStmt for the four print builtins. Phase 2 widens to the full
+// scalar + control-flow + user-function surface.
 func (l *lowerer) lowerStmt(s aotir.Stmt) ([]tstree.Stmt, error) {
 	switch v := s.(type) {
 	case *aotir.CallStmt:
 		return l.lowerCallStmt(v)
+	case *aotir.LetStmt:
+		return l.lowerLetStmt(v)
+	case *aotir.AssignStmt:
+		return l.lowerAssignStmt(v)
+	case *aotir.IfStmt:
+		return l.lowerIfStmt(v)
+	case *aotir.WhileStmt:
+		return l.lowerWhileStmt(v)
+	case *aotir.ForRangeStmt:
+		return l.lowerForRangeStmt(v)
+	case *aotir.BreakStmt:
+		return []tstree.Stmt{&tstree.BreakStmt{}}, nil
+	case *aotir.ContinueStmt:
+		return []tstree.Stmt{&tstree.ContinueStmt{}}, nil
+	case *aotir.ReturnStmt:
+		return l.lowerReturnStmt(v)
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 1 ships only print)", s)
+		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 2 surface)", s)
 	}
 }
 
-// lowerCallStmt translates `print(...)` into an inline runtime
-// helper call. The aotir builtin name dictates the helper.
+// lowerCallStmt translates a print or user-function call evaluated
+// for side effect. The Phase 1 path covered only the four print
+// builtins; Phase 2 widens it to any function in the program's
+// function table.
 func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) ([]tstree.Stmt, error) {
 	switch s.Func {
 	case "mochi_print_str":
@@ -209,25 +340,136 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) ([]tstree.Stmt, error) {
 	case "mochi_print_bool":
 		l.runtime.printBool = true
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported builtin call %q (Phase 1)", s.Func)
+		// Phase 2: any other CallStmt targets a user-defined
+		// function. We do not check Func against the program's
+		// function table here; the C lowerer already did, and a
+		// stale name would surface as a TS reference error at
+		// runtime (caught by the fixture gate).
 	}
-	if len(s.Args) != 1 {
-		return nil, fmt.Errorf("ts lower: %s wants 1 arg, got %d", s.Func, len(s.Args))
-	}
-	arg, err := l.lowerExpr(s.Args[0])
-	if err != nil {
-		return nil, err
+	args := make([]tstree.Expr, 0, len(s.Args))
+	for _, a := range s.Args {
+		la, err := l.lowerExpr(a)
+		if err != nil {
+			return nil, err
+		}
+		args = append(args, la)
 	}
 	return []tstree.Stmt{
 		&tstree.ExprStmt{Expr: &tstree.CallExpr{
 			Callee: &tstree.IdentExpr{Name: s.Func},
-			Args:   []tstree.Expr{arg},
+			Args:   args,
 		}},
 	}, nil
 }
 
-// lowerExpr translates one aotir expression. Phase 1 supports the
-// four scalar literals.
+// lowerLetStmt translates `let x: T = init` (immutable) and
+// `var y: T = init` (mutable). Mochi guarantees the binding has
+// an Init expression; the C lowerer rejects bare declarations.
+func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) ([]tstree.Stmt, error) {
+	tn, err := tsTypeFor(s.VarType)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: let %q: %w", s.Name, err)
+	}
+	init, err := l.lowerExpr(s.Init)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: let %q init: %w", s.Name, err)
+	}
+	return []tstree.Stmt{&tstree.LetDecl{
+		Name:    s.Name,
+		Type:    tn,
+		Init:    init,
+		Mutable: s.Mutable,
+	}}, nil
+}
+
+func (l *lowerer) lowerAssignStmt(s *aotir.AssignStmt) ([]tstree.Stmt, error) {
+	val, err := l.lowerExpr(s.Value)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: assign %q: %w", s.Name, err)
+	}
+	return []tstree.Stmt{&tstree.AssignStmt{Name: s.Name, Value: val}}, nil
+}
+
+func (l *lowerer) lowerIfStmt(s *aotir.IfStmt) ([]tstree.Stmt, error) {
+	cond, err := l.lowerExpr(s.Cond)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: if cond: %w", err)
+	}
+	if s.Then == nil {
+		return nil, fmt.Errorf("ts lower: if has nil Then block")
+	}
+	then, err := l.lowerBlock(s.Then.Statements)
+	if err != nil {
+		return nil, err
+	}
+	var elseBody []tstree.Stmt
+	if s.Else != nil {
+		elseBody, err = l.lowerBlock(s.Else.Statements)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return []tstree.Stmt{&tstree.IfStmt{
+		Cond: cond,
+		Then: then,
+		Else: elseBody,
+	}}, nil
+}
+
+func (l *lowerer) lowerWhileStmt(s *aotir.WhileStmt) ([]tstree.Stmt, error) {
+	cond, err := l.lowerExpr(s.Cond)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: while cond: %w", err)
+	}
+	if s.Body == nil {
+		return nil, fmt.Errorf("ts lower: while has nil Body")
+	}
+	body, err := l.lowerBlock(s.Body.Statements)
+	if err != nil {
+		return nil, err
+	}
+	return []tstree.Stmt{&tstree.WhileStmt{Cond: cond, Body: body}}, nil
+}
+
+func (l *lowerer) lowerForRangeStmt(s *aotir.ForRangeStmt) ([]tstree.Stmt, error) {
+	start, err := l.lowerExpr(s.Start)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: for-range start: %w", err)
+	}
+	end, err := l.lowerExpr(s.End)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: for-range end: %w", err)
+	}
+	if s.Body == nil {
+		return nil, fmt.Errorf("ts lower: for-range has nil Body")
+	}
+	body, err := l.lowerBlock(s.Body.Statements)
+	if err != nil {
+		return nil, err
+	}
+	return []tstree.Stmt{&tstree.ForRangeStmt{
+		Var:   s.Var,
+		Start: start,
+		End:   end,
+		Body:  body,
+	}}, nil
+}
+
+func (l *lowerer) lowerReturnStmt(s *aotir.ReturnStmt) ([]tstree.Stmt, error) {
+	if s.Value == nil {
+		return []tstree.Stmt{&tstree.ReturnStmt{Value: nil}}, nil
+	}
+	val, err := l.lowerExpr(s.Value)
+	if err != nil {
+		return nil, fmt.Errorf("ts lower: return: %w", err)
+	}
+	return []tstree.Stmt{&tstree.ReturnStmt{Value: val}}, nil
+}
+
+// lowerExpr translates one aotir expression. Phase 1 supported the
+// four scalar literals; Phase 2 widens to variable references,
+// binary / unary expressions, value-producing user function calls,
+// and the string-intrinsic family (len, index, contains, substring).
 func (l *lowerer) lowerExpr(e aotir.Expr) (tstree.Expr, error) {
 	switch v := e.(type) {
 	case *aotir.StringLit:
@@ -238,7 +480,114 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (tstree.Expr, error) {
 		return &tstree.FloatLit{Value: v.Value}, nil
 	case *aotir.BoolLit:
 		return &tstree.BoolLit{Value: v.Value}, nil
+	case *aotir.VarRef:
+		return &tstree.IdentExpr{Name: v.Name}, nil
+	case *aotir.BinaryExpr:
+		return l.lowerBinary(v)
+	case *aotir.UnaryExpr:
+		return l.lowerUnary(v)
+	case *aotir.CallExpr:
+		return l.lowerCallExpr(v)
+	case *aotir.StrLenExpr:
+		l.runtime.strLen = true
+		arg, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		return &tstree.CallExpr{
+			Callee: &tstree.IdentExpr{Name: "mochi_str_len"},
+			Args:   []tstree.Expr{arg},
+		}, nil
+	case *aotir.StrIndexExpr:
+		l.runtime.strAt = true
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		idx, err := l.lowerExpr(v.Index)
+		if err != nil {
+			return nil, err
+		}
+		return &tstree.CallExpr{
+			Callee: &tstree.IdentExpr{Name: "mochi_str_at"},
+			Args:   []tstree.Expr{recv, idx},
+		}, nil
+	case *aotir.StrSubstringExpr:
+		l.runtime.strSlice = true
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		start, err := l.lowerExpr(v.Start)
+		if err != nil {
+			return nil, err
+		}
+		end, err := l.lowerExpr(v.End)
+		if err != nil {
+			return nil, err
+		}
+		return &tstree.CallExpr{
+			Callee: &tstree.IdentExpr{Name: "mochi_str_slice"},
+			Args:   []tstree.Expr{recv, start, end},
+		}, nil
+	case *aotir.StrContainsExpr:
+		l.runtime.strContains = true
+		recv, err := l.lowerExpr(v.Receiver)
+		if err != nil {
+			return nil, err
+		}
+		needle, err := l.lowerExpr(v.Sub)
+		if err != nil {
+			return nil, err
+		}
+		return &tstree.CallExpr{
+			Callee: &tstree.IdentExpr{Name: "mochi_str_contains"},
+			Args:   []tstree.Expr{recv, needle},
+		}, nil
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 1)", e)
+		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 2 surface)", e)
 	}
+}
+
+func (l *lowerer) lowerBinary(e *aotir.BinaryExpr) (tstree.Expr, error) {
+	op, err := tsBinOp(e.Op)
+	if err != nil {
+		return nil, err
+	}
+	lhs, err := l.lowerExpr(e.Left)
+	if err != nil {
+		return nil, err
+	}
+	rhs, err := l.lowerExpr(e.Right)
+	if err != nil {
+		return nil, err
+	}
+	return &tstree.BinaryExpr{Op: op, Left: lhs, Right: rhs}, nil
+}
+
+func (l *lowerer) lowerUnary(e *aotir.UnaryExpr) (tstree.Expr, error) {
+	op, err := tsUnOp(e.Op)
+	if err != nil {
+		return nil, err
+	}
+	operand, err := l.lowerExpr(e.Operand)
+	if err != nil {
+		return nil, err
+	}
+	return &tstree.UnaryExpr{Op: op, Operand: operand}, nil
+}
+
+func (l *lowerer) lowerCallExpr(e *aotir.CallExpr) (tstree.Expr, error) {
+	args := make([]tstree.Expr, 0, len(e.Args))
+	for _, a := range e.Args {
+		la, err := l.lowerExpr(a)
+		if err != nil {
+			return nil, err
+		}
+		args = append(args, la)
+	}
+	return &tstree.CallExpr{
+		Callee: &tstree.IdentExpr{Name: e.Func},
+		Args:   args,
+	}, nil
 }

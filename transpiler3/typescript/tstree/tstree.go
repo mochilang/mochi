@@ -2,8 +2,14 @@
 //
 // Phase 1 ships the minimum shape sufficient for hello-world emit:
 // top-level FuncDecl, ExprStmt, CallExpr, IdentExpr, and the four
-// scalar literal nodes (StringLit, IntLit, FloatLit, BoolLit). Each
-// node implements TsString(indent int) string for tree-printer
+// scalar literal nodes (StringLit, IntLit, FloatLit, BoolLit).
+//
+// Phase 2 widens to scalars + control flow + user functions:
+// LetDecl (let / const), AssignStmt, IfStmt, WhileStmt, ForRangeStmt,
+// BreakStmt, ContinueStmt, BinaryExpr, UnaryExpr, ParenExpr, and
+// MemberCallExpr (for `s.includes(t)`-style runtime helper dispatch).
+//
+// Each node implements TsString(indent int) string for tree-printer
 // emission. The printer guarantees: no trailing whitespace, LF line
 // endings, two-space indentation, semicolon-terminated statements,
 // and idempotent re-emission (TsString(TsString(x)) == TsString(x))
