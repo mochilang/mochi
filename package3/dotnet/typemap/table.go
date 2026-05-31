@@ -117,12 +117,14 @@ type translator struct {
 }
 
 func (t *translator) skip(typeName, itemName string, reason errors.SkipReason, detail string) {
+	itemPath := typeName
+	if itemName != "" {
+		itemPath += "." + itemName
+	}
 	t.surface.Skips = append(t.surface.Skips, errors.SkipReport{
-		PackageID: t.packageID,
-		TypeName:  typeName,
-		ItemName:  itemName,
-		Reason:    reason,
-		Detail:    detail,
+		ItemPath: itemPath,
+		Reason:   reason,
+		Detail:   detail,
 	})
 }
 
@@ -216,7 +218,7 @@ func (t *translator) translateMethod(typ *metadata.TypeMeta, m *metadata.MethodM
 	var params []TranslatedParam
 	for _, p := range m.Params {
 		if p.IsRef || p.IsOut {
-			t.skip(typ.FullName, m.Name, errors.SkipByRef,
+			t.skip(typ.FullName, m.Name, errors.SkipRefType,
 				"ref/out parameter '"+p.Name+"'")
 			return
 		}
@@ -277,10 +279,10 @@ func (t *translator) translateSig(sig metadata.TypeSig) (MochiType, bool) {
 	case metadata.SigString:
 		return MochiType{Kind: MochiString}, true
 	case metadata.SigPtr:
-		t.skip("", "", errors.SkipUnsafePointer, "pointer type in signature")
+		t.skip("", "", errors.SkipPointer, "pointer type in signature")
 		return MochiType{}, false
 	case metadata.SigByRef:
-		t.skip("", "", errors.SkipByRef, "by-ref type in signature")
+		t.skip("", "", errors.SkipRefType, "by-ref type in signature")
 		return MochiType{}, false
 	case metadata.SigObject:
 		t.skip("", "", errors.SkipObjectReturn, "System.Object in signature")
