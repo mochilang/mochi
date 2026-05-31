@@ -40,6 +40,10 @@ const (
 	// any sidecar cffi/build.rs) into outDir without invoking cargo.
 	// Used by Phase 15 for publish-ready crate inspection.
 	TargetRustCrate
+	// TargetEmbeddedNoStd: run `cargo check --no-default-features --features embedded`
+	// to verify the source compiles under a no_std/no_alloc-async embedded profile.
+	// No binary is produced; skipped when the embedded toolchain is absent.
+	TargetEmbeddedNoStd
 )
 
 // Driver is the Rust transpiler pipeline entry point.
@@ -177,6 +181,17 @@ func (d *Driver) Build(src, outDir string, target Target) (string, error) {
 			return "", fmt.Errorf("rust build: copy crate: %w", err)
 		}
 		return outDir, nil
+	}
+
+	if target == TargetEmbeddedNoStd {
+		checkCmd := exec.Command(d.cargoPath, "check", "--no-default-features", "--features", "embedded")
+		checkCmd.Dir = workDir
+		checkCmd.Stdout = os.Stderr
+		checkCmd.Stderr = os.Stderr
+		if err := checkCmd.Run(); err != nil {
+			return "", fmt.Errorf("rust build: cargo check embedded: %w", err)
+		}
+		return filepath.Join(workDir, "src", "main.rs"), nil
 	}
 
 	buildArgs := []string{"build", "--release"}
