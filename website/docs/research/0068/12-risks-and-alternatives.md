@@ -1,276 +1,180 @@
 ---
 title: "12. Risks and alternatives"
 sidebar_position: 13
-sidebar_label: "12. Risks"
-description: "The MEP-68 risk register (CLR hosting API versioning, TFM mismatch, shim compile time, CLR startup overhead, offline NuGet restore, NativeAOT compat, Windows-only packages, trusted publishing config, generic explosion, GetAwaiter deadlock, package signing, version conflicts) and the rejected alternatives (C# source parsing, XML docs, NativeAOT default, direct P/Invoke, COM interop, GraalVM, IKVM, dotnet-embed, long-lived API keys, WIT, auto-monomorphise, TFM mirror)."
+sidebar_label: "12. Risks and alternatives"
+description: "Complete risk register and rejected alternatives register for MEP-68."
 ---
 
 # 12. Risks and alternatives
 
-This note collects the risks MEP-68 carries plus the alternative approaches that were considered and rejected. The risk register is a forward-looking inventory; the alternatives section documents the reasoning so future maintainers can understand why the chosen path was chosen.
+## Risk register
 
-## R1: CLR hosting API versioning
+### R1. NativeAOT compatibility rate
 
-**Risk**: the `hostfxr` API surface is documented as stable since .NET 5, but future .NET versions may deprecate or change the runtime configuration file format (`.runtimeconfig.json`) or the `hostfxr_get_runtime_delegate` function signature. MEP-68 pins to the .NET 8 LTS hosting contract.
+**Risk**: A meaningful fraction of popular NuGet packages (estimated 15-25% of the top 100 based on the 25-package fixture analysis in [[11-nativeaot-subset]]) require the CoreCLR hosting fallback due to runtime code generation. If the fallback path is not ready when users import these packages, the bridge cannot cover them.
 
-**Likelihood**: low. Microsoft has maintained `hostfxr` compatibility across .NET 5/6/7/8/9. The runtime configuration format has been stable since .NET Core 3.0.
+**Likelihood**: High (these packages are widely used: AutoMapper, MediatR, Humanizer, NHibernate, Castle Windsor).
 
-**Impact**: medium. A breaking change in `hostfxr` would require a bridge update.
+**Mitigation**: Phase 13 (CoreCLR hosting fallback) is explicitly scoped as a delivery phase. The bridge generates a clear `SkipReport: package requires CoreCLR hosting (phase 13); use nativeaot = false` at lock time, so users get a clear diagnostic rather than a silent failure. The phase-13 gate covers the three incompatible packages in the fixture corpus (AutoMapper, MediatR, Humanizer).
 
-**Mitigation**: the bridge reads the `hostfxr` version from the SDK header at lock time and errors if outside the supported range. The bridge ships a new minor version alongside each .NET LTS release.
+---
 
-**Residual**: a .NET 10 breaking change to `hostfxr` semantics (unlikely but possible) requires a bridge update. Users on .NET 8 LTS are unaffected until 2026-EOL (November 2026).
+### R2. ECMA-335 parser edge cases
 
-## R2: TFM mismatch at lock and build time
+**Risk**: The ECMA-335 CLI metadata format has 40+ table types, multiple coded-index flavors, and complex type signature encoding (generics, pointers, custom modifiers, forwarded types). A parser that covers the 25-package fixture corpus may miss edge cases in less-common NuGet packages (F# libraries, COM interop assemblies, signed assemblies with strong names, assemblies with nested types > 3 levels deep).
 
-**Risk**: `mochi.lock` records the TFM used at lock time. If the user changes `[dotnet] framework` between locks, or if CI builds on a different .NET SDK version than the developer, the shim built at lock time may reference assemblies not present at build time.
+**Likelihood**: Medium.
 
-**Likelihood**: medium. Developers frequently work on multiple .NET versions; CI is often configured differently.
+**Mitigation**: the parser is fuzz-tested against a corpus of 500+ NuGet packages from the top 10,000 by download count. Any panic or incorrect parse is a phase-2 gate failure. The `metadata-sha256` in `mochi.lock` ensures that a parse mismatch (e.g., on a platform with a different byte order) is caught at `--check` time. The parser is open-source and accepts contributions for edge cases.
 
-**Impact**: medium. A TFM mismatch at build time produces a `dotnet build` error, which is immediately visible.
+---
 
-**Mitigation**: the lockfile records `target-framework` per `[[dotnet-package]]` entry. A `mochi pkg lock --check` detects TFM drift and errors. The `[dotnet] framework` key defaults to `"net8.0"` to reduce accidental drift.
+### R3. NativeAOT compile time
 
-**Residual**: a first-time `mochi pkg lock` on a machine with only .NET 9 SDK installed, when `[dotnet] framework = "net8.0"` is declared, requires the .NET 8 targeting packs. Mitigation: the bridge checks SDK presence at lock time and emits guidance.
+**Risk**: `dotnet publish /p:PublishAot=true` takes 30-120 seconds per package per RID. For a Mochi project with 5 .NET packages and 4 RIDs, the NativeAOT pass takes 10-40 minutes on first build. This blocks CI pipelines and developer inner loops.
 
-## R3: C# shim compile time
+**Likelihood**: High for large projects.
 
-**Risk**: every imported NuGet package triggers a C# shim project build. For a program with 10 .NET imports, cold shim builds add ~150 seconds total to the first build.
+**Mitigation**: wrapper static libs are cached at `~/.cache/mochi/dotnet-deps/wrappers/<wrapper-sha256>-<rid>/`. Once built, a wrapper is never recompiled unless its `wrapper-sha256` changes (which only happens on a NuGet package update or a `mochi.toml` monomorphise change). In CI, the cache directory is stored as a build artefact between runs. The build orchestration (phase 7) parallelises the four RID compilations across available CPU cores.
 
-**Likelihood**: certain. The shim compile cost is intrinsic.
+---
 
-**Impact**: medium. Slow first-time builds increase iteration cost.
+### R4. Four-RID cross-compilation complexity
 
-**Mitigation**: shim build artefacts are cached in `~/.cache/mochi/dotnet-deps/shims/<shim-sha256>/`. Subsequent builds with the same shim SHA-256 are instant cache hits. The shim SHA-256 changes only when the package version or the `mochi-dotnet-meta` output changes.
+**Risk**: `dotnet publish -r linux-arm64` from a macOS host requires a cross-compilation toolchain. NativeAOT on Linux/macOS cross-compilation uses `clang` + LLVM for the native link step; the ARM64 target libraries must be present on the host. Windows cross-compilation (`-r win-x64` from Linux/macOS) is experimental in .NET 9.
 
-**Residual**: a cache-cold user pays the full compile cost. First-time CI runs pay it. We accept this.
+**Likelihood**: Medium.
 
-## R4: CLR startup overhead
+**Mitigation**: MEP-53 already requires `cargo-zigbuild` for cross-compilation of the Rust/Mochi binary; the bridge reuses `zig cc` as the cross-compilation C compiler for the NativeAOT link step (`<ZigCC>/zig cc --target=aarch64-linux-gnu` for linux-arm64). `win-x64` cross-compilation is marked `experimental` in phase 7 and documented as requiring either a Windows host or LLVM's `lld-link` with the Windows SDK sysroot.
 
-**Risk**: `hostfxr_initialize_for_runtime_config` takes 150-300 ms on cold start. Short-lived CLI tools that use MEP-68 .NET packages suffer disproportionate startup latency.
+---
 
-**Likelihood**: certain. The CLR startup cost is intrinsic to CLR hosting.
+### R5. GCHandle leak in collections
 
-**Impact**: medium. A tool that does `mochi run ./mytool.mochi` sees 150-300 ms CLR startup on the first run.
+**Risk**: `extern type T` values stored in `list<T>` or `map<string, T>` (e.g., a pool of `NpgsqlConnection` objects) are not automatically freed when the collection goes out of scope. The compiler's `defer _free` insertion only covers simple local variable bindings.
 
-**Mitigation**: NativeAOT (phase 13) eliminates this cost for AOT-compatible packages. For CLR hosting, the startup cost is paid once at process startup; long-running programs are unaffected. Users who need fast startup and have AOT-compatible deps should use `[dotnet] bridge = "nativeaot"`.
+**Likelihood**: Medium (common pattern for connection pools).
 
-**Residual**: CLR-hosted tools on cold start are slower than pure-native Mochi binaries by 150-300 ms. This is documented and expected.
+**Mitigation**: v1 emits a `WARNING: extern type T in list<T>; manual _free required` when a list of GC-handle-backed extern types is declared. A future MEP adds linear type tracking for `extern type` in collections. The `mochi-dotnet-runtime` package provides a `GCHandleList<T>` helper that frees all handles on dispose, accessible as `DotnetList.free_all(handles)`.
 
-## R5: NuGet offline restore in hermetic CI
+---
 
-**Risk**: the C# shim project references NuGet packages via `<PackageReference>`. The `dotnet restore` step requires network access to `api.nuget.org` unless a local feed is configured. Hermetic CI environments (no outbound NuGet access) fail at restore time.
+### R6. NuGet trusted publishing configuration friction
 
-**Likelihood**: medium. Hermetic CI is common in enterprise environments.
+**Risk**: nuget.org trusted publishing requires a one-time per-package setup in the nuget.org UI. First-time publishers (or first-time publishers of a new package name) may not have completed this setup. `mochi pkg publish --to=nuget.org` returns HTTP 403 with a non-obvious error message.
 
-**Impact**: medium. CI builds fail with a NuGet restore error if offline feeds are not configured.
+**Likelihood**: High for first-time users.
 
-**Mitigation**: the bridge copies each `.nupkg` from the content-addressed cache into a local NuGet feed directory (`<workdir>/dotnet_shim/_localfeed/`) before running `dotnet restore`, then adds `--source <workdir>/dotnet_shim/_localfeed/` to the restore invocation. This enables fully offline restore from the content-addressed cache.
+**Mitigation**: on HTTP 403, the bridge prints: `"NuGet trusted publishing is not configured for package '<id>'. Visit https://www.nuget.org/packages/<id>/Manage to add a trusted publisher, then re-run mochi pkg publish."` and optionally opens the URL in the browser (`--open-browser`).
 
-**Residual**: a user who runs `mochi pkg lock` on a machine without NuGet access cannot populate the content-addressed cache. The initial `mochi pkg lock` always requires NuGet access.
+---
 
-## R6: NativeAOT compatibility detection is imperfect
+### R7. Generic monomorphization explosion
 
-**Risk**: the `IsAotCompatible` NuGet metadata property is advisory (the package author declares it; it is not verified by a build-time check). A package that declares `IsAotCompatible=true` may still fail the trim step.
+**Risk**: a user who declares 50 monomorphise entries for `System.Linq.Enumerable.Where<T>` (for 50 different record types) produces a NativeAOT wrapper with 50 `[UnmanagedCallersOnly]` exports and a correspondingly long AOT compile time.
 
-**Likelihood**: low to medium. Package authors are increasingly careful, but false declarations exist.
+**Likelihood**: Low (typical projects have 5-20 monomorphise entries).
 
-**Impact**: medium. The trim step fails with an analysis error; the NativeAOT build fails.
+**Mitigation**: the bridge enforces a soft limit of 100 monomorphise entries per package (configurable via `[dotnet] monomorphise-limit`). Above the limit, `mochi pkg lock` prints a warning and suggests using a Mochi adapter layer instead.
 
-**Mitigation**: phase 13 gate exercises AOT trim against the full 20-package corpus and maintains a known-good/known-bad registry. The bridge checks the registry before trusting `IsAotCompatible`. A package known-bad in the registry overrides the declared property.
+---
 
-**Residual**: a new package (not in the registry) that declares `IsAotCompatible=true` but fails trim will cause phase 13 gate failures. The registry is updated quarterly.
+### R8. Windows cross-compilation linker
 
-## R7: Windows-only packages in a cross-platform deployment
+**Risk**: cross-compiling a `win-x64` NativeAOT static lib from Linux or macOS requires the MSVC linker or LLVM `lld-link` with the Windows SDK sysroot. Setting up the Windows SDK sysroot on a Linux CI agent is non-trivial (requires `xwin` or `winsdk-export`).
 
-**Risk**: some NuGet packages expose Windows-only P/Invoke surfaces (e.g., `System.Drawing.Common` before .NET 7's platform-guard attributes). On Linux/macOS, `PlatformNotSupportedException` is thrown at runtime.
+**Likelihood**: Medium for projects targeting Windows from non-Windows CI.
 
-**Likelihood**: low. Most popular packages have eliminated Windows-only APIs since .NET 6's cross-platform initiative.
+**Mitigation**: `win-x64` is marked `experimental` for cross-compilation in phase 7. The recommended path for `win-x64` is a Windows runner in CI (`runs-on: windows-latest`). The bridge documents the `xwin`-based setup for users who need Linux-to-Windows cross-compilation.
 
-**Impact**: medium. A runtime exception from a package that appeared to work at lock time.
+---
 
-**Mitigation**: the bridge checks `<platform-guard>` attributes in the package's `.nuspec` and platform-conditional compilation symbols. A package with `[SupportedOSPlatform("windows")]` on its primary API surface is warned at lock time when `[dotnet] runtime` is non-Windows.
+### R9. CoreCLR version skew
 
-**Residual**: packages that do not use `[SupportedOSPlatform]` correctly will slip through. This is a NuGet ecosystem quality issue.
+**Risk**: the CoreCLR version recorded in `mochi.lock` at lock time may differ from the version installed on the deployment machine at runtime. `coreclr_initialize` fails with a version mismatch.
 
-## R8: Trusted publishing configuration required before first publish
+**Likelihood**: Medium for long-lived deployments where .NET patch versions are regularly updated.
 
-**Risk**: a first-time publisher who runs `mochi pkg publish --to=nuget.org` without having configured a trusted publisher on nuget.org receives a 403.
+**Mitigation**: `--bundle-coreclr` bundles the exact `libcoreclr.so` version in the Mochi binary distribution. For deployments without bundling, `mochi pkg lock --check` must be run after any .NET SDK update; the CI gate enforces this. The check emits a clear error with the expected and found versions.
 
-**Likelihood**: certain for first-time publishers.
+---
 
-**Impact**: low. The error message is clear; the fix is a one-time web UI step.
+### R10. Symbol name collision across package major versions
 
-**Mitigation**: the bridge detects the 403, emits step-by-step configuration guidance, and provides `--emit-ci` to generate the workflow template.
+**Risk**: if the user imports `Newtonsoft.Json` v12 and v13 in the same project (unlikely but possible in large transitive dep graphs), the symbol `mochi_dotnet_Newtonsoft_Json_v13_JsonConvert_SerializeObject` and `mochi_dotnet_Newtonsoft_Json_v12_JsonConvert_SerializeObject` would coexist. If the user imports the same package twice with different aliases, the linker sees duplicate `[UnmanagedCallersOnly]` entry points.
 
-**Residual**: the one-time setup requirement is unavoidable. It is a nuget.org design constraint.
+**Likelihood**: Low.
 
-## R9: Generic explosion via `[dotnet.monomorphise]`
+**Mitigation**: the bridge enforces that each package ID appears at most once in `[dotnet-dependencies]` (the version constraint must unify to a single resolved version). Transitive dep conflicts are resolved by "nearest wins" (the directly-declared version overrides transitive). If two incompatible versions are truly required, the user must use `dotnet-dependencies.alias` to rename one and the bridge generates separate wrapper symbol namespaces.
 
-**Risk**: a user who lists 50+ monomorphisations generates 50+ shim methods and 50+ Mochi extern declarations. Compile time and binary size grow.
+---
 
-**Likelihood**: low for typical users; possible for power users working with heavily generic APIs.
+### R11. decimal precision and arithmetic cost
 
-**Impact**: low to medium. Compile time increases; binary size grows by ~10-50 KB per 10 monomorphisations.
+**Risk**: programs that use `decimal` arithmetic frequently (financial applications) pay ~5x the cost of `double` arithmetic because each operation crosses the C ABI boundary (two `MochiDecimal` structs in, one out).
 
-**Mitigation**: the bridge warns at 10+ monomorphisations per item and errors at a configurable maximum (default 200 total). The error message explains the trade-off.
+**Likelihood**: Low for non-financial applications; Medium for financial applications.
 
-**Residual**: a determined user can override the limit. We accept this.
+**Mitigation**: v1 treats this as a known trade-off. A future Mochi `decimal` literal syntax and a Mochi `decimal`-native arithmetic pass (MEP-XX) will eliminate the per-operation ABI crossing for pure-Mochi decimal arithmetic. For the bridge path, the `MochiDecimal` struct is blittable and the overhead is ~10 ns per operation (not the ~50 ns of a GCHandle round-trip).
 
-## R10: `.GetAwaiter().GetResult()` deadlock in non-standard contexts
+---
 
-**Risk**: a user who calls MEP-68 shim methods from a .NET managed thread that has an existing `SynchronizationContext` (e.g., a WPF or ASP.NET Core context) can hit the classic `.GetAwaiter().GetResult()` deadlock.
+### R12. Nullable annotation absence in older packages
 
-**Likelihood**: low. MEP-68's primary use case is calling from the Mochi main thread (no sync context). A deadlock requires the user to mix Mochi + CLR-hosted .NET managed threads.
+**Risk**: NuGet packages compiled before C# 8 (pre-2020) or packages that have not enabled `<Nullable>enable</Nullable>` have no `NullableAttribute` records. All their reference-type parameters are translated as non-null. A user who passes `nil` for a "logically nullable" parameter gets an `ArgumentNullException` from the .NET side at runtime.
 
-**Impact**: high when it occurs. A deadlock hangs the process.
+**Likelihood**: High for older packages (Newtonsoft.Json pre-13.0, older EF Core, etc.).
 
-**Mitigation**: the shim uses `.ConfigureAwait(false)` on all async calls to prevent sync context capture. This eliminates the most common deadlock scenario. Users who mix threads should review async patterns in their custom extern overrides.
+**Mitigation**: the bridge emits a `SkipReport: reference type 'string' at parameter 'value' has no nullable annotation; passing nil may throw ArgumentNullException` for each affected parameter. Users can override with a hand-authored `extern fn ... from dotnet "..."` declaration that marks the parameter as nullable.
 
-**Residual**: exotic sync contexts (custom task schedulers, custom `SynchronizationContext` implementations) may still deadlock despite `.ConfigureAwait(false)`. This is a known .NET async limitation.
+---
 
-## R11: Package signature verification coverage
+## Rejected alternatives register
 
-**Risk**: as of May 2026, NuGet package signing is optional; the majority of packages on nuget.org are unsigned. The bridge cannot verify the integrity of unsigned packages beyond the SHA-512 hash.
+### A1. Bundled `mochi-dotnet-inspect` binary for metadata extraction
 
-**Likelihood**: certain. Most packages are unsigned.
+A NativeAOT-compiled C# tool that reads an assembly and outputs JSON metadata. Simpler to implement than the Go-native ECMA-335 parser. Rejected: requires platform-specific binaries in the mochi distribution (one per host RID), complicates the release pipeline, is not air-gap-compatible. The Go-native parser is ~2,000 LOC and avoids these issues. See [[02-design-philosophy]] §1.
 
-**Impact**: medium. An unsigned package from nuget.org could, in theory, be tampered with in transit; SHA-512 integrity is the only guarantee.
+### A2. Roslyn as the bind source
 
-**Mitigation**: SHA-512 of the `.nupkg` is recorded in `mochi.lock` and verified at every `mochi pkg lock --check`. A future `[dotnet.capabilities] require-signed = true` option will reject unsigned packages. The trusted-publishing path for the publish direction does not affect the consumption-side signing story.
+Roslyn's `Microsoft.CodeAnalysis` NuGet provides the richest .NET semantic model. Rejected: requires C# source, which binary-only NuGet packages (commercial, legacy, NativeAOT-published) do not ship. ECMA-335 binary metadata is universally present. See [[02-design-philosophy]] §1.
 
-**Residual**: the SHA-512 pin is a strong tamper-evident mechanism for the content-addressed cache path. Transit security relies on HTTPS to nuget.org.
+### A3. P/Invoke as the wrapper mechanism
 
-## R12: NuGet version resolution conflicts
+P/Invoke is .NET calling native C. The bridge direction is native (Mochi/Rust) calling .NET. P/Invoke cannot serve the bridge's direction. `[UnmanagedCallersOnly]` is the correct mechanism. See [[09-abi-stability]] §1.
 
-**Risk**: two packages that both depend on `Newtonsoft.Json` at incompatible constraints (`^12.0` and `^13.0`) cannot be unified by the NuGet resolver.
+### A4. CppSharp or IKVM.NET as the binding layer
 
-**Likelihood**: medium. Version conflicts are common in large dependency graphs.
+CppSharp is C++→C#; wrong direction. IKVM is Java→.NET; not applicable. Neither provides a .NET→Mochi bidirectional bridge. See [[03-prior-art-bridges]].
 
-**Impact**: medium. Lock fails with a version conflict error.
+### A5. gRPC / Unix socket for cross-runtime communication
 
-**Mitigation**: the bridge surfaces the conflict with a specific diagnostic:
-```
-ERROR: version conflict
-  Serilog.Extensions.Logging@8.0 requires Serilog@>=3.1.0
-  OldLibrary@1.0 requires Serilog@>=2.0.0, <3.0.0
-  Resolution: add `Serilog = "^3.1"` to [dotnet-dependencies] to force the newer version,
-              or remove OldLibrary from [dotnet-dependencies].
-```
-The user can override by pinning the conflicting package explicitly in `[dotnet-dependencies]`.
+~100µs per-call overhead, separate process lifecycle, defeats the no-boilerplate promise. Rejected for in-process library calls. Appropriate for distributed service communication, not for tight library integration. See [[02-design-philosophy]] (implicitly, performance principle).
 
-**Residual**: some conflicts have no resolution (a package hardcodes an incompatible version constraint). The user must find an alternative package.
+### A6. WIT (Wasm Interface Types) / componentize-dotnet
 
-## Alternatives considered
+The .NET `componentize-dotnet` tool (Bytecode Alliance) compiles .NET code to a Wasm Component Model component with a WIT-described interface. Pre-GA as of May 2026, covers a subset of .NET types. Deferred to a post-v1 extension (`[dotnet.publish] wit = true`). Not a rejection; deferred due to maturity.
 
-### A1: C# source parsing via Roslyn
+### A7. Reference assemblies instead of implementation assemblies
 
-Roslyn (the C# compiler as a library) can parse C# source files and produce a semantic model. MEP-68 could use Roslyn to parse the NuGet package source (when included in the `.nupkg`) instead of reading assembly metadata.
+.NET SDK ships reference assemblies (API-only DLLs without method bodies) that are smaller and faster to parse. But third-party NuGet packages for non-BCL libraries do not ship reference assemblies universally. Implementation assemblies are always present. See [[04-assembly-metadata-ingest]] §1.
 
-Why rejected:
-- Most NuGet packages do not include C# source in the `.nupkg`. The source is in a separate SourceLink-referenced repository.
-- Roslyn source generators, partial classes, and `#if` compile-time conditionals mean the source-level surface differs from the compiled surface.
-- Shipping Roslyn as a Go dependency would be impractical. The `mochi-dotnet-meta` CLI tool is the right shape.
+### A8. Long-lived nuget.org API keys
 
-### A2: XML documentation files
+`NUGET_API_KEY` long-lived tokens. Rejected: matches MEP-57's broader principle that long-lived tokens are deprecated. NuGet trusted publishing GA November 2024 makes this unambiguous for new tooling. See [[07-oidc-nuget-trusted-publishing]].
 
-NuGet packages ship optional `.xml` documentation files alongside the `.dll`. MEP-68 could use these as the binding source.
+### A9. Value-type semantics in Mochi for .NET structs
 
-Why rejected:
-- The `.xml` file contains documentation strings, not type signatures. There is no parameter type information in the XML format.
-- Reconstructing method signatures from XML documentation is impossible without the assembly.
+Translating .NET `readonly struct` and `ref struct` into Mochi value-type annotations. Mochi does not have a ref/copy distinction; all `extern record` types are pass-by-copy at the type-system level (the ABI handles the details). `ref struct` (stack-only) is excluded entirely. See [[05-type-mapping]] §Struct types.
 
-### A3: NativeAOT as the default bridge mode
+### A10. Using `dotnet new` templates for TargetDotnetLibrary emit
 
-NativeAOT could be the default, with CLR hosting as the fallback for AOT-incompatible packages.
+`dotnet new classlib` then modify. Rejected: indirect dependency on `dotnet new` template versions; the bridge directly owns the emitted project structure. See [[06-nuget-publish-flow]] §Direction 2.
 
-Why rejected:
-- As shown in [[11-nativeaot-and-trimming]], 8 of the 20 fixture packages are not AOT-compatible. A default of NativeAOT would silently fail for 40% of the fixture corpus.
-- NativeAOT requires a more complex build step and an LLVM or MSVC toolchain on the host. The developer experience is worse for the common case.
+### A11. Eager NativeAOT compile at `mochi pkg lock` time
 
-CLR hosting is the conservative default; NativeAOT is the opt-in for users who need lower startup time.
+Compile all wrappers at lock time (not build time). Rejected: 30-120 seconds per package per RID makes `mochi pkg lock` unacceptably slow for a routine developer action. The cache means the cost is amortised across builds, not paid at every lock. See Risk R3.
 
-### A4: Direct P/Invoke from the Mochi binary
+### A12. dlopen pre-built shared libraries from nuget.org
 
-Mochi could generate P/Invoke declarations that call directly into the NuGet package's assembly. P/Invoke targets native entry points.
-
-Why rejected:
-- P/Invoke requires the target function to be a native (unmanaged) export. NuGet package assemblies contain managed IL, not native exports. P/Invoke cannot call a managed CLR method without a native wrapper.
-- The `[UnmanagedCallersOnly]` C# shim generates exactly the native wrappers that P/Invoke requires. The shim IS the necessary intermediary.
-
-### A5: COM interop as the bridge mechanism
-
-COM (Component Object Model) allows cross-language object invocation via `IDispatch`. MEP-68 could use COM interop to call .NET objects.
-
-Why rejected:
-- COM is Windows-only. MEP-68 targets Linux, macOS, and Windows.
-- Not all .NET types implement COM-visible interfaces. The majority of NuGet packages do not.
-- The CLR hosting API + `[UnmanagedCallersOnly]` is the modern, cross-platform equivalent.
-
-### A6: GraalVM polyglot as the bridge
-
-GraalVM's polyglot API allows multiple languages to share a heap inside the GraalVM JVM.
-
-Why rejected:
-- GraalVM does not host the .NET CLR. It hosts JVM languages, JavaScript, Python, Ruby.
-- Mochi targets native binaries; running inside a JVM is not applicable.
-
-### A7: IKVM.NET (JVM-to-.NET translation)
-
-IKVM.NET translates JVM bytecode to .NET MSIL. MEP-68 could use IKVM to translate Mochi (JVM-compiled) to .NET.
-
-Why rejected:
-- Mochi does not target the JVM. IKVM is not applicable to a native Mochi binary.
-- IKVM adds a JVM dependency which is heavier than a CLR hosting dependency.
-
-### A8: `dotnet-embed` (static archive of the .NET runtime)
-
-The .NET runtime could hypothetically be linked as a static archive into the Mochi binary.
-
-Why rejected:
-- The .NET runtime is not published as a static archive. The only supported embedding mechanism is the CLR hosting API.
-- Statically linking the CLR would produce binaries of 30-50 MB even before the user's code.
-
-### A9: Long-lived NuGet API keys
-
-The publish flow could use the `NUGET_API_KEY` environment variable for `nuget push` authentication.
-
-Why rejected:
-- NuGet trusted publishing has been GA since March 2024. Long-lived API keys are the historical supply-chain attack vector.
-- MEP-57 and MEP-73 both mandate Sigstore-keyless / OIDC publish. Consistency requires MEP-68 to follow the same path.
-- `--allow-token-fallback` exists for the transition period with explicit deprecation warning.
-
-### A10: WIT (WebAssembly Interface Types) as the bridge protocol
-
-WIT (the WebAssembly Component Model Interface Types) is a candidate for cross-language binding. MEP-68 could require .NET packages to be compiled as Wasm components with WIT descriptions.
-
-Why rejected:
-- .NET's Wasm Component Model support (`dotnet-wasi` WASI preview 2) is experimental as of May 2026.
-- The vast majority of NuGet packages do not ship WIT descriptions.
-- MEP-68 targets native binaries, not Wasm.
-
-WIT may become an additional bridge mode in a future sub-phase for Wasm-targeting Mochi programs.
-
-### A11: Auto-monomorphise all generic instantiations
-
-The bridge could automatically discover all generic instantiations used in the user's Mochi source and generate shim methods for each.
-
-Why rejected:
-- The combinatorial explosion for packages like `System.Linq.Enumerable` (dozens of generic methods, each needing a monomorphisation for each type in the user's program) is unbounded.
-- The explicit `[dotnet.monomorphise]` table makes the explosion bounded and user-visible (the same argument as [[02-design-philosophy]] §6).
-
-### A12: Mirror the transitive dep graph verbatim from each package's `.nuspec`
-
-The bridge could copy every `<dependency>` from each package's `.nuspec` into `mochi.lock`, including all framework-unconditional entries.
-
-Why rejected:
-- NuGet's `<group targetFramework="...">` attribute scopes dependencies to specific TFMs. Mirroring all groups would introduce spurious dependencies (e.g., .NET Standard 2.0 polyfills that are not needed on .NET 8).
-- The bridge resolves against the declared `[dotnet] framework` TFM and records only the TFM-scoped transitive deps in `mochi.lock`. This is the NuGet-correct behaviour.
-
-## Cross-references
-
-- [[02-design-philosophy]] for the load-bearing decisions that drove these choices.
-- [[03-prior-art-bridges]] for the broader landscape of .NET language bridges.
-- [[07-nuget-trusted-publishing]] for the trusted-publishing rationale.
-- [MEP-68 §Alternatives](/docs/mep/mep-0068#alternatives-considered) for the normative alternatives list.
-- [MEP-68 §Risks](/docs/mep/mep-0068#risks) for the normative risk register.
+nuget.org does not host pre-built native binaries (only `.nupkg` source/managed archives). Cross-RID pre-built binaries would require the package author to publish a `<id>.linux-x64.<version>.nupkg` runtime package. Some packages do this (Grpc.Tools, various native codec packages) but it is not universal. The NativeAOT source-compile path is the only universally applicable approach.

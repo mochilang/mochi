@@ -2,206 +2,133 @@
 title: "09. ABI stability"
 sidebar_position: 10
 sidebar_label: "09. ABI stability"
-description: "[UnmanagedCallersOnly] guarantees and constraints, the CLR hosting function-pointer load path, the MochiMarshal type conventions, string and list round-trip encoding, GCHandle-based opaque handles for reference types, drop semantics across the managed-native boundary, and NativeAOT vs CLR hosting ABI differences."
+description: "[UnmanagedCallersOnly] guarantees and limitations, blittable struct pass-by-value, GCHandle opaque handle strategy, Marshal.AllocHGlobal string buffers, nint handle type on 32/64-bit platforms, and cross-RID ABI compatibility."
 ---
 
 # 09. ABI stability
 
-This note documents the ABI the C# shim assembly exposes. The boundary is `[UnmanagedCallersOnly]` entry points called via CLR hosting function pointers; it is what Mochi's runtime calls into.
+This note documents the ABI contract between the NativeAOT wrapper static library and the Mochi/Rust binary that links it. The contract must be stable across .NET SDK updates, Mochi version bumps, and the four supported RIDs.
 
-## `[UnmanagedCallersOnly]` guarantees
+## [UnmanagedCallersOnly] guarantees
 
-The `[UnmanagedCallersOnly]` attribute (introduced in .NET 5, stable in .NET 6+) marks a static method as directly callable from unmanaged (native) code via a function pointer. The constraints:
+`[UnmanagedCallersOnly]` (introduced in .NET 5, stable since .NET 7) makes a `static` method callable from native code via a stable C ABI entry point. Guarantees:
 
-1. The method must be `static`.
-2. The method must not be generic (no open type parameters; monomorphised closed instantiations are permitted via explicit wrapper methods).
-3. Parameters and return types must be "blittable": value types that have the same memory representation in managed and unmanaged code (`int`, `long`, `double`, `bool` as `int`, `nint`/`IntPtr`, pointers), or `void`.
-4. The method must not throw exceptions that escape the `[UnmanagedCallersOnly]` boundary. The shim catches all managed exceptions and converts them to a `MochiErrorCode` return value.
+1. **No GC references in the signature.** The compiler enforces that every parameter and return type is blittable (primitive, pointer, or `[StructLayout(Sequential/Explicit)]` struct with only blittable fields). Reference types (`class`, `string`, `T[]`) cannot appear directly; the bridge uses `nint` (pointer-sized integer) for GC handles.
 
-The entry point name is declared via `EntryPoint`:
+2. **No exception propagation.** Exceptions thrown across an `[UnmanagedCallersOnly]` boundary cause undefined behaviour in the caller. The bridge catches all exceptions inside the wrapper and converts them to a mochi error sentinel (a non-zero `int` return code + a `mochi_dotnet_last_error()` function the Mochi side calls for the message).
 
-```csharp
-[UnmanagedCallersOnly(EntryPoint = "mochi_Newtonsoft_Json_JsonConvert_SerializeObject")]
-public static unsafe IntPtr SerializeObject(IntPtr value_handle)
-```
+3. **Calling convention is platform-default C ABI.** On x86-64 Linux/macOS: System V AMD64 ABI (integer args in rdi/rsi/rdx/rcx/r8/r9, float args in xmm0-7, return in rax). On ARM64: AAPCS64. On x86-64 Windows: Microsoft x64 ABI. The `CallConvs` property of `[UnmanagedCallersOnly]` can override to `CallConvCdecl`, `CallConvStdcall`, or `CallConvFastcall`; the bridge uses the default (platform default) for all four primary RIDs.
 
-The calling convention is platform default: `Cdecl` on Linux/macOS (SysV AMD64 ABI on x64, AAPCS64 on ARM64), `Stdcall` on Windows x64 (but effectively `Cdecl` on 64-bit Windows). The bridge specifies `CallConvs = new[] { typeof(CallConvCdecl) }` explicitly to ensure cross-platform consistency:
+4. **No inline caching, no JIT deoptimisation.** NativeAOT compiles the wrapper method to machine code once. There is no JIT, no tiered compilation, no OSR (On-Stack Replacement). The entry point is stable after `dotnet publish`.
 
-```csharp
-[UnmanagedCallersOnly(EntryPoint = "mochi_pkg_method", CallConvs = new[] { typeof(CallConvCdecl) })]
-```
+5. **Thread safety.** `[UnmanagedCallersOnly]` methods may be called from any thread simultaneously. The bridge generates wrappers that are reentrant (no shared mutable state outside of explicitly thread-safe structures like `GCHandleTable` with its internal lock and `Interlocked` operations).
 
-## The CLR hosting function-pointer load path
+## Blittable struct pass-by-value
 
-The bridge loads entry points via the CLR hosting API's `load_assembly_and_get_function_pointer` delegate:
-
-```go
-// package3/dotnet/hosting/clr.go
-
-type CLRHost struct {
-    loadDelegate  unsafe.Pointer  // load_assembly_and_get_function_pointer
-}
-
-func (h *CLRHost) GetFunctionPointer(
-    assemblyPath, typeName, methodName string,
-) (unsafe.Pointer, error) {
-    // Calls load_assembly_and_get_function_pointer via CGO
-}
-```
-
-Each entry point is loaded once at bridge initialization and cached as a Go function pointer. The loading sequence at process startup:
-
-1. `hostfxr_initialize_for_runtime_config(runtimeConfigPath, ...)`: initialise the CLR with the runtime configuration (`.runtimeconfig.json`) shipped alongside the shim assembly.
-2. `hostfxr_get_runtime_delegate(hostContextHandle, hdt_load_assembly_and_get_function_pointer, &delegate)`: obtain the `load_assembly_and_get_function_pointer` delegate.
-3. For each shim entry point: `delegate(assemblyPath, typeName, methodName, delegateTypeName, ...)`.
-
-The `delegateTypeName` must match the delegate type signature. For `[UnmanagedCallersOnly]` entry points, the bridge uses `UNMANAGEDCALLERSONLY_METHOD` as the delegate type (a special sentinel value defined in `nethost.h` that bypasses delegate-type checking).
-
-## `MochiMarshal` type conventions
-
-`MochiMarshal` is a static helper class in `dotnet_shim/shared/MochiMarshal.cs` that implements the native↔managed data marshalling conventions:
-
-### String convention
+For `[StructLayout(LayoutKind.Sequential)]` structs with all blittable fields (the "value type path"), the bridge passes the struct by value at the ABI. This is possible because `[UnmanagedCallersOnly]` parameters may be value types with blittable fields:
 
 ```csharp
-// Native to managed: read a UTF-8 byte* + int pair into a C# string
-public static string FromNativeString(IntPtr ptr, int len)
-    => Marshal.PtrToStringUTF8(ptr, len) ?? string.Empty;
+[StructLayout(LayoutKind.Sequential)]
+public struct Point { public float X; public float Y; }
 
-// Managed to native: allocate a CoTaskMem buffer with UTF-8 + return pointer + length
-public static (IntPtr ptr, int len) ToNativeString(string s) {
-    if (s == null) return (IntPtr.Zero, 0);
-    var bytes = Encoding.UTF8.GetBytes(s);
-    var ptr = Marshal.AllocCoTaskMem(bytes.Length);
-    Marshal.Copy(bytes, 0, ptr, bytes.Length);
-    return (ptr, bytes.Length);
-}
-
-// Free a native string returned by ToNativeString
-public static void FreeNativeString(IntPtr ptr) => Marshal.FreeCoTaskMem(ptr);
+[UnmanagedCallersOnly(EntryPoint = "mochi_dotnet_MyLib_Geometry_Scale")]
+public static Point Geometry_Scale(Point p, float factor) => new Point(p.X * factor, p.Y * factor);
 ```
 
-The convention uses `CoTaskMem` (the COM task memory allocator) for string ownership. `CoTaskMem` memory is allocated by the CLR side and freed by the Mochi side via a matching free call. The Mochi runtime calls `mochi_<pkg>_string_free(ptr)` (a generated shim entry) which delegates to `Marshal.FreeCoTaskMem`.
+On x86-64 SysV ABI, a two-float struct is passed in `xmm0` (two packed 32-bit floats) and returned in `xmm0`. On ARM64 AAPCS64, the same applies (HFA: Homogeneous Floating-point Aggregate). The Mochi-side `extern record Point { X: float, Y: float }` receives and returns the struct by value matching the ABI layout.
 
-### List convention
+For structs larger than 16 bytes (two registers), the ABI uses an implicit pointer argument (the caller allocates stack space, passes a pointer, the callee writes the result into it). This is transparent to the bridge user.
+
+Non-blittable structs (structs with reference-type fields) cannot be passed by value; they use the GCHandle strategy.
+
+## GCHandle opaque handle strategy
+
+Reference types (class instances, arrays, strings) cannot be passed directly across the `[UnmanagedCallersOnly]` boundary because:
+- The GC may move them in memory between the wrap call and the native caller's use.
+- Their internal layout is not stable (field ordering is up to the GC's optimisation).
+
+The bridge uses `GCHandle.Alloc(obj, GCHandleType.Normal)`:
 
 ```csharp
-public struct MochiSliceI64 {
-    public long* Ptr;
-    public int Len;
-}
+// Create a GCHandle (prevents GC from collecting the object)
+var handle = GCHandle.Alloc(myObject);
+nint handleValue = GCHandle.ToIntPtr(handle);
+// Return handleValue as nint to the Mochi caller
 
-public static MochiSliceI64 ToNativeListI64(List<long> list) {
-    var arr = list.ToArray();
-    var handle = GCHandle.Alloc(arr, GCHandleType.Pinned);
-    return new MochiSliceI64 {
-        Ptr = (long*)handle.AddrOfPinnedObject(),
-        Len = arr.Length
-    };
-    // NOTE: handle must be freed after Mochi copies the slice
-}
+// Later, when the Mochi caller frees:
+var handle = GCHandle.FromIntPtr(handleValue);
+var obj = (MyType)handle.Target!;
+handle.Free();
 ```
 
-For scalar lists, the data is pinned in managed memory and the native pointer is valid only for the duration of the call. For lists of strings, each element is marshalled to a `CoTaskMem` buffer.
+`GCHandle.Alloc(Normal)` pins the object in the GC's tracking table but does not pin its address in memory (the GC can still move it; the handle remains valid). The `nint` value returned is a 4-byte integer on 32-bit platforms and an 8-byte integer on 64-bit platforms, representing the GCHandle table index (not a raw pointer).
 
-### Opaque handle convention
-
-For reference types (classes, interfaces), the shim uses `GCHandle` to pin the managed object and passes the `GCHandle.ToIntPtr()` value as an `IntPtr` (Mochi `int` type):
+The `GCHandleTable` in `mochi-dotnet-runtime` provides a concurrent, GC-pressure-aware wrapper that batches handle allocations and tracks handle lifetimes for leak detection in debug builds:
 
 ```csharp
-[UnmanagedCallersOnly(EntryPoint = "mochi_HttpClient_new", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr HttpClient_new()
-{
-    var client = new HttpClient();
-    var handle = GCHandle.Alloc(client, GCHandleType.Normal);
-    return GCHandle.ToIntPtr(handle);
-}
+public static class GCHandleTable {
+    private static readonly ConcurrentDictionary<nint, GCHandle> _handles = new();
 
-[UnmanagedCallersOnly(EntryPoint = "mochi_HttpClient_free", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static void HttpClient_free(IntPtr handle_ptr)
-{
-    var handle = GCHandle.FromIntPtr(handle_ptr);
-    if (handle.IsAllocated) {
-        (handle.Target as IDisposable)?.Dispose();
-        handle.Free();
+    public static nint Alloc(object obj) {
+        var handle = GCHandle.Alloc(obj);
+        var key = GCHandle.ToIntPtr(handle);
+        _handles[key] = handle;
+        return key;
+    }
+
+    public static T Get<T>(nint key) => (T)_handles[key].Target!;
+
+    public static void Free(nint key) {
+        if (_handles.TryRemove(key, out var handle)) handle.Free();
     }
 }
 ```
 
-The Mochi runtime owns the `GCHandle` after the constructor call and calls `mochi_<type>_free` when the Mochi GC determines the handle is unreachable. The `GCHandle.Normal` type keeps the managed object alive as long as the handle is allocated; `GCHandle.Free` releases the CLR's hold on the object, allowing it to be collected.
+The `_handles` dictionary is itself a managed object (not subject to GC under NativeAOT's conservative pinning of static roots).
 
-## Exception handling across the boundary
+## Marshal.AllocHGlobal for strings
 
-Exceptions must not escape an `[UnmanagedCallersOnly]` method (an unhandled exception crossing the boundary causes a fatal abort). The shim catches all exceptions and encodes them as a `MochiError` out-parameter:
+.NET strings are UTF-16 managed objects. They cannot be returned directly from `[UnmanagedCallersOnly]` methods. The bridge allocates an unmanaged UTF-8 buffer:
 
 ```csharp
-[UnmanagedCallersOnly(EntryPoint = "mochi_Dapper_Query", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static unsafe IntPtr Dapper_Query(IntPtr conn_handle, byte* sql_ptr, int sql_len, IntPtr* error_out)
-{
-    *error_out = IntPtr.Zero;
-    try {
-        var conn = (IDbConnection)GCHandle.FromIntPtr(conn_handle).Target!;
-        var sql = MochiMarshal.FromNativeString((IntPtr)sql_ptr, sql_len);
-        var result = conn.Query(sql).AsList();
-        return MochiMarshal.ToNativeJsonList(result);
-    } catch (Exception ex) {
-        *error_out = MochiMarshal.ToNativeString(ex.ToString()).ptr;
-        return IntPtr.Zero;
-    }
+[UnmanagedCallersOnly(EntryPoint = "mochi_dotnet_<Pkg>_<Method>_ReturnString")]
+public static unsafe byte* <Method>_ReturnString(<args>) {
+    string managed = <method_call>(<args>);
+    if (managed == null) return null;
+    byte[] utf8 = System.Text.Encoding.UTF8.GetBytes(managed);
+    byte* ptr = (byte*)Marshal.AllocHGlobal(utf8.Length + 1);
+    utf8.AsSpan().CopyTo(new Span<byte>(ptr, utf8.Length));
+    ptr[utf8.Length] = 0; // null-terminate
+    return ptr;
+}
+
+// Companion free function:
+[UnmanagedCallersOnly(EntryPoint = "mochi_dotnet_string_free")]
+public static unsafe void StringFree(byte* ptr) {
+    if (ptr != null) Marshal.FreeHGlobal((nint)ptr);
 }
 ```
 
-The Mochi runtime checks `error_out` after each call. If non-null, the Mochi runtime reads the UTF-8 error string, frees it, and raises a Mochi panic with the message.
+`Marshal.AllocHGlobal` allocates from the native heap (not the GC heap), producing a stable pointer the Mochi side can hold. `Marshal.FreeHGlobal` frees it. The Mochi type checker inserts a `defer mochi_dotnet_string_free(s)` at the end of every scope that receives a string return value from a .NET method.
 
-## NativeAOT vs CLR hosting ABI difference
+## nint handle type on 32/64-bit platforms
 
-When `[dotnet] bridge = "nativeaot"` is set, the shim is compiled to a native shared library via `dotnet publish -r <rid> -p:PublishAot=true`. The `[UnmanagedCallersOnly]` entry points are the same; the loading mechanism changes.
+`nint` (alias for `System.IntPtr`) is 4 bytes on 32-bit platforms and 8 bytes on 64-bit platforms. All four MEP-68 primary targets (linux-x64, linux-arm64, osx-arm64, win-x64) are 64-bit, so `nint` is uniformly 8 bytes. The Mochi `extern type T` for GC-handle-backed types is emitted as a `long` (64-bit integer) on all four platforms.
 
-With CLR hosting:
-- The shim assembly (`.dll`) is loaded into the CLR at runtime via `load_assembly_and_get_function_pointer`.
-- Entry points are function pointers obtained from the CLR hosting delegate.
+If a future MEP adds 32-bit targets (linux-arm, win-x86), the bridge must emit `int` (32-bit) for `nint` on those targets. The `wrapper-sha256` in `mochi.lock` would differ between 32-bit and 64-bit wrapper builds because the symbol signatures differ; the lockfile records the per-RID wrapper hash.
 
-With NativeAOT:
-- The shim is a native shared library (`libshim.so` / `libshim.dylib` / `shim.dll`).
-- Entry points are standard shared library exports, loadable via `dlopen` / `LoadLibrary`.
-- No CLR at runtime; no `hostfxr` invocation.
+## Static link vs. shared lib vs. CoreCLR hosting ABI comparison
 
-The Mochi runtime detects the bridge mode from `mochi.lock`'s `[[dotnet-package]] bridge` field and uses the appropriate loading mechanism.
+| Strategy | ABI contract | Startup cost | Runtime dep on target |
+|----------|-------------|--------------|----------------------|
+| NativeAOT static lib (`NativeLib=Static`) | C ABI, `[UnmanagedCallersOnly]`, stable across SDK updates within the same major .NET version | 0 ms | None |
+| NativeAOT shared lib (`NativeLib=Shared`) | Same C ABI, but dlopen at runtime | ~1 ms (dlopen) | None (bundled in the Mochi binary distribution) |
+| CoreCLR hosting (`coreclr_initialize`) | `coreclr_create_delegate`-acquired function pointers | 100-300 ms | libcoreclr.so on target machine |
 
-The ABI surface is identical in both modes: the same `[UnmanagedCallersOnly]` entry point names, the same parameter types, the same `MochiMarshal` conventions. This is by design: a NativeAOT shim and a CLR-hosted shim are interchangeable from the Mochi runtime's perspective.
+MEP-68 uses static lib for the primary path. The shared lib option is noted for future use (e.g., if the Mochi binary size budget cannot accommodate all NativeAOT wrappers linked in).
 
-## ABI versioning
+## Cross-RID ABI compatibility
 
-Each shim project includes a version sentinel:
+The same `.mochi` shim file is used for all four RIDs. The `extern fn` declarations in the shim use the same symbol names (`mochi_dotnet_<pkg>_<Type>_<Method>`). The ABI type mapping (int=4 bytes, long=8 bytes, float=4 bytes, double=8 bytes, nint=8 bytes on 64-bit) is stable across all four primary targets.
 
-```csharp
-// MochiShimVersion.cs
-public static class MochiShimVersion {
-    public const int AbiVersion = 1;
-}
-```
-
-And a corresponding `[UnmanagedCallersOnly]` accessor:
-
-```csharp
-[UnmanagedCallersOnly(EntryPoint = "mochi_shim_abi_version", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static int GetAbiVersion() => MochiShimVersion.AbiVersion;
-```
-
-The Mochi runtime calls `mochi_shim_abi_version` at load time and refuses to use a shim whose ABI version differs from the runtime's expected version. An ABI version mismatch produces:
-
-```
-ERROR: ABI version mismatch
-  Shim: dotnet_shim/Serilog/Serilog.dll
-  Shim ABI version: 2
-  Runtime expected: 1
-  Resolution: regenerate the shim with `mochi pkg sync dotnet`
-```
-
-## Cross-references
-
-- [[05-type-mapping]] for the CLR-side types that drive the shim surface.
-- [[08-async-bridge]] for the `.GetAwaiter().GetResult()` entry into shim functions.
-- [[10-generics-and-reification]] for how CLR generics affect the shim encoding.
-- [[11-nativeaot-and-trimming]] for the NativeAOT shim path.
-- [MEP-68 §6](/docs/mep/mep-0068#6-build-orchestration) for how the shim fits into the build flow.
+The only ABI divergence is struct alignment: on x86-64 SysV, structs have natural alignment; on ARM64 AAPCS64, the same. On Windows x64 (MSVC ABI), structs with the same fields may have different padding if `__declspec(align)` or `[StructLayout(Pack=...)]` differ. The bridge always generates `[StructLayout(LayoutKind.Sequential)]` without `Pack` (which uses the platform default alignment), producing consistent layout on all four targets for structs with fields of the same types.

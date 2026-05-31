@@ -1,190 +1,183 @@
 ---
 title: "06. NuGet publish flow"
 sidebar_position: 7
-sidebar_label: "06. NuGet publish"
-description: "The nuget.org upload protocol, the .nupkg / .nuspec shape, the per-package metadata requirements, the NuGet v3 API for resolution and download, the TargetDotNetLibrary emit path, and the `mochi pkg publish --to=nuget.org` end-to-end flow."
+sidebar_label: "06. NuGet publish flow"
+description: "The NuGet V3 protocol (registration, flat container, search, publish endpoints), the .nupkg archive format, dotnet pack invocation, per-package metadata requirements, and the publish-side gate."
 ---
 
 # 06. NuGet publish flow
 
-This note documents the Mochi-as-.NET-library publish path: how `mochi pkg publish --to=nuget.org` lowers a Mochi package to a publishable .NET NuGet package and uploads it.
+This note covers both directions of the NuGet protocol: Direction 1 (fetching packages from nuget.org for the consumer path) and Direction 2 (publishing a Mochi package as a `.nupkg` to nuget.org for the producer path).
 
-## The library package shape
+## NuGet V3 protocol overview
 
-A .NET NuGet package intended for nuget.org distribution has the following structure:
+NuGet V3 is a JSON-based REST protocol whose entry point is the **service index** at `https://api.nuget.org/v3/index.json`. The service index lists resource URLs by `@type`:
+
+| Resource type | Example URL | Purpose |
+|--------------|-------------|---------|
+| `RegistrationsBaseUrl/3.6.0` | `https://api.nuget.org/v3/registration5-gz-semver2/` | Package registration blobs (version lists, metadata) |
+| `PackageBaseAddress/3.0.0` | `https://api.nuget.org/v3-flatcontainer/` | Content download (`.nupkg`, `.nuspec`, `.dll`) |
+| `SearchQueryService/3.5.0` | `https://azuresearch-usnc.nuget.org/query` | Full-text package search |
+| `PackagePublish/2.0.0` | `https://www.nuget.org/api/v2/package` | Upload endpoint for push |
+| `SymbolPackagePublish/4.9.0` | `https://nuget.smbsrc.net/api/v2/symbolpackage` | Symbol package upload |
+| `TrustedPackagePublish/1.0.0` | `https://api.nuget.org/v3/trustedpublish/` | OIDC trusted publish endpoint (GA November 2024) |
+
+The bridge uses the service index to discover the current resource URLs at lock time, caching the index for 24 hours.
+
+## Direction 1: fetching packages
+
+### Version resolution
+
+For each `[dotnet-dependencies]` entry, the bridge queries the registration endpoint:
 
 ```
-mochi-emitted.nupkg (a ZIP archive)
-  [Content_Types].xml
-  _rels/.rels
-  package/
-    services/
-      metadata/
-        core-properties/
-          <guid>.psmdcp
-  MyMochiLib.nuspec            # the package manifest
-  lib/
-    net8.0/
-      MyMochiLib.dll           # the compiled .NET assembly
-      MyMochiLib.xml           # XML documentation (optional)
-  icon.png                     # optional
-  README.md                    # optional
+GET https://api.nuget.org/v3/registration5-gz-semver2/<id>/index.json
 ```
 
-The user writes Mochi in `<package>/src/*.mochi`. The bridge lowers via `TargetDotNetLibrary` (a new MEP-53 build target) to a C# project, compiles it with `dotnet build -c Release`, and packages it with `dotnet pack`.
+The response is a registration index whose `items` array contains registration page blobs. Each page covers a version range. The bridge walks the pages (requesting individual page URLs when `@id` is present) to collect all available versions and their metadata.
 
-The emitted `.csproj`:
+Version resolution follows NuGet's SemVer 2.0 logic:
+- Four-part versions (`13.0.3.0`) are normalised to `13.0.3` (dropping trailing zero).
+- Prerelease versions are excluded unless `prerelease = true` is set in the dependency entry.
+- Version range syntax: `[13.0.3]` (exact), `(13.0.0,)` (exclusive lower), `[12.0.0,14.0.0)` (range), `^13.0` (MEP-68 shorthand for `[13.0.0,14.0.0)`).
+- Dependency conflicts are resolved via the "nearest wins" rule (the directly-declared version wins over transitive), then "lowest applicable" (within a range, pick the lowest version that satisfies all constraints).
 
-```xml
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <AssemblyName>MyMochiLib</AssemblyName>
-    <RootNamespace>MyMochiLib</RootNamespace>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageId>MyMochiLib</PackageId>
-    <PackageVersion>1.0.0</PackageVersion>
-    <Authors>tamnd</Authors>
-    <Description>A Mochi library published as a NuGet package.</Description>
-    <PackageProjectUrl>https://github.com/example/mymochi</PackageProjectUrl>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageTags>mochi</PackageTags>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="mochi-runtime-dotnet" Version="0.6.0" />
-  </ItemGroup>
-</Project>
+### Content download
+
+Once the version is resolved, the bridge downloads the `.nupkg` archive:
+
+```
+GET https://api.nuget.org/v3-flatcontainer/<id>/<version>/<id>.<version>.nupkg
 ```
 
-Metadata fields come from the Mochi `mochi.toml` `[dotnet.publish]` table. The package name is the Mochi package name (with `@scope/name` form, if present, flattened to `scope.name` since NuGet does not support scoped package identifiers).
+The `.nupkg` is a ZIP archive with the structure:
 
-`src/MyMochiLib.cs` is generated by lowering the Mochi package's public API. Mochi `fun` items become `public static` methods. Mochi `record` items become `public record struct` items. Mochi `type T = A | B` sum types become `public abstract class T` with nested derived types `A` and `B`. Private items become `internal`.
+```
+Newtonsoft.Json.13.0.3.nupkg
+├── [Content_Types].xml
+├── _rels/.rels
+├── Newtonsoft.Json.nuspec           # package metadata
+├── lib/
+│   ├── net20/Newtonsoft.Json.dll    # .NET 2.0 target (legacy)
+│   ├── netstandard2.0/
+│   │   ├── Newtonsoft.Json.dll      # NS2.0 target (primary for bridge)
+│   │   └── Newtonsoft.Json.xml      # XML documentation
+│   └── net6.0/Newtonsoft.Json.dll   # .NET 6 target
+├── build/
+├── analyzers/
+└── icon.png
+```
 
-## NuGet v3 API and resolution
+The bridge selects the DLL from the highest `lib/<tfm>/` folder that is compatible with the configured `[dotnet] framework` (following NuGet's TFM compatibility graph: `net9.0` is compatible with `net8.0`, `net6.0`, `netstandard2.0`, `netstandard2.1`, `netcoreapp3.1`, etc.). The XML documentation file from the same folder is also extracted.
 
-The NuGet v3 API is a RESTful JSON API documented at `https://docs.microsoft.com/en-us/nuget/api/overview`. The bridge uses the following endpoints:
+Hash verification uses the `nupkg-blake3` (computed by the bridge) and `nupkg-sha512` (published by nuget.org in the registration blob's `packageHash` field with `packageHashAlgorithm: "SHA512"`). Both hashes must match the lockfile entries at `mochi pkg lock --check` time.
 
-- **Service index** (`https://api.nuget.org/v3/index.json`): returns a JSON document listing all v3 API endpoints. The bridge fetches this at lock time.
-- **Search query service** (a URL from the service index with resource type `SearchQueryService/3.5.0`): resolves package name + version constraint to a specific version.
-- **Flat container** (resource type `PackageBaseAddress/3.0.0`): the content-addressed `.nupkg` download URL, in the form `<baseUrl>/<id>/<version>/<id>.<version>.nupkg`.
-- **Registration pages** (resource type `RegistrationsBaseUrl/3.6.0`): package metadata, including `.nuspec` dependency groups, deprecation status, and vulnerability advisories.
+### Content-addressed cache
 
-The resolution process:
+Downloaded `.nupkg` archives are stored at:
 
-1. Fetch the service index.
-2. For each `[dotnet-dependencies]` entry, query the search API with the package name and version constraint.
-3. Select the highest satisfying version (NuGet's default strategy; overridable via `[dotnet.resolve] strategy = "lowest"` in `mochi.toml`).
-4. Fetch the registration page for the resolved version to get the `.nuspec` dependency groups.
-5. Recurse into transitive dependencies until the full graph is resolved.
-6. Download each `.nupkg` to `~/.cache/mochi/dotnet-deps/<sha512-hex>/`.
+```
+~/.cache/mochi/dotnet-deps/<blake3-hex>/<id>.<version>.nupkg
+```
 
-## The `.nuspec` manifest
+and extracted to:
 
-A `.nuspec` file is an XML manifest inside the `.nupkg` that declares package metadata:
+```
+~/.cache/mochi/dotnet-deps/<blake3-hex>/extracted/
+├── <id>.dll
+├── <id>.xml
+└── <id>.nuspec
+```
+
+The extracted DLL is what the ECMA-335 parser reads. The cache is write-once (the BLAKE3 hash is the key); no update is ever needed unless the lockfile hash changes.
+
+### NuGet.Config for wrapper project restore
+
+The wrapper project's `dotnet restore` must resolve the NuGet package from the local cache, not the internet, to ensure reproducibility and offline builds. The bridge writes a `NuGet.Config` alongside the wrapper project:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+<configuration>
+  <packageSources>
+    <clear />
+    <add key="mochi-local" value="<workdir>/dotnet_deps/" />
+  </packageSources>
+  <fallbackPackageFolders>
+    <add key="mochi-cache" value="~/.cache/mochi/dotnet-deps/" />
+  </fallbackPackageFolders>
+</configuration>
+```
+
+This ensures `dotnet restore` uses only the pre-downloaded packages.
+
+## Direction 2: publishing to nuget.org
+
+### `mochi pkg publish --to=nuget.org` flow
+
+1. **Emit `TargetDotnetLibrary`.** The MEP-53 driver emits the `.csproj`, `Src/*.cs`, XML documentation, and `.nuspec`.
+
+2. **Run `dotnet build`.** Compiles the emitted C# source to a DLL.
+
+3. **Run `dotnet pack`.** Produces `<id>.<version>.nupkg` in the configured output directory. The bridge specifies `--no-build` (the DLL is already compiled) and `--output <outdir>`. `dotnet pack` reads the `.nuspec` or the `<PackageId>`, `<Version>`, `<Description>`, `<Authors>` properties from `.csproj` to populate the `.nupkg` metadata.
+
+4. **Obtain OIDC token.** See [[07-oidc-nuget-trusted-publishing]].
+
+5. **Upload via `TrustedPackagePublish` endpoint.** `PUT https://api.nuget.org/v3/trustedpublish/<id>/<version>` with the OIDC token in the `X-NuGet-OIDC-Token` header and the `.nupkg` bytes in the request body.
+
+6. **Record Rekor log entry.** If the upload succeeds, nuget.org returns a Rekor log entry URL in the `X-NuGet-Rekor-Log-Entry` response header. The bridge records this in `mochi.lock` under `[published.nuget]`.
+
+### The `.nuspec` metadata fields
+
+The bridge generates a `.nuspec` from `mochi.toml`'s `[package]` section:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<package>
   <metadata>
-    <id>MyMochiLib</id>
+    <id>MyPackage</id>
     <version>1.0.0</version>
-    <authors>tamnd</authors>
-    <description>A Mochi library published as a NuGet package.</description>
-    <projectUrl>https://github.com/example/mymochi</projectUrl>
-    <license type="expression">Apache-2.0</license>
+    <description>A Mochi-authored .NET library for...</description>
+    <authors>Alice Example</authors>
+    <license type="expression">MIT</license>
+    <repository type="git" url="https://github.com/example/mypackage" />
+    <projectUrl>https://mypackage.dev</projectUrl>
     <readme>README.md</readme>
-    <tags>mochi</tags>
+    <icon>assets/icon.png</icon>
+    <tags>mochi dotnet example</tags>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <group targetFramework="net8.0">
-        <dependency id="mochi-runtime-dotnet" version="0.6.0" exclude="Build,Analyzers" />
+      <group targetFramework="net9.0">
+        <!-- [dotnet-dependencies] entries that are public dependencies -->
       </group>
     </dependencies>
   </metadata>
 </package>
 ```
 
-The bridge generates this manifest from `[dotnet.publish]` in `mochi.toml`. Required fields: `id`, `version`, `authors`, `description`, `license`. Optional but strongly recommended: `projectUrl`, `readme`, `tags`.
+Required fields (nuget.org rejects packages missing these): `id`, `version`, `description`, `authors`. If `mochi.toml`'s `[package]` section lacks any required field, `mochi pkg publish` exits with an error listing the missing fields.
 
-## The `mochi pkg publish --to=nuget.org` flow
+The `license` field uses the SPDX expression format (`MIT`, `Apache-2.0`, `MIT OR Apache-2.0`). If the `[package] license` field is absent, `mochi pkg publish` warns and defaults to `proprietary` (not an SPDX expression; nuget.org accepts it but marks the package as unlicensed in its UI).
 
-```
-$ mochi pkg publish --to=nuget.org
-[1/6] Lowering package via TargetDotNetLibrary ... (2.1s)
-[2/6] Compiling C# project ... (4.3s)
-[3/6] Packing .nupkg ... (1.0s)
-[4/6] Validating .nuspec metadata ... OK
-[5/6] Obtaining GitHub Actions OIDC token (audience: nuget.org) ...
-       sub: repo:example/mymochi:ref:refs/tags/v1.0.0
-[6/6] Uploading to nuget.org ... OK
-       Package published: https://www.nuget.org/packages/MyMochiLib/1.0.0
-```
+### Symbol packages
 
-The `--dry-run` flag skips step 6:
+Mochi does not emit `.pdb` symbol files (the emitted C# source is the "source", and the `mochi-dotnet-runtime` package provides the helpers; there is no Mochi-authored .pdb). The bridge skips `SymbolPackagePublish`. A future sub-phase may emit a source-link-enabled `.pdb` that points to the Mochi source repository.
 
-```
-$ mochi pkg publish --to=nuget.org --dry-run
-...
-[6/6] DRY RUN: would POST .nupkg to https://www.nuget.org/api/v2/package
-       Package: MyMochiLib 1.0.0
-       SHA-512: abc123...
-```
+### Dry-run mode
 
-## nuget.org upload protocol
+`mochi pkg publish --to=nuget.org --dry-run` runs steps 1-3, skips steps 4-6, and instead:
 
-The nuget.org upload endpoint (v2-compatible, the currently supported endpoint) is:
+- Runs `dotnet pack --output <outdir>` and validates the resulting `.nupkg` (all required metadata present, no duplicate files, assembly version matches package version).
+- Runs `nuget verify` (if the `nuget` CLI is available) to assert the package is well-formed.
+- Emits a `DRY_RUN: upload would have PUT <nupkg-size> bytes to https://api.nuget.org/v3/trustedpublish/...` log line.
 
-```
-PUT https://www.nuget.org/api/v2/package
-Authorization: <token>    (legacy) or X-NuGet-Protocol-Version: 4.1.0 (trusted publishing)
-Content-Type: application/octet-stream
-Body: raw .nupkg bytes
-```
+This mode is used in CI to validate the publish path without actually uploading (and without needing a trusted-publisher configuration on nuget.org).
 
-For trusted publishing (see [[07-nuget-trusted-publishing]]), the `Authorization` header carries the OIDC token:
+## NuGet package validation gates
 
-```
-Authorization: Bearer <oidc-token>
-X-NuGet-Protocol-Version: 4.1.0
-```
+Before upload, the bridge validates:
 
-nuget.org's server-side handler validates the OIDC token against the configured trusted publisher and processes the upload.
-
-## Metadata validation
-
-Before upload the bridge validates:
-
-- `package-id` matches the NuGet package name regex `[A-Za-z0-9_\-.]{1,64}` (case-insensitive; no `@scope/` form).
-- `version` parses as NuGet semver (SemVer 2.0.0 compliant).
-- `license` parses as an SPDX expression.
-- `description` is between 1 and 4000 characters.
-- The `README.md` file exists in the package root.
-- No file in the package exceeds 100 MB (nuget.org's per-file limit).
-- The total `.nupkg` size does not exceed 250 MB (nuget.org's package limit).
-
-A validation failure exits before the upload step.
-
-## `TargetDotNetLibrary` emit path
-
-`TargetDotNetLibrary` is a new MEP-53 build target. The driver's `Build` function gates on `Driver.LibraryMode=true` plus `target == TargetDotNetLibrary`. The emit path:
-
-1. Lowers the Mochi package's public surface to a C# file (`src/<PackageId>.cs`) containing `public static` methods, `public record struct` types, and `public abstract class` sum types.
-2. Generates the `.csproj` from `[dotnet.publish]`.
-3. Runs `dotnet build -c Release`.
-4. Runs `dotnet pack -c Release --no-build`.
-5. Returns the path to the generated `.nupkg`.
-
-The emit step preserves Mochi's module visibility model: only `pub` items in the Mochi package become `public` in the generated C#; non-`pub` items become `internal`.
-
-## Cross-references
-
-- [[01-language-surface]] for the `mochi pkg publish` CLI surface.
-- [[07-nuget-trusted-publishing]] for the OIDC token exchange.
-- [[09-abi-stability]] for the .NET assembly ABI that downstream C# consumers link against.
-- [MEP-53](/docs/mep/mep-0053) for the build driver that `TargetDotNetLibrary` extends.
-- [MEP-68 §5](/docs/mep/mep-0068#5-cli-surface) for the normative CLI surface.
+1. **No duplicate assembly names.** The `.nupkg` must not contain two DLLs with the same `AssemblyName` attribute.
+2. **Version matches manifest.** The `<version>` in `.nuspec` must match `mochi.toml [package] version`.
+3. **Licence compatibility.** The transitive dep graph's SPDX licence union must be compatible with the declared `[package] license` (same check as MEP-73 §Risks §10 but for NuGet SPDX metadata).
+4. **No pre-release transitive deps unless pre-release version.** A `1.0.0` package must not depend on `1.0.0-alpha.1` packages.
+5. **Assembly strong-name consistency.** If the package is strong-named (sign key in `mochi.toml`), the generated assembly must be signed with the matching key.

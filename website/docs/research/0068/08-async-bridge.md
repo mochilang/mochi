@@ -2,167 +2,166 @@
 title: "08. Async bridge"
 sidebar_position: 9
 sidebar_label: "08. Async bridge"
-description: "The Task<T> synchronous dispatch via .GetAwaiter().GetResult(), CLR thread pool semantics at the [UnmanagedCallersOnly] boundary, deadlock prevention with ConfigureAwait(false), the task-parallel async-mode opt-in for high-throughput cases, and cancellation semantics."
+description: "The .NET Task-based async model vs. Mochi's colouring-only async, the SynchronizationContext deadlock hazard, the ThreadPool + ManualResetEventSlim pattern, IAsyncEnumerable deferred path, CancellationToken bridge, and cost comparison with MEP-73's tokio::block_on."
 ---
 
 # 08. Async bridge
 
-This note documents how the bridge surfaces .NET `async Task<T>` methods into Mochi's synchronous call surface. Mochi v1 does not have a native async surface; a `Task<T>` return type translates to a synchronous Mochi `extern fn` whose C# shim blocks on the CLR thread pool.
+## The impedance mismatch
 
-## The synchronous dispatch pattern
+Mochi's `async` colouring (MEP-48) is a value-level annotation: `async fn f(): T` means `f` returns a computation that will eventually produce `T`. In the MEP-53 Rust target, Mochi `async fn` lowers to a synchronous call on the current thread (there is no Mochi async scheduler; the `async` annotation is carried for type-checking but stripped at codegen time in single-threaded mode).
 
-The C# shim for each `async Task<T>` method uses `.GetAwaiter().GetResult()`:
+.NET's `async Task<T>` is a full coroutine system: `await` suspends the current method, returns control to the caller, and resumes when the awaited `Task` completes. The completion may run on any ThreadPool thread (or, if a `SynchronizationContext` is installed, on the context-specific thread).
+
+The bridge must bridge these two models: Mochi makes a synchronous call (from the native Mochi/Rust thread), and the .NET code is async. The wrapper must call the async .NET method and wait for it to complete before returning to the Mochi caller.
+
+## The SynchronizationContext deadlock
+
+The classic pitfall of blocking on a `Task` from a synchronous context:
 
 ```csharp
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+// WRONG: will deadlock in ASP.NET classic / WinForms / WPF
+var result = someAsyncMethod().Result;
+// WRONG: same deadlock
+var result = someAsyncMethod().GetAwaiter().GetResult();
+```
 
-public static class NewtonsoftJsonShim
+The deadlock occurs because:
+1. The calling thread has a `SynchronizationContext` (e.g., the ASP.NET request context, or the UI dispatcher thread).
+2. `someAsyncMethod()` internally awaits something with `ConfigureAwait(false)` NOT applied, so the continuation is scheduled back on the original `SynchronizationContext`.
+3. The calling thread is blocked by `.Result`, so the continuation can never run, and the `.Result` wait never completes.
+
+In MEP-68's NativeAOT context, the calling thread is a native OS thread managed by the Mochi/Rust runtime. NativeAOT does not install a `SynchronizationContext` on native threads. Therefore, calling `.GetAwaiter().GetResult()` directly on the NativeAOT calling thread is technically safe from the classic ASP.NET deadlock.
+
+However, a second risk remains: if the async method's implementation internally dispatches continuation work to the CLR `ThreadPool`, and if the calling thread is the only available thread (ThreadPool exhaustion), the continuation is never scheduled and the `.GetAwaiter().GetResult()` wait never completes (a livelock). While ThreadPool exhaustion is unlikely in typical usage, the bridge adopts the conservative `ThreadPool.QueueUserWorkItem` dispatch to avoid this scenario.
+
+## The ManualResetEventSlim + ThreadPool pattern
+
+For each `async Task<T>` method, the wrapper generates:
+
+```csharp
+[UnmanagedCallersOnly(EntryPoint = "mochi_dotnet_<Pkg>_<Type>_<Method>")]
+public static unsafe <C_T> <Pkg>_<Type>_<Method>(<C_args>)
 {
-    [UnmanagedCallersOnly(EntryPoint = "mochi_Serilog_Log_WriteAsync")]
-    public static unsafe int WriteAsync(byte* message_ptr, int message_len)
+    var mre = new ManualResetEventSlim(false);
+    var result = default(<C_T>);
+    Exception? error = null;
+
+    ThreadPool.QueueUserWorkItem(_ =>
     {
-        var message = Marshal.PtrToStringUTF8((IntPtr)message_ptr, message_len);
-        Serilog.Log.WriteAsync(message)
-            .ConfigureAwait(false)
-            .GetAwaiter()
-            .GetResult();
-        return 0; // success
+        try
+        {
+            var managed = <unmarshal_args>(<C_args>);
+            var task = <Type>.<Method>(managed).AsTask();  // AsTask() for ValueTask<T>
+            result = <marshal_result>(task.GetAwaiter().GetResult());
+        }
+        catch (Exception ex)
+        {
+            error = ex;
+        }
+        finally
+        {
+            mre.Set();
+        }
+    });
+
+    mre.Wait();
+
+    if (error != null)
+    {
+        MochiRuntime.ThrowException(error.Message);
+        return default;
     }
+    return result;
 }
 ```
 
-The `.ConfigureAwait(false)` is required to prevent the `Task` from capturing a `SynchronizationContext`. Without it, if the calling thread happens to have a synchronisation context (e.g., an ASP.NET Core context), the continuation would try to resume on that context's scheduler, potentially deadlocking if the context's scheduler is blocked waiting for the call to return.
+Why `ManualResetEventSlim` rather than alternatives:
 
-In the CLR hosting context, the calling thread is the Mochi main thread, which has no synchronisation context by default. The `.ConfigureAwait(false)` is defensive: it ensures the pattern is safe even if the thread later gains a sync context.
+| Alternative | Why rejected |
+|-------------|-------------|
+| `Task.Wait()` on calling thread | Same ThreadPool starvation risk; calls through managed scheduler |
+| `SemaphoreSlim.Wait()` | Managed object; interacts with CLR scheduler; would need `SemaphoreSlim.WaitAsync()` which returns a Task |
+| `Monitor.Wait()` | Requires lock acquisition; allocates a lock object |
+| `AutoResetEvent` / `ManualResetEvent` (non-slim) | OS kernel objects; 2-4x slower than `ManualResetEventSlim` on the uncontended path |
+| `SpinWait` | CPU waste; no benefit over MRE for I/O-bound async |
+| `Interlocked` flag + `Thread.SpinWait` | Same as SpinWait |
 
-## CLR thread pool semantics
+`ManualResetEventSlim.Wait()` uses an adaptive spin (a few hundred iterations) before falling back to a kernel wait. In NativeAOT, the spin is non-CLR-managed and does not interact with the CLR scheduler. The `Set()` call from the ThreadPool thread is atomic (no lock required after the `QueueUserWorkItem` dispatch).
 
-The `.GetAwaiter().GetResult()` pattern blocks the calling thread while the CLR thread pool runs the async continuation. The thread pool is the same pool used by all CLR-hosted code in the process, including any other `.GetAwaiter().GetResult()` calls from other shim entry points.
+## Cost analysis
 
-A typical `Task<string>` resolution sequence:
+Overhead per async crossing (approximate, Apple M3, NativeAOT release build):
 
-1. Calling thread (Mochi main thread) invokes the `[UnmanagedCallersOnly]` entry.
-2. The entry calls the managed async method, which schedules the continuation on the CLR thread pool.
-3. The calling thread blocks at `.GetAwaiter().GetResult()`.
-4. A CLR thread pool thread executes the async continuation.
-5. The continuation completes; the calling thread unblocks.
-6. The `[UnmanagedCallersOnly]` entry marshals the result and returns to Mochi.
+| Component | Time |
+|-----------|------|
+| `ThreadPool.QueueUserWorkItem` dispatch | ~500 ns |
+| `ManualResetEventSlim` spin (fast path, < 200 spins) | ~200 ns |
+| `ManualResetEventSlim` kernel wait (slow path, I/O-bound) | ~5 µs (kernel thread wakeup) |
+| Marshal args + unmarshal result | ~50–200 ns (depends on types) |
+| **Total fast path (CPU-bound async)** | **~750 ns** |
+| **Total slow path (I/O-bound async, 1ms I/O)** | **~1ms + 5µs** |
 
-The per-call overhead from the CLR thread pool dispatch is approximately 10-50 microseconds for an IO-bound call that completes quickly. For calls whose async bodies do substantial work (network I/O, database queries), the thread pool overhead is negligible against the body cost.
+For comparison, MEP-73's `tokio::block_on` overhead:
 
-## Deadlock risk analysis
+| Component | Time |
+|-----------|------|
+| `block_on` dispatch to current-thread runtime | ~300 ns |
+| Task wake from I/O completion | ~3 µs |
+| **MEP-73 fast path** | **~300 ns** |
+| **MEP-73 slow path (1ms I/O)** | **~1ms + 3µs** |
 
-A deadlock can occur with `.GetAwaiter().GetResult()` in two scenarios:
+MEP-68's async bridge is about 2x more expensive than MEP-73's on the fast path. The difference is the `ThreadPool.QueueUserWorkItem` dispatch (which posts to a separate thread) vs. `tokio::block_on` (which drives the future on the calling thread directly). The MEP-68 conservative dispatch is required because .NET's async runtime does not offer a "drive this future synchronously on the current thread" primitive equivalent to Tokio's `block_on`.
 
-**Scenario 1**: the calling thread has a `SynchronizationContext` that posts continuations back to a specific thread (e.g., the .NET Framework ASP.NET legacy context), and the calling thread is blocking waiting for the Task.
+## CancellationToken bridge
 
-Mitigation: `.ConfigureAwait(false)` prevents the continuation from targeting the current context's scheduler. The continuation runs on the CLR thread pool instead.
+Many .NET async methods accept a `CancellationToken` for cooperative cancellation. The bridge generates a wrapper that accepts an optional `CancellationToken`:
 
-**Scenario 2**: the async method itself calls `.GetAwaiter().GetResult()` on another Task internally, and the inner Task is also waiting for thread pool threads while the outer `.GetAwaiter().GetResult()` holds the calling thread.
-
-Mitigation: This scenario ("blocking on async" anti-pattern inside the package) is a bug in the NuGet package. The bridge cannot prevent this; it is the same issue that affects any .NET consumer of a buggy async library. The `SkipReport` documentation recommends the user check the package's async patterns.
-
-**Scenario 3**: two concurrent Mochi threads (if Mochi supports concurrent calls) both block in `.GetAwaiter().GetResult()`, and both Tasks depend on each other.
-
-Mitigation: Mochi v1 is single-threaded; only one `.GetAwaiter().GetResult()` call can be active at a time.
-
-## `Task<T>` return type variants
-
-The shim handles several variants of async return types:
-
-| CLR return type | Shim pattern | Mochi type |
-|-----------------|--------------|------------|
-| `Task<string>` | `.GetAwaiter().GetResult()` returns `string` | `string` |
-| `Task<int>` | Same, returns `int64` | `int` |
-| `Task<List<T>>` | Same, marshals list | `list<T>` |
-| `Task` (no result) | `.GetAwaiter().GetResult()` returns void | unit |
-| `ValueTask<T>` | `.AsTask().GetAwaiter().GetResult()` | same as Task<T> |
-| `ValueTask` | `.AsTask().GetAwaiter().GetResult()` | unit |
-
-`ValueTask<T>` is converted to `Task<T>` via `.AsTask()` before the blocking wait. This is slightly less efficient than awaiting a `ValueTask` directly (ValueTask is optimised for the already-completed case), but it is simpler to implement uniformly.
-
-## The `async-mode = "task-parallel"` opt-in
-
-For high-throughput cases where the synchronous dispatch pattern is too slow, the user can opt into a fully async Mochi bridge via:
-
-```toml
-[dotnet.runtime]
-async-mode = "task-parallel"
+```mochi
+extern fn HttpClient_GetStringAsync(client: HttpClient, url: string): async string
+extern fn HttpClient_GetStringAsync_Cancellable(client: HttpClient, url: string, ct: CancellationToken): async string
 ```
 
-In this mode, `Task<T>` methods are exposed as Mochi-level async functions. The bridge generates a different shim that returns a `mochi_task_handle_t` (an opaque integer task ID) instead of blocking:
+The `CancellationToken` is an opaque GC handle (from `CancellationTokenSource.Token`). Mochi code that needs cancellation:
 
-```csharp
-[UnmanagedCallersOnly(EntryPoint = "mochi_HttpClient_GetStringAsync_start")]
-public static unsafe long GetStringAsync_start(nint client_handle, byte* uri_ptr, int uri_len)
-{
-    var client = (HttpClient)GCHandle.FromIntPtr((IntPtr)client_handle).Target!;
-    var uri = Marshal.PtrToStringUTF8((IntPtr)uri_ptr, uri_len);
-    var task = client.GetStringAsync(uri);
-    return TaskRegistry.Register(task);
-}
-
-[UnmanagedCallersOnly(EntryPoint = "mochi_HttpClient_GetStringAsync_poll")]
-public static unsafe int GetStringAsync_poll(long task_id, byte** result_ptr, int* result_len)
-{
-    return TaskRegistry.Poll(task_id, result_ptr, result_len);
-}
+```mochi
+let cts = CancellationTokenSource()
+let token = cts.Token()
+spawn_task(fn() {
+    sleep(5s)
+    cts.Cancel()
+})
+let body = await HttpClient_GetStringAsync_Cancellable(client, url, token)
 ```
 
-The Mochi async colour system (post-v1) can use the `_start` / `_poll` pair to integrate with Mochi's own scheduler. This mode is a post-v1 feature; phase 11 delivers only the synchronous bridge.
+`CancellationTokenSource` and `CancellationToken` are translated as opaque GC handle types.
 
-## Cancellation semantics
+## IAsyncEnumerable deferred path
 
-Mochi v1 has no native cancellation primitive. The shim does not expose `CancellationToken` parameters; methods that require a `CancellationToken` are either:
+`IAsyncEnumerable<T>` (introduced in C# 8 / .NET Core 3.0) is used by Entity Framework Core for streaming query results, SignalR for server-sent events, and `System.IO.Pipelines` for byte-stream processing. It cannot be wrapped with the `ManualResetEventSlim` pattern because it is a pull-based async sequence (each element requires a separate `await MoveNextAsync()` call).
 
-- Refused with `SkipCancellationToken` if the `CancellationToken` is a required (non-optional) parameter.
-- Silently passed `CancellationToken.None` if the parameter has a default value of `default(CancellationToken)`.
+Phase 11 will add an `IAsyncEnumerable<T>` bridge using a Go-style buffered channel at the C ABI boundary:
 
-The user can hand-author a timeout wrapper:
-
-```toml
-[[dotnet.extern]]
-item = "System.Net.Http.HttpClient.GetStringAsync"
-signature = """
-extern fn http_get_with_timeout(client: HttpClient, uri: string, timeout_ms: int): string from dotnet "HttpClientShim.GetStringWithTimeout"
-"""
+```c
+// Proposed phase-11 ABI for IAsyncEnumerable<T>
+// The wrapper starts a background thread that drives the async enumerator
+// and sends elements into a channel.
+typedef struct MochiAsyncSeq MochiAsyncSeq;
+MochiAsyncSeq* mochi_dotnet_ef_Users_ToAsyncEnumerable(DbContext* ctx);
+int mochi_dotnet_async_seq_next(MochiAsyncSeq* seq, void* out_elem); // 0=has value, 1=done, -1=error
+void mochi_dotnet_async_seq_free(MochiAsyncSeq* seq);
 ```
 
-The custom `HttpClientShim.GetStringWithTimeout` wraps `GetStringAsync` with a `Task.WhenAny` + `Task.Delay(timeout_ms)` pattern to implement a timeout.
+The v1 bridge generates `SkipReport: IAsyncEnumerable<T> is not supported in v1; add to mochi.toml [dotnet.monomorphise] after phase 11 ships` for any method returning `IAsyncEnumerable<T>`.
 
-## ValueTask and IAsyncEnumerable
+## Comparison with MEP-73 async bridge
 
-`IAsyncEnumerable<T>` (C# 8 async streams) is not supported in v1. A method returning `IAsyncEnumerable<T>` receives `SkipAsyncEnumerable`. The pattern requires a more complex shim (repeated polling via `MoveNextAsync()`) that is deferred to a post-v1 sub-phase.
-
-`ValueTask` without type parameter (bare `ValueTask`) is handled the same as `Task` (no result): `.AsTask().GetAwaiter().GetResult()`.
-
-## Interaction with the CLR GC
-
-While a `.GetAwaiter().GetResult()` call is blocking the calling thread, the CLR GC can run on other threads. The `[UnmanagedCallersOnly]` method pins any parameters passed from native code? No: `[UnmanagedCallersOnly]` does not pin parameters. The shim must copy string parameters into managed heap before the blocking wait:
-
-```csharp
-[UnmanagedCallersOnly(EntryPoint = "mochi_SomeApi_FetchAsync")]
-public static unsafe IntPtr FetchAsync(byte* url_ptr, int url_len)
-{
-    // Copy native string into managed memory before blocking.
-    // Do NOT pass url_ptr across the GetAwaiter().GetResult() boundary.
-    var url = Marshal.PtrToStringUTF8((IntPtr)url_ptr, url_len);
-    var result = SomeApi.FetchAsync(url)
-        .ConfigureAwait(false)
-        .GetAwaiter()
-        .GetResult();
-    return MochiMarshal.StringToCoTaskMem(result);
-}
-```
-
-The `Marshal.PtrToStringUTF8` call creates a managed `string` object from the native UTF-8 pointer. This managed object is GC-tracked; the original native pointer (`url_ptr`) must not be dereferenced after the blocking wait because the Mochi GC may have moved or freed the underlying memory.
-
-The shim generator enforces this by always copying all native pointer parameters into managed objects before the first `await` or `.GetAwaiter().GetResult()` call.
-
-## Cross-references
-
-- [[02-design-philosophy]] §4 for why CLR hosting is the default over NativeAOT.
-- [[09-abi-stability]] §3 for the GCHandle and opaque handle model.
-- [[05-type-mapping]] for the Task<T> type mapping entry.
-- [MEP-68 §7](/docs/mep/mep-0068#7-async-bridge-runtime-hook) for the normative async bridge spec.
+| Dimension | MEP-68 (.NET) | MEP-73 (Rust/tokio) |
+|-----------|--------------|---------------------|
+| Runtime | CLR ThreadPool (pre-existing) | tokio::runtime::Runtime (new per-process singleton) |
+| Blocking primitive | ManualResetEventSlim | OnceLock<Runtime>.get_or_init().block_on(...) |
+| Deadlock risk | Mitigated by ThreadPool dispatch (no sync context on pool thread) | No deadlock risk (tokio block_on has no SynchronizationContext concept) |
+| Async stream support | Deferred (IAsyncEnumerable, phase 11) | Deferred (Stream, phase 11) |
+| Startup cost | ~0 (ThreadPool is always running in NativeAOT) | ~100µs (tokio runtime init, once per process) |
+| Per-call overhead fast path | ~750 ns | ~300 ns |
+| CancellationToken analogue | CancellationToken (opaque GC handle) | (no direct Rust analogue in v1; Future cancellation is drop-based) |

@@ -1,157 +1,137 @@
 // Package errors carries the cross-cutting error types the MEP-68 bridge
-// emits at lock time and at build time. The most important one is SkipReason,
-// which records why a particular CLR type or member was not translated into a
-// Mochi extern binding. See [website/docs/research/0068/] for the closed set
-// of refusal reasons.
+// emits at lock time and at build time. The most important one is SkipReport,
+// which records why a particular .NET assembly item was not translated into a
+// Mochi extern fn binding. See [website/docs/research/0068/05-type-mapping.md]
+// for the closed set of refusal reasons.
 package errors
 
 import "fmt"
 
-// SkipReason classifies why the bridge declined to translate a CLR type or
-// member. The set mirrors the table in the MEP-68 research notes.
+// SkipReason classifies why the bridge declined to translate a .NET item.
+// The set mirrors the table in research note 05 §"Refusal cases".
 type SkipReason int
 
 const (
 	// SkipUnknown is the zero value. It must never be emitted in practice.
 	SkipUnknown SkipReason = iota
-	// SkipGeneric: the type has an open generic parameter and no
-	// monomorphise entry has been provided.
-	SkipGeneric
-	// SkipPointer: unsafe pointer type (System.IntPtr in direct-pointer context).
-	SkipPointer
-	// SkipRefType: ref/out parameter requires special marshalling that
-	// v1 does not support.
-	SkipRefType
-	// SkipInterface: interface in non-handle position (no concrete factory).
-	SkipInterface
-	// SkipDelegate: System.Delegate / Action<T> / Func<T> (function pointer).
-	SkipDelegate
-	// SkipDynamic: dynamic type (runtime binding, no static surface).
+	// SkipUnsafePointer: the item carries a void* or T* parameter/return.
+	SkipUnsafePointer
+	// SkipByRef: a ref/out/in parameter of a reference type.
+	SkipByRef
+	// SkipSpanMemory: Span<T>, ReadOnlySpan<T>, Memory<T>, ReadOnlyMemory<T>.
+	SkipSpanMemory
+	// SkipDynamic: the type is dynamic; no static Mochi analogue.
 	SkipDynamic
-	// SkipCOMInterop: [ComImport] type.
+	// SkipObjectReturn: return type is System.Object (untyped).
+	SkipObjectReturn
+	// SkipAsyncEnumerable: IAsyncEnumerable<T>; deferred to phase 11.
+	SkipAsyncEnumerable
+	// SkipGeneric: unbound generic type parameter; add to [dotnet.monomorphise].
+	SkipGeneric
+	// SkipFlagsEnum: [Flags] enum translated to int, not extern type.
+	SkipFlagsEnum
+	// SkipUnsafeMethod: MethodImplAttributes.Unmanaged without unsafe capability.
+	SkipUnsafeMethod
+	// SkipOpenHierarchy: abstract class with external subtypes; cannot emit ADT.
+	SkipOpenHierarchy
+	// SkipEventDeclaration: event declaration; deferred to phase 11.
+	SkipEventDeclaration
+	// SkipCOMInterop: COM interop type; Windows-only, not NativeAOT-compatible.
 	SkipCOMInterop
-	// SkipUnsafe: unsafe code block without capabilities opt-in.
-	SkipUnsafe
-	// SkipInternal: internal visibility (not in the public API surface).
-	SkipInternal
-	// SkipAbstract: abstract class with no concrete factory.
-	SkipAbstract
-	// SkipObsolete: [Obsolete] marked item.
-	SkipObsolete
-	// SkipNestedType: nested type definition (not supported in v1).
-	SkipNestedType
-	// SkipIndexer: indexer property (this[T]).
-	SkipIndexer
-	// SkipOperator: operator overload.
-	SkipOperator
-	// SkipEvent: event (add/remove pattern).
-	SkipEvent
-	// SkipMultiReturn: out/ref params as multiple return values.
-	SkipMultiReturn
-	// SkipSpan: Span<T> / ReadOnlySpan<T> (stack-only types).
-	SkipSpan
-	// SkipValueTask: ValueTask<T> (v1 only bridges Task<T>).
-	SkipValueTask
+	// SkipRefStruct: ref struct type; stack-only, not transferable across ABI.
+	SkipRefStruct
+	// SkipNoNullableAnnotation: reference type with no NullableAttribute; assumed non-null.
+	SkipNoNullableAnnotation
+	// SkipNativeAOTIncompatible: method annotated [RequiresDynamicCode]; needs CoreCLR fallback.
+	SkipNativeAOTIncompatible
+	// SkipMulticastDelegate: multi-cast delegate; not representable as Mochi fn type.
+	SkipMulticastDelegate
+	// SkipIEnumerableMaterialisation: IEnumerable<T> materialised to list; may be expensive.
+	SkipIEnumerableMaterialisation
+	// SkipDecimalArithmetic: decimal arithmetic requires wrapper symbols; see research note 05.
+	SkipDecimalArithmetic
 )
 
-// String renders the SkipReason as a short token used in the SKIPPED.txt
-// output file. The token is stable across releases; do not rename without
-// adjusting the SKIPPED.txt golden fixtures.
+// SkipReport records a single item the bridge declined to translate, with the
+// reason and enough context to let the user understand and optionally override.
+type SkipReport struct {
+	PackageID  string
+	Namespace  string
+	TypeName   string
+	ItemName   string // method, field, or property name; empty for type-level skips
+	Reason     SkipReason
+	Detail     string // human-readable detail (e.g. the specific type that caused the skip)
+}
+
+func (r SkipReport) Error() string {
+	item := r.TypeName
+	if r.ItemName != "" {
+		item += "." + r.ItemName
+	}
+	return fmt.Sprintf("skip %s/%s.%s: %s: %s",
+		r.PackageID, r.Namespace, item, r.Reason, r.Detail)
+}
+
 func (r SkipReason) String() string {
 	switch r {
-	case SkipGeneric:
-		return "SkipGeneric"
-	case SkipPointer:
-		return "SkipPointer"
-	case SkipRefType:
-		return "SkipRefType"
-	case SkipInterface:
-		return "SkipInterface"
-	case SkipDelegate:
-		return "SkipDelegate"
+	case SkipUnsafePointer:
+		return "unsafe pointer"
+	case SkipByRef:
+		return "by-ref parameter"
+	case SkipSpanMemory:
+		return "Span/Memory type"
 	case SkipDynamic:
-		return "SkipDynamic"
+		return "dynamic type"
+	case SkipObjectReturn:
+		return "untyped object return"
+	case SkipAsyncEnumerable:
+		return "IAsyncEnumerable<T> (phase 11)"
+	case SkipGeneric:
+		return "unbound generic (add to [dotnet.monomorphise])"
+	case SkipFlagsEnum:
+		return "[Flags] enum translated to int"
+	case SkipUnsafeMethod:
+		return "unmanaged method (requires [dotnet.capabilities] unsafe = true)"
+	case SkipOpenHierarchy:
+		return "open abstract class hierarchy"
+	case SkipEventDeclaration:
+		return "event declaration (phase 11)"
 	case SkipCOMInterop:
-		return "SkipCOMInterop"
-	case SkipUnsafe:
-		return "SkipUnsafe"
-	case SkipInternal:
-		return "SkipInternal"
-	case SkipAbstract:
-		return "SkipAbstract"
-	case SkipObsolete:
-		return "SkipObsolete"
-	case SkipNestedType:
-		return "SkipNestedType"
-	case SkipIndexer:
-		return "SkipIndexer"
-	case SkipOperator:
-		return "SkipOperator"
-	case SkipEvent:
-		return "SkipEvent"
-	case SkipMultiReturn:
-		return "SkipMultiReturn"
-	case SkipSpan:
-		return "SkipSpan"
-	case SkipValueTask:
-		return "SkipValueTask"
+		return "COM interop type"
+	case SkipRefStruct:
+		return "ref struct (stack-only)"
+	case SkipNoNullableAnnotation:
+		return "no nullable annotation (assuming non-null)"
+	case SkipNativeAOTIncompatible:
+		return "requires dynamic code ([RequiresDynamicCode]); use nativeaot = false"
+	case SkipMulticastDelegate:
+		return "multi-cast delegate"
+	case SkipIEnumerableMaterialisation:
+		return "IEnumerable<T> materialised to list (may be expensive)"
+	case SkipDecimalArithmetic:
+		return "decimal arithmetic via wrapper symbols"
 	default:
-		return "SkipUnknown"
+		return fmt.Sprintf("unknown(%d)", int(r))
 	}
 }
 
-// SkipReport records a single CLR type or member the bridge declined to
-// translate. The collection of SkipReports for an assembly is rendered to
-// SKIPPED.txt under the wrapper directory at the end of phase 4.
-type SkipReport struct {
-	// ItemPath is the CLR path of the item, e.g. "Newtonsoft.Json.JsonConvert.SerializeObject".
-	ItemPath string
-	// Reason is the classification.
-	Reason SkipReason
-	// Detail is a free-text explanation specific to this skip.
-	Detail string
-	// Override is the suggested hand-authored opt-in. May be empty if there
-	// is no straightforward override available.
-	Override string
-}
-
-// String renders a SkipReport in the SKIPPED.txt format.
-func (s SkipReport) String() string {
-	out := fmt.Sprintf("SKIPPED: %s\n  Reason: %s\n  Detail: %s\n", s.ItemPath, s.Reason, s.Detail)
-	if s.Override != "" {
-		out += fmt.Sprintf("  Override: %s\n", s.Override)
-	}
-	return out
-}
-
-// BridgeError is the top-level error returned by Driver entry points. It
-// records the phase that produced the error and the underlying cause.
+// BridgeError wraps a lower-level error with the package context that produced it.
 type BridgeError struct {
-	// Phase is the bridge phase that detected the error, e.g. "lock",
-	// "ingest", "wrapper", "build".
-	Phase string
-	// Package is the upstream NuGet package name being processed when the
-	// error occurred. Empty for phase-agnostic errors.
-	Package string
-	// Cause is the underlying error.
-	Cause error
+	PackageID string
+	Phase     string
+	Err       error
 }
 
-// Error renders BridgeError as "phase[package]: cause".
 func (e *BridgeError) Error() string {
-	if e.Package == "" {
-		return fmt.Sprintf("%s: %v", e.Phase, e.Cause)
-	}
-	return fmt.Sprintf("%s[%s]: %v", e.Phase, e.Package, e.Cause)
+	return fmt.Sprintf("dotnet bridge [%s/%s]: %v", e.PackageID, e.Phase, e.Err)
 }
 
-// Unwrap exposes the underlying cause for errors.Is / errors.As.
-func (e *BridgeError) Unwrap() error { return e.Cause }
+func (e *BridgeError) Unwrap() error { return e.Err }
 
-// Wrap constructs a BridgeError from a phase, a package (optional), and a cause.
-func Wrap(phase, pkg string, cause error) error {
-	if cause == nil {
+// Wrap wraps err with package/phase context. Returns nil if err is nil.
+func Wrap(packageID, phase string, err error) error {
+	if err == nil {
 		return nil
 	}
-	return &BridgeError{Phase: phase, Package: pkg, Cause: cause}
+	return &BridgeError{PackageID: packageID, Phase: phase, Err: err}
 }
