@@ -1,0 +1,15 @@
+type Row {
+  id: int
+  label: string
+  weight: float
+  active: bool
+}
+
+let rs = [Row { id: 1, label: "a", weight: 1.5, active: true }, Row { id: 2, label: "b", weight: 2.5, active: false }]
+print(len(rs))
+for r in rs {
+  print(r.id)
+  print(r.label)
+  print(r.weight)
+  print(r.active)
+}

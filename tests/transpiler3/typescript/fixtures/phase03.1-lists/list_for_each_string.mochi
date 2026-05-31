@@ -1,0 +1,4 @@
+let xs = ["red", "green", "blue"]
+for c in xs {
+  print(c)
+}

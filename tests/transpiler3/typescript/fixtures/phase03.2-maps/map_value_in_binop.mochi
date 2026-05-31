@@ -1,0 +1,11 @@
+let m: map<string, int> = {"x": 10, "y": 5}
+var sum = 0
+for v in values(m) {
+  sum = sum + v
+}
+print(sum)
+var product = 1
+for v in values(m) {
+  product = product * v
+}
+print(product)

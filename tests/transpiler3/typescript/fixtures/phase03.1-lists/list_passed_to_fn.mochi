@@ -1,0 +1,5 @@
+fun head(xs: list<int>): int {
+  return xs[0]
+}
+let ys = [42, 7, 1]
+print(head(ys))

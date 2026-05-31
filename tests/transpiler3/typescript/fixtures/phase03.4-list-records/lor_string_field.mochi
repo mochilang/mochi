@@ -1,0 +1,9 @@
+type User {
+  name: string
+}
+
+let users = [User { name: "alice" }, User { name: "bob" }, User { name: "carol" }]
+print(len(users))
+for u in users {
+  print(u.name)
+}

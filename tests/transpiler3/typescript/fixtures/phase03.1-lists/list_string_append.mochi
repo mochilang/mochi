@@ -1,0 +1,6 @@
+let xs = ["a", "b"]
+let ys = append(xs, "c")
+print(ys[0])
+print(ys[1])
+print(ys[2])
+print(len(ys))

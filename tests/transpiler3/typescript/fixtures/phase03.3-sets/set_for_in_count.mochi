@@ -1,0 +1,6 @@
+let s: set<int> = set{10, 20, 30, 40, 50}
+var n: int = 0
+for x in s {
+  n = n + 1
+}
+print(n)

@@ -1,0 +1,14 @@
+type Delta {
+  dx: int
+  dy: int
+}
+
+let ds = [Delta { dx: -3, dy: 4 }, Delta { dx: 5, dy: -7 }, Delta { dx: -2, dy: -2 }]
+var net_x = 0
+var net_y = 0
+for d in ds {
+  net_x = net_x + d.dx
+  net_y = net_y + d.dy
+}
+print(net_x)
+print(net_y)

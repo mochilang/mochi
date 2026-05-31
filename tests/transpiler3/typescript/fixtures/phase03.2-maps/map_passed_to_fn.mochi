@@ -1,0 +1,9 @@
+fun total(m: map<string, int>): int {
+  var sum = 0
+  for v in values(m) {
+    sum = sum + v
+  }
+  return sum
+}
+let scores: map<string, int> = {"alice": 90, "bob": 75}
+print(total(scores))

@@ -1,0 +1,6 @@
+var xs = [1, 2]
+xs = [3, 4, 5]
+print(xs[0])
+print(xs[1])
+print(xs[2])
+print(len(xs))

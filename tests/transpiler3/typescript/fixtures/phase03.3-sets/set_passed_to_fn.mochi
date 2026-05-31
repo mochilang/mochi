@@ -1,0 +1,5 @@
+let s: set<int> = set{10, 20, 30}
+let probes: list<int> = [10, 25, 20, 30, 35]
+for p in probes {
+  print(has(s, p))
+}

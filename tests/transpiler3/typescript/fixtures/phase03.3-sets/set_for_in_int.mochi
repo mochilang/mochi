@@ -1,0 +1,6 @@
+let s: set<int> = set{3, 1, 2}
+var total: int = 0
+for x in s {
+  total = total + x
+}
+print(total)

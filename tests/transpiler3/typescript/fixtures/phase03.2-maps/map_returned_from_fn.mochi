@@ -1,0 +1,6 @@
+fun pair(a: string, b: string): map<string, int> {
+  return {a: 1, b: 2}
+}
+let m = pair("first", "second")
+print(m["first"])
+print(m["second"])

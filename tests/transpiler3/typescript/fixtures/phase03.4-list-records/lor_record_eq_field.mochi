@@ -1,0 +1,16 @@
+type Pair {
+  k: int
+  v: int
+}
+
+let ps = [Pair { k: 1, v: 10 }, Pair { k: 2, v: 20 }, Pair { k: 1, v: 99 }, Pair { k: 3, v: 30 }]
+var match_count = 0
+var match_sum = 0
+for p in ps {
+  if p.k == 1 {
+    match_count = match_count + 1
+    match_sum = match_sum + p.v
+  }
+}
+print(match_count)
+print(match_sum)

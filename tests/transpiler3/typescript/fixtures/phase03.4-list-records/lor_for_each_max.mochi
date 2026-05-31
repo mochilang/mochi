@@ -1,0 +1,18 @@
+type Pt {
+  x: int
+  y: int
+}
+
+let ps = [Pt { x: 5, y: 2 }, Pt { x: 8, y: 4 }, Pt { x: 3, y: 1 }, Pt { x: 6, y: 7 }]
+var maxx = 0
+var maxy = 0
+for p in ps {
+  if p.x > maxx {
+    maxx = p.x
+  }
+  if p.y > maxy {
+    maxy = p.y
+  }
+}
+print(maxx)
+print(maxy)

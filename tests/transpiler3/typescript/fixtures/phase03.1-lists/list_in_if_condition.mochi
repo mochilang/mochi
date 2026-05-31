@@ -1,0 +1,4 @@
+let xs = [10, 20]
+if len(xs) > 0 {
+  print(xs[0])
+}

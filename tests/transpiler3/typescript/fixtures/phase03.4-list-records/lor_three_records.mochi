@@ -1,0 +1,16 @@
+type A { v: int }
+type B { v: int }
+type C { v: int }
+
+let as_ = [A { v: 1 }, A { v: 2 }]
+let bs = [B { v: 10 }, B { v: 20 }, B { v: 30 }]
+let cs = [C { v: 100 }]
+
+var s = 0
+for a in as_ { s = s + a.v }
+for b in bs { s = s + b.v }
+for c in cs { s = s + c.v }
+print(s)
+print(len(as_))
+print(len(bs))
+print(len(cs))

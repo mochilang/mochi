@@ -41,6 +41,34 @@ type runtimeFlags struct {
 	strAt       bool
 	strSlice    bool
 	strContains bool
+	// Phase 3 list helpers. `mochi_list_at` performs the bounds
+	// check that Mochi's index semantics require (panic on
+	// out-of-range, not silently undefined as bare `xs[i]` would
+	// produce under `--noUncheckedIndexedAccess`). `mochi_list_sum`,
+	// `_min`, `_max`, `_contains` cover the scalar reductions.
+	listAt       bool
+	listSum      bool
+	listMin      bool
+	listMax      bool
+	listContains bool
+	listSlice    bool
+	listSortAsc  bool
+	// Phase 3.2 map helpers. `mochi_map_get` raises on a missing
+	// key (matches the aotir MapGetExpr "panic if absent" contract
+	// and keeps the strict-mode emit clean of `V | undefined`
+	// narrowing). `mochi_map_keys_sorted` and
+	// `mochi_map_values_sorted` sort by `String(k)` to match vm3's
+	// lex-sort iteration order.
+	mapGet          bool
+	mapKeysSorted   bool
+	mapValuesSorted bool
+	// Phase 3.3 set helpers. `mochi_set_to_list_sorted` is the
+	// only runtime-side helper; SetHas / SetLen / SetAdd lower
+	// inline (`.has(x)`, `.size`, `new Set([...s, x])`). The
+	// helper sorts by `String(x)` so byte-equal stdout holds
+	// across Node, Deno, and Bun even though JS Set iteration
+	// preserves insertion order.
+	setToListSorted bool
 }
 
 type lowerer struct {
@@ -92,11 +120,21 @@ func Lower(prog *aotir.Program, colours colour.ColourMap) (*tstree.SourceFile, e
 		return nil, err
 	}
 
-	// Helpers come first so they're hoisted above user code in
-	// the emitted module. TypeScript function declarations hoist
-	// regardless of textual order, but emit ordering still
-	// matters for source-map stability and for human readability.
-	decls := l.runtimeDecls()
+	// Record classes go first so user functions and main body
+	// references resolve forward (TS hoists `function` but not
+	// `class`, and a class used before its declaration would be
+	// a TDZ ReferenceError under `--strict`). Then runtime
+	// helpers, then user functions. Source-map stability and
+	// Phase 16 reproducibility rely on this fixed order.
+	recordClassDecls, err := l.recordDecls()
+	if err != nil {
+		return nil, err
+	}
+	decls := recordClassDecls
+	decls = append(decls, l.runtimeDecls()...)
+	decls = append(decls, l.runtimeListDecls()...)
+	decls = append(decls, l.runtimeMapDecls()...)
+	decls = append(decls, l.runtimeSetDecls()...)
 	decls = append(decls, userDecls...)
 
 	mainDecl := &tstree.FuncDecl{
@@ -320,8 +358,14 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]tstree.Stmt, error) {
 		return []tstree.Stmt{&tstree.ContinueStmt{}}, nil
 	case *aotir.ReturnStmt:
 		return l.lowerReturnStmt(v)
+	case *aotir.ForEachStmt:
+		return l.lowerForEachStmt(v)
+	case *aotir.ListSetStmt:
+		return l.lowerListSetStmt(v)
+	case *aotir.MapPutStmt:
+		return l.lowerMapPutStmt(v)
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 2 surface)", s)
+		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 3 surface)", s)
 	}
 }
 
@@ -365,8 +409,11 @@ func (l *lowerer) lowerCallStmt(s *aotir.CallStmt) ([]tstree.Stmt, error) {
 // lowerLetStmt translates `let x: T = init` (immutable) and
 // `var y: T = init` (mutable). Mochi guarantees the binding has
 // an Init expression; the C lowerer rejects bare declarations.
+//
+// Phase 3 widens the type renderer to compound containers: list
+// slots emit `T[]` using the LetStmt's ElemType side-channel.
 func (l *lowerer) lowerLetStmt(s *aotir.LetStmt) ([]tstree.Stmt, error) {
-	tn, err := tsTypeFor(s.VarType)
+	tn, err := tsTypeForLetSlot(s.VarType, s.ElemType, s.KeyType, s.ValueType, s.RecordName, s.ElemRecordName)
 	if err != nil {
 		return nil, fmt.Errorf("ts lower: let %q: %w", s.Name, err)
 	}
@@ -544,8 +591,54 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (tstree.Expr, error) {
 			Callee: &tstree.IdentExpr{Name: "mochi_str_contains"},
 			Args:   []tstree.Expr{recv, needle},
 		}, nil
+	case *aotir.ListLit:
+		return l.lowerListLit(v)
+	case *aotir.IndexExpr:
+		return l.lowerIndexExpr(v)
+	case *aotir.LenExpr:
+		return l.lowerLenExpr(v)
+	case *aotir.AppendExpr:
+		return l.lowerAppendExpr(v)
+	case *aotir.ListContainsExpr:
+		return l.lowerListContainsExpr(v)
+	case *aotir.ListSumExpr:
+		return l.lowerListSumExpr(v)
+	case *aotir.ListMinExpr:
+		return l.lowerListMinExpr(v)
+	case *aotir.ListMaxExpr:
+		return l.lowerListMaxExpr(v)
+	case *aotir.ListSliceExpr:
+		return l.lowerListSliceExpr(v)
+	case *aotir.ListSortAscExpr:
+		return l.lowerListSortAscExpr(v)
+	case *aotir.MapLit:
+		return l.lowerMapLit(v)
+	case *aotir.MapGetExpr:
+		return l.lowerMapGetExpr(v)
+	case *aotir.MapHasExpr:
+		return l.lowerMapHasExpr(v)
+	case *aotir.MapLenExpr:
+		return l.lowerMapLenExpr(v)
+	case *aotir.MapKeysExpr:
+		return l.lowerMapKeysExpr(v)
+	case *aotir.MapValuesExpr:
+		return l.lowerMapValuesExpr(v)
+	case *aotir.SetLiteralExpr:
+		return l.lowerSetLiteralExpr(v)
+	case *aotir.SetAddExpr:
+		return l.lowerSetAddExpr(v)
+	case *aotir.SetHasExpr:
+		return l.lowerSetHasExpr(v)
+	case *aotir.SetLenExpr:
+		return l.lowerSetLenExpr(v)
+	case *aotir.SetToListExpr:
+		return l.lowerSetToListExpr(v)
+	case *aotir.RecordLit:
+		return l.lowerRecordLit(v)
+	case *aotir.FieldAccess:
+		return l.lowerFieldAccess(v)
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 2 surface)", e)
+		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 3 surface)", e)
 	}
 }
 

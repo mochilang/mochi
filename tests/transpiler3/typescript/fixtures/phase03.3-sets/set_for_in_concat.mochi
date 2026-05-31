@@ -1,0 +1,6 @@
+let s: set<string> = set{"x", "y", "z"}
+var acc: string = ""
+for x in s {
+  acc = acc + x
+}
+print(acc)

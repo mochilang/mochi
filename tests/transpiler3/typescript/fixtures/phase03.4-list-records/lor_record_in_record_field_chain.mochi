@@ -1,0 +1,19 @@
+type Pt {
+  x: int
+  y: int
+}
+
+fun maxx(ps: list<Pt>): int {
+  var m = 0
+  for p in ps {
+    if p.x > m {
+      m = p.x
+    }
+  }
+  return m
+}
+
+let ps = [Pt { x: 4, y: 1 }, Pt { x: 9, y: 2 }, Pt { x: 1, y: 0 }, Pt { x: 7, y: 3 }]
+print(maxx(ps))
+let qs = [Pt { x: 1, y: 1 }]
+print(maxx(qs))
