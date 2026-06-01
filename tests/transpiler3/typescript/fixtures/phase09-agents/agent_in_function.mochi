@@ -1,0 +1,9 @@
+agent Adder(base: int) {
+  intent add(x: int): int { return base + x }
+}
+fun compute(a: Adder, x: int): int {
+  return a.add(x)
+}
+let a = Adder(10)
+print(compute(a, 5))
+print(compute(a, 20))

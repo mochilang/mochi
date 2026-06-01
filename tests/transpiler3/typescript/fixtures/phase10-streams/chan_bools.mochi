@@ -1,0 +1,7 @@
+let ch = chan<bool>(5)
+send(ch, true)
+send(ch, false)
+send(ch, true)
+print(recv(ch))
+print(recv(ch))
+print(recv(ch))

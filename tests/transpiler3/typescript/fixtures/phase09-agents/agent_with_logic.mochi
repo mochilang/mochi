@@ -1,0 +1,12 @@
+agent Counter2(count: int, step: int) {
+  intent next() { count = count + step }
+  intent get(): int { return count }
+  intent reset() { count = 0 }
+}
+let c = Counter2(0, 5)
+c.next()
+c.next()
+c.next()
+print(c.get())
+c.reset()
+print(c.get())

@@ -1,0 +1,9 @@
+fun add_async(a: int, b: int): future<int> {
+  return async (a + b)
+}
+let f1 = add_async(3, 4)
+let f2 = add_async(10, 20)
+let r1 = await f1
+let r2 = await f2
+print(r1)
+print(r2)

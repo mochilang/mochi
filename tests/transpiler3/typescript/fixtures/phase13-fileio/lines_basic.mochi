@@ -1,0 +1,5 @@
+write_file("/tmp/mochi_ts_test_lines.txt", "a\nb\nc")
+let ls = lines("/tmp/mochi_ts_test_lines.txt")
+for l in ls {
+  print(l)
+}

@@ -1,0 +1,13 @@
+fun safe_div(a: int, b: int): int {
+  try {
+    if b == 0 {
+      panic(1, "division by zero")
+    }
+    return a / b
+  } catch err {
+    return 0
+  }
+}
+print(safe_div(10, 2))
+print(safe_div(10, 0))
+print(safe_div(15, 3))

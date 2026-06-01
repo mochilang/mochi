@@ -1,0 +1,6 @@
+let result = llm.generate("openai", "gpt-4", "say hello")
+if result == "" {
+  print("no cassette")
+} else {
+  print(result)
+}

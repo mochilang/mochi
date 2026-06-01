@@ -1,0 +1,7 @@
+type Color = Red | Green | Blue
+let c = Color::Red
+match c {
+  Red => print("red")
+  Green => print("green")
+  Blue => print("blue")
+}

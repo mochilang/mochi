@@ -1,0 +1,7 @@
+let s = "hello world foo bar"
+let words = split(s, " ")
+for w in words {
+  print(w)
+}
+let rejoined = join(words, "-")
+print(rejoined)

@@ -1,0 +1,12 @@
+fun inner_risky(): int {
+  panic(1, "inner failed")
+  return 0
+}
+fun outer_safe(): int {
+  try {
+    return inner_risky()
+  } catch err {
+    return 99
+  }
+}
+print(outer_safe())

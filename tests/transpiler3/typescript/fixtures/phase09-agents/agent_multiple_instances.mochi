@@ -1,0 +1,11 @@
+agent Counter3(count: int) {
+  intent inc() { count = count + 1 }
+  intent get(): int { return count }
+}
+let a = Counter3(0)
+let b = Counter3(10)
+a.inc()
+a.inc()
+b.inc()
+print(a.get())
+print(b.get())

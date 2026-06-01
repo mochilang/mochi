@@ -1,0 +1,4 @@
+write_file("/tmp/mochi_ts_json_test.txt", "99")
+let raw = read_file("/tmp/mochi_ts_json_test.txt")
+let v = json_decode(raw)
+print(v)

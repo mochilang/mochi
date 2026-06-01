@@ -1,0 +1,8 @@
+var count = 0
+for i in 0..3 {
+  let r = llm.generate("openai", "gpt-4", "prompt " + str(i))
+  if r == "" {
+    count = count + 1
+  }
+}
+print(count)

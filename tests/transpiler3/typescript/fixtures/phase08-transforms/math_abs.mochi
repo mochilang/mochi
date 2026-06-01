@@ -1,0 +1,6 @@
+let x = -42
+let y = abs(x)
+print(y)
+let f = -3.14
+let g = abs(f)
+print(g)

@@ -1,0 +1,11 @@
+fun get_a(): future<int> {
+  return async 7
+}
+fun get_b(): future<int> {
+  return async 8
+}
+let fa = get_a()
+let fb = get_b()
+let a = await fa
+let b = await fb
+print(a + b)

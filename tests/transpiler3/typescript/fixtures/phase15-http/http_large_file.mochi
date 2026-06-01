@@ -1,0 +1,4 @@
+let data = "abcdefghij"
+write_file("/tmp/mochi_ts_http_large.txt", data)
+let got = http_get("file:///tmp/mochi_ts_http_large.txt")
+print(len(got))

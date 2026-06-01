@@ -1,0 +1,3 @@
+let raw = "42"
+let v = json_decode(raw)
+print(v)

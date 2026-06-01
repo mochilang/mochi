@@ -1,0 +1,3 @@
+write_file("/tmp/mochi_ts_test_overwrite.txt", "original")
+write_file("/tmp/mochi_ts_test_overwrite.txt", "replaced")
+print(read_file("/tmp/mochi_ts_test_overwrite.txt"))

@@ -1,0 +1,5 @@
+fun fetch_text(path: string): string {
+  return http_get("file://" + path)
+}
+write_file("/tmp/mochi_ts_http_func.txt", "fetched!")
+print(fetch_text("/tmp/mochi_ts_http_func.txt"))

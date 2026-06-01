@@ -73,6 +73,24 @@ type runtimeFlags struct {
 	// emits exactly when a match site lacks a wildcard arm so the
 	// helper opts in on first use and stays absent otherwise.
 	unreachable bool
+	// Phase 8 string transform helpers.
+	strReverse bool
+	// Phase 10 stream and channel helpers.
+	needsMochiStream bool
+	needsMochiChan   bool
+	// Phase 11 async helpers.
+	needsAwaitAll bool
+	// Phase 12 panic handler.
+	needsPanicHandler bool
+	// Phase 13 file I/O helpers.
+	needsFileIO bool
+	// Phase 14 LLM cassette helpers.
+	needsLLMGenerate bool
+	// Phase 15 HTTP fetch helper.
+	needsHttpGet bool
+	// Phase 16 JSON decode helpers. Each key is the canonical type
+	// tag used to name the helper (e.g. "list_i64").
+	jsonDecodeHelpers map[string]bool
 }
 
 type lowerer struct {
@@ -91,6 +109,13 @@ type lowerer struct {
 	// closure body / function-ref shim) functions by name so
 	// FunLit nodes can look up their body when inlining. Phase 6.
 	liftedByName map[string]*aotir.Function
+	// insideAgent is true while lowering an agent intent body so
+	// VarRef nodes with the `__self->` prefix are rewritten to
+	// `this.FIELD` instead of bare identifiers. Phase 9.
+	insideAgent bool
+	// asyncFuncName is the name of the function currently being lowered.
+	// Used by the colour pass to decide whether to emit `async`. Phase 11.
+	asyncFuncName string
 }
 
 // Lower translates an aotir.Program into a single-file
@@ -173,6 +198,14 @@ func Lower(prog *aotir.Program, colours colour.ColourMap) (*tstree.SourceFile, e
 		return nil, err
 	}
 	decls = append(decls, unionAliasDecls...)
+	// Phase 9: agent class declarations. Emitted before runtime
+	// helpers so the agent type names are in scope for any helper
+	// that might reference them.
+	agentDecls, err := l.lowerAgentDecls()
+	if err != nil {
+		return nil, err
+	}
+	decls = append(decls, agentDecls...)
 	decls = append(decls, l.runtimeDecls()...)
 	decls = append(decls, l.runtimeListDecls()...)
 	decls = append(decls, l.runtimeMapDecls()...)
@@ -186,12 +219,20 @@ func Lower(prog *aotir.Program, colours colour.ColourMap) (*tstree.SourceFile, e
 		return nil, err
 	}
 	decls = append(decls, recordEqHelpers...)
-	// Phase 5: mochiUnreachable trap. Emitted after the structural
-	// helpers (it is itself a structural helper) and before user
-	// functions so a match-call inside a user function resolves
-	// forward. The flag is set by lowerMatchStmt during the user-
-	// function lowering pass that already ran above.
+	// Phase 5: mochiUnreachable trap.
 	decls = append(decls, l.unreachableDecls()...)
+	// Phase 8: str_reverse helper.
+	decls = append(decls, l.strReverseDecls()...)
+	// Phase 10: stream/channel runtime classes.
+	decls = append(decls, l.streamChanRuntimeDecls()...)
+	// Phase 13: file I/O helpers (includes __mochi_runtime detection).
+	decls = append(decls, l.fileIODecls()...)
+	// Phase 14: LLM cassette helpers (requires mochi_read_file).
+	decls = append(decls, l.llmDecls()...)
+	// Phase 15: HTTP fetch helper (requires __mochi_runtime + mochi_read_file).
+	decls = append(decls, l.httpDecls()...)
+	// Phase 16: JSON decode helpers.
+	decls = append(decls, l.jsonDecls()...)
 	decls = append(decls, userDecls...)
 
 	mainDecl := &tstree.FuncDecl{
@@ -425,8 +466,29 @@ func (l *lowerer) lowerStmt(s aotir.Stmt) ([]tstree.Stmt, error) {
 		return l.lowerMatchStmt(v)
 	case *aotir.ClosureEnvStmt:
 		return l.lowerClosureEnvStmt(v)
+	// Phase 7
+	case *aotir.QueryScopeStmt:
+		return l.lowerQueryScopeStmt(v)
+	// Phase 10
+	case *aotir.StreamEmitStmt:
+		return l.lowerStreamEmitStmt(v)
+	case *aotir.ChanSendStmt:
+		return l.lowerChanSendStmt(v)
+	// Phase 12
+	case *aotir.TryCatchStmt:
+		return l.lowerTryCatchStmt(v)
+	case *aotir.PanicStmt:
+		return l.lowerPanicStmt(v)
+	// Phase 13
+	case *aotir.WriteFileStmt:
+		return l.lowerWriteFileStmt(v)
+	case *aotir.AppendFileStmt:
+		return l.lowerAppendFileStmt(v)
+	// Phase 9
+	case *aotir.AgentIntentCallStmt:
+		return l.lowerAgentIntentCallStmt(v)
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported stmt %T (Phase 6 surface)", s)
+		return nil, fmt.Errorf("ts lower: unsupported stmt %T", s)
 	}
 }
 
@@ -613,12 +675,13 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (tstree.Expr, error) {
 	case *aotir.BoolLit:
 		return &tstree.BoolLit{Value: v.Value}, nil
 	case *aotir.VarRef:
-		// Phase 6: the C lowerer stamps captured-variable refs
-		// inside a closure body as `__e->X` so its emitter can
-		// route them through the env struct. JS doesn't have an
-		// env struct, so we strip the prefix and let lexical
-		// scope resolve the identifier.
-		return &tstree.IdentExpr{Name: stripEnvPrefix(v.Name)}, nil
+		// Phase 6: strip `__e->` env-struct prefix (JS captures by scope).
+		// Phase 9: inside an agent intent body, `__self->FIELD` → `this.FIELD`.
+		name := stripEnvPrefix(v.Name)
+		if l.insideAgent {
+			name = stripSelfPrefix(name)
+		}
+		return &tstree.IdentExpr{Name: name}, nil
 	case *aotir.FunLit:
 		return l.lowerFunLit(v)
 	case *aotir.FunCallExpr:
@@ -735,8 +798,69 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (tstree.Expr, error) {
 		return l.lowerVariantLit(v)
 	case *aotir.UnionVarRef:
 		return l.lowerUnionVarRef(v)
+	// Phase 7
+	case *aotir.DatalogQueryExpr:
+		return l.lowerDatalogQueryExpr(v)
+	// Phase 8
+	case *aotir.ListMapExpr:
+		return l.lowerListMapExpr(v)
+	case *aotir.ListFilterExpr:
+		return l.lowerListFilterExpr(v)
+	case *aotir.ListFoldlExpr:
+		return l.lowerListFoldlExpr(v)
+	case *aotir.StrSplitExpr:
+		return l.lowerStrSplitExpr(v)
+	case *aotir.StrJoinExpr:
+		return l.lowerStrJoinExpr(v)
+	case *aotir.StrUpperExpr:
+		return l.lowerStrUpperExpr(v)
+	case *aotir.StrLowerExpr:
+		return l.lowerStrLowerExpr(v)
+	case *aotir.StrReverseExpr:
+		return l.lowerStrReverseExpr(v)
+	case *aotir.NumCastExpr:
+		return l.lowerNumCastExpr(v)
+	case *aotir.MathCallExpr:
+		return l.lowerMathCallExpr(v)
+	// Phase 9
+	case *aotir.AgentSpawnExpr:
+		return l.lowerAgentSpawnExpr(v)
+	case *aotir.AgentIntentCallExpr:
+		return l.lowerAgentIntentCallExpr(v)
+	// Phase 10
+	case *aotir.StreamMakeExpr:
+		return l.lowerStreamMakeExpr(v)
+	case *aotir.SubMakeExpr:
+		return l.lowerSubMakeExpr(v)
+	case *aotir.SubMakeLimitExpr:
+		return l.lowerSubMakeLimitExpr(v)
+	case *aotir.SubRecvExpr:
+		return l.lowerSubRecvExpr(v)
+	case *aotir.ChanMakeExpr:
+		return l.lowerChanMakeExpr(v)
+	case *aotir.ChanRecvExpr:
+		return l.lowerChanRecvExpr(v)
+	// Phase 11
+	case *aotir.AsyncExpr:
+		return l.lowerAsyncExpr(v)
+	case *aotir.AwaitExpr:
+		return l.lowerAwaitExpr(v)
+	// Phase 13
+	case *aotir.ReadFileExpr:
+		return l.lowerReadFileExpr(v)
+	case *aotir.LinesExpr:
+		return l.lowerLinesExpr(v)
+	// Phase 14
+	case *aotir.LLMGenerateExpr:
+		return l.lowerLLMGenerateExpr(v)
+	// Phase 15
+	case *aotir.HttpGetExpr:
+		return l.lowerHttpGetExpr(v)
+	// Phase 16
+	case *aotir.JsonDecodeExpr:
+		return l.lowerJsonDecodeExpr(v)
 	default:
-		return nil, fmt.Errorf("ts lower: unsupported expr %T (Phase 5 surface)", e)
+		return nil, fmt.Errorf("ts lower: unsupported expr %T", e)
 	}
 }
 

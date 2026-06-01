@@ -1,0 +1,14 @@
+fun safe_head(xs: list<int>): int {
+  try {
+    if len(xs) == 0 {
+      panic(1, "empty list")
+    }
+    return xs[0]
+  } catch err {
+    return -1
+  }
+}
+let a: list<int> = [10, 20, 30]
+let b: list<int> = []
+print(safe_head(a))
+print(safe_head(b))

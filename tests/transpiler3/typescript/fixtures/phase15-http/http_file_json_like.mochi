@@ -1,0 +1,3 @@
+write_file("/tmp/mochi_ts_http_json.txt", "42")
+let content = http_get("file:///tmp/mochi_ts_http_json.txt")
+print(content)

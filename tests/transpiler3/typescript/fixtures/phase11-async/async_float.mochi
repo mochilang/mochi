@@ -1,0 +1,6 @@
+fun pi_approx(): future<float> {
+  return async 3.14
+}
+let f = pi_approx()
+let pi = await f
+print(pi)

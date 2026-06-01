@@ -1,0 +1,3 @@
+let parts: list<string> = ["one", "two", "three"]
+print(join(parts, ", "))
+print(join(parts, " | "))

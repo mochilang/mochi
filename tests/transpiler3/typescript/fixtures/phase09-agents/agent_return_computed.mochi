@@ -1,0 +1,11 @@
+agent Counter4(n: int) {
+  intent doubled(): int { return n * 2 }
+  intent squared(): int { return n * n }
+  intent set(v: int) { n = v }
+}
+let c = Counter4(3)
+print(c.doubled())
+print(c.squared())
+c.set(5)
+print(c.doubled())
+print(c.squared())

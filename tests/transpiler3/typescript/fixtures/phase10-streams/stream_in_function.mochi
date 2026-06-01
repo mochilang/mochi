@@ -1,0 +1,13 @@
+fun produce_evens(s: stream<int>, n: int) {
+  for i in 0..n {
+    if i % 2 == 0 {
+      emit(s, i)
+    }
+  }
+}
+let s = stream<int>(10)
+let sub = subscribe(s)
+produce_evens(s, 8)
+for i in 0..4 {
+  print(recv(sub))
+}

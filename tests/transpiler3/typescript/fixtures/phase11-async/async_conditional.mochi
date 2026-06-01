@@ -1,0 +1,11 @@
+fun maybe(flag: bool): future<int> {
+  if flag {
+    return async 1
+  } else {
+    return async 0
+  }
+}
+let f1 = maybe(true)
+let f2 = maybe(false)
+print(await f1)
+print(await f2)

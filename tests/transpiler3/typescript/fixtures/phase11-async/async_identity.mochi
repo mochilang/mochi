@@ -1,0 +1,5 @@
+fun id_async(x: int): future<int> {
+  return async x
+}
+print(await id_async(42))
+print(await id_async(0))

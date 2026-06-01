@@ -1,0 +1,11 @@
+fun step1(): future<int> {
+  return async 10
+}
+fun step2(x: int): future<int> {
+  return async (x * 2)
+}
+let f1 = step1()
+let v1 = await f1
+let f2 = step2(v1)
+let v2 = await f2
+print(v2)

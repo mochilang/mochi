@@ -1,0 +1,4 @@
+let r1 = llm.generate("openai", "gpt-4", "prompt a")
+let r2 = llm.generate("anthropic", "claude-3", "prompt b")
+let r3 = llm.generate("google", "gemini", "prompt c")
+print(len(r1) + len(r2) + len(r3))

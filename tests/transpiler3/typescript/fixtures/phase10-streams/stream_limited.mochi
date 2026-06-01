@@ -1,0 +1,7 @@
+let s = stream<int>(10)
+let sub = subscribe_limited(s, 2)
+emit(s, 1)
+emit(s, 2)
+emit(s, 3)
+print(recv(sub))
+print(recv(sub))

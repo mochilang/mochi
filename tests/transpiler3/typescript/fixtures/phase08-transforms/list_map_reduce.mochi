@@ -1,0 +1,4 @@
+let nums = [1, 2, 3, 4, 5]
+let squares = map(nums, fun(x: int): int => x * x)
+let sum_of_squares = reduce(squares, fun(acc: int, x: int): int => acc + x, 0)
+print(sum_of_squares)

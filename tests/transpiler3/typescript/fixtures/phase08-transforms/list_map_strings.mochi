@@ -1,0 +1,5 @@
+let words: list<string> = ["hello", "world", "foo"]
+let uppers = map(words, fun(w: string): string => upper(w))
+for u in uppers {
+  print(u)
+}

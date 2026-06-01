@@ -1,0 +1,7 @@
+let ch = chan<string>(5)
+send(ch, "a")
+send(ch, "b")
+send(ch, "c")
+print(recv(ch))
+print(recv(ch))
+print(recv(ch))

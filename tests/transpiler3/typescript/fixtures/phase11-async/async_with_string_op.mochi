@@ -1,0 +1,5 @@
+fun greet_async(name: string): future<string> {
+  return async ("Hello, " + name + "!")
+}
+let f = greet_async("Mochi")
+print(await f)

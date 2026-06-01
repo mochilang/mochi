@@ -1,0 +1,6 @@
+let csv = "a,b,,c,d,"
+let parts = split(csv, ",")
+let nonempty = filter(parts, fun(s: string): bool => len(s) > 0)
+for p in nonempty {
+  print(p)
+}

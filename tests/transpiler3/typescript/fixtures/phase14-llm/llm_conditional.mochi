@@ -1,0 +1,6 @@
+let answer = llm.generate("openai", "gpt-4", "what is 2+2")
+if answer == "" {
+  print("4")
+} else {
+  print(answer)
+}

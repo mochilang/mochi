@@ -1,0 +1,3 @@
+write_file("/tmp/mochi_ts_test_linecount.txt", "one\ntwo\nthree\nfour\nfive")
+let ls = lines("/tmp/mochi_ts_test_linecount.txt")
+print(len(ls))

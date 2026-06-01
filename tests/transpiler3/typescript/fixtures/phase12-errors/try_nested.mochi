@@ -1,0 +1,12 @@
+fun risky(x: int): int {
+  try {
+    if x < 0 {
+      panic(1, "negative")
+    }
+    return x * 2
+  } catch err {
+    return -1
+  }
+}
+print(risky(5))
+print(risky(-3))

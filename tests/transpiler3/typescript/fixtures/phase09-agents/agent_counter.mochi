@@ -1,0 +1,9 @@
+agent Counter(count: int) {
+  intent get(): int { return count }
+  intent increment() { count = count + 1 }
+}
+let c = Counter(0)
+print(c.get())
+c.increment()
+c.increment()
+print(c.get())

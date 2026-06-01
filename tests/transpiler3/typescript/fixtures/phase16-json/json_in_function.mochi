@@ -1,0 +1,5 @@
+fun parse_num(s: string): int {
+  return json_decode(s)
+}
+print(parse_num("7"))
+print(parse_num("42"))

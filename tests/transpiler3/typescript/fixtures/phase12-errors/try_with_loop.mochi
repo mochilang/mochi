@@ -1,0 +1,12 @@
+var sum = 0
+for i in 1..6 {
+  try {
+    if i == 3 {
+      panic(1, "skip three")
+    }
+    sum = sum + i
+  } catch err {
+    sum = sum + 0
+  }
+}
+print(sum)

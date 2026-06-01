@@ -1,0 +1,6 @@
+for i in 1..4 {
+  let path = "/tmp/mochi_ts_http_loop" + str(i) + ".txt"
+  write_file(path, str(i * i))
+  let v = http_get("file://" + path)
+  print(v)
+}

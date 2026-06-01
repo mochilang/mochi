@@ -158,10 +158,22 @@ func (l *lowerer) lowerFunction(fn *aotir.Function) (*tstree.FuncDecl, error) {
 	if err != nil {
 		return nil, fmt.Errorf("ts lower: body of %q: %w", fn.Name, err)
 	}
+	// Phase 11: if the colour pass marked this function Red, wrap the
+	// return type in Promise<...> and add the `async` modifier.
+	var modifiers []string
+	if isAsyncFunction(fn.Name, l.colours) {
+		modifiers = []string{"async"}
+		if ret != "void" && ret != "Promise<void>" {
+			ret = "Promise<" + ret + ">"
+		} else if ret == "void" {
+			ret = "Promise<void>"
+		}
+	}
 	return &tstree.FuncDecl{
 		Name:       fn.Name,
 		Params:     params,
 		ReturnType: ret,
+		Modifiers:  modifiers,
 		Body:       body,
 	}, nil
 }

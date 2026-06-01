@@ -1,0 +1,9 @@
+agent Logger(last: string) {
+  intent log(msg: string) { last = msg }
+  intent get_last(): string { return last }
+}
+let l = Logger("")
+l.log("first")
+l.log("second")
+l.log("third")
+print(l.get_last())

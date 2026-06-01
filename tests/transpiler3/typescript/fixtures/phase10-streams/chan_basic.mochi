@@ -1,0 +1,7 @@
+let ch = chan<int>(10)
+send(ch, 10)
+send(ch, 20)
+send(ch, 30)
+print(recv(ch))
+print(recv(ch))
+print(recv(ch))

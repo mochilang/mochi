@@ -1,0 +1,6 @@
+let f = 3.9
+let i = int(f)
+print(i)
+let g = -2.7
+let j = int(g)
+print(j)

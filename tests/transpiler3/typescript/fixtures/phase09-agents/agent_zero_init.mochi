@@ -1,0 +1,9 @@
+agent Counter5(count: int) {
+  intent inc() { count = count + 1 }
+  intent get(): int { return count }
+}
+let c = Counter5(0)
+for i in 0..5 {
+  c.inc()
+}
+print(c.get())

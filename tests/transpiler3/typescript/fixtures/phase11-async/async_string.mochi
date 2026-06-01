@@ -1,0 +1,5 @@
+fun get_greeting(): future<string> {
+  return async "hello"
+}
+let f = get_greeting()
+print(await f)
