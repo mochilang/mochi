@@ -25,6 +25,7 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: '^1.26'
+          cache-dependency-path: go.sum
       - uses: actions/setup-java@v5
         with:
           java-version: ${{ matrix.java }}
@@ -43,6 +44,7 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: '^1.26'
+          cache-dependency-path: go.sum
       - uses: graalvm/setup-graalvm@v1
         with:
           java-version: '25'
@@ -61,6 +63,7 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: '^1.26'
+          cache-dependency-path: go.sum
       - uses: actions/setup-java@v5
         with:
           java-version: '26-ea'

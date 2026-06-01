@@ -55,6 +55,7 @@ func TestPhase1Hello(t *testing.T) {
 
 	for _, name := range names {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			fixture := filepath.Join(base, name)
 			src := filepath.Join(fixture, name+".mochi")
 			want, err := os.ReadFile(filepath.Join(fixture, "expect.txt"))

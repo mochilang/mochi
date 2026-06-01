@@ -17,6 +17,12 @@ name: Kotlin transpiler tests
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'transpiler3/kotlin/**'
+      - 'tests/transpiler3/kotlin/**'
+      - 'transpiler3/c/aotir/**'
+      - 'transpiler3/c/lower/**'
+      - '.github/workflows/transpiler3-kotlin-test.yml'
   pull_request:
     paths:
       - 'transpiler3/kotlin/**'

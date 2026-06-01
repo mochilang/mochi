@@ -68,6 +68,7 @@ func runVm3(t *testing.T, src string) []byte {
 // This is the shared helper used by all phase gate tests.
 func runBeamFixture(t *testing.T, mochiPath, outPath string) {
 	t.Helper()
+	t.Parallel()
 
 	want, err := os.ReadFile(outPath)
 	if err != nil {
