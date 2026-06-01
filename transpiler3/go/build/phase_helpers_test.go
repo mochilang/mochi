@@ -34,6 +34,14 @@ func runFixturesMatchingPrefixes(t *testing.T, prefixes ...string) {
 		if !matchesAnyPrefix(name, prefixes) {
 			continue
 		}
+		// Skip fixtures that require ambient setup files (setup/) or a
+		// cassette dir (cassette/); their dedicated test functions own them.
+		if _, err := os.Stat(filepath.Join(base, name, "setup")); err == nil {
+			continue
+		}
+		if _, err := os.Stat(filepath.Join(base, name, "cassette")); err == nil {
+			continue
+		}
 		matched++
 		fixtureName := name
 		t.Run(name, func(t *testing.T) {
