@@ -1308,6 +1308,18 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (rtree.Expr, error) {
 			return nil, fmt.Errorf("json_decode input: %w", err)
 		}
 		return &rtree.CallExpr{Func: "mochi_runtime::json::decode", Args: []rtree.Expr{in}}, nil
+	case *aotir.AwaitExpr:
+		future, err := l.lowerExpr(n.Future)
+		if err != nil {
+			return nil, fmt.Errorf("await: %w", err)
+		}
+		return &rtree.AwaitExpr{X: future}, nil
+	case *aotir.AsyncExpr:
+		body, err := l.lowerExpr(n.Body)
+		if err != nil {
+			return nil, fmt.Errorf("async: %w", err)
+		}
+		return &rtree.RawExpr{Code: fmt.Sprintf("async { %s }", body.RustExpr())}, nil
 	}
 	return nil, fmt.Errorf("rust lower: unsupported expr %T", e)
 }

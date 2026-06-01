@@ -789,6 +789,19 @@ func (i *IndexExpr) RustExpr() string {
 	return fmt.Sprintf("%s[%s]", i.Receiver.RustExpr(), i.Index.RustExpr())
 }
 
+// ---- AwaitExpr ----
+
+// AwaitExpr emits `(expr).await` using Rust's postfix await syntax.
+type AwaitExpr struct {
+	X Expr
+}
+
+func (*AwaitExpr) rustExpr() {}
+
+func (a *AwaitExpr) RustExpr() string {
+	return fmt.Sprintf("(%s).await", a.X.RustExpr())
+}
+
 // ---- RawExpr ----
 
 // RawExpr is a verbatim Rust expression. Use sparingly; the renderer

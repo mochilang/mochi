@@ -1,0 +1,13 @@
+type Color = Red | Green | Blue
+
+fun color_code(c: Color): int {
+  return match c {
+    Red => 1
+    Green => 2
+    Blue => 3
+  }
+}
+
+print(color_code(Red))
+print(color_code(Green))
+print(color_code(Blue))

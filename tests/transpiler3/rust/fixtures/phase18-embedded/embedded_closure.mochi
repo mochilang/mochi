@@ -1,0 +1,5 @@
+let double = fun(x: int): int => x * 2
+let add_ten = fun(x: int): int => x + 10
+print(double(5))
+print(add_ten(7))
+print(double(add_ten(3)))
