@@ -174,6 +174,20 @@ func (d *Driver) Build(src, out string, target, profile string) error {
 			return fmt.Errorf("transpiler3/go/build: copy wasm_exec.js: %w", err)
 		}
 		return nil
+	case TargetGoModule:
+		if err := os.MkdirAll(absOut, 0o755); err != nil {
+			return fmt.Errorf("transpiler3/go/build: mkdir module out: %w", err)
+		}
+		for _, name := range []string{"main.go", "go.mod"} {
+			data, err := os.ReadFile(filepath.Join(workDir, name))
+			if err != nil {
+				return fmt.Errorf("transpiler3/go/build: read %s: %w", name, err)
+			}
+			if err := os.WriteFile(filepath.Join(absOut, name), data, 0o644); err != nil {
+				return fmt.Errorf("transpiler3/go/build: write %s to module out: %w", name, err)
+			}
+		}
+		return nil
 	}
 
 	if err := goBuild(d.GoBin, workDir, absOut, nil); err != nil {

@@ -1,9 +1,10 @@
 package build
 
 import (
-	"io"
+	"bytes"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // copySiblingGoFiles copies every *.go file that lives in the same
@@ -32,17 +33,32 @@ func copySiblingGoFiles(src, workDir string) error {
 	return nil
 }
 
+// copyFile copies src to dst, stripping any leading `//go:build ignore` line
+// so that companion Go FFI files (which carry that tag to prevent `go build`
+// from compiling them in-place) are compiled normally inside the work dir.
 func copyFile(src, dst string) error {
-	in, err := os.Open(src)
+	data, err := os.ReadFile(src)
 	if err != nil {
 		return err
 	}
-	defer in.Close()
-	out, err := os.Create(dst)
-	if err != nil {
-		return err
+	data = stripBuildIgnore(data)
+	return os.WriteFile(dst, data, 0o644)
+}
+
+// stripBuildIgnore removes a leading `//go:build ignore` line (and any
+// immediately following blank line) from Go source so the copy compiles.
+func stripBuildIgnore(src []byte) []byte {
+	const tag = "//go:build ignore"
+	line, rest, found := bytes.Cut(src, []byte("\n"))
+	if !found {
+		return src
 	}
-	defer out.Close()
-	_, err = io.Copy(out, in)
-	return err
+	if strings.TrimSpace(string(line)) != tag {
+		return src
+	}
+	// drop optional blank separator line
+	if next, after, ok := bytes.Cut(rest, []byte("\n")); ok && strings.TrimSpace(string(next)) == "" {
+		return after
+	}
+	return rest
 }

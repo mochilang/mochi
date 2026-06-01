@@ -166,6 +166,8 @@ func (l *lowerer) lowerExpr(e aotir.Expr) (gotree.Expr, error) {
 		return l.lowerAsyncExpr(e)
 	case *aotir.AwaitExpr:
 		return l.lowerAwaitExpr(e)
+	case *aotir.LLMGenerateExpr:
+		return l.lowerLLMGenerateExpr(e)
 	case *aotir.DatalogQueryExpr:
 		return l.lowerDatalogQueryExpr(e)
 	default:

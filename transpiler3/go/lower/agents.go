@@ -36,24 +36,83 @@ func (l *lowerer) lowerChanRecvExpr(e *aotir.ChanRecvExpr) (gotree.Expr, error) 
 	return &gotree.UnaryExpr{Op: "<-", X: ch}, nil
 }
 
-// lowerStreamMakeExpr stubs stream creation for the Go target.
+// lowerStreamMakeExpr emits mochiStreamMake[T](cap).
 func (l *lowerer) lowerStreamMakeExpr(e *aotir.StreamMakeExpr) (gotree.Expr, error) {
-	return nil, fmt.Errorf("transpiler3/go/lower: StreamMakeExpr not yet implemented in Go target")
+	cap, err := l.lowerExpr(e.Cap)
+	if err != nil {
+		return nil, fmt.Errorf("stream make cap: %w", err)
+	}
+	et, err := l.lowerType(e.ElemType)
+	if err != nil {
+		return nil, fmt.Errorf("stream make elem type: %w", err)
+	}
+	l.addHelper("mochiStream")
+	l.addHelper("mochiSub")
+	l.addHelper("mochiStreamMake")
+	l.addImport("sync")
+	return &gotree.CallExpr{
+		Fun:  &gotree.Ident{Name: "mochiStreamMake[" + et + "]"},
+		Args: []gotree.Expr{&gotree.CallExpr{Fun: &gotree.Ident{Name: "int"}, Args: []gotree.Expr{cap}}},
+	}, nil
 }
 
-// lowerSubMakeExpr stubs subscriber creation for the Go target.
+// lowerSubMakeExpr emits mochiStreamSubscribe[T](stream).
 func (l *lowerer) lowerSubMakeExpr(e *aotir.SubMakeExpr) (gotree.Expr, error) {
-	return nil, fmt.Errorf("transpiler3/go/lower: SubMakeExpr not yet implemented in Go target")
+	stream, err := l.lowerExpr(e.Stream)
+	if err != nil {
+		return nil, fmt.Errorf("sub make stream: %w", err)
+	}
+	et, err := l.lowerType(e.ElemType)
+	if err != nil {
+		return nil, fmt.Errorf("sub make elem type: %w", err)
+	}
+	l.addHelper("mochiStream")
+	l.addHelper("mochiSub")
+	l.addHelper("mochiStreamSubscribe")
+	l.addImport("sync")
+	return &gotree.CallExpr{
+		Fun:  &gotree.Ident{Name: "mochiStreamSubscribe[" + et + "]"},
+		Args: []gotree.Expr{stream},
+	}, nil
 }
 
-// lowerSubMakeLimitExpr stubs bounded-subscriber creation for the Go target.
+// lowerSubMakeLimitExpr emits mochiStreamSubscribeLimit[T](stream, int(limit)).
 func (l *lowerer) lowerSubMakeLimitExpr(e *aotir.SubMakeLimitExpr) (gotree.Expr, error) {
-	return nil, fmt.Errorf("transpiler3/go/lower: SubMakeLimitExpr not yet implemented in Go target")
+	stream, err := l.lowerExpr(e.Stream)
+	if err != nil {
+		return nil, fmt.Errorf("sub make limit stream: %w", err)
+	}
+	limit, err := l.lowerExpr(e.Limit)
+	if err != nil {
+		return nil, fmt.Errorf("sub make limit: %w", err)
+	}
+	et, err := l.lowerType(e.ElemType)
+	if err != nil {
+		return nil, fmt.Errorf("sub make limit elem type: %w", err)
+	}
+	l.addHelper("mochiStream")
+	l.addHelper("mochiSub")
+	l.addHelper("mochiStreamSubscribeLimit")
+	l.addImport("sync")
+	return &gotree.CallExpr{
+		Fun:  &gotree.Ident{Name: "mochiStreamSubscribeLimit[" + et + "]"},
+		Args: []gotree.Expr{stream, &gotree.CallExpr{Fun: &gotree.Ident{Name: "int"}, Args: []gotree.Expr{limit}}},
+	}, nil
 }
 
-// lowerSubRecvExpr stubs subscriber receive for the Go target.
+// lowerSubRecvExpr emits mochiSubRecv(sub). Go infers the element type
+// from the *mochiSub[T] argument, so no explicit type parameter is needed.
 func (l *lowerer) lowerSubRecvExpr(e *aotir.SubRecvExpr) (gotree.Expr, error) {
-	return nil, fmt.Errorf("transpiler3/go/lower: SubRecvExpr not yet implemented in Go target")
+	sub, err := l.lowerExpr(e.Sub)
+	if err != nil {
+		return nil, fmt.Errorf("sub recv: %w", err)
+	}
+	l.addHelper("mochiSub")
+	l.addHelper("mochiSubRecv")
+	return &gotree.CallExpr{
+		Fun:  &gotree.Ident{Name: "mochiSubRecv"},
+		Args: []gotree.Expr{sub},
+	}, nil
 }
 
 // lowerAgentLit emits &AgentName{Field: val, ...}.
@@ -120,9 +179,9 @@ func (l *lowerer) lowerAsyncExpr(e *aotir.AsyncExpr) (gotree.Expr, error) {
 	}
 	chanType := "chan " + et
 
-	// ch := make(chan T, 1)
+	// __fut := make(chan T, 1)
 	makeCh := &gotree.AssignStmt{
-		Lhs: []gotree.Expr{&gotree.Ident{Name: "ch"}},
+		Lhs: []gotree.Expr{&gotree.Ident{Name: "__fut"}},
 		Tok: ":=",
 		Rhs: []gotree.Expr{&gotree.CallExpr{
 			Fun: &gotree.Ident{Name: "make"},
@@ -133,7 +192,7 @@ func (l *lowerer) lowerAsyncExpr(e *aotir.AsyncExpr) (gotree.Expr, error) {
 		}},
 	}
 
-	// go func() { ch <- body }()
+	// go func() { __fut <- body }()
 	goStmt := &gotree.GoStmt{
 		Call: &gotree.CallExpr{
 			Fun: &gotree.FuncLit{
@@ -141,7 +200,7 @@ func (l *lowerer) lowerAsyncExpr(e *aotir.AsyncExpr) (gotree.Expr, error) {
 				Body: &gotree.BlockStmt{
 					List: []gotree.Stmt{
 						&gotree.SendStmt{
-							Chan:  &gotree.Ident{Name: "ch"},
+							Chan:  &gotree.Ident{Name: "__fut"},
 							Value: body,
 						},
 					},
@@ -150,9 +209,9 @@ func (l *lowerer) lowerAsyncExpr(e *aotir.AsyncExpr) (gotree.Expr, error) {
 		},
 	}
 
-	// return ch
+	// return __fut
 	retCh := &gotree.ReturnStmt{
-		Results: []gotree.Expr{&gotree.Ident{Name: "ch"}},
+		Results: []gotree.Expr{&gotree.Ident{Name: "__fut"}},
 	}
 
 	return &gotree.CallExpr{
@@ -175,5 +234,32 @@ func (l *lowerer) lowerAwaitExpr(e *aotir.AwaitExpr) (gotree.Expr, error) {
 		return nil, fmt.Errorf("await: %w", err)
 	}
 	return &gotree.UnaryExpr{Op: "<-", X: ch}, nil
+}
+
+// lowerLLMGenerateExpr emits mochiLLMGenerate(provider, model, prompt).
+// In cassette mode (MOCHI_LLM_CASSETTE_DIR set) the helper replays a
+// recorded reply; live providers are deferred to Phase 13.1+.
+func (l *lowerer) lowerLLMGenerateExpr(e *aotir.LLMGenerateExpr) (gotree.Expr, error) {
+	model, err := l.lowerExpr(e.Model)
+	if err != nil {
+		return nil, fmt.Errorf("llm generate model: %w", err)
+	}
+	prompt, err := l.lowerExpr(e.Prompt)
+	if err != nil {
+		return nil, fmt.Errorf("llm generate prompt: %w", err)
+	}
+	l.addHelper("mochiLLMGenerate")
+	l.addHelper("mochiDJB2Key")
+	l.addImport("fmt")
+	l.addImport("os")
+	l.addImport("strings")
+	return &gotree.CallExpr{
+		Fun: &gotree.Ident{Name: "mochiLLMGenerate"},
+		Args: []gotree.Expr{
+			&gotree.BasicLit{Kind: gotree.StringLit, Value: e.Provider},
+			model,
+			prompt,
+		},
+	}, nil
 }
 
