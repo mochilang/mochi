@@ -920,6 +920,47 @@ func helperDecl(name string) gotree.Decl {
 		return &gotree.RawDecl{Code: `func mochiSubRecv[T any](sub *mochiSub[T]) T {
 	return <-sub.ch
 }`}
+	case "mochiHttpGet":
+		return &gotree.RawDecl{Code: `func mochiHttpGet(urlStr string) string {
+	if strings.HasPrefix(urlStr, "file://") {
+		path := strings.TrimPrefix(urlStr, "file://")
+		b, err := os.ReadFile(path)
+		if err != nil {
+			return ""
+		}
+		return strings.TrimRight(string(b), "\n")
+	}
+	resp, err := http.Get(urlStr)
+	if err != nil {
+		return ""
+	}
+	defer resp.Body.Close()
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return ""
+	}
+	return string(b)
+}`}
+	case "mochiLLMGenerate":
+		return &gotree.RawDecl{Code: `func mochiLLMGenerate(provider, model, prompt string) string {
+	if dir := os.Getenv("MOCHI_LLM_CASSETTE_DIR"); dir != "" {
+		key := mochiDJB2Key(provider, model, prompt)
+		path := fmt.Sprintf("%s/%d.txt", dir, key)
+		b, err := os.ReadFile(path)
+		if err == nil {
+			return strings.TrimRight(string(b), "\n")
+		}
+	}
+	return ""
+}`}
+	case "mochiDJB2Key":
+		return &gotree.RawDecl{Code: `func mochiDJB2Key(provider, model, prompt string) uint64 {
+	var h uint64 = 5381
+	for _, b := range []byte(provider + "\x00" + model + "\x00" + prompt) {
+		h = ((h << 5) + h) ^ uint64(b)
+	}
+	return h
+}`}
 	}
 	return nil
 }
