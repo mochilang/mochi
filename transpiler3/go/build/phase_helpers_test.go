@@ -37,6 +37,7 @@ func runFixturesMatchingPrefixes(t *testing.T, prefixes ...string) {
 		matched++
 		fixtureName := name
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			name = fixtureName
 			runGoFixture(t, filepath.Join(base, name), name)
 		})

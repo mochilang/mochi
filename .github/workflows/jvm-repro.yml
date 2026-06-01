@@ -13,6 +13,7 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: '^1.26'
+          cache-dependency-path: go.sum
       - uses: actions/setup-java@v5
         with:
           java-version: '21'

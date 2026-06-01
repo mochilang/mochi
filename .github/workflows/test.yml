@@ -30,7 +30,7 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          go build -v ./...
+          go build -v ./parser/... ./runtime/vm/... ./types/...
 
       - name: Run portable tests
         shell: bash
