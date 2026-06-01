@@ -41,6 +41,11 @@ func TestPhase1Hello(t *testing.T) {
 		if _, err := os.Stat(filepath.Join(base, e.Name(), "setup")); err == nil {
 			continue
 		}
+		// Skip LLM cassette fixtures: a `cassette/` subdir means the
+		// fixture requires MOCHI_LLM_CASSETTE_DIR; TestPhase13LLM owns them.
+		if _, err := os.Stat(filepath.Join(base, e.Name(), "cassette")); err == nil {
+			continue
+		}
 		names = append(names, e.Name())
 	}
 	sort.Strings(names)
