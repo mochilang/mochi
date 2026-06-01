@@ -10,6 +10,10 @@ name: Ruby transpiler tests
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'transpiler3/ruby/**'
+      - 'mochi-runtime/**'
+      - '.github/workflows/transpiler3-ruby-test.yml'
   pull_request:
     paths:
       - 'transpiler3/ruby/**'

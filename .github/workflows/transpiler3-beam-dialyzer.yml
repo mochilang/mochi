@@ -7,6 +7,10 @@ name: BEAM runtime Dialyzer
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'transpiler3/beam/runtime/src/**'
+      - 'transpiler3/beam/build/dialyzer_test.go'
+      - '.github/workflows/transpiler3-beam-dialyzer.yml'
   pull_request:
     paths:
       - 'transpiler3/beam/runtime/src/**'
